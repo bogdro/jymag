@@ -1,7 +1,7 @@
 /*
  * PhoneElement.java, part of the JYMAG package.
  *
- * Copyright (C) 2007 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -63,21 +63,35 @@ public class PhoneElement
 	 */
 	public String getExt ()
 	{
-		     if ( type.equals ("FGIF") ) return "gif";	// NOI18N
-		else if ( type.equals ("JPEG") ) return "jpg";	// NOI18N
-		else if ( type.equals ("MIDI") ) return "mid";	// NOI18N
-		else if ( type.equals ("VCRD") ) return "vcf";	// NOI18N
-		else if ( type.equals ("VCAL") ) return "ics";	// NOI18N
+		     if ( type.equals ("FGIF") ) return "gif";		// NOI18N
+		else if ( type.equals ("JPEG") ) return "jpg";		// NOI18N
+		else if ( type.equals ("MIDI") ) return "mid";		// NOI18N
+		else if ( type.equals ("VCRD") ) return "vcf";		// NOI18N
+		else if ( type.equals ("VCAL") ) return "ics";		// NOI18N
+		else if ( type.equals ("WBMP") ) return "wbm";		// NOI18N
+		else if ( type.equals ("TIFF") ) return "tif";		// NOI18N
+		else if ( type.equals ("PICT") ) return "pct";		// NOI18N
+		else if ( type.equals ("SVGZ") ) return "svz";		// NOI18N
+		else if ( type.equals ("AIFF") ) return "aif";		// NOI18N
+		else if ( type.equals ("MPEG") ) return "mpg";		// NOI18N
+		else if ( type.equals ("EMS_GR") ) return "emg";	// NOI18N
+		else if ( type.equals ("ASG1") ) return "as1";		// NOI18N
+		else if ( type.equals ("ASG2") ) return "as2";		// NOI18N
+		else if ( type.equals ("EMS_AN") ) return "ema";	// NOI18N
+		else if ( type.equals ("MJPG") ) return "mjp";		// NOI18N
+		else if ( type.equals ("3GP2") ) return "3gp";		// NOI18N
+		else if ( type.equals ("3GPP") ) return "3gp";		// NOI18N
 		else return type.toLowerCase ();
 	}
 
 	/**
-	 * Returns the filename with all blanks replaced with underscores.
+	 * Returns the filename with all blanks and unwanted characters
+	 * replaced with underscores.
 	 * @return The file name for this element.
 	 */
 	public String getFilename ()
 	{
-		byte[] quot = new byte[] { '"' };		// NOI18N
+		byte[] quot = new byte[] { '"' };	// NOI18N
 		return filename
 			.replaceAll ("\\s", "_")		// NOI18N
 			.replaceAll ("\\.", "_")		// NOI18N

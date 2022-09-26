@@ -1,3 +1,44 @@
+2008-11-15	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.7:
+	  Verified uploading of AMR ringtones.
+	  Unchecked uploading of: IMY, ASG1, ASG2, EMS_GR, EMS_AN, SSA,
+	  MJPG, MP3, MFI, AAC, AWB, TIFF, PICT, AI, EPS, PS, SG1, SG2, AVI,
+	  MP4, MPEG, MPG, 3GP, 3GPP, 3G2, JAR, JAD, JAM. Added JIF as an alias
+	  for JPEG, VCS as an alias for ICS, M4A as an alias for AAC.
+	  Added internationalization (i18n) support and Polish localization. Moved
+	  the resources to a package BogDroSoft.jymag.rsrc, under BogDroSoft.jymag.
+	* Utils.java (handleException): allow Throwables, not only Exceptions.
+	  Catching Throwables in the method.
+	* Utils.java: Added a Hashtable for Java files.
+	* DataTransporter.java: better JPG downloading (relying only on two
+	  header bytes; this should allow downloading Exif and MJPEG files),
+	  added unchecked downloading of: AIFF, IMY, AAC (MPEG4-AAC), MPEG4,
+	  GZIP, ZIP/JAR, some MPEG audio including MP3s, WMV, XML/SVG/anything
+	  that starts with "<!DOCTYPE", midlets' JAD files.
+	* MainWindow.java: added key listeners to Animation/Video tab, so that
+	  the Esc key works. Changed JPanels to JScrollPanes, so the users can
+	  scroll them if not all GUI elements are visible. Fixed a bug when
+	  "ATIMEI" was displayed instead of the phone type. Added a button
+	  which opens a window where you can check the phone's capabilities.
+	  Added a possibility to load and save the current configuration
+	  (port and main window settings). Fixed refreshing the phone type
+	  and firmware labels after next scans. Added a default exception
+	  handler for threads, so hopefully every important exception will get
+	  logged into the log file. Added a '--lang' command-line option which
+	  allows to set the language used by JYMAG. Changed the flow control combo
+	  to two checkboxes, to allow both software and hardware flow control. The
+	  '--help' option now displays the command-line options in alphabetical
+	  order. Added a '--conf' option to read configuration from a file at
+	  startup. New upload and download icons. New program icon.
+	* ConfigFile.java: a new class for dealing with configuration file
+	  loading and saving.
+	* README: upgrade and fixes
+	* PhoneElement.java (getExt): added more extensions.
+	* run.sh, run.bat: path corrections and upgrade.
+	* run-en.sh, run-en.bat: these files allow running the program in
+	  English, no matter what the system language is.
+
 2008-08-13	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.6:

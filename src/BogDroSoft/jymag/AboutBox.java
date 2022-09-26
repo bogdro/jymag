@@ -1,7 +1,7 @@
 /*
  * AboutBox.java, part of the JYMAG package.
  *
- * Copyright (C) 2007 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,16 +39,16 @@ import java.net.URI;
 public class AboutBox extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 72L;
-	private final String emailAddr = "bogdandr@op.pl";
-	private final String host1 = "jymag.sf.net";
-	private final String path1 = "/";
-	private final String www1Addr = "http://" + host1 + path1;
-	private final String host2 = "rudy.mif.pg.gda.pl";
-	private final String path2 = "/~bogdro/soft";
-	private final String www2Addr = "http://" + host2 + path2;
-	private final String host3 = "rudy.mif.pg.gda.pl";
-	private final String path3 = "/~bogdro/inne";
-	private final String www3Addr = "http://" + host3 + path3;
+	private final String emailAddr = "bogdandr@op.pl";			// NOI18N
+	private final String host1 = "jymag.sf.net";				// NOI18N
+	private final String path1 = "/";							// NOI18N
+	private final String www1Addr = "http://" + host1 + path1;	// NOI18N
+	private final String host2 = "rudy.mif.pg.gda.pl";			// NOI18N
+	private final String path2 = "/~bogdro/soft";				// NOI18N
+	private final String www2Addr = "http://" + host2 + path2;	// NOI18N
+	private final String host3 = "rudy.mif.pg.gda.pl";			// NOI18N
+	private final String path3 = "/~bogdro/inne";				// NOI18N
+	private final String www3Addr = "http://" + host3 + path3;	// NOI18N
 
 	/**
 	 * Creates new form AboutBox.
@@ -89,16 +89,19 @@ public class AboutBox extends javax.swing.JDialog
         thanksTo = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         licenseArea = new javax.swing.JTextArea();
+        licValue = new javax.swing.JLabel();
+        authorVal = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("About JYMAG");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/AboutBox"); // NOI18N
+        setTitle(bundle.getString("About_JYMAG")); // NOI18N
         setModal(true);
 
-        jymagLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/QMARK8.png"))); // NOI18N
+        jymagLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
         jymagLabel.setText("JYMAG - Java Your Music And Graphics " + MainWindow.verString);
         jymagLabel.setIconTextGap(40);
 
-        authorLabel.setText("Author: Bogdan Drozdowski"); // NOI18N
+        authorLabel.setText(bundle.getString("author")); // NOI18N
 
         emailLabel.setText("<html><a href=\"mailto:" + emailAddr + "\">" + emailAddr + "</a></html>");
         emailLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -130,19 +133,24 @@ public class AboutBox extends javax.swing.JDialog
             }
         });
 
-        licLabel.setText("License: GPLv3+"); // NOI18N
+        licLabel.setText(bundle.getString("License:_")); // NOI18N
 
-        suppOperLabel.setText("<html>\nSupported opertations<br>\n<ol>\n<li>Getting lists of: pictures, ringtones, addressbook entries, to-do tasks,<br> events and animations/videos</li>\n<li>Downloading:\n <ul>\n <li> pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG, WBMP</li>\n <li> ringtones: MIDI, AMR, WAV</li>\n <li> addressbook entries (vCards)</li>\n <li> to-do tasks</li>\n <li> events (reminders, ...)</li>\n <li> animation/videos: MNG, GIF</li>\n </ul></li>\n<li> Uploading:\n <ul>\n <li> pictures:  JPG, GIF, BMP, PNG, WBMP</li>\n <li> ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)</li>\n <li> addressbook entries (vCards)</li>\n <li> to-do tasks</li>\n <li> events (reminders, ...)</li>\n <li> animation/videos: MNG, GIF</li>\n </ul></li>\n<li> Deleting pictures, ringtones, addressbook entries, to-do tasks,<br>\n events and animation/videos</li>\n</ol>\nRun with --help for a list of command-line options.\n</html>");
+        suppOperLabel.setText(bundle.getString("supp_oper")); // NOI18N
 
-        thanksLabel.setText("Thanks to:");
+        thanksLabel.setText(bundle.getString("Thanks_to:")); // NOI18N
 
         thanksTo.setText("<html>Sharp (sharpy+at+xox.pl) for GetPic.pl, sebtx452 @ gmail.com for wxPicSound,<br>\nMIKSOFT for \"Mobile Media Converter\", \"ffmpeg project\" for ffmpeg\n</html>"); // NOI18N
 
         licenseArea.setColumns(20);
         licenseArea.setEditable(false);
         licenseArea.setRows(3);
-        licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("BogDroSoft/rsrc/GNU-GPLv3.txt")));
+        licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("BogDroSoft/jymag/rsrc/GNU-GPLv3.txt")));
         jScrollPane1.setViewportView(licenseArea);
+        licenseArea.getAccessibleContext().setAccessibleName(bundle.getString("license_text")); // NOI18N
+
+        licValue.setText("GPLv3+"); // NOI18N
+
+        authorVal.setText("Bogdan Drozdowski"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -151,11 +159,13 @@ public class AboutBox extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
                     .addComponent(jymagLabel)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(authorLabel)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(authorVal)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(emailLabel))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(wwwLabel)
@@ -163,8 +173,12 @@ public class AboutBox extends javax.swing.JDialog
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(www2Label)
                             .addComponent(www1Label)
-                            .addComponent(www3Label)))
-                    .addComponent(licLabel)
+                            .addComponent(www3Label))
+                        .addGap(299, 299, 299))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(licLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(licValue))
                     .addComponent(suppOperLabel)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(thanksLabel)
@@ -180,6 +194,7 @@ public class AboutBox extends javax.swing.JDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(authorLabel)
+                    .addComponent(authorVal)
                     .addComponent(emailLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -190,7 +205,9 @@ public class AboutBox extends javax.swing.JDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(www3Label)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(licLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(licLabel)
+                    .addComponent(licValue))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(suppOperLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -198,9 +215,17 @@ public class AboutBox extends javax.swing.JDialog
                     .addComponent(thanksLabel)
                     .addComponent(thanksTo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        jymagLabel.getAccessibleContext().setAccessibleName(bundle.getString("prog_name")); // NOI18N
+        emailLabel.getAccessibleContext().setAccessibleName(bundle.getString("e-mail_addr")); // NOI18N
+        www1Label.getAccessibleContext().setAccessibleName(bundle.getString("1stWWW")); // NOI18N
+        www2Label.getAccessibleContext().setAccessibleName(bundle.getString("2ndWWW")); // NOI18N
+        www3Label.getAccessibleContext().setAccessibleName(bundle.getString("3rdWWW")); // NOI18N
+        suppOperLabel.getAccessibleContext().setAccessibleName(bundle.getString("acc_supp_oper")); // NOI18N
+        thanksTo.getAccessibleContext().setAccessibleName(bundle.getString("thanks")); // NOI18N
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -217,13 +242,13 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.MAIL) )
-							d.mail (new URI ("mailto",
-								emailAddr + "?subject=ASM - JYMAG", null));
+							d.mail (new URI ("mailto",	// NOI18N
+								emailAddr + "?subject=ASM - JYMAG", null));	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "Desktop.mail");
+					Utils.handleException (ex, "Desktop.mail");	// NOI18N
 				}
 			}
 		}
@@ -241,13 +266,13 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI ("http", null,
+							Desktop.getDesktop ().browse (new URI ("http", null,	// NOI18N
 								host1, 80, path1, null, null));
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "Desktop.browse1");
+					Utils.handleException (ex, "Desktop.browse1");	// NOI18N
 				}
 			}
 		}
@@ -265,13 +290,16 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI ("http", null,
+							Desktop.getDesktop ().browse (new URI ("http", null,	// NOI18N
 								host2, 80, path2, null, null));
+							//Desktop.getDesktop ().browse (new URI (www2Addr));
+							//Desktop.getDesktop ().browse (new URI ("http",	// NOI18N
+							//	host2, path2, null));
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "Desktop.browse2");
+					Utils.handleException (ex, "Desktop.browse2");	// NOI18N
 				}
 			}
 		}
@@ -289,13 +317,13 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI ("http", null,
+							Desktop.getDesktop ().browse (new URI ("http", null,	// NOI18N
 								host3, 80, path3, null, null));
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "Desktop.browse3");
+					Utils.handleException (ex, "Desktop.browse3");	// NOI18N
 				}
 			}
 		}
@@ -307,7 +335,7 @@ public class AboutBox extends javax.swing.JDialog
 		File f = new File (fileName);
 		if ( (! f.exists ()) || (! f.canRead ()) )
 		{
-			return "";
+			return "";	// NOI18N
 		}
 		return getFileContents (f);
 	}
@@ -321,7 +349,7 @@ public class AboutBox extends javax.swing.JDialog
 		catch (Exception ex)
 		{
 			Utils.handleException (ex, fileName.toString ());
-			return "";
+			return "";	// NOI18N
 		}
 	}
 
@@ -333,15 +361,15 @@ public class AboutBox extends javax.swing.JDialog
 		}
 		catch (Exception ex)
 		{
-			Utils.handleException (ex, "new FileInputStream (" + f.getName () + ")");
-			return "";
+			Utils.handleException (ex, "new FileInputStream (" + f.getName () + ")");	// NOI18N
+			return "";	// NOI18N
 		}
 	}
 	*/
 
 	private String getFileContents (InputStream is)
 	{
-		String ret = "";
+		String ret = "";	// NOI18N
 		byte[] read = new byte[1024];
 		int wasRead;
 		do
@@ -353,7 +381,7 @@ public class AboutBox extends javax.swing.JDialog
 			}
 			catch (Exception ex)
 			{
-				Utils.handleException (ex, "InputStream.read");
+				Utils.handleException (ex, "InputStream.read");	// NOI18N
 				wasRead = 0;
 			}
 		} while (wasRead == read.length);
@@ -363,17 +391,19 @@ public class AboutBox extends javax.swing.JDialog
 		}
 		catch (Exception ex)
 		{
-			Utils.handleException (ex, "InputStream.close");
+			Utils.handleException (ex, "InputStream.close");	// NOI18N
 		}
 		return ret;
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel authorLabel;
+    private javax.swing.JLabel authorVal;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jymagLabel;
     private javax.swing.JLabel licLabel;
+    private javax.swing.JLabel licValue;
     private javax.swing.JTextArea licenseArea;
     private javax.swing.JLabel suppOperLabel;
     private javax.swing.JLabel thanksLabel;

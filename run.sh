@@ -1,3 +1,7 @@
 #!/bin/sh
 
-java -jar JYMAG.jar
+if ( [ -e dist/JYMAG.jar ] ); then
+	java -jar dist/JYMAG.jar
+elif ( [ -e JYMAG.jar ] ); then
+	java -jar JYMAG.jar
+fi

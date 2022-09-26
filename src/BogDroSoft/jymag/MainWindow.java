@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2007 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -28,19 +28,21 @@ package BogDroSoft.jymag;
 import gnu.io.CommPortIdentifier;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -55,16 +57,17 @@ public class MainWindow extends javax.swing.JFrame
 {
 	private static final long serialVersionUID = 65L;
 	private final MainWindow mw = this;
-	private KL kl = new KL ();
+	private final KL kl = new KL ();
 
 	/** Current version number as a String. */
-	public static final String verString = "0.6";	// NOI18N
+	public static final String verString = "0.7";	// NOI18N
 	private Vector<PhoneElement> currentRingElements;
 	private Vector<PhoneElement> currentPhotoElements;
 	private Vector<PhoneElement> currentAddrElements;
 	private Vector<PhoneElement> currentTodoElements;
 	private Vector<PhoneElement> currentEventElements;
 	private Vector<PhoneElement> currentAnimElements;
+	private Vector<PhoneElement> currentJavaElements;
 
 	private String lastSelDir;
 	// synchronization variable:
@@ -74,145 +77,184 @@ public class MainWindow extends javax.swing.JFrame
 	private Hashtable<String, String> phoneTypes;
 	private static Pattern verPattern;
 
-	private final static String logFile = "jymag.log";
+	private final static String logFile = "jymag.log";	// NOI18N
+
+	private JFileChooser downloadFC;
+	private JFileChooser uploadPictFC;
+	private JFileChooser uploadRingFC;
+	private JFileChooser uploadAddrFC;
+	private JFileChooser uploadTODOFC;
+	private JFileChooser uploadEventFC;
+	private JFileChooser uploadAnimFC;
+	private JFileChooser uploadJavaFC;
+	private JFileChooser cfgFC;
 
 	// ------------ i18n stuff
-	private static String noAnsString = "No answers received";
-	private static String errString = "Error";
-	private static String multiAnsString = "Multiple answers received. Select the correct port.";
-	private static String whichString = "Which one?";
-	private static String exOverString = " exists. Overwrite?";
-	private static String overwriteStr = "Overwrite?";
+	private static String noAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
+	private static String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static String multiAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Multiple_answers");
+	private static String whichString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Which_one");
+	private static String exOverString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("_exists._Overwrite");
+	private static String overwriteStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Overwrite?");
 	/** List of supported operations. */
-	private static String suppOperThank = "Supported opertations:"+
+	private static String suppOperThank = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_opertations:")+
+		": \n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_lists")+
 		"\n" +	// NOI18N
-		"1) Getting lists of: pictures, ringtones, addressbook entries, to-do tasks, events and animations/videos"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Downloading")+
+		":\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___a)_pictures")+
+		": JPG (" + 	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("both_Sagem_and_non-Sagem") +
+		"), GIF, BMP, PNG, WBMP, " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified") +
+		":\n\tTIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___b)_ringtones")+
+		": MIDI, AMR, WAV, "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
+		": AIFF, IMY, AAC, MP3\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___c)_addressbook_entries_(vCards)")+
 		"\n" +	// NOI18N
-		"2) Downloading:"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___d)_to-do_tasks")+
 		"\n" +	// NOI18N
-		"   a) pictures:"+
-		" JPG (" + 	// NOI18N
-		"both Sagem and non-Sagem" +
-		"), GIF, BMP, PNG, WBMP\n" +	// NOI18N
-		"   b) ringtones:"+
-		" MIDI, AMR, WAV\n" +	// NOI18N
-		"   c) addressbook entries (vCards)"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___e)_events_(reminders,_)")+
 		"\n" +	// NOI18N
-		"   d) to-do tasks"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___f)_animation/videos:")+
+		": MNG, GIF, "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
+		": WMV, MP4, MPEG\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Uploading:")+
+		": \n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___a)_pictures:")+
+		": JPG, GIF, BMP, PNG, WBMP, "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
+		": EMS_GR, TIFF, PICT, AI, EPS, PS\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___b)_ringtones")+
+		": MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?), AMR, "+ 	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
+		": IMY, ASG1,\n\tASG2, SSA, MP3, MFI, AAC, AWB, SG1, SG2\n"+	// NOI18N
 		"\n" +	// NOI18N
-		"   e) events (reminders, ...)"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___c)_addressbook_entries_(vCards)")+
 		"\n" +	// NOI18N
-		"   f) animation/videos:"+
-		" MNG, GIF\n" +	// NOI18N
-		"3) Uploading:"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___d)_to-do_tasks")+
 		"\n" +	// NOI18N
-		"   a) pictures:"+
-		" JPG, GIF, BMP, PNG, WBMP\n" +	// NOI18N
-		"   b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___e)_events_(reminders,_)")+
 		"\n" +	// NOI18N
-		"   c) addressbook entries (vCards)"+
-		"\n" +	// NOI18N
-		"   d) to-do tasks"+
-		"\n" +	// NOI18N
-		"   e) events (reminders, ...)"+
-		"\n" +	// NOI18N
-		"   f) animation/videos:"+
-		" MNG, GIF\n" +	// NOI18N
-		"4) Deleting pictures, ringtones, addressbook entries, to-do tasks, events and animations/videos"
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___f)_animation/videos")+
+		": MNG, GIF, "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
+		": EMS_AN, MJPG, AVI, MP4, MPEG, 3GP, 3GP2\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___g)_Java_files")+
+		": "+          	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
+		": JAR, JAD, JAM\n"+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Deleting")
 		+"\n" +	// NOI18N
-		"\n" +
-		"Run with --help for a list of command-line options."+
+		"\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Run_with_help")+
 		"\n\n" +	// NOI18N
-		"Thanks to:";
-	private static String aboutStr = "About";
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Thanks_to:");
+	//private static String aboutStr = "About";
 	/** A String that says "a Free 'My Pictures and Sounds' replacement." */
-	private static String freeMPASStr = "a Free 'My Pictures and Sounds' replacement.";
+	private static String freeMPASStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Free_My_Pictures_and_Sounds");
 	/** The "version" word. */
-	private static String verWord = "Version";
-	private static String picsString = "Supported pictures";
-	private static String soundsString = "Supported sounds";
-	private static String addrString = "Supported addressbook files";
-	private static String todoString = "Supported to-do files";
-	private static String eventString = "Supported event and task files";
-	private static String animString = "Supported animation/video files";
-	private static String getListStr = "Getting list of ";
-	private static String getFileStr = "Getting file";
-	private static String unsuppType = "Unsupported file type:";
-	private static String tryPortStr = "Trying port ";
-	private static String gotAnsStr = "Got answer!";
-	private static String noAnsStr = "No answers received";
-	private static String progIntroStr = "is a program " +
-		"for retrieving and sending multimedia from and to a Sagem mobile phone.";
-	private static String rxtxReqStr = "You need the RxTx Java Transmission package from www.rxtx.org";
-	private static String cmdLineStr = "Command-line options:"+
-		"\n--help, -h, -?, /?\t- "+	// NOI18N
-		"display help"+
-		"\n--licence, --license\t- "+	// NOI18N
-		"display license information"+
-		"\n--version, -v\t\t- "+	// NOI18N
-		"display version"+
-		"\n--download-dir <dir>\t- "+	// NOI18N
-		"set the default directory"+
-		"\n--flow <none,soft,hard>\t- "+	// NOI18N
-		"set the flow control mode"+
-		"\n--port <filename>\t- "+	// NOI18N
-		"set the default port"+
-		"\n--parity <none,even,odd,space,mark>\t- "+	// NOI18N
-		"set the parity mode"+
+	private static String verWord = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Version");
+	private static String picsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_pictures");
+	private static String soundsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_sounds");
+	private static String addrString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_addressbook_files");
+	private static String todoString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_to-do_files");
+	private static String eventString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_event_and_task_files");
+	private static String animString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_animation/video_files");
+	private static String javaString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_Java_files");
+	private static String getListStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_list_of_");
+	private static String getFileStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_file");
+	private static String unsuppType = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Unsupported_file_type:");
+	private static String tryPortStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Trying_port_");
+	private static String gotAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Got_answer!");
+	private static String noAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
+	private static String progIntroStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("is_a_program_") +
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("rxtx_multimedia_Sagem");
+	private static String rxtxReqStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("need_rxtx");
+	private static String cmdLineStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Command-line_options:")+
+		":" +	// NOI18N	
+		"\n--conf <file>\t\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("read_configuration_from_<file>") +
 		"\n--databits <5,6,7,8>\t- "+	// NOI18N
-		"set the number of data bits"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_number_of_data_bits")+
+		"\n--delete-after-download\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("delete_downloaded")+
+		"\n--download-dir <dir>\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_default_download_dir")+
+		"\n--download-all-animations\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_videos")+
+		"\n--download-all-events\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_events")+
+		"\n--download-all-photos\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_photos")+
+		"\n--download-all-ringtones - "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_ringtones")+
+		"\n--download-all-todo\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_to-do_tasks")+
+		"\n--download-all-vcards\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_addressbook")+
+		"\n--download-all\t\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("combine_all_download")+
+		"\n--flow <none,soft,hard,soft+hard>\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_flow_control_mode")+
+		"\n--help, -h, -?, /?\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_help")+
+		"\n--lang LL_CC_VV\t\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("select_the_language")+
+		"\n\t\t\t  " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("LL_is_the_language_CC")+
+		"\n\t\t\t  " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("__country_code,_VV")+
+		"\n\t\t\t  " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("__Separate_them_using_underscores._Only_LL_is_required.")+
+		"\n--licence, --license\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_license_information")+
+		"\n--parity <none,even,odd,space,mark>\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_parity_mode")+
+		"\n--port <filename>\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_default_port")+
+		"\n--scan\t\t\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("scan_available_ports")+
 		"\n--speed"+	// NOI18N
 		" <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200," +	// NOI18N
 		"\n\t230400, 460800, 500000, 576000, 921600, 1000000, 1152000,\n" +	// NOI18N
 		"\t1500000, 2000000, 2500000, 3000000, 3500000, 4000000>\n\t\t\t- " +	// NOI18N
-		"set the port speed"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_port_speed")+
 		"\n--stopbits <1,1.5,2>\t- "+	// NOI18N
-		"set the number of stop bits"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_stop_bits")+
 		"\n--upload <filename>\t- "+	// NOI18N
-		"upload the given file to the phone and exit"+
-		"\n--scan\t\t\t- "+	// NOI18N
-		"scan available ports for OK answers and exit"+
-		"\n--download-all-photos\t- "+	// NOI18N
-		"download all photos from the phone and exit"+
-		"\n--download-all-ringtones - "+	// NOI18N
-		"download all ringtones from the phone and exit"+
-		"\n--download-all-todo\t- "+	// NOI18N
-		"download all to-do tasks from the phone and exit"+
-		"\n--download-all-events\t- "+	// NOI18N
-		"download all events from the phone and exit"+
-		"\n--download-all-vcards\t- "+	// NOI18N
-		"download all addressbook entries from the phone and exit"+
-		"\n--download-all-animations\t- "+	// NOI18N
-		"download all animations/videos from the phone and exit"+
-		"\n--download-all\t\t- "+	// NOI18N
-		"combine all 'download' options and exit"+
-		"\n--delete-after-download\t- "+	// NOI18N
-		"delete the downloaded elements if downloaded succesfully"+
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("upload_file")+
+		"\n--version, -v\t\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_version")+
 		"\n" +	// NOI18N
 		"\n" +	// NOI18N
-		"JYMAG exits with 0 code if command-line operation (download, upload or scan) was successful.";
-	private static String deleteQuestion = "Are you quite sure you want to delete?";
-	private static String questionString = "Question";
-	private static String fileNotWriteMsg = "Can't write to file";
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("exit_zero_code");
+	private static String deleteQuestion = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("want_to_delete");
+	private static String questionString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Question");
+	private static String fileNotWriteMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Cant_write_to_file");
 
 	// error messages for file upload:
-	private static String uploadMsg1  = "File upload init failed";
-	private static String uploadMsg2  = "Sending file name's length failed";
-	private static String uploadMsg3  = "Sending file name failed";
-	private static String uploadMsg4  = "Format not suported by phone/file too big";
-	private static String uploadMsg5  = "File not accepted (too big?)";
-	private static String uploadMsg6  = "Closing transmission failed";
-	private static String uploadMsg7  = "Exception occurred";
-	private static String uploadMsg8  = "Incorrect parameter";
-	private static String uploadMsg9  = "Format not suported by JYMAG";
-	private static String uploadMsg10 = "Number of attempts exceeded";
-	private static String uploadMsg11 = "Incorrect parameter";
+	private static String uploadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_upload_init_failed");
+	private static String uploadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_names_length_failed");
+	private static String uploadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_name_failed");
+	private static String uploadMsg4  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_phone");
+	private static String uploadMsg5  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_not_accepted");
+	private static String uploadMsg6  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Closing_transmission_failed");
+	private static String uploadMsg7  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
+	private static String uploadMsg8  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
+	private static String uploadMsg9  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_JYMAG");
+	private static String uploadMsg10 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Number_of_attempts_exceeded");
+	private static String uploadMsg11 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
 
-	private static String downloadMsg1  = "Exception occurred";
-	private static String downloadMsg2  = "No data received";
-	private static String downloadMsg3  = "Incorrect parameter";
+	private static String downloadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
+	private static String downloadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_data");
+	private static String downloadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
 
-	private static String pressScanMsg = "(press Scan)";
+	private static String pressScanMsg = "(" + java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("(press_Scan)") + ")";	// NOI18N
 
 	// ------------ static variables for command-line
 
@@ -223,7 +265,10 @@ public class MainWindow extends javax.swing.JFrame
 	private static int speed = 115200;
 	private static int flow = 0;
 	private static int parity = 0;
-	private static String portName;
+	private static String portName = null;
+	private static boolean isMax = false;
+	private static int x = 0;
+	private static int y = 0;
 	private static boolean deleteAfterDownload = false;
 
 	/**
@@ -231,9 +276,31 @@ public class MainWindow extends javax.swing.JFrame
 	 */
 	private MainWindow ()
 	{
+		// set uncaught exception handler for GUI threads, just in case:
+		try
+		{
+			Thread[] ths = new Thread[Thread.activeCount () * 5];
+			if ( ths != null )
+			{
+				final int nThreads = Thread.enumerate (ths);
+				for ( int i=0; i < nThreads; i++ )
+				{
+					String name = ths[i].getName ();
+					if ( name == null ) continue;
+					if ( name.contains ("AWT") // NOI18N
+						|| name.contains ("Swing") // NOI18N
+						|| name.contains ("Image") // NOI18N
+					   )
+					{
+						ths[i].setUncaughtExceptionHandler (Utils.handler);
+					}
+				}
+			}
+		} catch (Throwable th) {}
+
 		initComponents ();
 
-		setTitle (getTitle () + " " + verString);
+		setTitle (getTitle () + " " + verString);	// NOI18N
 		firmware.setText (pressScanMsg);
 		phone.setText (pressScanMsg);
 		updateStatusLabel (STATUS.READY);
@@ -246,20 +313,38 @@ public class MainWindow extends javax.swing.JFrame
 			if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
 			{
 				portCombo.addItem (id.getName ());
-				if ( portName != null )
-				{
-					if ( id.getName ().equals (portName) )
-					{
-						portCombo.setSelectedItem (id.getName ());
-					}
-				}
 			}
 		}
+		if ( portName != null ) portCombo.setSelectedItem (portName);
 		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
-		stopBitsCombo.setSelectedItem (String.valueOf (sBits));
+		if ( Math.abs (sBits-2.0f) < 0.0001 )
+			stopBitsCombo.setSelectedIndex (2);
+		else if ( Math.abs (sBits-1.5f) < 0.0001 )
+			stopBitsCombo.setSelectedIndex (1);
+		else stopBitsCombo.setSelectedIndex (0);
 		speedCombo.setSelectedItem (String.valueOf (speed));
-		flowCombo.setSelectedIndex (flow);
+		switch (flow)
+		{
+			case 1:
+				flowSoft.setSelected (true);
+				flowHard.setSelected (false);
+				break;
+			case 2:
+				flowSoft.setSelected (false);
+				flowHard.setSelected (true);
+				break;
+			case 3:
+				flowSoft.setSelected (true);
+				flowHard.setSelected (true);
+				break;
+			default:
+				flowSoft.setSelected (false);
+				flowHard.setSelected (false);
+				break;
+		}
 		parityCombo.setSelectedIndex (parity);
+		if ( isMax ) setExtendedState (JFrame.MAXIMIZED_BOTH);
+		else setLocation (x, y);
 		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
 
 		/* Make clicking on the table header select all rows */
@@ -324,50 +409,81 @@ public class MainWindow extends javax.swing.JFrame
 		});
 
 		aboutBut.addKeyListener (kl);
+		dataBitsCombo.addKeyListener (kl);
+		flowSoft.addKeyListener (kl);
+		flowHard.addKeyListener (kl);
+		parityCombo.addKeyListener (kl);
+		portCombo.addKeyListener (kl);
+		rawBut.addKeyListener (kl);
+		scanButton.addKeyListener (kl);
+		speedCombo.addKeyListener (kl);
+		stopBitsCombo.addKeyListener (kl);
+		getCapBut.addKeyListener (kl);
+		loadConfBut.addKeyListener (kl);
+		saveConfBut.addKeyListener (kl);
+
+		tabPane.addKeyListener (kl);
 		addrBookPane.addKeyListener (kl);
 		addrTable.addKeyListener (kl);
-		dataBitsCombo.addKeyListener (kl);
-		deleteAddrBut.addKeyListener (kl);
-		deleteEventBut.addKeyListener (kl);
-		deletePhotoBut.addKeyListener (kl);
-		deleteRingBut.addKeyListener (kl);
-		deleteTodoBut.addKeyListener (kl);
-		downloadAddrBut.addKeyListener (kl);
-		downloadEventBut.addKeyListener (kl);
-		downloadPhotoBut.addKeyListener (kl);
-		downloadRingBut.addKeyListener (kl);
-		downloadTodoBut.addKeyListener (kl);
 		eventPane.addKeyListener (kl);
 		eventTable.addKeyListener (kl);
-		flowCombo.addKeyListener (kl);
-		getAddrListBut.addKeyListener (kl);
-		getEventListBut.addKeyListener (kl);
-		getPhotoListBut.addKeyListener (kl);
-		getRingListBut.addKeyListener (kl);
-		getTodoListBut.addKeyListener (kl);
+		photoPane.addKeyListener (kl);
+		photoTable.addKeyListener (kl);
+		ringPane.addKeyListener (kl);
+		ringTable.addKeyListener (kl);
+		todoPane.addKeyListener (kl);
+		todoTable.addKeyListener (kl);
+		animPane.addKeyListener (kl);
+		animTable.addKeyListener (kl);
+		javaPane.addKeyListener (kl);
+		javaTable.addKeyListener (kl);
+
 		jScrollPane1.addKeyListener (kl);
 		jScrollPane2.addKeyListener (kl);
 		jScrollPane3.addKeyListener (kl);
 		jScrollPane4.addKeyListener (kl);
 		jScrollPane5.addKeyListener (kl);
-		parityCombo.addKeyListener (kl);
-		photoPane.addKeyListener (kl);
-		photoTable.addKeyListener (kl);
-		portCombo.addKeyListener (kl);
-		rawBut.addKeyListener (kl);
-		ringPane.addKeyListener (kl);
-		ringTable.addKeyListener (kl);
-		scanButton.addKeyListener (kl);
-		speedCombo.addKeyListener (kl);
-		stopBitsCombo.addKeyListener (kl);
-		tabPane.addKeyListener (kl);
-		todoPane.addKeyListener (kl);
-		todoTable.addKeyListener (kl);
+		jScrollPane6.addKeyListener (kl);
+		jScrollPane7.addKeyListener (kl);
+		jScrollPane8.addKeyListener (kl);
+		jScrollPane9.addKeyListener (kl);
+		jScrollPane10.addKeyListener (kl);
+		jScrollPane11.addKeyListener (kl);
+		jScrollPane12.addKeyListener (kl);
+		jScrollPane13.addKeyListener (kl);
+		jScrollPane14.addKeyListener (kl);
+
+		deleteAddrBut.addKeyListener (kl);
+		deleteEventBut.addKeyListener (kl);
+		deletePhotoBut.addKeyListener (kl);
+		deleteRingBut.addKeyListener (kl);
+		deleteTodoBut.addKeyListener (kl);
+		deleteAnimBut.addKeyListener (kl);
+		deleteJavaBut.addKeyListener (kl);
+
+		downloadAddrBut.addKeyListener (kl);
+		downloadEventBut.addKeyListener (kl);
+		downloadPhotoBut.addKeyListener (kl);
+		downloadRingBut.addKeyListener (kl);
+		downloadTodoBut.addKeyListener (kl);
+		downloadAnimBut.addKeyListener (kl);
+		downloadJavaBut.addKeyListener (kl);
+
+		getAddrListBut.addKeyListener (kl);
+		getEventListBut.addKeyListener (kl);
+		getPhotoListBut.addKeyListener (kl);
+		getRingListBut.addKeyListener (kl);
+		getTodoListBut.addKeyListener (kl);
+		getAnimListBut.addKeyListener (kl);
+		getJavaListBut.addKeyListener (kl);
+
 		uploadAddrBut.addKeyListener (kl);
 		uploadEventBut.addKeyListener (kl);
 		uploadPhotoBut.addKeyListener (kl);
 		uploadRingBut.addKeyListener (kl);
 		uploadTodoBut.addKeyListener (kl);
+		uploadAnimBut.addKeyListener (kl);
+		uploadJavaBut.addKeyListener (kl);
 	}
 
 	/**
@@ -378,6 +494,7 @@ public class MainWindow extends javax.swing.JFrame
 	 */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         portCombo = new javax.swing.JComboBox();
         speedCombo = new javax.swing.JComboBox();
@@ -386,6 +503,7 @@ public class MainWindow extends javax.swing.JFrame
         stopBitsCombo = new javax.swing.JComboBox();
         scanButton = new javax.swing.JButton();
         tabPane = new javax.swing.JTabbedPane();
+        jScrollPane7 = new javax.swing.JScrollPane();
         photoPane = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         photoTable = new javax.swing.JTable();
@@ -393,6 +511,7 @@ public class MainWindow extends javax.swing.JFrame
         downloadPhotoBut = new javax.swing.JButton();
         uploadPhotoBut = new javax.swing.JButton();
         deletePhotoBut = new javax.swing.JButton();
+        jScrollPane8 = new javax.swing.JScrollPane();
         ringPane = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         ringTable = new javax.swing.JTable();
@@ -400,6 +519,7 @@ public class MainWindow extends javax.swing.JFrame
         downloadRingBut = new javax.swing.JButton();
         uploadRingBut = new javax.swing.JButton();
         deleteRingBut = new javax.swing.JButton();
+        jScrollPane9 = new javax.swing.JScrollPane();
         addrBookPane = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         addrTable = new javax.swing.JTable();
@@ -407,6 +527,7 @@ public class MainWindow extends javax.swing.JFrame
         downloadAddrBut = new javax.swing.JButton();
         uploadAddrBut = new javax.swing.JButton();
         deleteAddrBut = new javax.swing.JButton();
+        jScrollPane10 = new javax.swing.JScrollPane();
         todoPane = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         todoTable = new javax.swing.JTable();
@@ -414,6 +535,7 @@ public class MainWindow extends javax.swing.JFrame
         downloadTodoBut = new javax.swing.JButton();
         uploadTodoBut = new javax.swing.JButton();
         deleteTodoBut = new javax.swing.JButton();
+        jScrollPane11 = new javax.swing.JScrollPane();
         eventPane = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         eventTable = new javax.swing.JTable();
@@ -421,6 +543,7 @@ public class MainWindow extends javax.swing.JFrame
         downloadEventBut = new javax.swing.JButton();
         uploadEventBut = new javax.swing.JButton();
         deleteEventBut = new javax.swing.JButton();
+        jScrollPane12 = new javax.swing.JScrollPane();
         animPane = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         animTable = new javax.swing.JTable();
@@ -428,13 +551,20 @@ public class MainWindow extends javax.swing.JFrame
         downloadAnimBut = new javax.swing.JButton();
         uploadAnimBut = new javax.swing.JButton();
         deleteAnimBut = new javax.swing.JButton();
+        jScrollPane13 = new javax.swing.JScrollPane();
+        javaPane = new javax.swing.JPanel();
+        jScrollPane14 = new javax.swing.JScrollPane();
+        javaTable = new javax.swing.JTable();
+        getJavaListBut = new javax.swing.JButton();
+        downloadJavaBut = new javax.swing.JButton();
+        uploadJavaBut = new javax.swing.JButton();
+        deleteJavaBut = new javax.swing.JButton();
         portLabel = new javax.swing.JLabel();
         speedLabel = new javax.swing.JLabel();
         databitsLabel = new javax.swing.JLabel();
         parityLabel = new javax.swing.JLabel();
         stopbitsLabel = new javax.swing.JLabel();
         flowLabel = new javax.swing.JLabel();
-        flowCombo = new javax.swing.JComboBox();
         aboutBut = new javax.swing.JButton();
         rawBut = new javax.swing.JButton();
         bpsLabel = new javax.swing.JLabel();
@@ -447,9 +577,15 @@ public class MainWindow extends javax.swing.JFrame
         phoneTypeLabel = new javax.swing.JLabel();
         phone = new javax.swing.JLabel();
         exitBut = new javax.swing.JButton();
+        getCapBut = new javax.swing.JButton();
+        loadConfBut = new javax.swing.JButton();
+        saveConfBut = new javax.swing.JButton();
+        flowSoft = new javax.swing.JCheckBox();
+        flowHard = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Your Music and Graphics");
+        setTitle("Your Music and Graphics"); // NOI18N
+        setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag.png"))).getImage ());
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -471,22 +607,27 @@ public class MainWindow extends javax.swing.JFrame
 
         stopBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "1.5", "2" }));
 
-        scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/SCAN5.png"))); // NOI18N
-        scanButton.setText("Scan ports");
+        scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/SCAN5.png"))); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+        scanButton.setText(bundle.getString("Scan_ports")); // NOI18N
         scanButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 scanButtonActionPerformed(evt);
             }
         });
 
+        tabPane.setPreferredSize(new java.awt.Dimension(800, 600));
+
         photoPane.setBackground(new java.awt.Color(184, 242, 255));
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
 
         photoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name"
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
             }
         ) {
             private static final long serialVersionUID = 66L;
@@ -507,32 +648,32 @@ public class MainWindow extends javax.swing.JFrame
         });
         jScrollPane1.setViewportView(photoTable);
 
-        getPhotoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
-        getPhotoListBut.setText("Get list");
+        getPhotoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getPhotoListBut.setText(bundle.getString("Get_list")); // NOI18N
         getPhotoListBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 getPhotoListButActionPerformed(evt);
             }
         });
 
-        downloadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
-        downloadPhotoBut.setText("Download selected");
+        downloadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadPhotoBut.setText(bundle.getString("Download_selected")); // NOI18N
         downloadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButActionPerformed(evt);
             }
         });
 
-        uploadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        uploadPhotoBut.setText("Upload");
+        uploadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadPhotoBut.setText(bundle.getString("Upload")); // NOI18N
         uploadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 uploadPhotoButActionPerformed(evt);
             }
         });
 
-        deletePhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
-        deletePhotoBut.setText("Delete selected");
+        deletePhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deletePhotoBut.setText(bundle.getString("Delete_selected")); // NOI18N
         deletePhotoBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButActionPerformed(evt);
@@ -546,7 +687,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(photoPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
                     .addGroup(photoPaneLayout.createSequentialGroup()
                         .addComponent(getPhotoListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -560,7 +701,7 @@ public class MainWindow extends javax.swing.JFrame
         photoPaneLayout.setVerticalGroup(
             photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getPhotoListBut)
@@ -570,16 +711,32 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        tabPane.addTab("Photos", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/pict-1.png")), photoPane); // NOI18N
+        getPhotoListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_pictures")); // NOI18N
+        downloadPhotoBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_pictures")); // NOI18N
+        uploadPhotoBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_pictures")); // NOI18N
+        deletePhotoBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_pictures")); // NOI18N
+
+        jScrollPane7.setViewportView(photoPane);
+
+        tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pict-1.png")), jScrollPane7); // NOI18N
 
         ringPane.setBackground(new java.awt.Color(179, 255, 179));
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        bindingGroup.addBinding(binding);
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 0));
 
         ringTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name"
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
             }
         ) {
             private static final long serialVersionUID = 67L;
@@ -600,32 +757,32 @@ public class MainWindow extends javax.swing.JFrame
         });
         jScrollPane2.setViewportView(ringTable);
 
-        getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
-        getRingListBut.setText("Get list");
+        getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getRingListBut.setText(bundle.getString("Get_list")); // NOI18N
         getRingListBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 getRingListButActionPerformed(evt);
             }
         });
 
-        downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
-        downloadRingBut.setText("Download selected");
+        downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadRingBut.setText(bundle.getString("Download_selected")); // NOI18N
         downloadRingBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButActionPerformed(evt);
             }
         });
 
-        uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        uploadRingBut.setText("Upload");
+        uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadRingBut.setText(bundle.getString("Upload")); // NOI18N
         uploadRingBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 uploadRingButActionPerformed(evt);
             }
         });
 
-        deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
-        deleteRingBut.setText("Delete selected");
+        deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteRingBut.setText(bundle.getString("Delete_selected")); // NOI18N
         deleteRingBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButActionPerformed(evt);
@@ -639,7 +796,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(ringPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
                     .addGroup(ringPaneLayout.createSequentialGroup()
                         .addComponent(getRingListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -653,7 +810,7 @@ public class MainWindow extends javax.swing.JFrame
         ringPaneLayout.setVerticalGroup(
             ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getRingListBut)
@@ -663,16 +820,32 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        tabPane.addTab("Ringtones", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/ring.png")), ringPane); // NOI18N
+        getRingListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_ringtones")); // NOI18N
+        downloadRingBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_ringtones")); // NOI18N
+        uploadRingBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_ringtones")); // NOI18N
+        deleteRingBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_ringtones")); // NOI18N
+
+        jScrollPane8.setViewportView(ringPane);
+
+        tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/ring.png")), jScrollPane8); // NOI18N
 
         addrBookPane.setBackground(new java.awt.Color(255, 255, 193));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        bindingGroup.addBinding(binding);
+
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(0, 0));
 
         addrTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name"
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
             }
         ) {
             private static final long serialVersionUID = 68L;
@@ -693,32 +866,32 @@ public class MainWindow extends javax.swing.JFrame
         });
         jScrollPane3.setViewportView(addrTable);
 
-        getAddrListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
-        getAddrListBut.setText("Get list");
+        getAddrListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getAddrListBut.setText(bundle.getString("Get_list")); // NOI18N
         getAddrListBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 getAddrListButActionPerformed(evt);
             }
         });
 
-        downloadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
-        downloadAddrBut.setText("Download selected");
+        downloadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadAddrBut.setText(bundle.getString("Download_selected")); // NOI18N
         downloadAddrBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButActionPerformed(evt);
             }
         });
 
-        uploadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        uploadAddrBut.setText("Upload");
+        uploadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadAddrBut.setText(bundle.getString("Upload")); // NOI18N
         uploadAddrBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 uploadAddrButActionPerformed(evt);
             }
         });
 
-        deleteAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
-        deleteAddrBut.setText("Delete selected");
+        deleteAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteAddrBut.setText(bundle.getString("Delete_selected")); // NOI18N
         deleteAddrBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButActionPerformed(evt);
@@ -732,7 +905,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(addrBookPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
                     .addGroup(addrBookPaneLayout.createSequentialGroup()
                         .addComponent(getAddrListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -746,7 +919,7 @@ public class MainWindow extends javax.swing.JFrame
         addrBookPaneLayout.setVerticalGroup(
             addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getAddrListBut)
@@ -756,16 +929,32 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        tabPane.addTab("Addressbook", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/abook.png")), addrBookPane); // NOI18N
+        getAddrListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_addressbook_entries")); // NOI18N
+        downloadAddrBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_addressbook_entries")); // NOI18N
+        uploadAddrBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_addressbook_entries")); // NOI18N
+        deleteAddrBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_addressbook_entries")); // NOI18N
+
+        jScrollPane9.setViewportView(addrBookPane);
+
+        tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/abook.png")), jScrollPane9); // NOI18N
 
         todoPane.setBackground(new java.awt.Color(127, 196, 127));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        bindingGroup.addBinding(binding);
+
+        jScrollPane4.setPreferredSize(new java.awt.Dimension(0, 0));
 
         todoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name"
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
             }
         ) {
             private static final long serialVersionUID = 69L;
@@ -786,32 +975,32 @@ public class MainWindow extends javax.swing.JFrame
         });
         jScrollPane4.setViewportView(todoTable);
 
-        getTodoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
-        getTodoListBut.setText("Get list");
+        getTodoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getTodoListBut.setText(bundle.getString("Get_list")); // NOI18N
         getTodoListBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 getTodoListButActionPerformed(evt);
             }
         });
 
-        downloadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
-        downloadTodoBut.setText("Download selected");
+        downloadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadTodoBut.setText(bundle.getString("Download_selected")); // NOI18N
         downloadTodoBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButActionPerformed(evt);
             }
         });
 
-        uploadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        uploadTodoBut.setText("Upload");
+        uploadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadTodoBut.setText(bundle.getString("Upload")); // NOI18N
         uploadTodoBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 uploadTodoButActionPerformed(evt);
             }
         });
 
-        deleteTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
-        deleteTodoBut.setText("Delete selected");
+        deleteTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteTodoBut.setText(bundle.getString("Delete_selected")); // NOI18N
         deleteTodoBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButActionPerformed(evt);
@@ -825,7 +1014,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(todoPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
                     .addGroup(todoPaneLayout.createSequentialGroup()
                         .addComponent(getTodoListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -839,7 +1028,7 @@ public class MainWindow extends javax.swing.JFrame
         todoPaneLayout.setVerticalGroup(
             todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getTodoListBut)
@@ -849,16 +1038,32 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        tabPane.addTab("To do", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/todo.png")), todoPane); // NOI18N
+        getTodoListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_to-do_tasks")); // NOI18N
+        downloadTodoBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_to-do_tasks")); // NOI18N
+        uploadTodoBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_to-do_tasks")); // NOI18N
+        deleteTodoBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_to-do_tasks")); // NOI18N
+
+        jScrollPane10.setViewportView(todoPane);
+
+        tabPane.addTab(bundle.getString("ToDoTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/todo.png")), jScrollPane10); // NOI18N
 
         eventPane.setBackground(new java.awt.Color(219, 218, 156));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        bindingGroup.addBinding(binding);
+
+        jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 0));
 
         eventTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name"
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
             }
         ) {
             private static final long serialVersionUID = 70L;
@@ -879,32 +1084,32 @@ public class MainWindow extends javax.swing.JFrame
         });
         jScrollPane5.setViewportView(eventTable);
 
-        getEventListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
-        getEventListBut.setText("Get list");
+        getEventListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getEventListBut.setText(bundle.getString("Get_list")); // NOI18N
         getEventListBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 getEventListButActionPerformed(evt);
             }
         });
 
-        downloadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
-        downloadEventBut.setText("Download selected");
+        downloadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadEventBut.setText(bundle.getString("Download_selected")); // NOI18N
         downloadEventBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButActionPerformed(evt);
             }
         });
 
-        uploadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        uploadEventBut.setText("Upload");
+        uploadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadEventBut.setText(bundle.getString("Upload")); // NOI18N
         uploadEventBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 uploadEventButActionPerformed(evt);
             }
         });
 
-        deleteEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
-        deleteEventBut.setText("Delete selected");
+        deleteEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteEventBut.setText(bundle.getString("Delete_selected")); // NOI18N
         deleteEventBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButActionPerformed(evt);
@@ -918,7 +1123,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(eventPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
                     .addGroup(eventPaneLayout.createSequentialGroup()
                         .addComponent(getEventListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -932,7 +1137,7 @@ public class MainWindow extends javax.swing.JFrame
         eventPaneLayout.setVerticalGroup(
             eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getEventListBut)
@@ -942,16 +1147,32 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        tabPane.addTab("Events/Tasks", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/event.png")), eventPane); // NOI18N
+        getEventListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_events")); // NOI18N
+        downloadEventBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_events")); // NOI18N
+        uploadEventBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_events")); // NOI18N
+        deleteEventBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_events")); // NOI18N
+
+        jScrollPane11.setViewportView(eventPane);
+
+        tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/event.png")), jScrollPane11); // NOI18N
 
         animPane.setBackground(new java.awt.Color(171, 171, 255));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        bindingGroup.addBinding(binding);
+
+        jScrollPane6.setPreferredSize(new java.awt.Dimension(0, 0));
 
         animTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name"
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
             }
         ) {
             private static final long serialVersionUID = 73L;
@@ -972,32 +1193,32 @@ public class MainWindow extends javax.swing.JFrame
         });
         jScrollPane6.setViewportView(animTable);
 
-        getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
-        getAnimListBut.setText("Get list");
+        getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getAnimListBut.setText(bundle.getString("Get_list")); // NOI18N
         getAnimListBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 getAnimListButActionPerformed(evt);
             }
         });
 
-        downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
-        downloadAnimBut.setText("Download selected");
+        downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadAnimBut.setText(bundle.getString("Download_selected")); // NOI18N
         downloadAnimBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButActionPerformed(evt);
             }
         });
 
-        uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        uploadAnimBut.setText("Upload");
+        uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadAnimBut.setText(bundle.getString("Upload")); // NOI18N
         uploadAnimBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 uploadAnimButActionPerformed(evt);
             }
         });
 
-        deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
-        deleteAnimBut.setText("Delete selected");
+        deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteAnimBut.setText(bundle.getString("Delete_selected")); // NOI18N
         deleteAnimBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButActionPerformed(evt);
@@ -1011,7 +1232,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(animPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
                     .addGroup(animPaneLayout.createSequentialGroup()
                         .addComponent(getAnimListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1025,7 +1246,7 @@ public class MainWindow extends javax.swing.JFrame
         animPaneLayout.setVerticalGroup(
             animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, animPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getAnimListBut)
@@ -1035,123 +1256,286 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        tabPane.addTab("Animations/Videos", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/video.png")), animPane); // NOI18N
+        getAnimListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_videos")); // NOI18N
+        downloadAnimBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_videos")); // NOI18N
+        uploadAnimBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_videos")); // NOI18N
+        deleteAnimBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_videos")); // NOI18N
 
-        portLabel.setText("Port:");
+        jScrollPane12.setViewportView(animPane);
 
-        speedLabel.setText("Speed:");
+        tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/video.png")), jScrollPane12); // NOI18N
 
-        databitsLabel.setText("Data bits:");
+        javaPane.setBackground(new java.awt.Color(0, 102, 255));
 
-        parityLabel.setText("Parity:");
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        bindingGroup.addBinding(binding);
 
-        stopbitsLabel.setText("Stop bits:");
+        jScrollPane14.setPreferredSize(new java.awt.Dimension(0, 0));
 
-        flowLabel.setText("Flow control:");
+        javaTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        flowCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Software (XON/XOFF)", "Hardware (CTS/RTS)" }));
+            },
+            new String [] {
+                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+            }
+        ) {
+            private static final long serialVersionUID = 74L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
 
-        aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/QMARK8.png"))); // NOI18N
-        aboutBut.setText("About...");
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane14.setViewportView(javaTable);
+
+        getJavaListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getJavaListBut.setText(bundle.getString("Get_list")); // NOI18N
+        getJavaListBut.setEnabled(false);
+        getJavaListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getJavaListButActionPerformed(evt);
+            }
+        });
+
+        downloadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadJavaBut.setText(bundle.getString("Download_selected")); // NOI18N
+        downloadJavaBut.setEnabled(false);
+        downloadJavaBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadJavaBut.setText(bundle.getString("Upload")); // NOI18N
+        uploadJavaBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadJavaButActionPerformed(evt);
+            }
+        });
+
+        deleteJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteJavaBut.setText(bundle.getString("Delete_selected")); // NOI18N
+        deleteJavaBut.setEnabled(false);
+        deleteJavaBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout javaPaneLayout = new javax.swing.GroupLayout(javaPane);
+        javaPane.setLayout(javaPaneLayout);
+        javaPaneLayout.setHorizontalGroup(
+            javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javaPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addGroup(javaPaneLayout.createSequentialGroup()
+                        .addComponent(getJavaListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadJavaBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadJavaBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteJavaBut)))
+                .addContainerGap())
+        );
+        javaPaneLayout.setVerticalGroup(
+            javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, javaPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getJavaListBut)
+                    .addComponent(downloadJavaBut)
+                    .addComponent(uploadJavaBut)
+                    .addComponent(deleteJavaBut))
+                .addContainerGap())
+        );
+
+        getJavaListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_Java_elements")); // NOI18N
+        downloadJavaBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected__Java_elements")); // NOI18N
+        uploadJavaBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_Java")); // NOI18N
+        deleteJavaBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_Java_elements")); // NOI18N
+
+        jScrollPane13.setViewportView(javaPane);
+
+        tabPane.addTab(bundle.getString("JavaTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/java.png")), jScrollPane13); // NOI18N
+
+        portLabel.setText(bundle.getString("Port:")); // NOI18N
+
+        speedLabel.setText(bundle.getString("Speed:")); // NOI18N
+
+        databitsLabel.setText(bundle.getString("Data_bits:")); // NOI18N
+
+        parityLabel.setText(bundle.getString("Parity:")); // NOI18N
+
+        stopbitsLabel.setText(bundle.getString("Stop_bits:")); // NOI18N
+
+        flowLabel.setText(bundle.getString("Flow_control:")); // NOI18N
+
+        aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
+        aboutBut.setText(bundle.getString("About_JYMAG...")); // NOI18N
         aboutBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutButActionPerformed(evt);
             }
         });
 
-        rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/tools1.png"))); // NOI18N
-        rawBut.setText("Manual commands");
+        rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/tools1.png"))); // NOI18N
+        rawBut.setText(bundle.getString("Manual_commands")); // NOI18N
         rawBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rawButActionPerformed(evt);
             }
         });
 
-        bpsLabel.setText("bps");
+        bpsLabel.setText("bps"); // NOI18N
 
-        statusLabel.setText("Program status:");
+        statusLabel.setText(bundle.getString("Program_status:")); // NOI18N
 
         status.setForeground(new java.awt.Color(0, 204, 0));
-        status.setText("READY");
+        status.setText("READY"); // NOI18N
 
-        firmwareLabel.setText("Firmware:");
+        firmwareLabel.setText(bundle.getString("Firmware:")); // NOI18N
 
-        firmware.setText("-");
+        firmware.setText("-"); // NOI18N
 
-        progressLabel.setText("Progress:");
+        progressLabel.setText(bundle.getString("Progress:")); // NOI18N
 
-        phoneTypeLabel.setText("Phone type:");
+        phoneTypeLabel.setText(bundle.getString("Phone_type:")); // NOI18N
 
-        phone.setText("-");
+        phone.setText("-"); // NOI18N
 
-        exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/exit.png"))); // NOI18N
-        exitBut.setText("Exit");
+        exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+        exitBut.setText(bundle.getString("Exit")); // NOI18N
         exitBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitButActionPerformed(evt);
             }
         });
 
+        getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capab.png"))); // NOI18N
+        getCapBut.setText(bundle.getString("Get_capabilities")); // NOI18N
+        getCapBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getCapButActionPerformed(evt);
+            }
+        });
+
+        loadConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/loadconf.png"))); // NOI18N
+        loadConfBut.setText(bundle.getString("Load_configuration")); // NOI18N
+        loadConfBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadConfButActionPerformed(evt);
+            }
+        });
+
+        saveConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/saveconf.png"))); // NOI18N
+        saveConfBut.setText(bundle.getString("Save_configuration")); // NOI18N
+        saveConfBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveConfButActionPerformed(evt);
+            }
+        });
+
+        flowSoft.setText(bundle.getString("Software_(XON/XOFF)")); // NOI18N
+
+        flowHard.setText(bundle.getString("Hardware_(RTS/CTS)")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tabPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 759, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(phoneTypeLabel)
-                            .addComponent(firmwareLabel)
+                        .addGap(0, 0, 0)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(portLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(speedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(databitsLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(portLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(speedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(databitsLabel, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(12, 12, 12)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(bpsLabel))
-                                            .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(flowLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(stopbitsLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(parityLabel, javax.swing.GroupLayout.Alignment.TRAILING)))
-                            .addComponent(statusLabel)
-                            .addComponent(progressLabel))
+                                .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(bpsLabel))
+                                    .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(14, 14, 14)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(parityLabel)
+                            .addComponent(stopbitsLabel)
+                            .addComponent(flowLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(flowCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
+                            .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(flowSoft))
+                        .addGap(2, 2, 2)
+                        .addComponent(flowHard)
+                        .addGap(110, 110, 110))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(loadConfBut)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(saveConfBut))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(196, 196, 196)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(phoneTypeLabel)
+                                    .addComponent(statusLabel)
+                                    .addComponent(progressLabel)
+                                    .addComponent(firmwareLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(phone)
+                                    .addComponent(firmware)
                                     .addComponent(status)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(phone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(firmware, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(exitBut)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(aboutBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(scanButton))
-                                        .addComponent(rawBut)))))))
+                                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))))
+                        .addGap(284, 284, 284))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
+                        .addComponent(scanButton))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
+                        .addComponent(aboutBut))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
+                        .addComponent(rawBut))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
+                        .addComponent(getCapBut))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
+                        .addComponent(exitBut))
+                    .addComponent(tabPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 888, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {aboutBut, exitBut, rawBut, scanButton});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {aboutBut, exitBut, getCapBut, rawBut, scanButton});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1159,60 +1543,80 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(portLabel)
-                            .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(7, 7, 7)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(speedLabel)
-                            .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(bpsLabel))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(portLabel)
+                                    .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(speedLabel)
+                                    .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(bpsLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(databitsLabel)
+                                    .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(flowHard)
+                                    .addComponent(flowLabel)
+                                    .addComponent(flowSoft)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(parityLabel)
+                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(stopbitsLabel)
+                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(databitsLabel)
-                            .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(parityLabel)
-                            .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(54, 54, 54)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(phone))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(firmwareLabel)
+                                    .addComponent(firmware))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(statusLabel)
+                                    .addComponent(status)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(loadConfBut)
+                                .addComponent(saveConfBut)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(stopbitsLabel)
-                            .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(flowCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(flowLabel)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(progressLabel)
+                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(scanButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(aboutBut)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(phone))
+                        .addComponent(aboutBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(firmwareLabel)
-                            .addComponent(firmware))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(status)
-                            .addComponent(statusLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(progressLabel)))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(rawBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(getCapBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exitBut)))
-                .addGap(18, 18, 18)
-                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        portCombo.getAccessibleContext().setAccessibleName(bundle.getString("port_list")); // NOI18N
+        speedCombo.getAccessibleContext().setAccessibleName(bundle.getString("port_speed")); // NOI18N
+        dataBitsCombo.getAccessibleContext().setAccessibleName(bundle.getString("data_bits")); // NOI18N
+        parityCombo.getAccessibleContext().setAccessibleName(bundle.getString("parity_type")); // NOI18N
+        stopBitsCombo.getAccessibleContext().setAccessibleName(bundle.getString("stop_bits")); // NOI18N
+        tabPane.getAccessibleContext().setAccessibleName(bundle.getString("tabPane")); // NOI18N
+        status.getAccessibleContext().setAccessibleName(bundle.getString("program_status")); // NOI18N
+        firmware.getAccessibleContext().setAccessibleName(bundle.getString("phone_firmware")); // NOI18N
+        progressBar.getAccessibleContext().setAccessibleName(bundle.getString("operation_progress")); // NOI18N
+        phone.getAccessibleContext().setAccessibleName(bundle.getString("phone_type")); // NOI18N
+
+        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1223,7 +1627,11 @@ public class MainWindow extends javax.swing.JFrame
 		final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
 		final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
 		final int cParity = parityCombo.getSelectedIndex ();
-		final int cFlow = flowCombo.getSelectedIndex ();
+		final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
+
+		// always create new:
+		firmwares = new Hashtable<String, String> (1);
+		phoneTypes = new Hashtable<String, String> (1);
 
 		updateStatusLabel (STATUS.SENDING);
 		progressBar.setValue (0);
@@ -1270,13 +1678,9 @@ public class MainWindow extends javax.swing.JFrame
 								int testRes = dt.test ();
 								if ( testRes == 0 )
 								{
-									if ( firmwares == null )
-										firmwares = new Hashtable<String, String> (1);
-									if ( phoneTypes == null )
-										phoneTypes = new Hashtable<String, String> (1);
 									active.add (id);
 									// get firmware version
-									String rcvd = "";
+									String rcvd = "";	// NOI18N
 									int trials = 0;
 									do
 									{
@@ -1298,7 +1702,7 @@ public class MainWindow extends javax.swing.JFrame
 										try
 										{
 											// have to split to make it work
-											String[] lines = rcvd.split ("\r");
+											String[] lines = rcvd.split ("\r");	// NOI18N
 											if ( lines != null )
 											{
 												for ( int i=0; i < lines.length; i++ )
@@ -1323,7 +1727,7 @@ public class MainWindow extends javax.swing.JFrame
 										}
 									}
 									// get phone type
-									rcvd = "";
+									rcvd = "";	// NOI18N
 									trials = 0;
 									do
 									{
@@ -1337,7 +1741,9 @@ public class MainWindow extends javax.swing.JFrame
 											dt.reopen ();
 											trials++;
 										}
-									} while (rcvd.trim ().equals ("")	// NOI18N
+									} while ( //(
+											rcvd.trim ().equals ("")	// NOI18N
+											//|| rcvd.contains ("ATIMEI"))
 										&& trials <= DataTransporter.MAX_TRIALS);
 									if ( trials <= DataTransporter.MAX_TRIALS )
 									{
@@ -1345,13 +1751,14 @@ public class MainWindow extends javax.swing.JFrame
 										try
 										{
 											// have to split to make it work
-											String[] lines = rcvd.split ("\r");
+											String[] lines = rcvd.split ("\r");	// NOI18N
 											if ( lines != null )
 											{
 												for ( int i=0; i < lines.length; i++ )
 												{
 													if ( lines[i] == null ) continue;
-													if ( lines[i].trim ().length () > 0 )
+													if ( lines[i].trim ().length () > 0
+															&& ! lines[i].contains ("ATIMEI") )	// NOI18N
 													{
 														phoneTypes.put (
 															id.getName (),
@@ -1378,6 +1785,7 @@ public class MainWindow extends javax.swing.JFrame
 						}
 						Utils.changeGUI (new Runnable ()
 						{
+							@Override
 							public void run ()
 							{
 								progressBar.setValue (progressBar.getValue ()+1);
@@ -1404,12 +1812,16 @@ public class MainWindow extends javax.swing.JFrame
 						JOptionPane.showMessageDialog (mw,
 							noAnsString, errString,
 							JOptionPane.ERROR_MESSAGE);
+						firmware.setText (pressScanMsg);
+						phone.setText (pressScanMsg);
 					}
 					else if (active.size () == 0)
 					{
 						JOptionPane.showMessageDialog (mw,
 							noAnsString, errString,
 							JOptionPane.ERROR_MESSAGE);
+						firmware.setText (pressScanMsg);
+						phone.setText (pressScanMsg);
 					}
 					else if (active.size () == 1)
 					{
@@ -1497,7 +1909,7 @@ public class MainWindow extends javax.swing.JFrame
 								phone.setText (pressScanMsg);
 							}
 						}
-						else
+						else	// the user closed the window - choose the first one
 						{
 							// NOT setSelectedIndex (0)!
 							portCombo.setSelectedItem
@@ -1604,6 +2016,17 @@ public class MainWindow extends javax.swing.JFrame
 			currentAnimElements);
 	}//GEN-LAST:event_getAnimListButActionPerformed
 
+	private void getJavaListButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getJavaListButActionPerformed
+		if ( currentJavaElements == null ) currentJavaElements =
+			new Vector<PhoneElement> (1);
+
+		/* TODO
+		putListInTable ("JAR",	// NOI18N
+			(DefaultTableModel) javaTable.getModel (),
+			currentJavaElements);*/
+	}//GEN-LAST:event_getJavaListButActionPerformed
+
+
 	private void downloadButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButActionPerformed
 
 		int[] selectedRows = null;
@@ -1633,42 +2056,48 @@ public class MainWindow extends javax.swing.JFrame
 			selectedRows = eventTable.getSelectedRows ();
 			temp = currentEventElements;
 		}
-		else //if ( tabPane.getSelectedIndex () == 5 )
+		else if ( tabPane.getSelectedIndex () == 5 )
 		{
 			selectedRows = animTable.getSelectedRows ();
 			temp = currentAnimElements;
+		}
+		else if ( tabPane.getSelectedIndex () == 6 )
+		{
+			selectedRows = javaTable.getSelectedRows ();
+			temp = currentJavaElements;
 		}
 		final Vector<PhoneElement> currentElements = temp;
 		if ( selectedRows == null || currentElements == null ) return;
 		if ( selectedRows.length == 0 ) return;
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.SAVE_DIALOG);
-		jfc.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
+		if ( downloadFC == null ) downloadFC = new JFileChooser ();
+		downloadFC.setMultiSelectionEnabled (false);
+		downloadFC.setDialogType (JFileChooser.SAVE_DIALOG);
+		downloadFC.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
 		// destDirName is the static field
 		if ( destDirName != null )
 		{
 			if ( destDirName.length () > 0 )
 			{
 				File d = new File (destDirName);
-				jfc.setSelectedFile (d);
-				jfc.setCurrentDirectory (d);
+				downloadFC.setSelectedFile (d);
+				downloadFC.setCurrentDirectory (d);
 			}
 		}
+		/*
 		if ( lastSelDir != null )
 		{
 			File d = new File (lastSelDir);
-			jfc.setSelectedFile (d);
-			jfc.setCurrentDirectory (d);
-		}
-		int dialogRes = jfc.showSaveDialog (this);
+			downloadFC.setSelectedFile (d);
+			downloadFC.setCurrentDirectory (d);
+		}*/
+		int dialogRes = downloadFC.showSaveDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
 			try
 			{
-				File destDir = jfc.getSelectedFile ();
+				File destDir = downloadFC.getSelectedFile ();
 				lastSelDir = destDir.getAbsolutePath ();
 				final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 					(portCombo.getSelectedItem ().toString ());
@@ -1679,7 +2108,7 @@ public class MainWindow extends javax.swing.JFrame
 				final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
 				final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
 				final int cParity = parityCombo.getSelectedIndex ();
-				final int cFlow = flowCombo.getSelectedIndex ();
+				final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
 				final AtomicInteger threads = new AtomicInteger (0);
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
@@ -1703,7 +2132,7 @@ public class MainWindow extends javax.swing.JFrame
 					if ( received.exists () && ! received.canWrite () )
 					{
 						JOptionPane.showMessageDialog (this,
-							fileNotWriteMsg + ": " + received.getName (),
+							fileNotWriteMsg + ": " + received.getName (),	// NOI18N
 							errString, JOptionPane.ERROR_MESSAGE);
 						continue;
 					}
@@ -1799,9 +2228,10 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadPhotoButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadPhotoButActionPerformed
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadPictFC == null ) uploadPictFC = new JFileChooser ();
+		uploadPictFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
+			@Override
 			public boolean accept ( File f )
 			{
 				if ( f.isDirectory () ) return true;
@@ -1816,6 +2246,7 @@ public class MainWindow extends javax.swing.JFrame
 				return false;
 			}
 
+			@Override
 			public String getDescription ()
 			{
 				String desc = picsString;
@@ -1824,34 +2255,34 @@ public class MainWindow extends javax.swing.JFrame
 					Enumeration<String> keys = Utils.photofileIDs.keys ();
 					if ( keys != null )
 					{
-						desc += " (";
+						desc += " (";	// NOI18N
 						while ( keys.hasMoreElements () )
 						{
-							desc += "*." + keys.nextElement () + ", ";
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
 						}
 						// remove the last comma and space
 						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";
+						desc += ")";	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "photofileIDs.keys");
+					Utils.handleException (ex, "photofileIDs.keys");	// NOI18N
 				}
 				return desc;
 			}
 		} );
 
-		jfc.setAcceptAllFileFilterUsed (false);
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
-		if ( lastSelDir != null )
-			jfc.setCurrentDirectory (new File (lastSelDir));
-		int dialogRes = jfc.showOpenDialog (this);
+		uploadPictFC.setAcceptAllFileFilterUsed (false);
+		uploadPictFC.setMultiSelectionEnabled (false);
+		uploadPictFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadPictFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadPictFC.showOpenDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
-			File res = jfc.getSelectedFile ();
+			File res = uploadPictFC.getSelectedFile ();
 			lastSelDir = res.getParent ();
 			dynamicUpload (res);
 		}
@@ -1859,9 +2290,10 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadRingButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadRingButActionPerformed
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadRingFC == null ) uploadRingFC = new JFileChooser ();
+		uploadRingFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
+			@Override
 			public boolean accept ( File f )
 			{
 				if ( f.isDirectory () ) return true;
@@ -1876,6 +2308,7 @@ public class MainWindow extends javax.swing.JFrame
 				return false;
 			}
 
+			@Override
 			public String getDescription ()
 			{
 				String desc = soundsString;
@@ -1884,34 +2317,34 @@ public class MainWindow extends javax.swing.JFrame
 					Enumeration<String> keys = Utils.ringfileIDs.keys ();
 					if ( keys != null )
 					{
-						desc += " (";
+						desc += " (";	// NOI18N
 						while ( keys.hasMoreElements () )
 						{
-							desc += "*." + keys.nextElement () + ", ";
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
 						}
 						// remove the last comma and space
 						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";
+						desc += ")";	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ringfileIDs.keys");
+					Utils.handleException (ex, "ringfileIDs.keys");	// NOI18N
 				}
 				return desc;
 			}
 		} );
 
-		jfc.setAcceptAllFileFilterUsed (false);
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
-		if ( lastSelDir != null )
-			jfc.setCurrentDirectory (new File (lastSelDir));
-		int dialogRes = jfc.showOpenDialog (this);
+		uploadRingFC.setAcceptAllFileFilterUsed (false);
+		uploadRingFC.setMultiSelectionEnabled (false);
+		uploadRingFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadRingFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadRingFC.showOpenDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
-			File res = jfc.getSelectedFile ();
+			File res = uploadRingFC.getSelectedFile ();
 			lastSelDir = res.getParent ();
 			dynamicUpload (res);
 		}
@@ -1919,9 +2352,10 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadAddrButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadAddrButActionPerformed
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadAddrFC == null ) uploadAddrFC = new JFileChooser ();
+		uploadAddrFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
+			@Override
 			public boolean accept ( File f )
 			{
 				if ( f.isDirectory () ) return true;
@@ -1936,6 +2370,7 @@ public class MainWindow extends javax.swing.JFrame
 				return false;
 			}
 
+			@Override
 			public String getDescription ()
 			{
 				String desc = addrString;
@@ -1944,34 +2379,34 @@ public class MainWindow extends javax.swing.JFrame
 					Enumeration<String> keys = Utils.addrfileIDs.keys ();
 					if ( keys != null )
 					{
-						desc += " (";
+						desc += " (";	// NOI18N
 						while ( keys.hasMoreElements () )
 						{
-							desc += "*." + keys.nextElement () + ", ";
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
 						}
 						// remove the last comma and space
 						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";
+						desc += ")";	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "addrfileIDs.keys");
+					Utils.handleException (ex, "addrfileIDs.keys");	// NOI18N
 				}
 				return desc;
 			}
 		} );
 
-		jfc.setAcceptAllFileFilterUsed (false);
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
-		if ( lastSelDir != null )
-			jfc.setCurrentDirectory (new File (lastSelDir));
-		int dialogRes = jfc.showOpenDialog (this);
+		uploadAddrFC.setAcceptAllFileFilterUsed (false);
+		uploadAddrFC.setMultiSelectionEnabled (false);
+		uploadAddrFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadAddrFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadAddrFC.showOpenDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
-			File res = jfc.getSelectedFile ();
+			File res = uploadAddrFC.getSelectedFile ();
 			lastSelDir = res.getParent ();
 			dynamicUpload (res);
 		}
@@ -1979,9 +2414,10 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadTodoButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadTodoButActionPerformed
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadTODOFC == null ) uploadTODOFC = new JFileChooser ();
+		uploadTODOFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
+			@Override
 			public boolean accept ( File f )
 			{
 				if ( f.isDirectory () ) return true;
@@ -1996,6 +2432,7 @@ public class MainWindow extends javax.swing.JFrame
 				return false;
 			}
 
+			@Override
 			public String getDescription ()
 			{
 				String desc = todoString;
@@ -2004,34 +2441,34 @@ public class MainWindow extends javax.swing.JFrame
 					Enumeration<String> keys = Utils.todofileIDs.keys ();
 					if ( keys != null )
 					{
-						desc += " (";
+						desc += " (";	// NOI18N
 						while ( keys.hasMoreElements () )
 						{
-							desc += "*." + keys.nextElement () + ", ";
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
 						}
 						// remove the last comma and space
 						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";
+						desc += ")";	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "todofileIDs.keys");
+					Utils.handleException (ex, "todofileIDs.keys");	// NOI18N
 				}
 				return desc;
 			}
 		} );
 
-		jfc.setAcceptAllFileFilterUsed (false);
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
-		if ( lastSelDir != null )
-			jfc.setCurrentDirectory (new File (lastSelDir));
-		int dialogRes = jfc.showOpenDialog (this);
+		uploadTODOFC.setAcceptAllFileFilterUsed (false);
+		uploadTODOFC.setMultiSelectionEnabled (false);
+		uploadTODOFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadTODOFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadTODOFC.showOpenDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
-			File res = jfc.getSelectedFile ();
+			File res = uploadTODOFC.getSelectedFile ();
 			lastSelDir = res.getParent ();
 			dynamicUpload (res);
 		}
@@ -2039,9 +2476,10 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadEventButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadEventButActionPerformed
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadEventFC == null ) uploadEventFC = new JFileChooser ();
+		uploadEventFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
+			@Override
 			public boolean accept ( File f )
 			{
 				if ( f.isDirectory () ) return true;
@@ -2056,6 +2494,7 @@ public class MainWindow extends javax.swing.JFrame
 				return false;
 			}
 
+			@Override
 			public String getDescription ()
 			{
 				String desc = eventString;
@@ -2064,34 +2503,34 @@ public class MainWindow extends javax.swing.JFrame
 					Enumeration<String> keys = Utils.eventfileIDs.keys ();
 					if ( keys != null )
 					{
-						desc += " (";
+						desc += " (";	// NOI18N
 						while ( keys.hasMoreElements () )
 						{
-							desc += "*." + keys.nextElement () + ", ";
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
 						}
 						// remove the last comma and space
 						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";
+						desc += ")";	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "eventfileIDs.keys");
+					Utils.handleException (ex, "eventfileIDs.keys");	// NOI18N
 				}
 				return desc;
 			}
 		} );
 
-		jfc.setAcceptAllFileFilterUsed (false);
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
-		if ( lastSelDir != null )
-			jfc.setCurrentDirectory (new File (lastSelDir));
-		int dialogRes = jfc.showOpenDialog (this);
+		uploadEventFC.setAcceptAllFileFilterUsed (false);
+		uploadEventFC.setMultiSelectionEnabled (false);
+		uploadEventFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadEventFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadEventFC.showOpenDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
-			File res = jfc.getSelectedFile ();
+			File res = uploadEventFC.getSelectedFile ();
 			lastSelDir = res.getParent ();
 			dynamicUpload (res);
 		}
@@ -2099,9 +2538,10 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadAnimButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadAnimButActionPerformed
 
-		JFileChooser jfc = new JFileChooser ();
-		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadAnimFC == null ) uploadAnimFC = new JFileChooser ();
+		uploadAnimFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
+			@Override
 			public boolean accept ( File f )
 			{
 				if ( f.isDirectory () ) return true;
@@ -2116,6 +2556,7 @@ public class MainWindow extends javax.swing.JFrame
 				return false;
 			}
 
+			@Override
 			public String getDescription ()
 			{
 				String desc = animString;
@@ -2124,38 +2565,100 @@ public class MainWindow extends javax.swing.JFrame
 					Enumeration<String> keys = Utils.animfileIDs.keys ();
 					if ( keys != null )
 					{
-						desc += " (";
+						desc += " (";	// NOI18N
 						while ( keys.hasMoreElements () )
 						{
-							desc += "*." + keys.nextElement () + ", ";
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
 						}
 						// remove the last comma and space
 						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";
+						desc += ")";	// NOI18N
 					}
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "animfileIDs.keys");
+					Utils.handleException (ex, "animfileIDs.keys");	// NOI18N
 				}
 				return desc;
 			}
 		} );
 
-		jfc.setAcceptAllFileFilterUsed (false);
-		jfc.setMultiSelectionEnabled (false);
-		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
-		if ( lastSelDir != null )
-			jfc.setCurrentDirectory (new File (lastSelDir));
-		int dialogRes = jfc.showOpenDialog (this);
+		uploadAnimFC.setAcceptAllFileFilterUsed (false);
+		uploadAnimFC.setMultiSelectionEnabled (false);
+		uploadAnimFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadAnimFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadAnimFC.showOpenDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
-			File res = jfc.getSelectedFile ();
+			File res = uploadAnimFC.getSelectedFile ();
 			lastSelDir = res.getParent ();
 			dynamicUpload (res);
 		}
 	}//GEN-LAST:event_uploadAnimButActionPerformed
+
+	private void uploadJavaButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadJavaButActionPerformed
+
+		if ( uploadJavaFC == null ) uploadJavaFC = new JFileChooser ();
+		uploadJavaFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		{
+			@Override
+			public boolean accept ( File f )
+			{
+				if ( f.isDirectory () ) return true;
+				if ( f.getName ().contains ("."))	// NOI18N
+				{
+					if ( Utils.javafileIDs.containsKey (f.getName ().substring
+						(f.getName ().lastIndexOf (".")+1)	// NOI18N
+						.toLowerCase ()))
+
+						return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription ()
+			{
+				String desc = javaString;
+				try
+				{
+					Enumeration<String> keys = Utils.javafileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";	// NOI18N
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";	// NOI18N
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";	// NOI18N
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "javafileIDs.keys");	// NOI18N
+				}
+				return desc;
+			}
+		} );
+
+		uploadJavaFC.setAcceptAllFileFilterUsed (false);
+		uploadJavaFC.setMultiSelectionEnabled (false);
+		uploadJavaFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	uploadJavaFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = uploadJavaFC.showOpenDialog (this);
+
+		if ( dialogRes == JFileChooser.APPROVE_OPTION )
+		{
+			File res = uploadJavaFC.getSelectedFile ();
+			lastSelDir = res.getParent ();
+			dynamicUpload (res);
+		}
+	}//GEN-LAST:event_uploadJavaButActionPerformed
 
 	private void dynamicUpload (final File f)
 	{
@@ -2171,7 +2674,7 @@ public class MainWindow extends javax.swing.JFrame
 			final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
 			final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
 			final int cParity = parityCombo.getSelectedIndex ();
-			final int cFlow = flowCombo.getSelectedIndex ();
+			final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
 			SwingWorker<Integer, Void> sw =
 				new SwingWorker<Integer, Void> ()
 			{
@@ -2278,10 +2781,15 @@ public class MainWindow extends javax.swing.JFrame
 			selectedRows = eventTable.getSelectedRows ();
 			temp = currentEventElements;
 		}
-		else //if ( tabPane.getSelectedIndex () == 5 )
+		else if ( tabPane.getSelectedIndex () == 5 )
 		{
 			selectedRows = animTable.getSelectedRows ();
 			temp = currentAnimElements;
+		}
+		else if ( tabPane.getSelectedIndex () == 6 )
+		{
+			selectedRows = javaTable.getSelectedRows ();
+			temp = currentJavaElements;
 		}
 		if ( selectedRows == null || temp == null ) return;
 		if ( selectedRows.length == 0 ) return;
@@ -2310,7 +2818,7 @@ public class MainWindow extends javax.swing.JFrame
 				final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
 				final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
 				final int cParity = parityCombo.getSelectedIndex ();
-				final int cFlow = flowCombo.getSelectedIndex ();
+				final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
@@ -2374,7 +2882,7 @@ public class MainWindow extends javax.swing.JFrame
 				Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
 				Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
 				parityCombo.getSelectedIndex (),
-				flowCombo.getSelectedIndex ()
+				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
 				);
 			new RawCommunicator (dt, this, sync).setVisible (true);
 			dt.close ();
@@ -2384,6 +2892,28 @@ public class MainWindow extends javax.swing.JFrame
 			Utils.handleException (ex, "MainWindow.RawCommunnicator.start");	// NOI18N
 		}
 	}//GEN-LAST:event_rawButActionPerformed
+
+	private void getCapButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getCapButActionPerformed
+
+		try
+		{
+			CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+				(portCombo.getSelectedItem ().toString ());
+			DataTransporter dt = new DataTransporter (id);
+			dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
+				Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
+				Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
+				parityCombo.getSelectedIndex (),
+				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
+				);
+			new CapabilityWindow (dt, this, sync).setVisible (true);
+			dt.close ();
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "MainWindow.CapabilityWindow.start");	// NOI18N
+		}
+	}//GEN-LAST:event_getCapButActionPerformed
 
 	private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
@@ -2438,6 +2968,144 @@ public class MainWindow extends javax.swing.JFrame
 		closeProgram (0);
 	}//GEN-LAST:event_exitButActionPerformed
 
+	private void loadConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfButActionPerformed
+
+		if ( cfgFC == null ) cfgFC = new JFileChooser ();
+		cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		{
+			@Override
+			public boolean accept ( File f )
+			{
+				if ( f.isDirectory () ) return true;
+				if ( f.getName ().endsWith (".cfg"))	// NOI18N
+				{
+						return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription ()
+			{
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("JYMAG_configuration_files")
+						+ " (*.cfg)";	// NOI18N
+			}
+		} );
+
+		cfgFC.setAcceptAllFileFilterUsed (false);
+		cfgFC.setMultiSelectionEnabled (false);
+		cfgFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	cfgFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = cfgFC.showOpenDialog (this);
+
+		if ( dialogRes == JFileChooser.APPROVE_OPTION )
+		{
+			try
+			{
+				File res = cfgFC.getSelectedFile ();
+				lastSelDir = res.getParent ();
+				ConfigFile cfg = new ConfigFile (res);
+				cfg.read ();
+				portCombo.setSelectedItem (cfg.getPort ());
+				speedCombo.setSelectedItem (String.valueOf (cfg.getSpeed ()));
+				dataBitsCombo.setSelectedItem (String.valueOf (cfg.getDBits ()));
+				int lparity = cfg.getParity ();
+				if ( lparity < parityCombo.getItemCount () )
+					parityCombo.setSelectedIndex (lparity);
+				int stopbits = cfg.getSBits ();
+				if ( stopbits < stopBitsCombo.getItemCount () )
+					stopBitsCombo.setSelectedIndex (stopbits);
+				int lflow = cfg.getFlowCtl ();
+				switch (lflow)
+				{
+					case 1:
+						flowSoft.setSelected (true);
+						flowHard.setSelected (false);
+						break;
+					case 2:
+						flowSoft.setSelected (false);
+						flowHard.setSelected (true);
+						break;
+					case 3:
+						flowSoft.setSelected (true);
+						flowHard.setSelected (true);
+						break;
+					default:
+						flowSoft.setSelected (false);
+						flowHard.setSelected (false);
+						break;
+				}
+				//flowCombo.setSelectedIndex ();	// FIXME:
+				setLocation (cfg.getX (), cfg.getY ());
+				setSize (cfg.getWidth (), cfg.getHeight ());
+				if ( cfg.getIsMax () ) setExtendedState (JFrame.MAXIMIZED_BOTH);
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "config.load");	// NOI18N
+			}
+		}
+	}//GEN-LAST:event_loadConfButActionPerformed
+
+	private void saveConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfButActionPerformed
+
+		if ( cfgFC == null ) cfgFC = new JFileChooser ();
+		cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		{
+			@Override
+			public boolean accept ( File f )
+			{
+				if ( f.isDirectory () ) return true;
+				if ( f.getName ().endsWith (".cfg"))	// NOI18N
+				{
+						return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription ()
+			{
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("JYMAG_configuration_files") 
+						+ " (*.cfg)";	// NOI18N
+			}
+		} );
+
+		cfgFC.setAcceptAllFileFilterUsed (false);
+		cfgFC.setMultiSelectionEnabled (false);
+		cfgFC.setDialogType (JFileChooser.OPEN_DIALOG);
+		//if ( lastSelDir != null )
+		//	cfgFC.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = cfgFC.showSaveDialog (this);
+
+		if ( dialogRes == JFileChooser.APPROVE_OPTION )
+		{
+			try
+			{
+				File res = cfgFC.getSelectedFile ();
+				lastSelDir = res.getParent ();
+				ConfigFile cfg = new ConfigFile (res);
+				cfg.setPort (portCombo.getSelectedItem ().toString ());
+				cfg.setSpeed (Integer.valueOf (speedCombo.getSelectedItem ().toString ()));
+				cfg.setDataBits (Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()));
+				cfg.setParity (parityCombo.getSelectedIndex ());
+				cfg.setStopBits (stopBitsCombo.getSelectedIndex ());
+				cfg.setFlow (((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0));
+				cfg.setX (getX ());
+				cfg.setY (getY ());
+				cfg.setWidth (getWidth ());
+				cfg.setHeight (getHeight ());
+				cfg.setIsMaximized ((getExtendedState () & JFrame.MAXIMIZED_BOTH) != 0);
+				cfg.write ();
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "config.save");	// NOI18N
+			}
+		}
+	}//GEN-LAST:event_saveConfButActionPerformed
+
 	private void putListInTable (final String ofWhat,
 		final DefaultTableModel dtm,
 		final Vector<PhoneElement> placeForData)
@@ -2454,7 +3122,7 @@ public class MainWindow extends javax.swing.JFrame
 			final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
 			final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
 			final int cParity = parityCombo.getSelectedIndex ();
-			final int cFlow = flowCombo.getSelectedIndex ();
+			final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
 			SwingWorker<Vector<PhoneElement>, Void> sw =
 				new SwingWorker<Vector<PhoneElement>, Void> ()
 			{
@@ -2551,6 +3219,18 @@ public class MainWindow extends javax.swing.JFrame
 		READY,
 		SENDING,
 		RECEIVING;
+		
+		@Override
+		public String toString ()
+		{
+			if ( this.equals (STATUS.READY) )
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("READY");
+			else if ( this.equals (STATUS.SENDING) )
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("SENDING");
+			else if ( this.equals (STATUS.RECEIVING) )
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("RECEIVING");
+			return "";	// NOI18N
+		}
 	}
 
 	private void updateStatusLabel (final STATUS s)
@@ -2699,7 +3379,7 @@ public class MainWindow extends javax.swing.JFrame
 			(f.getName ().lastIndexOf (".")+1)	// NOI18N
 			.toLowerCase ()))
 		{
-			System.out.println (unsuppType+" '"	// NOI18N
+			System.out.println (unsuppType+": '"	// NOI18N
 				+f.getName ().substring
 				(f.getName ().lastIndexOf (".")+1)	// NOI18N
 				.toLowerCase () + "'");	// NOI18N
@@ -2790,6 +3470,34 @@ public class MainWindow extends javax.swing.JFrame
 		return 0;
 	}
 
+	private static void readConfig (File f)
+	{
+		if ( f == null ) return;
+		if ( (! f.exists ()) || (! f.canRead ()) ) return;
+
+		try
+		{
+			ConfigFile cfg = new ConfigFile (f);
+			cfg.read ();
+			portName = cfg.getPort ().trim ();
+			speed = cfg.getSpeed ();
+			dBits = cfg.getDBits ();
+			parity = cfg.getParity ();
+			int l_sBits = cfg.getSBits ();
+			if ( l_sBits == 2 ) sBits = 2.0f;
+			else if ( l_sBits == 1 ) sBits = 1.5f;
+			else sBits = 1.0f;
+			flow = cfg.getFlowCtl ();
+			isMax = cfg.getIsMax ();
+			x = cfg.getX ();
+			y = cfg.getY ();
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "static readConfig");	// NOI18N
+		}
+	}
+
 	/**
 	 * Program starting point.
 	 * @param args the command line arguments.
@@ -2805,8 +3513,12 @@ public class MainWindow extends javax.swing.JFrame
 		{
 			Utils.handleException (ex, "stderr");	// NOI18N
 		}
+
+		// set default uncaught exception handler:
+		Thread.setDefaultUncaughtExceptionHandler (Utils.handler);
+
 		// firmware version pattern
-		verPattern = Pattern.compile ("\\s*\\+KPSV:\\s*(.+)");
+		verPattern = Pattern.compile ("\\s*\\+KPSV:\\s*(.+)");	// NOI18N
 
 		if ( args != null )
 		{
@@ -2824,7 +3536,7 @@ public class MainWindow extends javax.swing.JFrame
 				                "http://rudy.mif.pg.gda.pl/~bogdro/soft\n\n" +	// NOI18N
 				                cmdLineStr
 						);
-					System.exit (0);
+					closeProgram (0);
 				}
 				else if ( args[i].toLowerCase ().equals ("--license")	// NOI18N
 					|| args[i].toLowerCase ().equals ("--licence") )	// NOI18N
@@ -2846,15 +3558,15 @@ public class MainWindow extends javax.swing.JFrame
 						"               51 Franklin Street, Fifth Floor\n" +	// NOI18N
 						"               Boston, MA 02110-1301\n" +	// NOI18N
 						"               USA\n");	// NOI18N
-					System.exit (0);
+					closeProgram (0);
 				}
 				else if ( args[i].toLowerCase ().equals ("--version")	// NOI18N
 					|| args[i].toLowerCase ().equals ("-v") )	// NOI18N
 				{
 					System.out.println ("JYMAG " + verWord + " " + verString);	// NOI18N
-					System.exit (0);
+					closeProgram (0);
 				}
-				else if ( args[i].toLowerCase ().equals ("--port"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--port") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -2862,35 +3574,36 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--parity"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--parity") )	// NOI18N
 				{
+					parity = 0;
 					if ( i < args.length-1 )
 					{
 						// <none, even, odd, space, mark>
-						if ( args[i+1].toLowerCase ().equals ("none"))	// NOI18N
+						if ( args[i+1].toLowerCase ().equals ("none") )	// NOI18N
 						{
 							parity = 0;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("even"))	// NOI18N
+						else if ( args[i+1].toLowerCase ().equals ("even") )	// NOI18N
 						{
 							parity = 1;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("odd"))	// NOI18N
+						else if ( args[i+1].toLowerCase ().equals ("odd") )	// NOI18N
 						{
 							parity = 2;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("space"))	// NOI18N
+						else if ( args[i+1].toLowerCase ().equals ("space") )	// NOI18N
 						{
 							parity = 3;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("mark"))	// NOI18N
+						else if ( args[i+1].toLowerCase ().equals ("mark") )	// NOI18N
 						{
 							parity = 4;
 						}
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--databits"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--databits") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -2900,18 +3613,18 @@ public class MainWindow extends javax.swing.JFrame
 						}
 						catch (Exception ex)
 						{
+							dBits = -1;
 							Utils.handleException (ex,
 								"Integer.parseInt:'" + args[i+1] + "'");	// NOI18N
 						}
-						if ( dBits != 5 && dBits != 6
-							&& dBits != 7 && dBits != 8 )
+						if ( ! Utils.isAllowableDataBits (dBits) )
 						{
 							dBits = 8;
 						}
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--speed"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--speed") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -2921,42 +3634,23 @@ public class MainWindow extends javax.swing.JFrame
 						}
 						catch (Exception ex)
 						{
+							speed = -1;
 							Utils.handleException (ex,
 								"Integer.parseInt:'" + args[i+1] + "'");	// NOI18N
 						}
-						if ( speed != 1200
-							&& speed != 2400
-							&& speed != 4800
-							&& speed != 9600
-							&& speed != 19200
-							&& speed != 38400
-							&& speed != 57600
-							&& speed != 115200
-							&& speed != 230400
-							&& speed != 460800
-							&& speed != 500000
-							&& speed != 576000
-							&& speed != 921600
-							&& speed != 1000000
-							&& speed != 1152000
-							&& speed != 1500000
-							&& speed != 2000000
-							&& speed != 2500000
-							&& speed != 3000000
-							&& speed != 3500000
-							&& speed != 4000000
-							)
+						if ( ! Utils.isAllowableSpeed (speed) )
 						{
 							speed = 115200;
 						}
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--stopbits"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--stopbits") )	// NOI18N
 				{
+					sBits = 1;
 					if ( i < args.length-1 )
 					{
-						if ( args[i+1].toLowerCase ().equals ("2"))	// NOI18N
+						if ( args[i+1].toLowerCase ().equals ("2") )	// NOI18N
 						{
 							sBits = 2;
 						}
@@ -2972,31 +3666,37 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--flow"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--flow") )	// NOI18N
 				{
+					flow = 0;
 					if ( i < args.length-1 )
 					{
 						// <none,soft,hard>
-						if ( args[i+1].toLowerCase ().equals ("none"))	// NOI18N
+						if ( args[i+1].toLowerCase ().equals ("none") )	// NOI18N
 						{
 							flow = 0;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("soft"))	// NOI18N
+						else if ( args[i+1].toLowerCase ().equals ("soft") )	// NOI18N
 						{
 							flow = 1;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("hard"))	// NOI18N
+						else if ( args[i+1].toLowerCase ().equals ("hard") )	// NOI18N
 						{
 							flow = 2;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("soft+hard")	// NOI18N
+								 || args[i+1].toLowerCase ().equals ("hard+soft") )	// NOI18N
+						{
+							flow = 3;
 						}
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--scan"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--scan") )	// NOI18N
 				{
 					closeProgram (scanPorts ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--upload"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--upload") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3014,31 +3714,31 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-photos"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all-photos") )	// NOI18N
 				{
 					closeProgram (getAllPics ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-ringtones"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all-ringtones") )	// NOI18N
 				{
 					closeProgram (getAllRings ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-todo"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all-todo") )	// NOI18N
 				{
 					closeProgram (getAllTODOs ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-events"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all-events") )	// NOI18N
 				{
 					closeProgram (getAllEvents ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-vcards"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all-vcards") )	// NOI18N
 				{
 					closeProgram (getAllVcards ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-vcards"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all-vcards") )	// NOI18N
 				{
 					closeProgram (getAllAnimations ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-all") )	// NOI18N
 				{
 					closeProgram (getAllPics ()
 						+ getAllRings ()
@@ -3048,7 +3748,7 @@ public class MainWindow extends javax.swing.JFrame
 						+ getAllAnimations ()
 						);
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-dir"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--download-dir") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3056,9 +3756,46 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--delete-after-download"))	// NOI18N
+				else if ( args[i].toLowerCase ().equals ("--delete-after-download") )	// NOI18N
 				{
 					deleteAfterDownload = true;
+				}
+				else if ( args[i].toLowerCase ().equals ("--lang") )	// NOI18N
+				{
+					if ( i < args.length-1 )
+					{
+						try
+						{
+							String[] locale = args[i+1].split ("_");	// NOI18N
+							if ( locale != null )
+							{
+								Locale newLoc = null;
+								if (locale.length == 1)
+									newLoc = new Locale (locale[0]);
+								else if (locale.length == 2)
+									newLoc = new Locale (locale[0],
+										locale[1]);
+								else if (locale.length == 3)
+									newLoc = new Locale (locale[0],
+										locale[1], locale[2]);
+								if ( newLoc != null )
+									Locale.setDefault (newLoc);
+							}
+						}
+						catch ( Exception ex )
+						{
+							Utils.handleException (ex,
+								"main.lang(" + args[i+1] + ")");	// NOI18N
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--conf") )	// NOI18N
+				{
+					if ( i < args.length-1 )
+					{
+						readConfig (new File (args[i+1]));
+					}
 				}
 			}	// for i
 		}
@@ -3076,19 +3813,21 @@ public class MainWindow extends javax.swing.JFrame
 
 		SwingUtilities.invokeLater (new Runnable ()
 		{
-				public void run ()
-				{
-						new MainWindow ().setVisible (true);
-				}
+			@Override
+			public void run ()
+			{
+				new MainWindow ().setVisible (true);
+			}
 		});
 	}	// main ()
 
-	private class KL implements KeyListener
+	private class KL extends KeyAdapter
 	{
 		/**
 		 * Receives key-typed events (called when the user types a key).
 		 * @param ke The key-typed event.
 		 */
+		@Override
 		public void keyTyped (KeyEvent ke)
 		{
 			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
@@ -3096,18 +3835,6 @@ public class MainWindow extends javax.swing.JFrame
 				dispose ();
 			}
 		}
-
-		/**
-		 * Receives key-pressed events (unused).
-		 * @param ke The key-pressed event.
-		 */
-		public void keyPressed (KeyEvent ke) {}
-
-		/**
-		 * Receives key-released events (unused).
-		 * @param ke The key-released event.
-	 	 */
-		public void keyReleased (KeyEvent ke) {}
 	}
 
 
@@ -3123,12 +3850,14 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JButton deleteAddrBut;
     private javax.swing.JButton deleteAnimBut;
     private javax.swing.JButton deleteEventBut;
+    private javax.swing.JButton deleteJavaBut;
     private javax.swing.JButton deletePhotoBut;
     private javax.swing.JButton deleteRingBut;
     private javax.swing.JButton deleteTodoBut;
     private javax.swing.JButton downloadAddrBut;
     private javax.swing.JButton downloadAnimBut;
     private javax.swing.JButton downloadEventBut;
+    private javax.swing.JButton downloadJavaBut;
     private javax.swing.JButton downloadPhotoBut;
     private javax.swing.JButton downloadRingBut;
     private javax.swing.JButton downloadTodoBut;
@@ -3137,20 +3866,34 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JButton exitBut;
     private javax.swing.JLabel firmware;
     private javax.swing.JLabel firmwareLabel;
-    private javax.swing.JComboBox flowCombo;
+    private javax.swing.JCheckBox flowHard;
     private javax.swing.JLabel flowLabel;
+    private javax.swing.JCheckBox flowSoft;
     private javax.swing.JButton getAddrListBut;
     private javax.swing.JButton getAnimListBut;
+    private javax.swing.JButton getCapBut;
     private javax.swing.JButton getEventListBut;
+    private javax.swing.JButton getJavaListBut;
     private javax.swing.JButton getPhotoListBut;
     private javax.swing.JButton getRingListBut;
     private javax.swing.JButton getTodoListBut;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
+    private javax.swing.JScrollPane jScrollPane14;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JPanel javaPane;
+    private javax.swing.JTable javaTable;
+    private javax.swing.JButton loadConfBut;
     private javax.swing.JComboBox parityCombo;
     private javax.swing.JLabel parityLabel;
     private javax.swing.JLabel phone;
@@ -3164,6 +3907,7 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JButton rawBut;
     private javax.swing.JPanel ringPane;
     private javax.swing.JTable ringTable;
+    private javax.swing.JButton saveConfBut;
     private javax.swing.JButton scanButton;
     private javax.swing.JComboBox speedCombo;
     private javax.swing.JLabel speedLabel;
@@ -3177,9 +3921,11 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JButton uploadAddrBut;
     private javax.swing.JButton uploadAnimBut;
     private javax.swing.JButton uploadEventBut;
+    private javax.swing.JButton uploadJavaBut;
     private javax.swing.JButton uploadPhotoBut;
     private javax.swing.JButton uploadRingBut;
     private javax.swing.JButton uploadTodoBut;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
 }

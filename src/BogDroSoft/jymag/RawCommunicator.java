@@ -1,7 +1,7 @@
 /*
  * RawCommunicator.java, part of the JYMAG package.
  *
- * Copyright (C) 2007 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -38,10 +38,10 @@ public class RawCommunicator extends javax.swing.JDialog
 	private static final long serialVersionUID = 71L;
 	private DataTransporter dtr;
 	private Object sync;
-	private KL kl = new KL ();
+	private final KL kl = new KL ();
 
 	// ------------ i18n stuff
-	private static String exString = "Exception";
+	private static String exString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator").getString("Exception");
 
 	/**
 	 * Creates new form RawCommunicator.
@@ -95,7 +95,8 @@ public class RawCommunicator extends javax.swing.JDialog
         closeBut = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Manual communication");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator"); // NOI18N
+        setTitle(bundle.getString("Manual_communication")); // NOI18N
 
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
@@ -103,6 +104,7 @@ public class RawCommunicator extends javax.swing.JDialog
         cmdArea.setEditable(false);
         cmdArea.setRows(5);
         jScrollPane1.setViewportView(cmdArea);
+        cmdArea.getAccessibleContext().setAccessibleName(bundle.getString("sent_commands")); // NOI18N
 
         jSplitPane1.setTopComponent(jScrollPane1);
 
@@ -110,23 +112,25 @@ public class RawCommunicator extends javax.swing.JDialog
         answerArea.setEditable(false);
         answerArea.setRows(5);
         jScrollPane2.setViewportView(answerArea);
+        answerArea.getAccessibleContext().setAccessibleName(bundle.getString("received_answers")); // NOI18N
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
         currCommArea.setColumns(20);
         currCommArea.setRows(5);
         jScrollPane3.setViewportView(currCommArea);
+        currCommArea.getAccessibleContext().setAccessibleName(bundle.getString("command")); // NOI18N
 
-        sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
-        sendBut.setText("Send");
+        sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        sendBut.setText(bundle.getString("Send")); // NOI18N
         sendBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sendButActionPerformed(evt);
             }
         });
 
-        closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/exit.png"))); // NOI18N
-        closeBut.setText("Exit");
+        closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+        closeBut.setText(bundle.getString("Exit")); // NOI18N
         closeBut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButActionPerformed(evt);
@@ -177,21 +181,22 @@ public class RawCommunicator extends javax.swing.JDialog
 		if ( cmd == null ) return;
 		if ( cmd.trim ().length () == 0 ) return;
 		cmdArea.setText (cmdArea.getText ()  + cmd + "\n");	// NOI18N
-		currCommArea.setText ("");	// NOI18N
+		currCommArea.setText ("");				// NOI18N
 		try
 		{
-			String rcvd = "";	// NOI18N
+			String rcvd;
 			synchronized (sync)
 			{
 				dtr.send ((cmd+"\r").getBytes ());	// NOI18N
-				rcvd = "";	// NOI18N
+				rcvd = "";				// NOI18N
 				int trial = 0;
 				do
 				{
 					byte[] recvdB = dtr.recv (null);
 					if ( recvdB != null ) rcvd = new String (recvdB);
 					trial++;
-				} while (rcvd.trim ().equals ("") && trial < 3);	// NOI18N
+				} while (rcvd.trim ().equals ("")	// NOI18N
+					&& trial < DataTransporter.MAX_TRIALS);
 			}
 			if ( rcvd.trim ().length () > 0 )
 			{
@@ -202,9 +207,9 @@ public class RawCommunicator extends javax.swing.JDialog
 		{
 			Utils.handleException (ex, "RawCommunicator: send/recv");	// NOI18N
 			answerArea.setText (answerArea.getText ()
-				+ "<" // NOI18N
+				+ "<" 					// NOI18N
 				+ exString
-				+ ": " + ex + ">\n");	// NOI18N
+				+ ": " + ex + ">\n");			// NOI18N
 		}
 		currCommArea.requestFocusInWindow ();
 	}//GEN-LAST:event_sendButActionPerformed
@@ -216,6 +221,7 @@ public class RawCommunicator extends javax.swing.JDialog
 		 * Receives key-typed events (called when the user types a key).
 		 * @param ke The key-typed event.
 		 */
+		@Override
 		public void keyTyped (KeyEvent ke)
 		{
 			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
@@ -228,12 +234,14 @@ public class RawCommunicator extends javax.swing.JDialog
 		 * Receives key-pressed events (unused).
 		 * @param ke The key-pressed event.
 		 */
+		@Override
 		public void keyPressed (KeyEvent ke) {}
 
 		/**
 		 * Receives key-released events (unused).
 		 * @param ke The key-released event.
 	 	 */
+		@Override
 		public void keyReleased (KeyEvent ke) {}
 	}
 

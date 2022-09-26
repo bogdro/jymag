@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2007 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -57,10 +57,11 @@ public class DataTransporter
 	private SPL spl = new SPL ();
 
 	// file headers:
-	private final byte[] JPG = new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff };
+	// JPG/EXIF/MJPG
+	private final byte[] JPG = new byte[] { (byte) 0xff, (byte) 0xd8/*, (byte) 0xff*/ };
 	// MTh
 	private final byte[] MID = new byte[] { (byte) 0x4d, (byte) 0x54, (byte) 0x68 };
-	// #!AMR = 23 21 41 4D  52
+	// AMR and AMR-WB (AWB) #!AMR = 23 21 41 4D  52
 	private final byte[] AMR = new byte[] { (byte) 0x23, (byte) 0x21, (byte) 0x41,
 		(byte) 0x4D, (byte) 0x52 };
 	// BM  = 42 4D
@@ -92,6 +93,96 @@ public class DataTransporter
 	private final byte[] MNG = new byte[] {
 		(byte) 0x8A, (byte) 0x4D, (byte) 0x4E, (byte) 0x47 };
 
+	// AIFF: "FORM" or "AIFF"
+	private final byte[] AIFF1 = new byte[] {
+		(byte) 0x46, (byte) 0x4F, (byte) 0x52, (byte) 0x4D  };
+	private final byte[] AIFF2 = new byte[] {
+		(byte) 0x41, (byte) 0x49, (byte) 0x46, (byte) 0x46  };
+
+	// IMY (IMELODY): "BEGIN:IMELODY"
+	private final byte[] IMY = new byte[] {
+		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
+		(byte) 0x4E, (byte) 0x3A, (byte) 0x49, (byte) 0x4D,
+		(byte) 0x45, (byte) 0x4C, (byte) 0x4F, (byte) 0x44,
+		(byte) 0x59
+		};
+
+	// AAC: "\0 \0 \0 . ftyp"
+	private final byte[] MPEG = new byte[] {
+		//(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x14,
+		(byte) 0x66, (byte) 0x74, (byte) 0x79, (byte) 0x70
+		};
+
+	// GZIP:
+	private final byte[] GZIP = new byte[] {
+		(byte) 0x1f, (byte) 0x8b
+		};
+
+	// ZIP:
+	private final byte[] ZIP = new byte[] {
+		(byte) 0x50, (byte) 0x4b
+		};
+
+	// MPEG-audio:
+	private final byte[] MPA1 = new byte[] {
+		(byte) 0xFF, (byte) 0xFA
+		};
+	private final byte[] MPA2 = new byte[] {
+		(byte) 0xFF, (byte) 0xFB
+		};
+	private final byte[] MPA3 = new byte[] {
+		(byte) 0xFF, (byte) 0xFC
+		};
+
+	// WMV1/2:
+	private final byte[] WMV = new byte[] {
+		(byte) 0x30, (byte) 0x26, (byte) 0xB2, (byte) 0x75
+		/* after these four, there are: 8E 66 CF 11  A6 D9 00 AA  00 62 CE 6C */
+		};
+
+	// XML: "<?xml"
+	private final byte[] XML = new byte[] {
+		(byte) 0x3C, (byte) 0x3F, (byte) 0x78, (byte) 0x6D, (byte) 0x6C
+		};
+
+	// DOCTYPE:
+	private final byte[] DOCTYPE = new byte[] {
+		(byte) 0x3C, (byte) 0x21, (byte) 0x44, (byte) 0x4F,
+		(byte) 0x43, (byte) 0x54, (byte) 0x59, (byte) 0x50,
+		(byte) 0x45
+		};
+
+	// SVG:
+	private final byte[] SVG = new byte[] {
+		(byte) 0x3C, (byte) 0x73, (byte) 0x76, (byte) 0x67
+		};
+
+	// WMF
+	private final byte[] WMF = new byte[] {
+		(byte) 0xD7, (byte) 0xCD, (byte) 0xC6, (byte) 0x9A,
+		(byte) 0x00, (byte) 0x00
+		};
+
+	// PS/EPS: %!PS
+	private final byte[] PS = new byte[] {
+		(byte) 0x25, (byte) 0x21, (byte) 0x50, (byte) 0x53
+		};
+
+	// TIFF: "II"
+	private final byte[] TIFF = new byte[] {
+		(byte) 0x49, (byte) 0x49
+		};
+
+	// midlets: "MIDlet"
+	private final byte[] MIDLET = new byte[] {
+		(byte) 0x4D, (byte) 0x49, (byte) 0x44, (byte) 0x6C,
+		(byte) 0x65, (byte) 0x74
+		};
+
+	// 3GP has a header of 3 zeros, so let's catch it with "generic type" - WBMP
+	// DIB is a bitmap with no header, so let's catch it with "generic type" - WBMP
+
+
 	// "CONNECT\r\n"
 	private final byte[] START = new byte[] {
 		(byte) 0x43, (byte) 0x4F, (byte) 0x4E, (byte) 0x4E,
@@ -106,7 +197,8 @@ public class DataTransporter
 		(byte) 0x45, (byte) 0x52 };
 
 	// i18n stuff:
-	private final String ansString = "answer";
+	private final String ansString = 
+			java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DataTransporter").getString("answer");
 
 	/**
 	 * Creates a new instance of DataTransporter.
@@ -133,11 +225,11 @@ public class DataTransporter
 	public void open (int speed, int dataBits, float stopBits, int parity,
 		int flowControl) throws Exception
 	{
-		if ( portID == null ) throw new NullPointerException ("DataTransporter.open: portID == null");
-		if ( ! portID.getName ().startsWith ("COM") )
+		if ( portID == null ) throw new NullPointerException ("DataTransporter.open: portID == null");	// NOI18N
+		if ( ! portID.getName ().startsWith ("COM") )	// NOI18N
 		{
 			File portFile = new File (portID.getName ());
-			if ( ! portFile.exists () ) throw new IOException ("DataTransporter.open: ! portFile.exists: "
+			if ( ! portFile.exists () ) throw new IOException ("DataTransporter.open: ! portFile.exists: "	// NOI18N
 					+ portID.getName ());
 		}
 		s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
@@ -161,11 +253,14 @@ public class DataTransporter
 		else if ( parity == 4 ) par = SerialPort.PARITY_MARK;
 
 		int flow = SerialPort.FLOWCONTROL_NONE;
-		// Combo: none, XONN/XOFF, RTS/CTS
+		// checkboxes: none, XONN/XOFF, RTS/CTS
 		if ( flowControl == 1 ) flow = SerialPort.FLOWCONTROL_XONXOFF_IN
 			+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
 		else if ( flowControl == 2 ) flow = SerialPort.FLOWCONTROL_RTSCTS_IN
 			+ SerialPort.FLOWCONTROL_RTSCTS_OUT;
+		else if ( flowControl == 3 ) flow = SerialPort.FLOWCONTROL_RTSCTS_IN
+			+ SerialPort.FLOWCONTROL_RTSCTS_OUT + SerialPort.FLOWCONTROL_XONXOFF_IN
+			+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
 
 		s.setSerialPortParams (speed, dBits, sBits, par);
 		s.setFlowControlMode (flow);
@@ -311,7 +406,7 @@ public class DataTransporter
 			return -9;
 		}
 		if ( newName == null ) newName = f.getName ().substring (0,
-			f.getName ().indexOf ("."));
+			f.getName ().indexOf ("."));	// NOI18N
 
 		String rcvd;
 		byte[] recvdB;
@@ -693,15 +788,102 @@ public class DataTransporter
 				fos.write (recvdB, findBytes (recvdB, VCRD),
 					findBytes (recvdB, FINISH) - findBytes (recvdB, VCRD) );
 			}
-			else if ( findBytes (recvdB, WBMP) >= 0 )
-			{
-				fos.write (recvdB, findBytes (recvdB, WBMP) + 4,
-					findBytes (recvdB, FINISH) - (findBytes (recvdB, WBMP)+4) );
-			}
 			else if ( findBytes (recvdB, MNG) >= 0 )
 			{
 				fos.write (recvdB, findBytes (recvdB, MNG),
 					findBytes (recvdB, FINISH) - findBytes (recvdB, MNG) );
+			}
+			else if ( findBytes (recvdB, AIFF1) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, AIFF1),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, AIFF1) );
+			}
+			else if ( findBytes (recvdB, AIFF2) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, AIFF2),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, AIFF2) );
+			}
+			else if ( findBytes (recvdB, IMY) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, IMY),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, IMY) );
+			}
+			else if ( findBytes (recvdB, MPEG) >= 0 )
+			{
+				// start with 4 bytes before "ftyp"
+				fos.write (recvdB, findBytes (recvdB, MPEG) -4,
+					findBytes (recvdB, FINISH) - (findBytes (recvdB, MPEG)-4) );
+			}
+			else if ( findBytes (recvdB, GZIP) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, GZIP),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, GZIP) );
+			}
+			else if ( findBytes (recvdB, ZIP) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, ZIP),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, ZIP) );
+			}
+			else if ( findBytes (recvdB, MPA1) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, MPA1),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, MPA1) );
+			}
+			else if ( findBytes (recvdB, MPA2) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, MPA2),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, MPA2) );
+			}
+			else if ( findBytes (recvdB, MPA3) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, MPA3),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, MPA3) );
+			}
+			else if ( findBytes (recvdB, WMV) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, WMV),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, WMV) );
+			}
+			else if ( findBytes (recvdB, XML) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, XML),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, XML) );
+			}
+			else if ( findBytes (recvdB, DOCTYPE) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, DOCTYPE),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, DOCTYPE) );
+			}
+			else if ( findBytes (recvdB, SVG) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, SVG),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, SVG) );
+			}
+			else if ( findBytes (recvdB, WMF) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, WMF),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, WMF) );
+			}
+			else if ( findBytes (recvdB, PS) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, PS),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, PS) );
+			}
+			else if ( findBytes (recvdB, TIFF) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, TIFF),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, TIFF) );
+			}
+			else if ( findBytes (recvdB, MIDLET) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, MIDLET),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, MIDLET) );
+			}
+			/* always keep WBMP last, as this is the new generic case */
+			else if ( findBytes (recvdB, WBMP) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, WBMP) + 4,
+					findBytes (recvdB, FINISH) - (findBytes (recvdB, WBMP)+4) );
 			}
 			else if ( findBytes (recvdB, START) >= 0 )
 			{
@@ -937,6 +1119,7 @@ public class DataTransporter
 		 * Used to receive events for the port.
 		 * @param event A received port event.
 		 */
+		@Override
 		public void serialEvent (SerialPortEvent event)
 		{
 			if ( event == null ) return;

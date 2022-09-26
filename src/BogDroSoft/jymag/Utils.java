@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2007 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -87,6 +87,12 @@ public class Utils
 	 */
 	public final static Hashtable<String, Integer> animfileIDs;
 
+	/**
+	 * A Hashtable containing ID numbers connected to the given Java file
+	 * extensions, used for file uploading.
+	 */
+	public final static Hashtable<String, Integer> javafileIDs;
+
 	static
 	{
 		/*
@@ -99,56 +105,92 @@ public class Utils
 				+ "\\w+\\" + '"' + ",\\" + '"' + "(\\w+)\\"+ '"'	// NOI18N
 				+ ",[^,]+,[^,]+,\\"+ '"' + "([^\"]+)\\" + '"');	// NOI18N
 
-		ringfileIDs = new Hashtable<String, Integer> (6);
-		// seem to do something: 201-202, 205-207
-		// rejected: 3-12, 17, 20-22, 30-32, 40-42, 50-52, 60-62,
-		//	70-72, 80-82, 90-101, 106-111, 200, 203-204, 208-212
-		//	120-122
-		ringfileIDs.put ("wav" ,   1);	// NOI18N
-//		ringfileIDs.put ("amr" ,   212);	// NOI18N
-		ringfileIDs.put ("mid" ,   2);	// NOI18N
-		ringfileIDs.put ("midi",   2);	// NOI18N
-		//ringfileIDs.put ("rmi" ,   2);	// ?	// NOI18N
-		//ringfileIDs.put ("kar" ,   2);	// ?	// NOI18N
-//		ringfileIDs.put ("imy" ,   4);	// ?	// NOI18N
+		ringfileIDs = new Hashtable<String, Integer> (11);
+		ringfileIDs.put ("wav" ,   1);		// NOI18N
+		ringfileIDs.put ("mid" ,   2);		// NOI18N
+		ringfileIDs.put ("midi",   2);		// NOI18N
+		//ringfileIDs.put ("rmi" ,   2);// ?	// NOI18N
+		//ringfileIDs.put ("kar" ,   2);// ?	// NOI18N
+		ringfileIDs.put ("amr" ,  14);		// NOI18N
+		// UNCHECKED:
+		ringfileIDs.put ("mp3" ,   3);		// NOI18N
+		ringfileIDs.put ("imy" ,   4);		// NOI18N
+		ringfileIDs.put ("asg1",   5);		// NOI18N
+		ringfileIDs.put ("asg2",   6);		// NOI18N
+		ringfileIDs.put ("mfi" ,  15);		// NOI18N
+		ringfileIDs.put ("aac" ,  17);		// NOI18N
+		ringfileIDs.put ("m4a" ,  17);		// NOI18N
+		ringfileIDs.put ("awb" ,  18);		// NOI18N
 
-		photofileIDs = new Hashtable<String, Integer> (6);
-		photofileIDs.put ("wbmp", 101);	// NOI18N
-		photofileIDs.put ("bmp" , 102);	// NOI18N
-		photofileIDs.put ("png" , 103);	// NOI18N
-		photofileIDs.put ("jpg" , 104);	// NOI18N
-		photofileIDs.put ("jpeg", 104);	// NOI18N
-		photofileIDs.put ("jpe" , 104);	// NOI18N
-		photofileIDs.put ("gif" , 105);	// NOI18N
+		photofileIDs = new Hashtable<String, Integer> (16);
+		photofileIDs.put ("wbmp", 101);		// NOI18N
+		photofileIDs.put ("bmp" , 102);		// NOI18N
+		photofileIDs.put ("png" , 103);		// NOI18N
+		photofileIDs.put ("jpg" , 104);		// NOI18N
+		photofileIDs.put ("jpeg", 104);		// NOI18N
+		photofileIDs.put ("jpe" , 104);		// NOI18N
+		photofileIDs.put ("jif" , 104);		// NOI18N
+		photofileIDs.put ("gif" , 105);		// NOI18N
+		// UNCHECKED:
+		photofileIDs.put ("tif" , 106);		// NOI18N
+		photofileIDs.put ("tiff", 106);		// NOI18N
+		photofileIDs.put ("pct" , 107);		// NOI18N
+		photofileIDs.put ("pict", 107);		// NOI18N
+		photofileIDs.put ("ai"  , 108);		// NOI18N
+		photofileIDs.put ("eps" , 108);		// NOI18N
+		photofileIDs.put ("ps"  , 108);		// NOI18N
+		photofileIDs.put ("ems_gr", 109 );	// NOI18N
 
-		addrfileIDs = new Hashtable<String, Integer> (2);
+		addrfileIDs = new Hashtable<String, Integer> (3);
 		addrfileIDs.put  ("vcf"  , 220);	// NOI18N
 		addrfileIDs.put  ("vcard", 220);	// NOI18N
 		addrfileIDs.put  ("vcrd" , 220);	// NOI18N
 
-		todofileIDs = new Hashtable<String, Integer> (4);
-		todofileIDs.put  ("ics" , 221);	// NOI18N
-		todofileIDs.put  ("ical", 221);	// NOI18N
-		todofileIDs.put  ("ifb" , 221);	// NOI18N
-		todofileIDs.put  ("icalendar" , 221);	// NOI18N
+		todofileIDs = new Hashtable<String, Integer> (5);
+		todofileIDs.put  ("ics" , 221);		// NOI18N
+		todofileIDs.put  ("ical", 221);		// NOI18N
+		todofileIDs.put  ("ifb" , 221);		// NOI18N
+		todofileIDs.put  ("icalendar", 221);	// NOI18N
+		todofileIDs.put  ("vcs" , 221);		// NOI18N
 
 		eventfileIDs = new Hashtable<String, Integer> (todofileIDs.size ());
 		eventfileIDs.putAll (todofileIDs);
 
-		animfileIDs = new Hashtable<String, Integer> (2);
-		animfileIDs.put  ("mng" , 202);	// NOI18N
-		animfileIDs.put  ("gif" , 105);	// NOI18N
+		animfileIDs = new Hashtable<String, Integer> (15);
+		animfileIDs.put  ("gif" , 105);		// NOI18N
+		animfileIDs.put  ("mng" , 202);		// NOI18N
+		// UNCHECKED:
+		animfileIDs.put  ("sg1" , 203);		// NOI18N
+		animfileIDs.put  ("sg2" , 204);		// NOI18N
+		animfileIDs.put  ("ems_an", 205);	// NOI18N
+		animfileIDs.put  ("ssa" , 206);		// NOI18N
+		animfileIDs.put  ("mjpg", 207);		// NOI18N
+		animfileIDs.put  ("mjpeg",207);		// NOI18N
+		animfileIDs.put  ("avi" , 231);		// NOI18N
+		animfileIDs.put  ("mp4" , 232);		// NOI18N
+		animfileIDs.put  ("mpeg", 232);		// NOI18N
+		animfileIDs.put  ("mpg" , 232);		// NOI18N
+		animfileIDs.put  ("3gp" , 233);		// NOI18N
+		animfileIDs.put  ("3gpp", 233);		// NOI18N
+		animfileIDs.put  ("3g2" , 233);		// NOI18N
+
+		javafileIDs = new Hashtable<String, Integer> (3);
+		// UNCHECKED:
+		javafileIDs.put  ("jar" , 1001);	// NOI18N
+		javafileIDs.put  ("jad" , 1002);	// NOI18N
+		javafileIDs.put  ("jam" , 1003);	// NOI18N
 
 		filetypeIDs = new Hashtable<String, Integer> (ringfileIDs.size ()
 			+ photofileIDs.size () + addrfileIDs.size ()
 			+ todofileIDs.size () + eventfileIDs.size ()
-			+ animfileIDs.size ());
+			+ animfileIDs.size () + javafileIDs.size ());
 		filetypeIDs.putAll (photofileIDs);
 		filetypeIDs.putAll (ringfileIDs);
 		filetypeIDs.putAll (addrfileIDs);
 		filetypeIDs.putAll (todofileIDs);
 		filetypeIDs.putAll (eventfileIDs);
 		filetypeIDs.putAll (animfileIDs);
+		filetypeIDs.putAll (javafileIDs);
 	}
 
 	// non-instantiable
@@ -159,7 +201,7 @@ public class Utils
 	 * @param ex The exception to display.
 	 * @param data Any additional data to display.
 	 */
-	public static void handleException (Exception ex, Object data)
+	public static void handleException (Throwable ex, Object data)
 	{
 		if ( ex == null || (System.out == null && System.err == null) ) return;
 		try
@@ -202,46 +244,56 @@ public class Utils
 				System.err.flush ();
 			}
 
-		} catch (Exception e) {}
+		} catch (Throwable e) {}
 
-		String msg = ex.getMessage ();
-		if ( msg != null )
+		try
+		{
+			String msg = ex.getMessage ();
+			if ( msg != null )
+			{
+				if ( System.out != null )
+				{
+					System.out.print (", Message='" + msg + "'");	// NOI18N
+					System.out.flush ();
+				}
+				if ( System.err != null )
+				{
+					System.err.print (", Message='" + msg + "'");	// NOI18N
+					System.err.flush ();
+				}
+			}
+		} catch (Throwable e) {}
+
+		try
+		{
+			if ( data != null )
+			{
+				if ( System.out != null )
+				{
+					System.out.print (", Data='" + data.toString () + "'");	// NOI18N
+					System.out.flush ();
+				}
+				if ( System.err != null )
+				{
+					System.err.print (", Data='" + data.toString () + "'");	// NOI18N
+					System.err.flush ();
+				}
+			}
+		} catch (Throwable e) {}
+
+		try
 		{
 			if ( System.out != null )
 			{
-				System.out.print (", Message='" + msg + "'");	// NOI18N
+				System.out.println ();	// NOI18N
 				System.out.flush ();
 			}
 			if ( System.err != null )
 			{
-				System.err.print (", Message='" + msg + "'");	// NOI18N
+				System.err.println ();	// NOI18N
 				System.err.flush ();
 			}
-		}
-
-		if ( data != null )
-		{
-			if ( System.out != null )
-			{
-				System.out.print (", Data='" + data.toString () + "'");	// NOI18N
-				System.out.flush ();
-			}
-			if ( System.err != null )
-			{
-				System.err.print (", Data='" + data.toString () + "'");	// NOI18N
-				System.err.flush ();
-			}
-		}
-		if ( System.out != null )
-		{
-			System.out.println ("");	// NOI18N
-			System.out.flush ();
-		}
-		if ( System.err != null )
-		{
-			System.err.println ("");	// NOI18N
-			System.err.flush ();
-		}
+		} catch (Throwable e) {}
 
 		StackTraceElement[] ste = ex.getStackTrace ();
 		if ( ste != null )
@@ -250,50 +302,56 @@ public class Utils
 			{
 				if ( ste[i] != null )
 				{
-					String clazz = ste[i].getClassName ();
-					String file = ste[i].getFileName ();
-					String function = ste[i].getMethodName ();
-					int line = ste[i].getLineNumber ();
-					String toShow = "\tat\t";	// NOI18N
-					if ( clazz != null )
+					try
 					{
-						// let's display only our files
-						if ( ! clazz.startsWith (Utils.class.getPackage ().getName ()) )
-							continue;
-						toShow += clazz;
-					}
-					else
-					{
-						toShow += "<Unknown class>";	// NOI18N
-					}
-					if ( function != null )
-					{
-						toShow += "." + function;	// NOI18N
-					}
-					else
-					{
-						toShow += ".<Unknown method>";	// NOI18N
-					}
-					if ( file != null )
-					{
-						toShow += " (" + file;	// NOI18N
-					}
-					else
-					{
-						toShow += " (<Unknown file>";	// NOI18N
-					}
-					toShow += ":" + String.valueOf (line) + ")";	// NOI18N
+						String clazz = ste[i].getClassName ();
+						String file = ste[i].getFileName ();
+						String function = ste[i].getMethodName ();
+						int line = ste[i].getLineNumber ();
+						String toShow = "\tat\t";	// NOI18N
+						if ( clazz != null )
+						{
+							// let's display only our files
+							if ( ! clazz.startsWith
+								(Utils.class.getPackage ().getName ()) )
+							{
+								continue;
+							}
+							toShow += clazz;
+						}
+						else
+						{
+							toShow += "<Unknown class>";	// NOI18N
+						}
+						if ( function != null )
+						{
+							toShow += "." + function;	// NOI18N
+						}
+						else
+						{
+							toShow += ".<Unknown method>";	// NOI18N
+						}
+						if ( file != null )
+						{
+							toShow += " (" + file;	// NOI18N
+						}
+						else
+						{
+							toShow += " (<Unknown file>";	// NOI18N
+						}
+						toShow += ":" + String.valueOf (line) + ")";	// NOI18N
 
-					if ( System.out != null )
-					{
-						System.out.println (toShow);
-						System.out.flush ();
-					}
-					if ( System.err != null )
-					{
-						System.err.println (toShow);
-						System.err.flush ();
-					}
+						if ( System.out != null )
+						{
+							System.out.println (toShow);
+							System.out.flush ();
+						}
+						if ( System.err != null )
+						{
+							System.err.println (toShow);
+							System.err.flush ();
+						}
+					} catch (Throwable e) {}
 				}
 			}
 		}
@@ -313,7 +371,7 @@ public class Utils
 			{
 				r.run ();
 			}
-			catch (Exception ex)
+			catch (Throwable ex)
 			{
 				Utils.handleException (ex, "changeGUI->r.run");	// NOI18N
 			}
@@ -331,10 +389,10 @@ public class Utils
 						{
 							r.run ();
 						}
-						catch (Exception ex)
+						catch (Throwable ex)
 						{
 							Utils.handleException (ex,
-								"changeGUI->invokeAndWait->r.run");	// NOI18N
+								"changeGUI->invokeAndWait->r.run");// NOI18N
 						}
 					}
 				});
@@ -342,13 +400,81 @@ public class Utils
 			catch (InterruptedException ex)
 			{
 				// can be called when closing the program, so ignore
-				//Utils.handleException (ex, "changeGUI->invokeAndWait->Interrupt");	// NOI18N
+				//Utils.handleException (ex, "changeGUI->invokeAndWait->Interrupt");// NOI18N
 			}
-			catch (Exception ex)
+			catch (Throwable ex)
 			{
 				Utils.handleException (ex, "changeGUI->invokeAndWait");	// NOI18N
 			}
 		}
 	}
 
+	/**
+	 * Tells whether the given integer is a valid speed value.
+	 * @param speed The value to test.
+	 * @return true if it is.
+	 */
+	public static boolean isAllowableSpeed (int speed)
+	{
+		if ( speed != 1200
+			&& speed != 2400
+			&& speed != 4800
+			&& speed != 9600
+			&& speed != 19200
+			&& speed != 38400
+			&& speed != 57600
+			&& speed != 115200
+			&& speed != 230400
+			&& speed != 460800
+			&& speed != 500000
+			&& speed != 576000
+			&& speed != 921600
+			&& speed != 1000000
+			&& speed != 1152000
+			&& speed != 1500000
+			&& speed != 2000000
+			&& speed != 2500000
+			&& speed != 3000000
+			&& speed != 3500000
+			&& speed != 4000000 ) return false;
+
+		return true;
+	}
+
+	/**
+	 * Tells whether the given integer is a valid data bits' value.
+	 * @param dBits The value to test.
+	 * @return true if it is.
+	 */
+	public static boolean isAllowableDataBits (int dBits)
+	{
+		if ( dBits != 5 && dBits != 6
+			&& dBits != 7 && dBits != 8 ) return false;
+		return true;
+	}
+
+	/**
+	 * A sample uncaught-exception handler instance for threads.
+	 */
+	public static final UncExHndlr handler = new UncExHndlr ();
+	/**
+	 * A sample uncaught-exception handler class for threads.
+	 */
+	public static class UncExHndlr implements Thread.UncaughtExceptionHandler
+	{
+		/**
+		 * Called when an uncaught exception occurrs.
+		 * @param t The thread, in which the exception occurred.
+		 * @param ex The exception that occurred.
+		 */
+		@Override
+		public void uncaughtException (Thread t, Throwable ex)
+		{
+			try
+			{
+				handleException (ex, "Utils.UncaughtExceptionHandler: Thread="	// NOI18N
+					+ ((t != null)? t.getName() : "?"));	// NOI18N
+			} catch (Throwable th) {}
+		}
+	}
 }

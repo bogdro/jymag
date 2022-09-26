@@ -2,7 +2,7 @@
 # JYMAG hand-made Makefile for creating distribution packages.
 #
 
-VER	= 0.6
+VER	= 0.7
 
 all:	dist
 dist:	dist-src dist-bin
@@ -25,9 +25,11 @@ dist-bin:
 		JYMAG-$(VER)/ChangeLog	\
 		JYMAG-$(VER)/INSTALL	\
 		JYMAG-$(VER)/README	\
-		JYMAG-$(VER)/run.sh	\
 		JYMAG-$(VER)/dist	\
+		JYMAG-$(VER)/run.sh	\
 		JYMAG-$(VER)/run.bat	\
+		JYMAG-$(VER)/run-en.sh	\
+		JYMAG-$(VER)/run-en.bat	\
 		JYMAG-$(VER)/THANKS	&& \
 	rm -rf JYMAG-$(VER) && \
 	gpg -ba JYMAG-bin-$(VER).tar.gz
