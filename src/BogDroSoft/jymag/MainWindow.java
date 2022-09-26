@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -60,7 +60,7 @@ public class MainWindow extends javax.swing.JFrame
 	private final KL kl = new KL ();
 
 	/** Current version number as a String. */
-	public static final String verString = "0.7";	// NOI18N
+	public static final String verString = "0.8";	// NOI18N
 	private Vector<PhoneElement> currentRingElements;
 	private Vector<PhoneElement> currentPhotoElements;
 	private Vector<PhoneElement> currentAddrElements;
@@ -71,13 +71,15 @@ public class MainWindow extends javax.swing.JFrame
 
 	private String lastSelDir;
 	// synchronization variable:
-	private Object sync = new Object ();
+	private final Object sync = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
 	private Hashtable<String, String> firmwares;
 	private Hashtable<String, String> phoneTypes;
+	private Hashtable<String, String> phoneIMEIs;
+	private Hashtable<String, String> phoneSubsNums;
 	private static Pattern verPattern;
 
-	private final static String logFile = "jymag.log";	// NOI18N
+	private static String logFile = "jymag.log";	// NOI18N
 
 	private JFileChooser downloadFC;
 	private JFileChooser uploadPictFC;
@@ -91,7 +93,7 @@ public class MainWindow extends javax.swing.JFrame
 
 	// ------------ i18n stuff
 	private static String noAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
-	private static String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	/*private*/ static String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
 	private static String multiAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Multiple_answers");
 	private static String whichString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Which_one");
 	private static String exOverString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("_exists._Overwrite");
@@ -176,7 +178,7 @@ public class MainWindow extends javax.swing.JFrame
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("rxtx_multimedia_Sagem");
 	private static String rxtxReqStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("need_rxtx");
 	private static String cmdLineStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Command-line_options:")+
-		":" +	// NOI18N	
+		":" +	// NOI18N
 		"\n--conf <file>\t\t- "+	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("read_configuration_from_<file>") +
 		"\n--databits <5,6,7,8>\t- "+	// NOI18N
@@ -303,6 +305,8 @@ public class MainWindow extends javax.swing.JFrame
 		setTitle (getTitle () + " " + verString);	// NOI18N
 		firmware.setText (pressScanMsg);
 		phone.setText (pressScanMsg);
+		IMEI.setText (pressScanMsg);
+		subsNum.setText (pressScanMsg);
 		updateStatusLabel (STATUS.READY);
 
 		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
@@ -344,7 +348,8 @@ public class MainWindow extends javax.swing.JFrame
 		}
 		parityCombo.setSelectedIndex (parity);
 		if ( isMax ) setExtendedState (JFrame.MAXIMIZED_BOTH);
-		else setLocation (x, y);
+		else setExtendedState ( getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
+		setLocation (x, y);
 		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
 
 		/* Make clicking on the table header select all rows */
@@ -582,6 +587,10 @@ public class MainWindow extends javax.swing.JFrame
         saveConfBut = new javax.swing.JButton();
         flowSoft = new javax.swing.JCheckBox();
         flowHard = new javax.swing.JCheckBox();
+        IMEILabel = new javax.swing.JLabel();
+        IMEI = new javax.swing.JLabel();
+        subsNumLabel = new javax.swing.JLabel();
+        subsNum = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Your Music and Graphics"); // NOI18N
@@ -687,7 +696,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(photoPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(photoPaneLayout.createSequentialGroup()
                         .addComponent(getPhotoListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -701,7 +710,7 @@ public class MainWindow extends javax.swing.JFrame
         photoPaneLayout.setVerticalGroup(
             photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getPhotoListBut)
@@ -711,10 +720,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getPhotoListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_pictures")); // NOI18N
-        downloadPhotoBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_pictures")); // NOI18N
-        uploadPhotoBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_pictures")); // NOI18N
-        deletePhotoBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_pictures")); // NOI18N
+        getPhotoListBut.getAccessibleContext().setAccessibleName("null");
+        downloadPhotoBut.getAccessibleContext().setAccessibleName("null");
+        uploadPhotoBut.getAccessibleContext().setAccessibleName("null");
+        deletePhotoBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane7.setViewportView(photoPane);
 
@@ -796,7 +805,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(ringPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(ringPaneLayout.createSequentialGroup()
                         .addComponent(getRingListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -810,7 +819,7 @@ public class MainWindow extends javax.swing.JFrame
         ringPaneLayout.setVerticalGroup(
             ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getRingListBut)
@@ -820,10 +829,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getRingListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_ringtones")); // NOI18N
-        downloadRingBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_ringtones")); // NOI18N
-        uploadRingBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_ringtones")); // NOI18N
-        deleteRingBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_ringtones")); // NOI18N
+        getRingListBut.getAccessibleContext().setAccessibleName("null");
+        downloadRingBut.getAccessibleContext().setAccessibleName("null");
+        uploadRingBut.getAccessibleContext().setAccessibleName("null");
+        deleteRingBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane8.setViewportView(ringPane);
 
@@ -905,7 +914,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(addrBookPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(addrBookPaneLayout.createSequentialGroup()
                         .addComponent(getAddrListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -919,7 +928,7 @@ public class MainWindow extends javax.swing.JFrame
         addrBookPaneLayout.setVerticalGroup(
             addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getAddrListBut)
@@ -929,10 +938,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getAddrListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_addressbook_entries")); // NOI18N
-        downloadAddrBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_addressbook_entries")); // NOI18N
-        uploadAddrBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_addressbook_entries")); // NOI18N
-        deleteAddrBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_addressbook_entries")); // NOI18N
+        getAddrListBut.getAccessibleContext().setAccessibleName("null");
+        downloadAddrBut.getAccessibleContext().setAccessibleName("null");
+        uploadAddrBut.getAccessibleContext().setAccessibleName("null");
+        deleteAddrBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane9.setViewportView(addrBookPane);
 
@@ -1014,7 +1023,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(todoPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(todoPaneLayout.createSequentialGroup()
                         .addComponent(getTodoListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1028,7 +1037,7 @@ public class MainWindow extends javax.swing.JFrame
         todoPaneLayout.setVerticalGroup(
             todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getTodoListBut)
@@ -1038,10 +1047,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getTodoListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_to-do_tasks")); // NOI18N
-        downloadTodoBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_to-do_tasks")); // NOI18N
-        uploadTodoBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_to-do_tasks")); // NOI18N
-        deleteTodoBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_to-do_tasks")); // NOI18N
+        getTodoListBut.getAccessibleContext().setAccessibleName("null");
+        downloadTodoBut.getAccessibleContext().setAccessibleName("null");
+        uploadTodoBut.getAccessibleContext().setAccessibleName("null");
+        deleteTodoBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane10.setViewportView(todoPane);
 
@@ -1123,7 +1132,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(eventPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(eventPaneLayout.createSequentialGroup()
                         .addComponent(getEventListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1137,7 +1146,7 @@ public class MainWindow extends javax.swing.JFrame
         eventPaneLayout.setVerticalGroup(
             eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getEventListBut)
@@ -1147,10 +1156,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getEventListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_events")); // NOI18N
-        downloadEventBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_events")); // NOI18N
-        uploadEventBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_events")); // NOI18N
-        deleteEventBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_events")); // NOI18N
+        getEventListBut.getAccessibleContext().setAccessibleName("null");
+        downloadEventBut.getAccessibleContext().setAccessibleName("null");
+        uploadEventBut.getAccessibleContext().setAccessibleName("null");
+        deleteEventBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane11.setViewportView(eventPane);
 
@@ -1232,7 +1241,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(animPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(animPaneLayout.createSequentialGroup()
                         .addComponent(getAnimListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1246,7 +1255,7 @@ public class MainWindow extends javax.swing.JFrame
         animPaneLayout.setVerticalGroup(
             animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, animPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getAnimListBut)
@@ -1256,16 +1265,16 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getAnimListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_videos")); // NOI18N
-        downloadAnimBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected_videos")); // NOI18N
-        uploadAnimBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_videos")); // NOI18N
-        deleteAnimBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_videos")); // NOI18N
+        getAnimListBut.getAccessibleContext().setAccessibleName("null");
+        downloadAnimBut.getAccessibleContext().setAccessibleName("null");
+        uploadAnimBut.getAccessibleContext().setAccessibleName("null");
+        deleteAnimBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane12.setViewportView(animPane);
 
         tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/video.png")), jScrollPane12); // NOI18N
 
-        javaPane.setBackground(new java.awt.Color(0, 102, 255));
+        javaPane.setBackground(new java.awt.Color(122, 189, 255));
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
         bindingGroup.addBinding(binding);
@@ -1344,7 +1353,7 @@ public class MainWindow extends javax.swing.JFrame
             .addGroup(javaPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
+                    .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                     .addGroup(javaPaneLayout.createSequentialGroup()
                         .addComponent(getJavaListBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1358,7 +1367,7 @@ public class MainWindow extends javax.swing.JFrame
         javaPaneLayout.setVerticalGroup(
             javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, javaPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(getJavaListBut)
@@ -1368,10 +1377,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addContainerGap())
         );
 
-        getJavaListBut.getAccessibleContext().setAccessibleName(bundle.getString("Get_list_of_Java_elements")); // NOI18N
-        downloadJavaBut.getAccessibleContext().setAccessibleName(bundle.getString("Download_selected__Java_elements")); // NOI18N
-        uploadJavaBut.getAccessibleContext().setAccessibleName(bundle.getString("Upload_Java")); // NOI18N
-        deleteJavaBut.getAccessibleContext().setAccessibleName(bundle.getString("Delete_selected_Java_elements")); // NOI18N
+        getJavaListBut.getAccessibleContext().setAccessibleName("null");
+        downloadJavaBut.getAccessibleContext().setAccessibleName("null");
+        uploadJavaBut.getAccessibleContext().setAccessibleName("null");
+        deleteJavaBut.getAccessibleContext().setAccessibleName("null");
 
         jScrollPane13.setViewportView(javaPane);
 
@@ -1458,80 +1467,81 @@ public class MainWindow extends javax.swing.JFrame
 
         flowHard.setText(bundle.getString("Hardware_(RTS/CTS)")); // NOI18N
 
+        IMEILabel.setText("IMEI:"); // NOI18N
+
+        IMEI.setText("-");
+
+        subsNumLabel.setText(bundle.getString("Subscriber_number")); // NOI18N
+
+        subsNum.setText("-");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(portLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(speedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(databitsLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 882, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(portLabel)
+                                    .addComponent(speedLabel)
+                                    .addComponent(databitsLabel))
                                 .addGap(12, 12, 12)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(bpsLabel))
-                                    .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(parityLabel)
-                            .addComponent(stopbitsLabel)
-                            .addComponent(flowLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(flowSoft))
-                        .addGap(2, 2, 2)
-                        .addComponent(flowHard)
-                        .addGap(110, 110, 110))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(loadConfBut)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(bpsLabel))
+                                            .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(36, 36, 36)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(parityLabel)
+                                            .addComponent(stopbitsLabel)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(flowLabel)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(saveConfBut))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(196, 196, 196)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(flowSoft)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(flowHard))))
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(phoneTypeLabel)
+                                    .addComponent(firmwareLabel)
+                                    .addComponent(IMEILabel)
+                                    .addComponent(subsNumLabel)
+                                    .addComponent(loadConfBut)
                                     .addComponent(statusLabel)
-                                    .addComponent(progressLabel)
-                                    .addComponent(firmwareLabel))
+                                    .addComponent(progressLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(status)
+                                    .addComponent(subsNum)
+                                    .addComponent(IMEI)
                                     .addComponent(phone)
                                     .addComponent(firmware)
-                                    .addComponent(status)
-                                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))))
-                        .addGap(284, 284, 284))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
-                        .addComponent(scanButton))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
-                        .addComponent(aboutBut))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
-                        .addComponent(rawBut))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
-                        .addComponent(getCapBut))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 718, Short.MAX_VALUE)
-                        .addComponent(exitBut))
-                    .addComponent(tabPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 888, Short.MAX_VALUE))
+                                    .addComponent(saveConfBut)
+                                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
+                                .addGap(30, 30, 30)))
+                        .addGap(46, 46, 46)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(exitBut)
+                            .addComponent(getCapBut)
+                            .addComponent(rawBut)
+                            .addComponent(aboutBut)
+                            .addComponent(scanButton))))
                 .addContainerGap())
         );
 
@@ -1546,6 +1556,14 @@ public class MainWindow extends javax.swing.JFrame
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(parityLabel)
+                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(stopbitsLabel)
+                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(portLabel)
                                     .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(7, 7, 7)
@@ -1557,35 +1575,35 @@ public class MainWindow extends javax.swing.JFrame
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(databitsLabel)
                                     .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(flowHard)
                                     .addComponent(flowLabel)
-                                    .addComponent(flowSoft)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(parityLabel)
-                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(7, 7, 7)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(stopbitsLabel)
-                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(flowSoft)
+                                    .addComponent(flowHard))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(loadConfBut)
+                            .addComponent(saveConfBut))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(54, 54, 54)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(phone))
+                                .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(firmwareLabel)
-                                    .addComponent(firmware))
+                                .addComponent(firmwareLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(statusLabel)
-                                    .addComponent(status)))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(loadConfBut)
-                                .addComponent(saveConfBut)))
+                                .addComponent(IMEILabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(subsNumLabel))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(phone)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(firmware)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(IMEI)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(subsNum)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(statusLabel)
+                            .addComponent(status))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(progressLabel)
@@ -1597,24 +1615,25 @@ public class MainWindow extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(rawBut)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(getCapBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(getCapBut))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(192, 192, 192)
                         .addComponent(exitBut)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
+                .addGap(6, 6, 6)
+                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        portCombo.getAccessibleContext().setAccessibleName(bundle.getString("port_list")); // NOI18N
-        speedCombo.getAccessibleContext().setAccessibleName(bundle.getString("port_speed")); // NOI18N
-        dataBitsCombo.getAccessibleContext().setAccessibleName(bundle.getString("data_bits")); // NOI18N
-        parityCombo.getAccessibleContext().setAccessibleName(bundle.getString("parity_type")); // NOI18N
-        stopBitsCombo.getAccessibleContext().setAccessibleName(bundle.getString("stop_bits")); // NOI18N
-        tabPane.getAccessibleContext().setAccessibleName(bundle.getString("tabPane")); // NOI18N
-        status.getAccessibleContext().setAccessibleName(bundle.getString("program_status")); // NOI18N
-        firmware.getAccessibleContext().setAccessibleName(bundle.getString("phone_firmware")); // NOI18N
-        progressBar.getAccessibleContext().setAccessibleName(bundle.getString("operation_progress")); // NOI18N
-        phone.getAccessibleContext().setAccessibleName(bundle.getString("phone_type")); // NOI18N
+        portCombo.getAccessibleContext().setAccessibleName("null");
+        speedCombo.getAccessibleContext().setAccessibleName("null");
+        dataBitsCombo.getAccessibleContext().setAccessibleName("null");
+        parityCombo.getAccessibleContext().setAccessibleName("null");
+        stopBitsCombo.getAccessibleContext().setAccessibleName("null");
+        tabPane.getAccessibleContext().setAccessibleName("null");
+        status.getAccessibleContext().setAccessibleName("null");
+        firmware.getAccessibleContext().setAccessibleName("null");
+        progressBar.getAccessibleContext().setAccessibleName("null");
+        phone.getAccessibleContext().setAccessibleName("null");
 
         bindingGroup.bind();
 
@@ -1628,10 +1647,6 @@ public class MainWindow extends javax.swing.JFrame
 		final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
 		final int cParity = parityCombo.getSelectedIndex ();
 		final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
-
-		// always create new:
-		firmwares = new Hashtable<String, String> (1);
-		phoneTypes = new Hashtable<String, String> (1);
 
 		updateStatusLabel (STATUS.SENDING);
 		progressBar.setValue (0);
@@ -1651,6 +1666,12 @@ public class MainWindow extends javax.swing.JFrame
 			}
 		}
 		progressBar.setMaximum (max);
+		// always create new:
+		firmwares = new Hashtable<String, String> (max);
+		phoneTypes = new Hashtable<String, String> (max);
+		phoneIMEIs = new Hashtable<String, String> (max);
+		phoneSubsNums = new Hashtable<String, String> (max);
+
 		SwingWorker<Vector<CommPortIdentifier>, Void> sw =
 			new SwingWorker<Vector<CommPortIdentifier>, Void> ()
 		{
@@ -1774,7 +1795,177 @@ public class MainWindow extends javax.swing.JFrame
 												"phone type");	// NOI18N
 										}
 									}
-								}
+									// get additional phone type
+									rcvd = "";	// NOI18N
+									trials = 0;
+									do
+									{
+										dt.send ( ("AT+CGMR\r")	// NOI18N
+											.getBytes ());
+										byte[] recvdB = dt.recv (null);	// NOI18N
+										rcvd = new String (recvdB);
+
+										if ( rcvd.trim ().equals ("") )	// NOI18N
+										{
+											dt.reopen ();
+											trials++;
+										}
+									} while ( //(
+											rcvd.trim ().equals ("")	// NOI18N
+											//|| rcvd.contains ("CGMR"))
+										&& trials <= DataTransporter.MAX_TRIALS);
+									if ( trials <= DataTransporter.MAX_TRIALS )
+									{
+										// sample: "+CGMR: SAGEM KB3,ME"
+										try
+										{
+											// have to split to make it work
+											String[] lines = rcvd.split ("\r");	// NOI18N
+											if ( lines != null )
+											{
+												for ( int i=0; i < lines.length; i++ )
+												{
+													if ( lines[i] == null ) continue;
+													lines[i] = lines[i].replaceAll ("\\+CGMR: ", "");	// NOI18N
+													if ( lines[i].trim ().length () > 0 )
+													{
+														String type = null;
+														try
+														{
+															type = phoneTypes.get (id.getName ());
+														} catch (Exception ex) {}
+														if ( type == null ) type = "";	// NOI18N
+														if ( type.length () != 0 ) type += ", ";	// NOI18N
+														type += lines[i].trim ();
+														phoneTypes.put (
+															id.getName (),
+															type);
+														break;
+													}
+												}
+											}
+										}
+										catch (Exception ex)
+										{
+											Utils.handleException (ex,
+												"phone type");	// NOI18N
+										}
+									}
+									// get phone IMEI
+									rcvd = "";	// NOI18N
+									trials = 0;
+									do
+									{
+										dt.send ( ("AT+CGSN\r")	// NOI18N
+											.getBytes ());
+										byte[] recvdB = dt.recv (null);	// NOI18N
+										rcvd = new String (recvdB);
+
+										if ( rcvd.trim ().equals ("") )	// NOI18N
+										{
+											dt.reopen ();
+											trials++;
+										}
+									} while ( //(
+											rcvd.trim ().equals ("")	// NOI18N
+											//|| rcvd.contains ("CGSN"))
+										&& trials <= DataTransporter.MAX_TRIALS);
+									if ( trials <= DataTransporter.MAX_TRIALS )
+									{
+										// sample: "AT+CGSN
+										// 353056005020024
+										// OK"
+										try
+										{
+											// have to split to make it work
+											String[] lines = rcvd.split ("\r");	// NOI18N
+											if ( lines != null )
+											{
+												for ( int i=0; i < lines.length; i++ )
+												{
+													if ( lines[i] == null ) continue;
+													if ( lines[i].trim ().length () > 0
+															&& ! lines[i].contains ("CGSN") )	// NOI18N
+													{
+														phoneIMEIs.put (
+															id.getName (),
+															lines[i].trim ());
+														break;
+													}
+												}
+											}
+										}
+										catch (Exception ex)
+										{
+											Utils.handleException (ex,
+												"phone IMEI");	// NOI18N
+										}
+									}
+									// get subscriber phone numbers:
+									rcvd = "";	// NOI18N
+									trials = 0;
+									do
+									{
+										dt.send ( ("AT+CNUM\r")	// NOI18N
+											.getBytes ());
+										byte[] recvdB = dt.recv (null);	// NOI18N
+										rcvd = new String (recvdB);
+
+										if ( rcvd.trim ().equals ("") )	// NOI18N
+										{
+											dt.reopen ();
+											trials++;
+										}
+									} while ( //(
+											rcvd.trim ().equals ("")	// NOI18N
+											//|| rcvd.contains ("CNUM"))
+										&& trials <= DataTransporter.MAX_TRIALS);
+									if ( trials <= DataTransporter.MAX_TRIALS )
+									{
+										// sample: "+CNUM: "","+48788317087",145"
+										try
+										{
+											// have to split to make it work
+											String[] lines = rcvd.split ("\r");	// NOI18N
+											if ( lines != null )
+											{
+												for ( int i=0; i < lines.length; i++ )
+												{
+													if ( lines[i] == null ) continue;
+													lines[i] = lines[i].replaceAll ("\\+CNUM: ", "");	// NOI18N
+													if ( lines[i].trim ().length () > 0 )
+													{
+														String type = null;
+														try
+														{
+															type = phoneSubsNums.get (id.getName ());
+														} catch (Exception ex) {}
+														String[] elems = lines[i].trim ().split (",");
+														String newElem = "";
+														if ( elems != null )
+															if ( elems.length > 1 )
+																newElem = elems[1].trim().replaceAll ("\"", "");
+														if ( newElem.length () > 0 )
+														{
+															if ( type == null ) type = "";	// NOI18N
+															if ( type.length () != 0 ) type += ", ";	// NOI18N
+															type += newElem;
+															phoneSubsNums.put (
+																id.getName (),
+																type);
+															//break;
+														}
+													}
+												}
+											}
+										}
+										catch (Exception ex)
+										{
+											Utils.handleException (ex,
+												"phone subscriber numbers");	// NOI18N
+										}
+									}
+								} // test res = 0
 								dt.close ();
 							}
 						}
@@ -1857,6 +2048,36 @@ public class MainWindow extends javax.swing.JFrame
 						{
 							phone.setText (pressScanMsg);
 						}
+						if ( phoneIMEIs != null )
+						{
+							if ( phoneIMEIs.containsKey (active.get (0).getName ()) )
+							{
+								IMEI.setText (phoneIMEIs.get (active.get (0).getName ()));
+							}
+							else
+							{
+								IMEI.setText (pressScanMsg);
+							}
+						}
+						else
+						{
+							IMEI.setText (pressScanMsg);
+						}
+						if ( phoneSubsNums != null )
+						{
+							if ( phoneSubsNums.containsKey (active.get (0).getName ()) )
+							{
+								subsNum.setText (phoneSubsNums.get (active.get (0).getName ()));
+							}
+							else
+							{
+								subsNum.setText (pressScanMsg);
+							}
+						}
+						else
+						{
+							subsNum.setText (pressScanMsg);
+						}
 					}
 					else
 					{
@@ -1908,6 +2129,36 @@ public class MainWindow extends javax.swing.JFrame
 							{
 								phone.setText (pressScanMsg);
 							}
+							if ( phoneIMEIs != null )
+							{
+								if ( phoneIMEIs.containsKey (active.get (res).getName ()) )
+								{
+									IMEI.setText (phoneIMEIs.get (active.get (res).getName ()));
+								}
+								else
+								{
+									IMEI.setText (pressScanMsg);
+								}
+							}
+							else
+							{
+								IMEI.setText (pressScanMsg);
+							}
+							if ( phoneSubsNums != null )
+							{
+								if ( phoneSubsNums.containsKey (active.get (res).getName ()) )
+								{
+									subsNum.setText (phoneSubsNums.get (active.get (res).getName ()));
+								}
+								else
+								{
+									subsNum.setText (pressScanMsg);
+								}
+							}
+							else
+							{
+								subsNum.setText (pressScanMsg);
+							}
 						}
 						else	// the user closed the window - choose the first one
 						{
@@ -1943,6 +2194,36 @@ public class MainWindow extends javax.swing.JFrame
 							else
 							{
 								phone.setText (pressScanMsg);
+							}
+							if ( phoneIMEIs != null )
+							{
+								if ( phoneIMEIs.containsKey (active.get (0).getName ()) )
+								{
+									IMEI.setText (phoneIMEIs.get (active.get (0).getName ()));
+								}
+								else
+								{
+									IMEI.setText (pressScanMsg);
+								}
+							}
+							else
+							{
+								IMEI.setText (pressScanMsg);
+							}
+							if ( phoneSubsNums != null )
+							{
+								if ( phoneSubsNums.containsKey (active.get (0).getName ()) )
+								{
+									subsNum.setText (phoneSubsNums.get (active.get (0).getName ()));
+								}
+								else
+								{
+									subsNum.setText (pressScanMsg);
+								}
+							}
+							else
+							{
+								subsNum.setText (pressScanMsg);
 							}
 						}
 					}
@@ -2070,10 +2351,13 @@ public class MainWindow extends javax.swing.JFrame
 		if ( selectedRows == null || currentElements == null ) return;
 		if ( selectedRows.length == 0 ) return;
 
-		if ( downloadFC == null ) downloadFC = new JFileChooser ();
-		downloadFC.setMultiSelectionEnabled (false);
-		downloadFC.setDialogType (JFileChooser.SAVE_DIALOG);
-		downloadFC.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
+		if ( downloadFC == null )
+		{
+			downloadFC = new JFileChooser ();
+			downloadFC.setMultiSelectionEnabled (false);
+			downloadFC.setDialogType (JFileChooser.SAVE_DIALOG);
+			downloadFC.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
+		}
 		// destDirName is the static field
 		if ( destDirName != null )
 		{
@@ -2124,8 +2408,8 @@ public class MainWindow extends javax.swing.JFrame
 							currentElements.get (toGet).getFilename ()
 							+ "." 	// NOI18N
 							+ currentElements.get (toGet).getExt () +
-							exOverString,
-							overwriteStr,
+							" " +	// NOI18N
+							exOverString, overwriteStr,
 							JOptionPane.YES_NO_CANCEL_OPTION);
 						if ( res != JOptionPane.YES_OPTION ) continue;
 					}
@@ -2223,59 +2507,74 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void aboutButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButActionPerformed
 
-		new AboutBox (this, true).setVisible (true);
+		try
+		{
+			new AboutBox (this, true).setVisible (true);
+		}
+		catch (Throwable ex)
+		{
+			Utils.handleException (ex, "MainWindow.AboutBox.start");	// NOI18N
+			try
+			{
+				JOptionPane.showMessageDialog (null, ex.toString (),
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			} catch (Exception ex2) {}
+		}
 	}//GEN-LAST:event_aboutButActionPerformed
 
 	private void uploadPhotoButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadPhotoButActionPerformed
 
-		if ( uploadPictFC == null ) uploadPictFC = new JFileChooser ();
-		uploadPictFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadPictFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadPictFC = new JFileChooser ();
+			uploadPictFC.setAcceptAllFileFilterUsed (false);
+			uploadPictFC.setMultiSelectionEnabled (false);
+			uploadPictFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadPictFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.photofileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = picsString;
-				try
-				{
-					Enumeration<String> keys = Utils.photofileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "photofileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.photofileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadPictFC.setAcceptAllFileFilterUsed (false);
-		uploadPictFC.setMultiSelectionEnabled (false);
-		uploadPictFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = picsString;
+					try
+					{
+						Enumeration<String> keys = Utils.photofileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "photofileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadPictFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadPictFC.showOpenDialog (this);
@@ -2290,54 +2589,57 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadRingButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadRingButActionPerformed
 
-		if ( uploadRingFC == null ) uploadRingFC = new JFileChooser ();
-		uploadRingFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadRingFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadRingFC = new JFileChooser ();
+			uploadRingFC.setAcceptAllFileFilterUsed (false);
+			uploadRingFC.setMultiSelectionEnabled (false);
+			uploadRingFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadRingFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.ringfileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = soundsString;
-				try
-				{
-					Enumeration<String> keys = Utils.ringfileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "ringfileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.ringfileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadRingFC.setAcceptAllFileFilterUsed (false);
-		uploadRingFC.setMultiSelectionEnabled (false);
-		uploadRingFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = soundsString;
+					try
+					{
+						Enumeration<String> keys = Utils.ringfileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "ringfileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadRingFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadRingFC.showOpenDialog (this);
@@ -2352,54 +2654,57 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadAddrButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadAddrButActionPerformed
 
-		if ( uploadAddrFC == null ) uploadAddrFC = new JFileChooser ();
-		uploadAddrFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadAddrFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadAddrFC = new JFileChooser ();
+			uploadAddrFC.setAcceptAllFileFilterUsed (false);
+			uploadAddrFC.setMultiSelectionEnabled (false);
+			uploadAddrFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadAddrFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.addrfileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = addrString;
-				try
-				{
-					Enumeration<String> keys = Utils.addrfileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "addrfileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.addrfileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadAddrFC.setAcceptAllFileFilterUsed (false);
-		uploadAddrFC.setMultiSelectionEnabled (false);
-		uploadAddrFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = addrString;
+					try
+					{
+						Enumeration<String> keys = Utils.addrfileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "addrfileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadAddrFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadAddrFC.showOpenDialog (this);
@@ -2414,54 +2719,57 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadTodoButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadTodoButActionPerformed
 
-		if ( uploadTODOFC == null ) uploadTODOFC = new JFileChooser ();
-		uploadTODOFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadTODOFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadTODOFC = new JFileChooser ();
+			uploadTODOFC.setAcceptAllFileFilterUsed (false);
+			uploadTODOFC.setMultiSelectionEnabled (false);
+			uploadTODOFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadTODOFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.todofileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = todoString;
-				try
-				{
-					Enumeration<String> keys = Utils.todofileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "todofileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.todofileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadTODOFC.setAcceptAllFileFilterUsed (false);
-		uploadTODOFC.setMultiSelectionEnabled (false);
-		uploadTODOFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = todoString;
+					try
+					{
+						Enumeration<String> keys = Utils.todofileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "todofileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadTODOFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadTODOFC.showOpenDialog (this);
@@ -2476,54 +2784,57 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadEventButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadEventButActionPerformed
 
-		if ( uploadEventFC == null ) uploadEventFC = new JFileChooser ();
-		uploadEventFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadEventFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadEventFC = new JFileChooser ();
+			uploadEventFC.setAcceptAllFileFilterUsed (false);
+			uploadEventFC.setMultiSelectionEnabled (false);
+			uploadEventFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadEventFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.eventfileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = eventString;
-				try
-				{
-					Enumeration<String> keys = Utils.eventfileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "eventfileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.eventfileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadEventFC.setAcceptAllFileFilterUsed (false);
-		uploadEventFC.setMultiSelectionEnabled (false);
-		uploadEventFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = eventString;
+					try
+					{
+						Enumeration<String> keys = Utils.eventfileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "eventfileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadEventFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadEventFC.showOpenDialog (this);
@@ -2538,54 +2849,57 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadAnimButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadAnimButActionPerformed
 
-		if ( uploadAnimFC == null ) uploadAnimFC = new JFileChooser ();
-		uploadAnimFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadAnimFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadAnimFC = new JFileChooser ();
+			uploadAnimFC.setAcceptAllFileFilterUsed (false);
+			uploadAnimFC.setMultiSelectionEnabled (false);
+			uploadAnimFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadAnimFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.animfileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = animString;
-				try
-				{
-					Enumeration<String> keys = Utils.animfileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "animfileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.animfileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadAnimFC.setAcceptAllFileFilterUsed (false);
-		uploadAnimFC.setMultiSelectionEnabled (false);
-		uploadAnimFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = animString;
+					try
+					{
+						Enumeration<String> keys = Utils.animfileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "animfileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadAnimFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadAnimFC.showOpenDialog (this);
@@ -2600,54 +2914,57 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void uploadJavaButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadJavaButActionPerformed
 
-		if ( uploadJavaFC == null ) uploadJavaFC = new JFileChooser ();
-		uploadJavaFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( uploadJavaFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			uploadJavaFC = new JFileChooser ();
+			uploadJavaFC.setAcceptAllFileFilterUsed (false);
+			uploadJavaFC.setMultiSelectionEnabled (false);
+			uploadJavaFC.setDialogType (JFileChooser.OPEN_DIALOG);
+			uploadJavaFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().contains ("."))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
-					if ( Utils.javafileIDs.containsKey (f.getName ().substring
-						(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()))
-
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				String desc = javaString;
-				try
-				{
-					Enumeration<String> keys = Utils.javafileIDs.keys ();
-					if ( keys != null )
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().contains ("."))	// NOI18N
 					{
-						desc += " (";	// NOI18N
-						while ( keys.hasMoreElements () )
-						{
-							desc += "*." + keys.nextElement () + ", ";	// NOI18N
-						}
-						// remove the last comma and space
-						desc = desc.substring (0, desc.length () - 2);
-						desc += ")";	// NOI18N
-					}
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "javafileIDs.keys");	// NOI18N
-				}
-				return desc;
-			}
-		} );
+						if ( Utils.javafileIDs.containsKey (f.getName ().substring
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
+							.toLowerCase (Locale.ENGLISH)))
 
-		uploadJavaFC.setAcceptAllFileFilterUsed (false);
-		uploadJavaFC.setMultiSelectionEnabled (false);
-		uploadJavaFC.setDialogType (JFileChooser.OPEN_DIALOG);
+							return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription ()
+				{
+					String desc = javaString;
+					try
+					{
+						Enumeration<String> keys = Utils.javafileIDs.keys ();
+						if ( keys != null )
+						{
+							desc += " (";	// NOI18N
+							while ( keys.hasMoreElements () )
+							{
+								desc += "*." + keys.nextElement () + ", ";	// NOI18N
+							}
+							// remove the last comma and space
+							desc = desc.substring (0, desc.length () - 2);
+							desc += ")";	// NOI18N
+						}
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "javafileIDs.keys");	// NOI18N
+					}
+					return desc;
+				}
+			} );
+		}
+
 		//if ( lastSelDir != null )
 		//	uploadJavaFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = uploadJavaFC.showOpenDialog (this);
@@ -2887,9 +3204,14 @@ public class MainWindow extends javax.swing.JFrame
 			new RawCommunicator (dt, this, sync).setVisible (true);
 			dt.close ();
 		}
-		catch (Exception ex)
+		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "MainWindow.RawCommunnicator.start");	// NOI18N
+			try
+			{
+				JOptionPane.showMessageDialog (null, ex.toString (),
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			} catch (Exception ex2) {}
 		}
 	}//GEN-LAST:event_rawButActionPerformed
 
@@ -2909,9 +3231,14 @@ public class MainWindow extends javax.swing.JFrame
 			new CapabilityWindow (dt, this, sync).setVisible (true);
 			dt.close ();
 		}
-		catch (Exception ex)
+		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "MainWindow.CapabilityWindow.start");	// NOI18N
+			try
+			{
+				JOptionPane.showMessageDialog (null, ex.toString (),
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			} catch (Exception ex2) {}
 		}
 	}//GEN-LAST:event_getCapButActionPerformed
 
@@ -2958,8 +3285,38 @@ public class MainWindow extends javax.swing.JFrame
 				{
 					phone.setText (pressScanMsg);
 				}
-			}
-		}
+				if ( phoneIMEIs != null )
+				{
+					if ( phoneIMEIs.containsKey (item.toString ()) )
+					{
+						IMEI.setText (phoneIMEIs.get (item.toString ()));
+					}
+					else
+					{
+						IMEI.setText (pressScanMsg);
+					}
+				}
+				else
+				{
+					IMEI.setText (pressScanMsg);
+				}
+				if ( phoneSubsNums != null )
+				{
+					if ( phoneSubsNums.containsKey (item.toString ()) )
+					{
+						subsNum.setText (phoneSubsNums.get (item.toString ()));
+					}
+					else
+					{
+						subsNum.setText (pressScanMsg);
+					}
+				}
+				else
+				{
+					subsNum.setText (pressScanMsg);
+				}
+			} // item != null
+		} // selected
 	}//GEN-LAST:event_portComboItemStateChanged
 
 	private void exitButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButActionPerformed
@@ -2970,30 +3327,32 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void loadConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfButActionPerformed
 
-		if ( cfgFC == null ) cfgFC = new JFileChooser ();
-		cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( cfgFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			cfgFC = new JFileChooser ();
+			cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().endsWith (".cfg"))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().endsWith (".cfg"))	// NOI18N
+					{
 						return true;
+					}
+					return false;
 				}
-				return false;
-			}
 
-			@Override
-			public String getDescription ()
-			{
-				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("JYMAG_configuration_files")
+				@Override
+				public String getDescription ()
+				{
+					return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("JYMAG_configuration_files")
 						+ " (*.cfg)";	// NOI18N
-			}
-		} );
-
-		cfgFC.setAcceptAllFileFilterUsed (false);
-		cfgFC.setMultiSelectionEnabled (false);
+				}
+			} );
+			cfgFC.setAcceptAllFileFilterUsed (false);
+			cfgFC.setMultiSelectionEnabled (false);
+		}
 		cfgFC.setDialogType (JFileChooser.OPEN_DIALOG);
 		//if ( lastSelDir != null )
 		//	cfgFC.setCurrentDirectory (new File (lastSelDir));
@@ -3036,10 +3395,10 @@ public class MainWindow extends javax.swing.JFrame
 						flowHard.setSelected (false);
 						break;
 				}
-				//flowCombo.setSelectedIndex ();	// FIXME:
+				if ( cfg.getIsMax () ) setExtendedState (JFrame.MAXIMIZED_BOTH);
+				else setExtendedState ( getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
 				setLocation (cfg.getX (), cfg.getY ());
 				setSize (cfg.getWidth (), cfg.getHeight ());
-				if ( cfg.getIsMax () ) setExtendedState (JFrame.MAXIMIZED_BOTH);
 			}
 			catch (Exception ex)
 			{
@@ -3050,31 +3409,34 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void saveConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfButActionPerformed
 
-		if ( cfgFC == null ) cfgFC = new JFileChooser ();
-		cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		if ( cfgFC == null )
 		{
-			@Override
-			public boolean accept ( File f )
+			cfgFC = new JFileChooser ();
+			cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 			{
-				if ( f.isDirectory () ) return true;
-				if ( f.getName ().endsWith (".cfg"))	// NOI18N
+				@Override
+				public boolean accept ( File f )
 				{
+					if ( f.isDirectory () ) return true;
+					if ( f.getName ().endsWith (".cfg"))	// NOI18N
+					{
 						return true;
+					}
+					return false;
 				}
-				return false;
-			}
 
-			@Override
-			public String getDescription ()
-			{
-				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("JYMAG_configuration_files") 
+				@Override
+				public String getDescription ()
+				{
+					return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("JYMAG_configuration_files")
 						+ " (*.cfg)";	// NOI18N
-			}
-		} );
+				}
+			} );
+			cfgFC.setAcceptAllFileFilterUsed (false);
+			cfgFC.setMultiSelectionEnabled (false);
+		}
+		cfgFC.setDialogType (JFileChooser.SAVE_DIALOG);
 
-		cfgFC.setAcceptAllFileFilterUsed (false);
-		cfgFC.setMultiSelectionEnabled (false);
-		cfgFC.setDialogType (JFileChooser.OPEN_DIALOG);
 		//if ( lastSelDir != null )
 		//	cfgFC.setCurrentDirectory (new File (lastSelDir));
 		int dialogRes = cfgFC.showSaveDialog (this);
@@ -3219,7 +3581,7 @@ public class MainWindow extends javax.swing.JFrame
 		READY,
 		SENDING,
 		RECEIVING;
-		
+
 		@Override
 		public String toString ()
 		{
@@ -3244,7 +3606,7 @@ public class MainWindow extends javax.swing.JFrame
 				status.setText (s.toString ());
 				if ( s.equals (STATUS.READY) )
 				{
-					status.setForeground (Color.GREEN);
+					status.setForeground (new Color (0, 204, 0)/*Color.GREEN*/);
 				}
 				else
 				{
@@ -3267,7 +3629,7 @@ public class MainWindow extends javax.swing.JFrame
 		if ( System.err != null ) System.err.close ();
 		// remove the log file if empty
 		File log = new File (logFile);
-		if ( (! log.exists ()) || log.length () == 0 ) log.delete ();
+		if ( log.exists () && log.length () == 0 ) log.delete ();
 		// check if GUI was created, or only the command line was used
 		/*
 		if ( aboutBut != null )
@@ -3285,7 +3647,7 @@ public class MainWindow extends javax.swing.JFrame
 		{
 			if ( portName == null )
 			{
-		                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+				Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 
 				while (portList.hasMoreElements ())
 				{
@@ -3298,10 +3660,8 @@ public class MainWindow extends javax.swing.JFrame
 					}
 				}
 			}
-			if ( destDirName == null )
-			{
-				destDirName = ".";	// NOI18N
-			}
+			if ( destDirName == null ) destDirName = ".";	// NOI18N
+
 			CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 				(portName);
 			DataTransporter dt = new DataTransporter (id);
@@ -3377,12 +3737,12 @@ public class MainWindow extends javax.swing.JFrame
 		if ( ! f.getName ().contains (".") ) return -9;	// NOI18N
 		if ( ! Utils.filetypeIDs.containsKey (f.getName ().substring
 			(f.getName ().lastIndexOf (".")+1)	// NOI18N
-			.toLowerCase ()))
+			.toLowerCase (Locale.ENGLISH)))
 		{
 			System.out.println (unsuppType+": '"	// NOI18N
 				+f.getName ().substring
 				(f.getName ().lastIndexOf (".")+1)	// NOI18N
-				.toLowerCase () + "'");	// NOI18N
+				.toLowerCase (Locale.ENGLISH) + "'");	// NOI18N
 			return -10;
 		}
 
@@ -3499,10 +3859,10 @@ public class MainWindow extends javax.swing.JFrame
 	}
 
 	/**
-	 * Program starting point.
+	 * Real program starting point.
 	 * @param args the command line arguments.
 	 */
-	public static void main (String args[])
+	/*public*/ static void main (String args[])
 	{
 		// redirect stderr (caught and uncaught exceptions) to a file
 		try
@@ -3511,7 +3871,55 @@ public class MainWindow extends javax.swing.JFrame
 		}
 		catch (Exception ex)
 		{
-			Utils.handleException (ex, "stderr");	// NOI18N
+			String dirSep = null;
+			try
+			{
+				dirSep = System.getProperty ("file.separator", "/");	// NOI18N
+			} catch (Exception e) {}
+			if ( dirSep == null ) dirSep = "/";	// NOI18N
+			String[] dirs = new String[7];
+			try
+			{
+				dirs[0] = System.getProperty ("user.dir");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[1] = System.getProperty ("user.home");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[2] = System.getenv ("HOME");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[3] = System.getenv ("TMP");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[4] = System.getenv ("TEMP");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[5] = System.getenv ("TMPDIR");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[6] = System.getenv ("TEMPDIR");	// NOI18N
+			} catch (Exception e) {}
+			int i;
+			for ( i = 0; i < dirs.length; i++ )
+			{
+				if ( dirs[i] == null ) continue;
+				try
+				{
+					System.setErr (new PrintStream (new File (
+						dirs[i] + dirSep + logFile)));
+					logFile = dirs[i] + dirSep + logFile;
+					break;
+				}
+				catch (Exception e) {}
+			}
+			if ( i == dirs.length ) Utils.handleException (ex, "stderr");	// NOI18N
 		}
 
 		// set default uncaught exception handler:
@@ -3524,22 +3932,22 @@ public class MainWindow extends javax.swing.JFrame
 		{
 			for ( int i=0; i < args.length; i++ )
 			{
-				if ( args[i].toLowerCase ().equals ("--help")	// NOI18N
-					|| args[i].toLowerCase ().equals ("-h")	// NOI18N
-					|| args[i].toLowerCase ().equals ("-?")	// NOI18N
-					|| args[i].toLowerCase ().equals ("/?") )	// NOI18N
+				if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--help")	// NOI18N
+					|| args[i].toLowerCase (Locale.ENGLISH).equals ("-h")	// NOI18N
+					|| args[i].toLowerCase (Locale.ENGLISH).equals ("-?")	// NOI18N
+					|| args[i].toLowerCase (Locale.ENGLISH).equals ("/?") )	// NOI18N
 				{
 					System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +	// NOI18N
 						"\n\n*** " + rxtxReqStr +" ***\n\n" +	// NOI18N
 						"Author: Bogdan Drozdowski, bogdandr @ op . pl\n" +	// NOI18N
 						"License: GPLv3+\n" +	// NOI18N
-				                "http://rudy.mif.pg.gda.pl/~bogdro/soft\n\n" +	// NOI18N
-				                cmdLineStr
+						"http://rudy.mif.pg.gda.pl/~bogdro/soft\n\n" +	// NOI18N
+						cmdLineStr
 						);
 					closeProgram (0);
 				}
-				else if ( args[i].toLowerCase ().equals ("--license")	// NOI18N
-					|| args[i].toLowerCase ().equals ("--licence") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--license")	// NOI18N
+					|| args[i].toLowerCase (Locale.ENGLISH).equals ("--licence") )	// NOI18N
 				{
 					System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +	// NOI18N
 						"\nSee http://rudy.mif.pg.gda.pl/~bogdro/soft\n" +	// NOI18N
@@ -3560,13 +3968,13 @@ public class MainWindow extends javax.swing.JFrame
 						"               USA\n");	// NOI18N
 					closeProgram (0);
 				}
-				else if ( args[i].toLowerCase ().equals ("--version")	// NOI18N
-					|| args[i].toLowerCase ().equals ("-v") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--version")	// NOI18N
+					|| args[i].toLowerCase (Locale.ENGLISH).equals ("-v") )	// NOI18N
 				{
 					System.out.println ("JYMAG " + verWord + " " + verString);	// NOI18N
 					closeProgram (0);
 				}
-				else if ( args[i].toLowerCase ().equals ("--port") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--port") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3574,36 +3982,36 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--parity") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--parity") )	// NOI18N
 				{
 					parity = 0;
 					if ( i < args.length-1 )
 					{
 						// <none, even, odd, space, mark>
-						if ( args[i+1].toLowerCase ().equals ("none") )	// NOI18N
+						if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("none") )	// NOI18N
 						{
 							parity = 0;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("even") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("even") )	// NOI18N
 						{
 							parity = 1;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("odd") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("odd") )	// NOI18N
 						{
 							parity = 2;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("space") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("space") )	// NOI18N
 						{
 							parity = 3;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("mark") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("mark") )	// NOI18N
 						{
 							parity = 4;
 						}
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--databits") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--databits") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3624,7 +4032,7 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--speed") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--speed") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3645,17 +4053,17 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--stopbits") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--stopbits") )	// NOI18N
 				{
 					sBits = 1;
 					if ( i < args.length-1 )
 					{
-						if ( args[i+1].toLowerCase ().equals ("2") )	// NOI18N
+						if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("2") )	// NOI18N
 						{
 							sBits = 2;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("1.5")	// NOI18N
-							|| args[i+1].toLowerCase ().equals ("1,5") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("1.5")	// NOI18N
+							|| args[i+1].toLowerCase (Locale.ENGLISH).equals ("1,5") )	// NOI18N
 						{
 							sBits = 1.5f;
 						}
@@ -3666,37 +4074,37 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--flow") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--flow") )	// NOI18N
 				{
 					flow = 0;
 					if ( i < args.length-1 )
 					{
 						// <none,soft,hard>
-						if ( args[i+1].toLowerCase ().equals ("none") )	// NOI18N
+						if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("none") )	// NOI18N
 						{
 							flow = 0;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("soft") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("soft") )	// NOI18N
 						{
 							flow = 1;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("hard") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("hard") )	// NOI18N
 						{
 							flow = 2;
 						}
-						else if ( args[i+1].toLowerCase ().equals ("soft+hard")	// NOI18N
-								 || args[i+1].toLowerCase ().equals ("hard+soft") )	// NOI18N
+						else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("soft+hard")	// NOI18N
+								 || args[i+1].toLowerCase (Locale.ENGLISH).equals ("hard+soft") )	// NOI18N
 						{
 							flow = 3;
 						}
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--scan") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--scan") )	// NOI18N
 				{
 					closeProgram (scanPorts ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--upload") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--upload") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3714,31 +4122,31 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-photos") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-photos") )	// NOI18N
 				{
 					closeProgram (getAllPics ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-ringtones") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-ringtones") )	// NOI18N
 				{
 					closeProgram (getAllRings ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-todo") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-todo") )	// NOI18N
 				{
 					closeProgram (getAllTODOs ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-events") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-events") )	// NOI18N
 				{
 					closeProgram (getAllEvents ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-vcards") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-vcards") )	// NOI18N
 				{
 					closeProgram (getAllVcards ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all-vcards") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-vcards") )	// NOI18N
 				{
 					closeProgram (getAllAnimations ());
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-all") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all") )	// NOI18N
 				{
 					closeProgram (getAllPics ()
 						+ getAllRings ()
@@ -3748,7 +4156,7 @@ public class MainWindow extends javax.swing.JFrame
 						+ getAllAnimations ()
 						);
 				}
-				else if ( args[i].toLowerCase ().equals ("--download-dir") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-dir") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3756,11 +4164,11 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--delete-after-download") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-after-download") )	// NOI18N
 				{
 					deleteAfterDownload = true;
 				}
-				else if ( args[i].toLowerCase ().equals ("--lang") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--lang") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3790,7 +4198,7 @@ public class MainWindow extends javax.swing.JFrame
 						i++;
 					}
 				}
-				else if ( args[i].toLowerCase ().equals ("--conf") )	// NOI18N
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--conf") )	// NOI18N
 				{
 					if ( i < args.length-1 )
 					{
@@ -3839,6 +4247,8 @@ public class MainWindow extends javax.swing.JFrame
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel IMEI;
+    private javax.swing.JLabel IMEILabel;
     private javax.swing.JButton aboutBut;
     private javax.swing.JPanel addrBookPane;
     private javax.swing.JTable addrTable;
@@ -3915,6 +4325,8 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JLabel statusLabel;
     private javax.swing.JComboBox stopBitsCombo;
     private javax.swing.JLabel stopbitsLabel;
+    private javax.swing.JLabel subsNum;
+    private javax.swing.JLabel subsNumLabel;
     private javax.swing.JTabbedPane tabPane;
     private javax.swing.JPanel todoPane;
     private javax.swing.JTable todoTable;

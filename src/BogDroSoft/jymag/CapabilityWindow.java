@@ -1,7 +1,7 @@
 /*
  * CapabilityWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 75L;
 	private DataTransporter dtr;
-	private Object sync;
+	private final Object sync;
 	private final KL kl = new KL ();
 
 	// ------------ i18n stuff
@@ -55,13 +55,13 @@ public class CapabilityWindow extends javax.swing.JDialog
 	{
 		// make always modal
 		super (parent, true);
+		dtr = dt;
+		sync = synchro;
 		if ( dt == null || synchro == null )
 		{
 			dispose ();
 			return;
 		}
-		dtr = dt;
-		sync = synchro;
 
 		initComponents ();
 
@@ -204,6 +204,7 @@ public class CapabilityWindow extends javax.swing.JDialog
     }// </editor-fold>//GEN-END:initComponents
 
 	private void exitButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButActionPerformed
+
 		dispose ();
 	}//GEN-LAST:event_exitButActionPerformed
 
@@ -237,9 +238,9 @@ public class CapabilityWindow extends javax.swing.JDialog
 			if ( rcvd.trim ().length () > 0 )
 			{
 				capabText.setText (rcvd.substring (
-						rcvd.indexOf ("CONNECT")+7,	// NOI18N
-						rcvd.indexOf ("NO CARRIER")	// NOI18N 
-						));
+					rcvd.indexOf ("CONNECT")+7,	// NOI18N
+					rcvd.indexOf ("NO CARRIER")	// NOI18N
+					));
 			}
 		}
 		catch (Exception ex)

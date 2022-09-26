@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -53,17 +53,17 @@ public class ConfigFile
 	private int height;
 	private boolean isMax;
 	// patterns for matching:
-	private static final Pattern portPat = Pattern.compile ("port\\s*=\\s*([^\\s]+)");			// NOI18N
-	private static final Pattern speedPat = Pattern.compile ("speed\\s*=\\s*(\\d+)");			// NOI18N
-	private static final Pattern dBitsPat = Pattern.compile ("databits\\s*=\\s*(\\d+)");		// NOI18N
-	private static final Pattern parityPat = Pattern.compile ("parity\\s*=\\s*(\\d+)");			// NOI18N
-	private static final Pattern sBitsPat = Pattern.compile ("stopbits\\s*=\\s*([\\d\\.]+)");	// NOI18N
-	private static final Pattern flowCtlPat = Pattern.compile ("flowcontrol\\s*=\\s*(\\d+)");	// NOI18N
-	private static final Pattern xPat = Pattern.compile ("x\\s*=\\s*(\\d+)");					// NOI18N
-	private static final Pattern yPat = Pattern.compile ("y\\s*=\\s*(\\d+)");					// NOI18N
-	private static final Pattern widthPat = Pattern.compile ("width\\s*=\\s*(\\d+)");			// NOI18N
-	private static final Pattern heightPat = Pattern.compile ("height\\s*=\\s*(\\d+)");			// NOI18N
-	private static final Pattern isMaxPat = Pattern.compile ("ismax\\s*=\\s*(\\d+)");			// NOI18N
+	private static final Pattern portPat = Pattern.compile ("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern speedPat = Pattern.compile ("speed\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern dBitsPat = Pattern.compile ("databits\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
+	private static final Pattern parityPat = Pattern.compile ("parity\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern sBitsPat = Pattern.compile ("stopbits\\s*=\\s*([\\d\\.]+)", Pattern.CASE_INSENSITIVE);	// NOI18N
+	private static final Pattern flowCtlPat = Pattern.compile ("flowcontrol\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);	// NOI18N
+	private static final Pattern xPat = Pattern.compile ("x\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
+	private static final Pattern yPat = Pattern.compile ("y\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
+	private static final Pattern widthPat = Pattern.compile ("width\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern heightPat = Pattern.compile ("height\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern isMaxPat = Pattern.compile ("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
 	private Matcher portM;
 	private Matcher speedM;
 	private Matcher dBitsM;
@@ -140,7 +140,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.raead.group");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.group");	// NOI18N
 				}
 			}
 			else if ( speedM.matches () )
@@ -151,7 +151,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (1)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (speed)");	// NOI18N
 				}
 			}
 			else if ( dBitsM.matches () )
@@ -162,7 +162,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (2)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (data bits)");	// NOI18N
 				}
 			}
 			else if ( parityM.matches () )
@@ -173,7 +173,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (3)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (parity)");	// NOI18N
 				}
 			}
 			else if ( sBitsM.matches () )
@@ -184,7 +184,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (4)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (stop bits)");	// NOI18N
 				}
 			}
 			else if ( flowCtlM.matches () )
@@ -195,7 +195,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (5)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (flow control)");	// NOI18N
 				}
 			}
 			else if ( xM.matches () )
@@ -206,7 +206,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (6)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (x)");	// NOI18N
 				}
 			}
 			else if ( yM.matches () )
@@ -217,7 +217,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (7)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (y)");	// NOI18N
 				}
 			}
 			else if ( widthM.matches () )
@@ -228,7 +228,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (8)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (width)");	// NOI18N
 				}
 			}
 			else if ( heightM.matches () )
@@ -239,7 +239,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (9)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (height)");	// NOI18N
 				}
 			}
 			else if ( isMaxM.matches () )
@@ -250,7 +250,7 @@ public class ConfigFile
 				}
 				catch (Exception ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.parseInt (10)");	// NOI18N
+					Utils.handleException (ex, "ConfigFile.read.parseInt (maximized)");	// NOI18N
 				}
 			}
 		} while (line != null);
@@ -274,7 +274,12 @@ public class ConfigFile
 	 */
 	public void write () throws Exception
 	{
-		String newLine = System.getProperty ("line.separator");	// NOI18N
+		String newLine = null;
+		try
+		{
+			newLine = System.getProperty ("line.separator"); // NOI18N
+		}
+		catch (Exception ex) {}
 		if ( newLine == null )
 		{
 			newLine = "\n";	// NOI18N
@@ -292,7 +297,8 @@ public class ConfigFile
 			+ "parity = " + parity + newLine	// NOI18N
 			+ "# Stop bits: 0=1 bit, 1=1.5 bits, 2=2 bits." + newLine	// NOI18N
 			+ "stopbits = " + sBits + newLine	// NOI18N
-			+ "# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware." + newLine	// NOI18N
+			+ "# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware."
+			+ newLine	// NOI18N
 			+ "flowcontrol = " + flowCtl + newLine	// NOI18N
 			+ "x = " + x + newLine	// NOI18N
 			+ "y = " + y + newLine	// NOI18N
@@ -404,7 +410,7 @@ public class ConfigFile
 		isMax = v;
 	}
 
-	// ================ setters:
+	// ================ getters:
 
 
 	/**

@@ -1,3 +1,35 @@
+2009-11-08	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.8:
+	  Fix for downloading non-Sagem JPG files. Unchecked downloading of CGM
+	  (the most common CGM types, at least), WMF and PMB files. Displaying
+	  the IMEI and subscriber phone numbers and additional phone type.
+	* DataTransporter.java (getFile): the second match in a double match
+	  in JPG files' downloading now has to end with 0xFF, this fixes some
+	  problems with non-Sagem photos. Unchecked downloading of CGM, WMF
+	  and PMB files.
+	* ConfigFile.java (read): more friendly error messages in exceptions.
+	* ConfigFile.java: Patterns are now case-insensitive. Other minor
+	  fixes and enhancements.
+	* MainWindow.java (downloadButActionPerformed): separate the filename
+	  from the "exists" message with a space.
+	* README: updates in build instructions, other small fixes.
+	* MainWindow, CapabilityWindow, DataTransporter, RawCommunicator:
+	  synchronizing only on final fields.
+	* AboutBox.java: change e-mail subject
+	* MainWindow.java: perform prepare operations on the file choosers just
+	  once. If configuration file says the window wasn't maximized,
+	  unmaximize it, to allow position and size changes. Use Locale.ENGLISH
+	  in String.toLowerCase(). Displaying the IMEI and subscriber phone
+	  numbers and additional phone type. Catching Throwables when trying
+	  to launch new windows.
+	* PhoneElement (getExt): use Locale.ENGLISH in String.toLowerCase().
+	* DataTransporter.java (putFile): use Locale.ENGLISH in
+	  String.toLowerCase().
+	* Utils.java: updated initial size of ringfileIDs.
+	* Starter.java: a new main class that tries to launch the program or
+	  displays an error to the user.
+
 2008-11-15	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.7:

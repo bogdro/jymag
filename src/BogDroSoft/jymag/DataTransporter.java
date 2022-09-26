@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Matcher;
 
@@ -48,41 +49,58 @@ public class DataTransporter
 	private CommPortIdentifier portID;
 	private SerialPort s;
 	private InputStream inputStream;
+	private final Object inputStreamLock = new Object ();
 	private OutputStream outputStream;
 	/** Maximum number of attempts to establish communication. */
 	public static final int MAX_TRIALS = 3;
-	/** Timeout betwenn up/download stages, in milliseconds. */
-	private static final int TIMEOUT = 250;
+	/** DT_TIMEOUT betwenn up/download stages, in milliseconds. */
+	private static final int DT_TIMEOUT = 250;
 
 	private SPL spl = new SPL ();
 
 	// file headers:
 	// JPG/EXIF/MJPG
-	private final byte[] JPG = new byte[] { (byte) 0xff, (byte) 0xd8/*, (byte) 0xff*/ };
+	private final byte[] JPG = new byte[] {
+		(byte) 0xff, (byte) 0xd8/*, (byte) 0xff*/
+		};
 	// MTh
-	private final byte[] MID = new byte[] { (byte) 0x4d, (byte) 0x54, (byte) 0x68 };
+	private final byte[] MID = new byte[] {
+		(byte) 0x4d, (byte) 0x54, (byte) 0x68
+		};
 	// AMR and AMR-WB (AWB) #!AMR = 23 21 41 4D  52
-	private final byte[] AMR = new byte[] { (byte) 0x23, (byte) 0x21, (byte) 0x41,
-		(byte) 0x4D, (byte) 0x52 };
+	private final byte[] AMR = new byte[] {
+		(byte) 0x23, (byte) 0x21, (byte) 0x41, (byte) 0x4D,
+		(byte) 0x52
+		};
 	// BM  = 42 4D
-	private final byte[] BMP = new byte[] { (byte) 0x42, (byte) 0x4D };
+	private final byte[] BMP = new byte[] {
+		(byte) 0x42, (byte) 0x4D
+		};
 	// GIF = 47 49 46
-	private final byte[] GIF = new byte[] { (byte) 0x47, (byte) 0x49, (byte) 0x46 };
+	private final byte[] GIF = new byte[] {
+		(byte) 0x47, (byte) 0x49, (byte) 0x46
+		};
 	// PNG
-	private final byte[] PNG = new byte[] { (byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47 };
+	private final byte[] PNG = new byte[] {
+		(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47
+		};
 	// WAV = RIFF = 52 49 46 46
-	private final byte[] WAV = new byte[] { (byte) 0x52, (byte) 0x49, (byte) 0x46, (byte) 0x46 };
+	private final byte[] WAV = new byte[] {
+		(byte) 0x52, (byte) 0x49, (byte) 0x46, (byte) 0x46
+		};
 	//// "BEGIN:VCALENDAR"
 	private final byte[] VCAL = new byte[] {
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
 		(byte) 0x4E, (byte) 0x3A, (byte) 0x56, (byte) 0x43,
 		(byte) 0x41, (byte) 0x4C, (byte) 0x45, (byte) 0x4E,
-		(byte) 0x44, (byte) 0x41, (byte) 0x52 };
+		(byte) 0x44, (byte) 0x41, (byte) 0x52
+		};
 	//// "BEGIN:vCard"
 	private final byte[] VCRD = new byte[] {
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
 		(byte) 0x4E, (byte) 0x3A, (byte) 0x76, (byte) 0x43,
-		(byte) 0x61, (byte) 0x72, (byte) 0x64 };
+		(byte) 0x61, (byte) 0x72, (byte) 0x64
+		};
 	// WBMP: 0, 0
 	//private final byte[] WBMP = new byte[] { (byte) 0x00, (byte) 0x00 };
 	// the 2-bytes-zero header dosen't work well. Instead, let's look for '$'
@@ -91,13 +109,16 @@ public class DataTransporter
 
 	// MNG: 8A 4D 4E 47
 	private final byte[] MNG = new byte[] {
-		(byte) 0x8A, (byte) 0x4D, (byte) 0x4E, (byte) 0x47 };
+		(byte) 0x8A, (byte) 0x4D, (byte) 0x4E, (byte) 0x47
+		};
 
 	// AIFF: "FORM" or "AIFF"
 	private final byte[] AIFF1 = new byte[] {
-		(byte) 0x46, (byte) 0x4F, (byte) 0x52, (byte) 0x4D  };
+		(byte) 0x46, (byte) 0x4F, (byte) 0x52, (byte) 0x4D
+		};
 	private final byte[] AIFF2 = new byte[] {
-		(byte) 0x41, (byte) 0x49, (byte) 0x46, (byte) 0x46  };
+		(byte) 0x41, (byte) 0x49, (byte) 0x46, (byte) 0x46
+		};
 
 	// IMY (IMELODY): "BEGIN:IMELODY"
 	private final byte[] IMY = new byte[] {
@@ -179,6 +200,33 @@ public class DataTransporter
 		(byte) 0x65, (byte) 0x74
 		};
 
+	// text CGM: "BEGMF"
+	private final byte[] CGMtext = new byte[] {
+		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x4D, (byte) 0x46
+		};
+
+	// binary CGM: & 0xFFE0 = "0x0020" big-endian
+	private final byte[] CGMbin01 = new byte[] {
+		(byte) 0x00, (byte) 0x29
+		};
+
+	private final byte[] CGMbin02 = new byte[] {
+		(byte) 0x00, (byte) 0x28
+		};
+
+	// character CGM: =="0x3020" big-endian
+	private final byte[] CGMchar = new byte[] {
+		(byte) 0x30, (byte) 0x20
+		};
+
+	// PMB: "[BitmapInfo2]"
+	private final byte[] PMB = new byte[] {
+		(byte) 0x5B, (byte) 0x42, (byte) 0x69, (byte) 0x74,
+		(byte) 0x6D, (byte) 0x61, (byte) 0x70, (byte) 0x49,
+		(byte) 0x6E, (byte) 0x66, (byte) 0x6F, (byte) 0x32,
+		(byte) 0x5D
+		};
+
 	// 3GP has a header of 3 zeros, so let's catch it with "generic type" - WBMP
 	// DIB is a bitmap with no header, so let's catch it with "generic type" - WBMP
 
@@ -187,18 +235,20 @@ public class DataTransporter
 	private final byte[] START = new byte[] {
 		(byte) 0x43, (byte) 0x4F, (byte) 0x4E, (byte) 0x4E,
 		(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x0D,
-		(byte) 0x0A };
+		(byte) 0x0A
+		};
 
 	// "\r\nNO CARRIER"
 	private final byte[] FINISH = new byte[] {
 		(byte) 0x0D, (byte) 0x0A,
 		(byte) 0x4E, (byte) 0x4F, (byte) 0x20, (byte) 0x43,
 		(byte) 0x41, (byte) 0x52, (byte) 0x52, (byte) 0x49,
-		(byte) 0x45, (byte) 0x52 };
+		(byte) 0x45, (byte) 0x52
+		};
 
 	// i18n stuff:
-	private final String ansString = 
-			java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DataTransporter").getString("answer");
+	private final String ansString =
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DataTransporter").getString("answer");
 
 	/**
 	 * Creates a new instance of DataTransporter.
@@ -233,7 +283,10 @@ public class DataTransporter
 					+ portID.getName ());
 		}
 		s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
-		inputStream  = s.getInputStream  ();
+		synchronized (inputStreamLock)
+		{
+			inputStream  = s.getInputStream  ();
+		}
 		outputStream = s.getOutputStream ();
 
 		int dBits = SerialPort.DATABITS_8;
@@ -277,21 +330,40 @@ public class DataTransporter
 	public byte[] recv (Object[] extraTerminators)
 	{
 		byte[] res = new byte[0];
-		if ( inputStream == null ) return res;
+		synchronized (inputStreamLock)
+		{
+			if ( inputStream == null ) return res;
+		}
+		int avail = 0;
 		while (true)
 		{
 			try
 			{
-				if ( inputStream.available () == 0 )
+				synchronized (inputStreamLock)
 				{
-					synchronized (inputStream)
+					avail = inputStream.available ();
+				}
+				if ( avail == 0 )
+				{
+					synchronized (inputStreamLock)
 					{
-						inputStream.wait (5*1000);
+						//synchronized (inputStream)
+						{
+							inputStreamLock.wait (5*1000);//inputStream.wait (5*1000);
+						}
 					}
-					if ( inputStream.available () > 0 )
+					synchronized (inputStreamLock)
 					{
-						byte[] readBuffer = new byte[inputStream.available ()];
-						int wasRead = inputStream.read (readBuffer);
+						avail = inputStream.available ();
+					}
+					if ( avail > 0 )
+					{
+						byte[] readBuffer = new byte[avail];
+						int wasRead = -1;
+						synchronized (inputStreamLock)
+						{
+							wasRead = inputStream.read (readBuffer);
+						}
 						if ( wasRead < 0 ) break;
 						String curr = new String (readBuffer, 0, wasRead);
 						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
@@ -302,10 +374,14 @@ public class DataTransporter
 					}
 					else return res;
 				}
-				else if ( inputStream.available () > 0 )
+				else if ( avail > 0 )
 				{
-					byte[] readBuffer = new byte[inputStream.available ()];
-					int wasRead = inputStream.read (readBuffer);
+					byte[] readBuffer = new byte[avail];
+					int wasRead = -1;
+					synchronized (inputStreamLock)
+					{
+						wasRead = inputStream.read (readBuffer);
+					}
 					if ( wasRead < 0 ) break;
 					String curr = new String (readBuffer, 0, wasRead);
 					res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
@@ -320,10 +396,18 @@ public class DataTransporter
 				try
 				{
 					// being interrupted not necessarily means that data is available, so check
-					if ( inputStream.available () > 0 )
+					synchronized (inputStreamLock)
 					{
-						byte[] readBuffer = new byte[inputStream.available ()];
-						int wasRead = inputStream.read (readBuffer);
+						avail = inputStream.available ();
+					}
+					if ( avail > 0 )
+					{
+						byte[] readBuffer = new byte[avail];
+						int wasRead = -1;
+						synchronized (inputStreamLock)
+						{
+							wasRead = inputStream.read (readBuffer);
+						}
 						if ( wasRead < 0 ) break;
 						String curr = new String (readBuffer, 0, wasRead);
 						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
@@ -401,7 +485,7 @@ public class DataTransporter
 		if ( ! f.getName ().contains (".")) return -8;	// NOI18N
 		if ( ! Utils.filetypeIDs.containsKey (f.getName ().substring
 			(f.getName ().lastIndexOf (".")+1)	// NOI18N
-			.toLowerCase ()))
+			.toLowerCase (Locale.ENGLISH)))
 		{
 			return -9;
 		}
@@ -444,7 +528,7 @@ public class DataTransporter
 			{
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// init file upload
 				do
@@ -474,7 +558,7 @@ public class DataTransporter
 				stage++;
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send filename length (the last parameter)
 				do
@@ -505,7 +589,7 @@ public class DataTransporter
 				stage++;
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send filename
 				do
@@ -535,7 +619,7 @@ public class DataTransporter
 				stage++;
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send file type (4th param) and length (5th parameter)
 				do
@@ -544,7 +628,7 @@ public class DataTransporter
 						+ Utils.filetypeIDs.get
 							(f.getName ().substring
 								(f.getName ().lastIndexOf (".")+1) // NOI18N
-							.toLowerCase ()).intValue ()
+							.toLowerCase (Locale.ENGLISH)).intValue ()
 						+ "," + f.length () + "\r").getBytes ());	// NOI18N
 					recvdB = recv (new String[] { "CONNECT" });	// NOI18N
 					rcvd = new String (recvdB);
@@ -569,7 +653,7 @@ public class DataTransporter
 
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send file data here:
 				FileInputStream fis = new FileInputStream (f);
@@ -610,7 +694,7 @@ public class DataTransporter
 				stage++;
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// close file upload
 				do
@@ -704,7 +788,7 @@ public class DataTransporter
 			{
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send file retrieve command
 				send (("AT+KPSR=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
@@ -738,7 +822,7 @@ public class DataTransporter
 				int pos = findBytes (recvdB, JPG);
 				int pos2 = findBytes (Arrays.copyOfRange (recvdB, pos+1, recvdB.length),
 					JPG);
-				if ( pos2 >= 0 )
+				if ( pos2 >= 0 && recvdB[pos+1+pos2+2] == 0xff )
 				{
 					fos.write (recvdB, pos+1+pos2,
 						findBytes (recvdB, FINISH) - pos2-pos-1 );
@@ -762,11 +846,6 @@ public class DataTransporter
 			{
 				fos.write (recvdB, findBytes (recvdB, WAV),
 					findBytes (recvdB, FINISH) - findBytes (recvdB, WAV) );
-			}
-			else if ( findBytes (recvdB, BMP) >= 0 )
-			{
-				fos.write (recvdB, findBytes (recvdB, BMP),
-					findBytes (recvdB, FINISH) - findBytes (recvdB, BMP) );
 			}
 			else if ( findBytes (recvdB, GIF) >= 0 )
 			{
@@ -879,6 +958,37 @@ public class DataTransporter
 				fos.write (recvdB, findBytes (recvdB, MIDLET),
 					findBytes (recvdB, FINISH) - findBytes (recvdB, MIDLET) );
 			}
+			else if ( findBytes (recvdB, CGMtext) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, CGMtext),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, CGMtext) );
+			}
+			else if ( findBytes (recvdB, CGMchar) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, CGMchar),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, CGMchar) );
+			}
+			else if ( findBytes (recvdB, CGMbin01) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, CGMbin01),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, CGMbin01) );
+			}
+			else if ( findBytes (recvdB, CGMbin02) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, CGMbin02),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, CGMbin02) );
+			}
+			else if ( findBytes (recvdB, PMB) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, PMB),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, PMB) );
+			}
+			// BMP after CGM, which can start with "BM"?
+			else if ( findBytes (recvdB, BMP) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, BMP),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, BMP) );
+			}
 			/* always keep WBMP last, as this is the new generic case */
 			else if ( findBytes (recvdB, WBMP) >= 0 )
 			{
@@ -939,7 +1049,7 @@ public class DataTransporter
 			{
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send "get list" command
 				send (("AT+KPSL=\"" + ofWhat + "\",1\r").getBytes ());	// NOI18N
@@ -999,7 +1109,7 @@ public class DataTransporter
 			{
 				try
 				{
-					Thread.sleep (TIMEOUT);
+					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send file retrieve command
 				send (("AT+KPSD=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
@@ -1053,7 +1163,10 @@ public class DataTransporter
 			s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
 			if ( s != null )
 			{
-				inputStream  = s.getInputStream  ();
+				synchronized (inputStreamLock)
+				{
+					inputStream  = s.getInputStream  ();
+				}
 				outputStream = s.getOutputStream ();
 				s.setSerialPortParams ( bps, dbits, sbits, parity );
 				s.setFlowControlMode ( flow );
@@ -1126,9 +1239,12 @@ public class DataTransporter
 			switch (event.getEventType ())
 			{
 				case SerialPortEvent.DATA_AVAILABLE:
-					synchronized (inputStream)
+					synchronized (inputStreamLock)
 					{
-						inputStream.notifyAll ();
+						//synchronized (inputStream)
+						{
+							inputStreamLock.notifyAll ();// inputStream.notifyAll ();
+						}
 					}
 					break;
 			}

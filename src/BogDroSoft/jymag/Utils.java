@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -105,7 +105,7 @@ public class Utils
 				+ "\\w+\\" + '"' + ",\\" + '"' + "(\\w+)\\"+ '"'	// NOI18N
 				+ ",[^,]+,[^,]+,\\"+ '"' + "([^\"]+)\\" + '"');	// NOI18N
 
-		ringfileIDs = new Hashtable<String, Integer> (11);
+		ringfileIDs = new Hashtable<String, Integer> (12);
 		ringfileIDs.put ("wav" ,   1);		// NOI18N
 		ringfileIDs.put ("mid" ,   2);		// NOI18N
 		ringfileIDs.put ("midi",   2);		// NOI18N
@@ -243,7 +243,6 @@ public class Utils
 				System.err.print (time + ex);
 				System.err.flush ();
 			}
-
 		} catch (Throwable e) {}
 
 		try
@@ -355,7 +354,7 @@ public class Utils
 				}
 			}
 		}
-        }
+	}
 
 	/**
 	 * Method used to change the GUI - runs r.run () on the
@@ -457,6 +456,7 @@ public class Utils
 	 * A sample uncaught-exception handler instance for threads.
 	 */
 	public static final UncExHndlr handler = new UncExHndlr ();
+
 	/**
 	 * A sample uncaught-exception handler class for threads.
 	 */

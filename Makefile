@@ -2,7 +2,7 @@
 # JYMAG hand-made Makefile for creating distribution packages.
 #
 
-VER	= 0.7
+VER	= 0.8
 
 all:	dist
 dist:	dist-src dist-bin
@@ -13,7 +13,7 @@ dist-src:
 	cp -r JYMAG JYMAG-$(VER) && \
 	tar zcf JYMAG-src-$(VER).tar.gz JYMAG-$(VER)/ && \
 	rm -rf JYMAG-$(VER) && \
-	gpg -ba JYMAG-src-$(VER).tar.gz
+	gpg --digest-algo RIPEMD160 -ba JYMAG-src-$(VER).tar.gz
 
 dist-bin:
 	cd .. && \
@@ -32,7 +32,7 @@ dist-bin:
 		JYMAG-$(VER)/run-en.bat	\
 		JYMAG-$(VER)/THANKS	&& \
 	rm -rf JYMAG-$(VER) && \
-	gpg -ba JYMAG-bin-$(VER).tar.gz
+	gpg --digest-algo RIPEMD160 -ba JYMAG-bin-$(VER).tar.gz
 
 .PHONY:	dist-src dist-bin dist all
 

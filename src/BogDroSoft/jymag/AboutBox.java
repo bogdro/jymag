@@ -1,7 +1,7 @@
 /*
  * AboutBox.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -243,7 +243,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.MAIL) )
 							d.mail (new URI ("mailto",	// NOI18N
-								emailAddr + "?subject=ASM - JYMAG", null));	// NOI18N
+								emailAddr + "?subject=SOFT - JYMAG", null));	// NOI18N
 					}
 				}
 				catch (Exception ex)

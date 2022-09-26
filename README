@@ -61,24 +61,26 @@ Requirements for compiling:
 	can be downloaded separately)
 
 Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
- and click "Build Main Project" (or press F11).
+ and click "Build Main Project" (or press F11) if it is your main project
+ (bold font). If it's not your main project, right-click the JYMAG project
+ icon and click "Build".
 
 Compiling by hand :
 	- on Un*x shells try:
 		cd JYMAG/src/BogDroSoft/jymag/
-		CLASSPATH="$CLASSPATH:<path to netbeans>/java1/modules/ext/beansbinding-A.B.C.jar" javac *.java
+		CLASSPATH="$CLASSPATH:<path to netbeans>/javaN/modules/ext/beansbinding-A.B.C.jar" javac *.java
 	- on MS Windows this could work:
 		cd JYMAG\src\BogDroSoft\jymag
-		set CLASSPATH=%CLASSPATH%;<path to netbeans>\java1\modules\ext\beansbinding-A.B.C.jar
+		set CLASSPATH=%CLASSPATH%;<path to netbeans>\javaN\modules\ext\beansbinding-A.B.C.jar
 		javac *.java
 Replace "<path to netbeans>" with the path to your NetBeans installation
-directory and "A.B.C" with your beansbinding file's version number. You can,
-of course, specify the direct path to the beansbinding JAR file, if you got
-it separately.
+directory, "A.B.C" with your beansbinding file's version number, "N" with the
+correct number in your directory name. You can, of course, specify the direct
+path to the beansbinding JAR file, if you got it separately.
 
 ========================= Usage (GUI)
 
-Phone setup: conecct it to the computer using a cable or IrDA or
+Phone setup: connect it to the computer using a cable or IrDA or
  whatever works. Switch the transmission on in the phone, if necessary.
  If using a cable, select "Automatic speed" in the configuration.
 
@@ -94,7 +96,7 @@ To upload an element, simply click the "Upload" button. Getting the
 
 The following command-line (case-insensitive) options are supported:
 
-		--conf <file>			- read configuration from the given file
+	    --conf <file>		- read configuration from the given file
 	    --databits <5,6,7,8>	- sets the number of data bits
 	    --delete-after-download     - delete the downloaded elements if
 					  downloaded succesfully
@@ -114,12 +116,13 @@ The following command-line (case-insensitive) options are supported:
 					  and exits the program
 	    --download-dir <dir>	- sets the default directory
 	    --flow <none,soft,hard,soft+hard>	- sets the flow control mode
-		--help				- display help
+	    --help			- display help
 	    --lang LL_CC_VV		- select the language to use by JYMAG:
 	    				  "LL" is the language, "CC" is the
 	    				  country code, "VV" is the variant.
 	    				  Separate them using underscores.
-						  Only LL is required.
+					  Only LL is required.
+	    --license, --licence	- display license information
 	    --port <filename>		- sets the default port
 	    --parity <none, even, odd, space, mark>	- sets the parity mode
 	    --scan			- scans available ports for "OK"
@@ -127,11 +130,11 @@ The following command-line (case-insensitive) options are supported:
 	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
-			- sets the port speed
+					- sets the port speed
 	    --stopbits <1,1.5,2>	- sets the number of stop bits
 	    --upload <filename>		- uploads the given file to the phone
 					  and exits the program
-		--version, -v			- display program version
+	    --version, -v		- display program version
 
 ========================= Currently supported operations:
 
@@ -139,7 +142,7 @@ The following command-line (case-insensitive) options are supported:
    to-do tasks, events and animations/videos
 2) Downloading:
    a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG, WBMP,
-      unverified: TIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP
+      unverified: TIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP, WMF, CGM, PMB
    b) ringtones: MIDI, AMR, WAV, unverified: AIFF, IMY, AAC, MP3
    c) addressbook entries (vCards)
    d) to-do tasks
@@ -189,8 +192,8 @@ To translate the progrm to your language, make a copy of each *.properties
 	RawCommunicator_pt_BR.properties
  Then open each file in UTF-8 mode and translate the words AFTER the "=" in
  each line. When you've finished all the files, send them to me. Remember,
- UTF-8, not ISO-8859-*, not windows-*.
- NOTE: If you change the words before the "=", your translations won't
+ UTF-8, not ISO-8859-*, not windows-*, not cp*.
+NOTE: If you change the words before the "=", your translations won't
  be seen by the program.
 
 ========================= If not working
@@ -245,7 +248,7 @@ To translate the progrm to your language, make a copy of each *.properties
    in the current JYMAG working directory.
 5. If the program exited normally, but the "jymag.log" still exists after
    closing the program and is not empty, include it in your report.
-6. Take all the information from the above steps any and additional
-   information you can give and send to my e-mail address (you can find it
+6. Take all the information from the above steps and any additional
+   information you can give and send it to my e-mail address (you can find it
    at the top of this file).
 

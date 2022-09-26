@@ -1,7 +1,7 @@
 /*
  * PhoneElement.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,8 @@
 
 package BogDroSoft.jymag;
 
+import java.util.Locale;
+
 /**
  * This class represents an element in the phone (picture, ringtone, ...).
  * @author Bogdan Drozdowski
@@ -36,17 +38,17 @@ public class PhoneElement
 	private String filename;
 
 	/**
-	 * Creates a new instance of PhoneElement, using defaults.
+	 * Creates a new instance of PhoneElement.
 	 * @param ID ID number of the element in the phone.
 	 * @param format Element type (format), like FGIF, JPEG, MIDI.
 	 * @param name Element's name.
 	 */
-        public PhoneElement (String ID, String format, String name)
-        {
+	public PhoneElement (String ID, String format, String name)
+	{
 		id = new String (ID);
 		type = new String (format);
 		filename = new String (name);
-        }
+	}
 
 	/**
 	 * Returns this element's ID number in the phone.
@@ -81,7 +83,7 @@ public class PhoneElement
 		else if ( type.equals ("MJPG") ) return "mjp";		// NOI18N
 		else if ( type.equals ("3GP2") ) return "3gp";		// NOI18N
 		else if ( type.equals ("3GPP") ) return "3gp";		// NOI18N
-		else return type.toLowerCase ();
+		else return type.toLowerCase (Locale.ENGLISH);
 	}
 
 	/**

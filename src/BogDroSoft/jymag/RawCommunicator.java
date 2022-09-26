@@ -1,7 +1,7 @@
 /*
  * RawCommunicator.java, part of the JYMAG package.
  *
- * Copyright (C) 2008 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ public class RawCommunicator extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 71L;
 	private DataTransporter dtr;
-	private Object sync;
+	private final Object sync;
 	private final KL kl = new KL ();
 
 	// ------------ i18n stuff
@@ -55,13 +55,13 @@ public class RawCommunicator extends javax.swing.JDialog
 	{
 		// make modal
 		super (parent, true);
+		dtr = dt;
+		sync = synchro;
 		if ( dt == null || synchro == null )
 		{
 			dispose ();
 			return;
 		}
-		dtr = dt;
-		sync = synchro;
 
 		initComponents ();
 
@@ -213,7 +213,6 @@ public class RawCommunicator extends javax.swing.JDialog
 		}
 		currCommArea.requestFocusInWindow ();
 	}//GEN-LAST:event_sendButActionPerformed
-
 
 	private class KL implements KeyListener
 	{

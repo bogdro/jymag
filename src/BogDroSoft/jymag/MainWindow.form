@@ -17,6 +17,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
@@ -30,94 +31,83 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="tabPane" alignment="1" pref="882" max="32767" attributes="2"/>
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="portLabel" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="speedLabel" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="databitsLabel" alignment="1" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="dataBitsCombo" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="portLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="speedLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="databitsLabel" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="speedCombo" min="-2" pref="88" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="bpsLabel" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="speedCombo" min="-2" pref="88" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="bpsLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="portCombo" alignment="0" min="-2" pref="136" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="parityLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="stopbitsLabel" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
-                                  <Component id="portCombo" alignment="0" min="-2" pref="136" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="1">
+                                      <Component id="dataBitsCombo" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="flowLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="parityCombo" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="stopBitsCombo" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="flowSoft" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="flowHard" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
-                      </Group>
-                      <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="parityLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="stopbitsLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="flowLabel" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="parityCombo" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="stopBitsCombo" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="flowSoft" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                      <Component id="flowHard" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="loadConfBut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="saveConfBut" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="196" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="phoneTypeLabel" min="-2" max="-2" attributes="0"/>
-                                  <Component id="statusLabel" min="-2" max="-2" attributes="0"/>
-                                  <Component id="progressLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                                   <Component id="firmwareLabel" min="-2" max="-2" attributes="0"/>
+                                  <Component id="IMEILabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="subsNumLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="loadConfBut" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="statusLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="progressLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="status" min="-2" max="-2" attributes="1"/>
+                                  <Component id="subsNum" min="-2" max="-2" attributes="0"/>
+                                  <Component id="IMEI" min="-2" max="-2" attributes="0"/>
                                   <Component id="phone" min="-2" max="-2" attributes="1"/>
                                   <Component id="firmware" min="-2" max="-2" attributes="1"/>
-                                  <Component id="status" min="-2" max="-2" attributes="1"/>
-                                  <Component id="progressBar" alignment="0" pref="311" max="32767" attributes="0"/>
+                                  <Component id="saveConfBut" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="progressBar" alignment="0" pref="334" max="32767" attributes="0"/>
                               </Group>
+                              <EmptySpace min="30" pref="30" max="30" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="284" pref="284" max="284" attributes="0"/>
+                      <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="exitBut" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="getCapBut" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="rawBut" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="aboutBut" linkSize="1" alignment="1" min="-2" max="-2" attributes="1"/>
+                          <Component id="scanButton" linkSize="1" alignment="1" min="-2" max="-2" attributes="1"/>
+                      </Group>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="718" max="32767" attributes="0"/>
-                      <Component id="scanButton" linkSize="1" min="-2" max="-2" attributes="1"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="718" max="32767" attributes="0"/>
-                      <Component id="aboutBut" linkSize="1" min="-2" max="-2" attributes="1"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="718" max="32767" attributes="0"/>
-                      <Component id="rawBut" linkSize="1" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="718" max="32767" attributes="0"/>
-                      <Component id="getCapBut" linkSize="1" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="718" max="32767" attributes="0"/>
-                      <Component id="exitBut" linkSize="1" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="tabPane" alignment="1" pref="888" max="32767" attributes="2"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
@@ -130,7 +120,18 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="parityLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="parityCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="stopbitsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="stopBitsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="portLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="portCombo" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -145,46 +146,42 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="databitsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="dataBitsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="flowHard" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="flowLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="flowSoft" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" attributes="1">
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="parityLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="parityCombo" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="stopbitsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="stopBitsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="flowHard" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="loadConfBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="saveConfBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="phoneTypeLabel" alignment="3" min="-2" pref="14" max="-2" attributes="0"/>
-                                  <Component id="phone" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="phoneTypeLabel" min="-2" pref="14" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="firmwareLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="firmware" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="firmwareLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="IMEILabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="subsNumLabel" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="phone" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="statusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="status" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="firmware" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="IMEI" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="subsNum" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="loadConfBut" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="saveConfBut" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="statusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="status" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
@@ -200,12 +197,14 @@
                       <Component id="rawBut" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="getCapBut" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="192" max="-2" attributes="0"/>
                       <Component id="exitBut" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="tabPane" pref="415" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+              <Component id="tabPane" pref="394" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -319,7 +318,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/SCAN5.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Scan_ports" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Scan_ports" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -345,7 +344,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Photos">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Photos" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Photos" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/pict-1.png"/>
@@ -369,7 +368,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane1" alignment="0" pref="856" max="32767" attributes="2"/>
+                              <Component id="jScrollPane1" alignment="0" pref="850" max="32767" attributes="2"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getPhotoListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -387,7 +386,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane1" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getPhotoListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -416,7 +415,7 @@
                     <Component class="javax.swing.JTable" name="photoTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 66L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 66L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -428,7 +427,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -446,7 +445,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -464,7 +463,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -482,7 +481,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -503,7 +502,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Ringtones">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Ringtones" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Ringtones" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/ring.png"/>
@@ -532,7 +531,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane2" alignment="0" pref="856" max="32767" attributes="1"/>
+                              <Component id="jScrollPane2" alignment="0" pref="850" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getRingListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -550,7 +549,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane2" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getRingListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -579,7 +578,7 @@
                     <Component class="javax.swing.JTable" name="ringTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 67L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 67L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -591,7 +590,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -609,7 +608,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -627,7 +626,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -645,7 +644,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -666,7 +665,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Addressbook">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Addressbook" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Addressbook" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/abook.png"/>
@@ -695,7 +694,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane3" alignment="0" pref="856" max="32767" attributes="1"/>
+                              <Component id="jScrollPane3" alignment="0" pref="850" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getAddrListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -713,7 +712,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane3" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getAddrListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -742,7 +741,7 @@
                     <Component class="javax.swing.JTable" name="addrTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;    private static final long serialVersionUID = 68L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;    private static final long serialVersionUID = 68L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -754,7 +753,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -772,7 +771,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -790,7 +789,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -808,7 +807,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -829,7 +828,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="To do">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="ToDoTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="ToDoTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/todo.png"/>
@@ -858,7 +857,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane4" alignment="0" pref="856" max="32767" attributes="1"/>
+                              <Component id="jScrollPane4" alignment="0" pref="850" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getTodoListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -876,7 +875,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane4" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane4" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getTodoListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -905,7 +904,7 @@
                     <Component class="javax.swing.JTable" name="todoTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;    private static final long serialVersionUID = 69L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;    private static final long serialVersionUID = 69L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -917,7 +916,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -935,7 +934,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -953,7 +952,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -971,7 +970,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -992,7 +991,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Events/Tasks">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="EventsTasksTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="EventsTasksTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/event.png"/>
@@ -1021,7 +1020,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane5" alignment="0" pref="856" max="32767" attributes="1"/>
+                              <Component id="jScrollPane5" alignment="0" pref="850" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getEventListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1039,7 +1038,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane5" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane5" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getEventListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1068,7 +1067,7 @@
                     <Component class="javax.swing.JTable" name="eventTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;    private static final long serialVersionUID = 70L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;    private static final long serialVersionUID = 70L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -1080,7 +1079,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1098,7 +1097,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1116,7 +1115,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1134,7 +1133,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1155,7 +1154,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Animations/Videos">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="AnimationsVideosTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="AnimationsVideosTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/video.png"/>
@@ -1184,7 +1183,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane6" alignment="0" pref="856" max="32767" attributes="1"/>
+                              <Component id="jScrollPane6" alignment="0" pref="850" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getAnimListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1202,7 +1201,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane6" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane6" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getAnimListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1231,7 +1230,7 @@
                     <Component class="javax.swing.JTable" name="animTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 73L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 73L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -1243,7 +1242,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1261,7 +1260,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1279,7 +1278,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1297,7 +1296,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1318,7 +1317,7 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Java">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="JavaTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="JavaTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/BogDroSoft/jymag/rsrc/java.png"/>
@@ -1332,7 +1331,7 @@
             <Container class="javax.swing.JPanel" name="javaPane">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="66" red="0" type="rgb"/>
+                  <Color blue="ff" green="bd" red="7a" type="rgb"/>
                 </Property>
               </Properties>
               <BindingProperties>
@@ -1347,7 +1346,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane14" alignment="0" pref="856" max="32767" attributes="1"/>
+                              <Component id="jScrollPane14" alignment="0" pref="850" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="getJavaListBut" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1365,7 +1364,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane14" pref="287" max="32767" attributes="0"/>
+                          <Component id="jScrollPane14" pref="266" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="getJavaListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1394,7 +1393,7 @@
                     <Component class="javax.swing.JTable" name="javaTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 74L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                          <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        java.util.ResourceBundle.getBundle(&quot;BogDroSoft/jymag/i18n/MainWindow&quot;).getString(&quot;Name&quot;)&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 74L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -1406,7 +1405,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/list.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_list" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -1425,7 +1424,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/download.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Download_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -1444,7 +1443,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Upload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <AccessibilityProperties>
@@ -1462,7 +1461,7 @@
                       <Image iconType="3" name="/BogDroSoft/jymag/rsrc/delete.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Delete_selected" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -1484,42 +1483,42 @@
     <Component class="javax.swing.JLabel" name="portLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Port:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Port:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="speedLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Speed:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Speed:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="databitsLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Data_bits:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Data_bits:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="parityLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Parity:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Parity:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="stopbitsLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Stop_bits:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Stop_bits:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="flowLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Flow_control:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Flow_control:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -1529,7 +1528,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/QMARK8.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="About_JYMAG..." replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="About_JYMAG..." replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -1542,7 +1541,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/tools1.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Manual_commands" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Manual_commands" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -1557,7 +1556,7 @@
     <Component class="javax.swing.JLabel" name="statusLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Program_status:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Program_status:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -1577,7 +1576,7 @@
     <Component class="javax.swing.JLabel" name="firmwareLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Firmware:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Firmware:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -1594,7 +1593,7 @@
     <Component class="javax.swing.JLabel" name="progressLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Progress:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Progress:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -1608,7 +1607,7 @@
     <Component class="javax.swing.JLabel" name="phoneTypeLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Phone_type:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Phone_type:" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -1628,7 +1627,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/exit.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Exit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Exit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -1641,7 +1640,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/capab.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Get_capabilities" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_capabilities" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -1654,7 +1653,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/loadconf.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Load_configuration" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Load_configuration" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -1667,7 +1666,7 @@
           <Image iconType="3" name="/BogDroSoft/jymag/rsrc/saveconf.png"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Save_configuration" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Save_configuration" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -1677,15 +1676,37 @@
     <Component class="javax.swing.JCheckBox" name="flowSoft">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Software_(XON/XOFF)" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Software_(XON/XOFF)" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="flowHard">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="BogDroSoft/jymag/MainWindow.properties" key="Hardware_(RTS/CTS)" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Hardware_(RTS/CTS)" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="IMEILabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="IMEI:" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="IMEI">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="-"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="subsNumLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Subscriber_number" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="subsNum">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="-"/>
       </Properties>
     </Component>
   </SubComponents>
