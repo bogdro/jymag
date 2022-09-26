@@ -1,7 +1,7 @@
 #
 # JYMAG hand-made Makefile for creating distribution packages.
 # Best with GNU make.
-# Copyright (C) 2008-2012 Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl
+# Copyright (C) 2008-2013 Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,11 +22,13 @@
 #
 
 # JYMAG version
-VER		= 1.2
+VER		= 1.3
 
 SHELL		= /bin/sh
 DEL		= /bin/rm -fr
 COPY		= /bin/cp -fr
+PACK_EXCL_SRC	= jymag.exclude
+PACK_OTPS	= --exclude-from=$(PACK_EXCL_SRC)
 PACK		= tar jcf
 PACK_EXT	= tar.bz2
 GNUPG		= gpg
@@ -42,6 +44,7 @@ SED_OPTS	= -i
 NSIS		= makensis
 UNIX2DOS	= unix2dos
 UPX		= upx
+TOUCH		= touch
 
 
 # ------------- targets:
@@ -57,22 +60,27 @@ dist:	dist-javadoc dist-bin installer dist-src
 
 dist-src:	../JYMAG-src-$(VER).$(PACK_EXT) Makefile
 
+# better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
+# some systems don't like it
 ../JYMAG-src-$(VER).$(PACK_EXT): clean Makefile
 	cd .. && \
 	$(DEL) JYMAG-src-$(VER).$(PACK_EXT) JYMAG-src-$(VER).$(PACK_EXT).asc && \
 	$(COPY) JYMAG JYMAG-$(VER) && \
-	$(PACK) JYMAG-src-$(VER).$(PACK_EXT) JYMAG-$(VER) && \
+	$(TOUCH) $(PACK_EXCL_SRC) && \
+	$(PACK) JYMAG-src-$(VER).$(PACK_EXT) $(PACK_OTPS) JYMAG-$(VER) && \
 	$(DEL) JYMAG-$(VER) && \
 	$(GNUPG) $(GNUPG_OPTS) JYMAG-src-$(VER).$(PACK_EXT)
 
 dist-bin:	../JYMAG-bin-$(VER).$(PACK_EXT) Makefile
 
+# better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
+# some systems don't like it
 ../JYMAG-bin-$(VER).$(PACK_EXT):	manual jar Makefile
 	$(DEL) dist/javadoc && \
 	cd .. && \
 	$(DEL) JYMAG-bin-$(VER).$(PACK_EXT) JYMAG-bin-$(VER).$(PACK_EXT).asc && \
 	$(COPY) JYMAG JYMAG-$(VER) && \
-	$(PACK) JYMAG-bin-$(VER).$(PACK_EXT) \
+	$(PACK) JYMAG-bin-$(VER).$(PACK_EXT) $(PACK_OTPS) \
 		JYMAG-$(VER)/AUTHORS	\
 		JYMAG-$(VER)/COPYING	\
 		JYMAG-$(VER)/ChangeLog	\
@@ -83,13 +91,15 @@ dist-bin:	../JYMAG-bin-$(VER).$(PACK_EXT) Makefile
 		JYMAG-$(VER)/run*.bat	\
 		JYMAG-$(VER)/manual	\
 		JYMAG-$(VER)/JYMAG-manual-*.pdf	\
-		JYMAG-$(VER)/THANKS	&& \
+		JYMAG-$(VER)/THANKS	\
+		JYMAG-$(VER)/jymag.desktop	&& \
 	$(DEL) JYMAG-$(VER) && \
 	$(GNUPG) $(GNUPG_OPTS) JYMAG-bin-$(VER).$(PACK_EXT)
 
 manual: JYMAG-manual-EN.pdf JYMAG-manual-PL.pdf Makefile
 
-JYMAG-manual-EN.pdf: manual/en/*.html manual/rsrc/css/* manual/rsrc/img/* manual/rsrc/license.html Makefile
+JYMAG-manual-EN.pdf: manual/en/*.html manual/rsrc/css/* manual/en/rsrc/* \
+	manual/pl/rsrc/* manual/rsrc/license.html Makefile
 	$(HTMLDOC) $(HTMLDOC_OPTS) -f JYMAG-manual-EN.pdf \
 		manual/en/index.html \
 		manual/en/readme.html \
@@ -101,7 +111,8 @@ JYMAG-manual-EN.pdf: manual/en/*.html manual/rsrc/css/* manual/rsrc/img/* manual
 		manual/en/signal_power.html \
 		manual/rsrc/license.html
 
-JYMAG-manual-PL.pdf: manual/pl/*.html manual/rsrc/css/* manual/rsrc/img/* manual/rsrc/license.html Makefile
+JYMAG-manual-PL.pdf: manual/pl/*.html manual/rsrc/css/* manual/en/rsrc/* \
+	manual/pl/rsrc/* manual/rsrc/license.html Makefile
 	$(HTMLDOC) $(HTMLDOC_OPTS) -f JYMAG-manual-PL.pdf \
 		manual/pl/index.html \
 		manual/pl/readme.html \
@@ -115,11 +126,13 @@ JYMAG-manual-PL.pdf: manual/pl/*.html manual/rsrc/css/* manual/rsrc/img/* manual
 
 dist-javadoc:	../JYMAG-javadoc-$(VER).$(PACK_EXT) Makefile
 
+# better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
+# some systems don't like it
 ../JYMAG-javadoc-$(VER).$(PACK_EXT):	dist/javadoc Makefile
 	cd .. && \
 	$(DEL) JYMAG-javadoc-$(VER).$(PACK_EXT) JYMAG-javadoc-$(VER).$(PACK_EXT).asc && \
 	$(COPY) JYMAG JYMAG-$(VER) && \
-	$(PACK) JYMAG-javadoc-$(VER).$(PACK_EXT) JYMAG-$(VER)/dist/javadoc && \
+	$(PACK) JYMAG-javadoc-$(VER).$(PACK_EXT) $(PACK_OTPS) JYMAG-$(VER)/dist/javadoc && \
 	$(DEL) JYMAG-$(VER) && \
 	$(GNUPG) $(GNUPG_OPTS) JYMAG-javadoc-$(VER).$(PACK_EXT)
 
@@ -132,7 +145,7 @@ jar: dist/JYMAG.jar
 dist/JYMAG.jar:	$(shell find src)
 	$(ANT) jar
 
-installer:	jar manual setup/jymag.exe setup/Setup-JYMAG-$(VER).exe Makefile
+installer:	jar manual setup/jymag.exe setup/jymag-en.exe setup/Setup-JYMAG-$(VER).exe Makefile
 
 setup/jymag.exe:	setup/launch4j-jymag.xml setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) 's/<fileVersion>[^<]*<\/fileVersion>/<fileVersion>$(VER).0.0<\/fileVersion>/' \
@@ -145,6 +158,18 @@ setup/jymag.exe:	setup/launch4j-jymag.xml setup/jymag.ico Makefile
 		setup/launch4j-jymag.xml
 	$(LAUNCH4J) $(PWD)/setup/launch4j-jymag.xml
 	$(COPY) setup/jymag.exe ../jymag-$(VER).exe
+
+setup/jymag-en.exe:	setup/launch4j-jymag.xml setup/jymag.ico Makefile
+	$(SED) $(SED_OPTS) 's/<fileVersion>[^<]*<\/fileVersion>/<fileVersion>$(VER).0.0<\/fileVersion>/' \
+		setup/launch4j-jymag-en.xml
+	$(SED) $(SED_OPTS) 's/<txtFileVersion>[^<]*<\/txtFileVersion>/<txtFileVersion>$(VER)<\/txtFileVersion>/' \
+		setup/launch4j-jymag-en.xml
+	$(SED) $(SED_OPTS) 's/<productVersion>[^<]*<\/productVersion>/<productVersion>$(VER).0.0<\/productVersion>/' \
+		setup/launch4j-jymag-en.xml
+	$(SED) $(SED_OPTS) 's/<txtProductVersion>[^<]*<\/txtProductVersion>/<txtProductVersion>$(VER)<\/txtProductVersion>/' \
+		setup/launch4j-jymag-en.xml
+	$(LAUNCH4J) $(PWD)/setup/launch4j-jymag-en.xml
+	$(COPY) setup/jymag-en.exe ../jymag-en-$(VER).exe
 
 setup/Setup-JYMAG-$(VER).exe:	setup/jymag.nsi AUTHORS ChangeLog INSTALL \
 		COPYING README THANKS Makefile
@@ -164,6 +189,7 @@ setup/Setup-JYMAG-$(VER).exe:	setup/jymag.nsi AUTHORS ChangeLog INSTALL \
 	$(NSIS) setup/jymag.nsi
 	#$(UPX) setup/Setup-JYMAG-$(VER).exe
 	$(COPY) setup/Setup-JYMAG-$(VER).exe ..
+	$(GNUPG) $(GNUPG_OPTS) ../Setup-JYMAG-$(VER).exe
 
 clean:
 	$(ANT) clean

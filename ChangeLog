@@ -1,3 +1,44 @@
+2013-02-17	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.3:
+	  Code cleanup and organizing into packages (GUI, communication).
+	  Added answering a call and changing the volume level. Added sending
+	  a file with commands/data on the command line. Removed the
+	  dependency on the beansbinding library, making the binary
+	  distibution smaller.
+	* Utils.STATUS: get the bundle and the strings just once
+	* Makefile: allowing excluding files from source distribution, signing
+	  the installer automatically
+	* MainWindow.java, ConfigFile.java: saving and restoring the
+	  selected tab
+	* RawCommunicator.java (start): listen for data all the time
+	* TransferUtils.java: one general method and SwingWorker to support
+	  all operations. Added operations for answering a call, changing the
+	  volume level and sending a file with commands to the port.
+	* setup/{launch4j-jymag-en.xml,jymag.nsi},Makefile: added a Windows
+	  executable for launching JYMAG in English.
+	* jymag.desktop,Makefile: added a Desktop file to the source and
+	  binary releases to simplify adding JYMAG to KDE and other
+	  freedesktop-compatible desktops
+	* Utils.java: made the Hashtables private, accessible only via getters
+	* DataTransporter.java: changed some of the return values, added
+	  getting and setting the volume level, added an overloaded send()
+	  method
+	* RawCommunicator.java (sendFileButActionPerformed): using the new
+	  send() method from DataTransporter
+	* DialPanel.java: added buttons to answer an incoming call and
+	  changing the loudspeaker volume level.
+	* MainWindow.properties: fixed a typo
+	* run*: accepting and passing command line parameters
+	* CommandLineParser.java (parse): recognising new command-line
+	  option: --send-cmd-file.
+	* README, manual/en/readme.html, manual/pl/readme.html: added the new
+	  command-line option --send-cmd-file, updated compiling.
+	* manual/*/{main_window.html,about_window.html,tables.html}: updated
+	  with new features and screenshots.
+	* SignalDisplayer.java: fixed closing the window when there is no
+	  communication.
+
 2012-06-30	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 1.2:

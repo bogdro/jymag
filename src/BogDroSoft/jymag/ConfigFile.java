@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -41,6 +41,7 @@ public class ConfigFile
 	private File cfgFile;
 	private volatile static String newLine = null;
 	private static final String defaultNewLine = "\n";		// NOI18N
+	private static final String emptyString = "";		// NOI18N
 
 	// communication parameters:
 	private String port;
@@ -56,6 +57,7 @@ public class ConfigFile
 	private int height;
 	private boolean isMax;
 	private int fontSize;
+	private int selectedTab;
 
 	// patterns for matching:
 	private static final Pattern portPat = Pattern.compile
@@ -82,6 +84,8 @@ public class ConfigFile
 			("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern fontSizePat = Pattern.compile
 			("font_size\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
+	private static final Pattern selectedTabPat = Pattern.compile
+			("tab\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 
 	private Matcher portM;
 	private Matcher speedM;
@@ -95,6 +99,7 @@ public class ConfigFile
 	private Matcher heightM;
 	private Matcher isMaxM;
 	private Matcher fontSizeM;
+	private Matcher selectedTabM;
 
 	/**
 	 * Creates a new instance of ConfigFile.
@@ -102,7 +107,10 @@ public class ConfigFile
 	 */
 	public ConfigFile (File f)
 	{
-		if ( f == null ) throw new NullPointerException ("ConfigFile:f==null");	// NOI18N
+		if ( f == null )
+		{
+			throw new IllegalArgumentException ("ConfigFile:f==null");	// NOI18N
+		}
 		cfgFile = f;
 		if ( newLine == null )
 		{
@@ -132,7 +140,7 @@ public class ConfigFile
 	 */
 	public void read () throws Exception
 	{
-		port = "";	// NOI18N
+		port = emptyString;
 		speed = 115200;
 		dBits = 8;
 		parity = 0;
@@ -144,6 +152,7 @@ public class ConfigFile
 		height = 600;
 		isMax = true;
 		fontSize = 12;
+		selectedTab = 0;
 
 		// don't force any encodings, because the file may be in a different encoding
 		BufferedReader br = new BufferedReader (new FileReader (cfgFile));
@@ -160,8 +169,14 @@ public class ConfigFile
 				line = null;
 				break;
 			}
-			if ( line == null ) break;
-			if ( line.isEmpty () ) continue;
+			if ( line == null )
+			{
+				break;
+			}
+			if ( line.isEmpty () )
+			{
+				continue;
+			}
 			portM = portPat.matcher (line);
 			speedM = speedPat.matcher (line);
 			dBitsM = dBitsPat.matcher (line);
@@ -174,6 +189,7 @@ public class ConfigFile
 			heightM = heightPat.matcher (line);
 			isMaxM = isMaxPat.matcher (line);
 			fontSizeM = fontSizePat.matcher (line);
+			selectedTabM = selectedTabPat.matcher (line);
 
 			if ( line.matches ("^#.*") ) continue;	// NOI18N
 			else if ( portM.matches () )
@@ -308,20 +324,65 @@ public class ConfigFile
 					Utils.handleException (ex, "ConfigFile.read.parseInt (font_size)");	// NOI18N
 				}
 			}
+			else if ( selectedTabM.matches () )
+			{
+				try
+				{
+					selectedTab = Integer.parseInt (selectedTabM.group (1));
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "ConfigFile.read.parseInt (tab)");	// NOI18N
+				}
+			}
 		} while (line != null);
 		br.close ();
 
 		// verify here
-		if ( ! Utils.isAllowableSpeed (speed) ) speed = 115200;
-		if ( ! Utils.isAllowableDataBits (dBits) ) dBits = 8;
-		if ( parity < 0 || parity > 4 ) parity = 0;
-		if ( sBits < 0 || sBits > 2 ) sBits = 0;
-		if ( flowCtl < 0 || flowCtl > 3 ) flowCtl = 0;
-		if ( x < 0 ) x = 0;
-		if ( y < 0 ) y = 0;
-		if ( width < 0 ) width = 0;
-		if ( height < 0 ) height = 0;
-		if ( fontSize < 0 ) fontSize = 12;
+		if ( ! Utils.isAllowableSpeed (speed) )
+		{
+			speed = 115200;
+		}
+		if ( ! Utils.isAllowableDataBits (dBits) )
+		{
+			dBits = 8;
+		}
+		if ( parity < 0 || parity > 4 )
+		{
+			parity = 0;
+		}
+		if ( sBits < 0 || sBits > 2 )
+		{
+			sBits = 0;
+		}
+		if ( flowCtl < 0 || flowCtl > 3 )
+		{
+			flowCtl = 0;
+		}
+		if ( x < 0 )
+		{
+			x = 0;
+		}
+		if ( y < 0 )
+		{
+			y = 0;
+		}
+		if ( width < 0 )
+		{
+			width = 0;
+		}
+		if ( height < 0 )
+		{
+			height = 0;
+		}
+		if ( fontSize < 0 )
+		{
+			fontSize = 12;
+		}
+		if ( selectedTab < 0 )
+		{
+			selectedTab = 0;
+		}
 	}
 
 	/**
@@ -349,6 +410,7 @@ public class ConfigFile
 			+ "height = " + height + newLine	// NOI18N
 			+ "ismax = " + ((isMax)? 1 : 0) + newLine	// NOI18N
 			+ "font_size = " + fontSize + newLine						// NOI18N
+			+ "tab = " + selectedTab + newLine						// NOI18N
 		);
 		pw.close ();
 	}
@@ -463,6 +525,15 @@ public class ConfigFile
 		fontSize = v;
 	}
 
+	/**
+	 * Sets the selected tab.
+	 * @param v the new value.
+	 */
+	public void setSelectedTab (int v)
+	{
+		selectedTab = v;
+	}
+
 	// ================ getters:
 
 
@@ -573,4 +644,14 @@ public class ConfigFile
 	{
 		return fontSize;
 	}
+
+	/**
+	 * Gets the selected tab.
+	 * @return the selected tab's index.
+	 */
+	public int getSelectedTab ()
+	{
+		return selectedTab;
+	}
+
 }

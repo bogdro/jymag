@@ -1,7 +1,7 @@
 /*
  * Starter.java, part of the JYMAG package.
  *
- * Copyright (C) 2009-2012 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2009-2013 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,8 @@
 
 package BogDroSoft.jymag;
 
+import BogDroSoft.jymag.gui.MainWindow;
+import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 /**
@@ -34,8 +36,12 @@ import javax.swing.JOptionPane;
 public class Starter
 {
 	private static final String startError
-		= java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/Starter").getString("JYMAG_Start_Error");
-	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/Starter")
+		.getString("JYMAG_Start_Error");
+	private static final String errString
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow")
+		.getString("Error");
+
 	private Starter () {}
 
 	/**
@@ -46,7 +52,7 @@ public class Starter
 	{
 		try
 		{
-			MainWindow.main (args);
+			MainWindow.start (args);
 		}
 		catch (Throwable ex)
 		{

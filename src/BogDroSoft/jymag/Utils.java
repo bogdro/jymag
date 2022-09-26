@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -62,49 +63,49 @@ public class Utils
 	 * A Hashtable containing all ID numbers connected to the given file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> filetypeIDs;
+	private final static Hashtable<String, Integer> filetypeIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given photo file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> photofileIDs;
+	private final static Hashtable<String, Integer> photofileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given ringtone file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> ringfileIDs;
+	private final static Hashtable<String, Integer> ringfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given addressbook file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> addrfileIDs;
+	private final static Hashtable<String, Integer> addrfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given to-do file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> todofileIDs;
+	private final static Hashtable<String, Integer> todofileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given event file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> eventfileIDs;
+	private final static Hashtable<String, Integer> eventfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given animation/video file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> animfileIDs;
+	private final static Hashtable<String, Integer> animfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given Java file
 	 * extensions, used for file uploading.
 	 */
-	/*public*/ final static Hashtable<String, Integer> javafileIDs;
+	private final static Hashtable<String, Integer> javafileIDs;
 
 	private static final String emptyStr = "";				// NOI18N
 	private static final String dash = "-";					// NOI18N
@@ -343,7 +344,7 @@ public class Utils
 						{
 							// let's display only our files
 							if ( ! clazz.startsWith
-								(Utils.class.getPackage ().getName ()) )
+								("BogDro") )
 							{
 								continue;
 							}
@@ -394,7 +395,10 @@ public class Utils
 	 */
 	public synchronized static void changeGUI (final Runnable r)
 	{
-		if ( r == null ) return;
+		if ( r == null )
+		{
+			return;
+		}
 		if ( SwingUtilities.isEventDispatchThread () )
 		{
 			try
@@ -448,7 +452,10 @@ public class Utils
 	 */
 	public static void setFontSize (Component c, float newSize)
 	{
-		if ( c == null ) return;
+		if ( c == null )
+		{
+			return;
+		}
 		c.setFont (c.getFont ().deriveFont (newSize));
 		if ( c instanceof Container )
 		{
@@ -458,7 +465,9 @@ public class Utils
 				for ( int i = 0; i < subComps.length; i++ )
 				{
 					if ( subComps[i] != null )
+					{
 						setFontSize (subComps[i], newSize);
+					}
 				}
 			}
 		}
@@ -491,7 +500,10 @@ public class Utils
 			&& speed != 2500000
 			&& speed != 3000000
 			&& speed != 3500000
-			&& speed != 4000000 ) return false;
+			&& speed != 4000000 )
+		{
+			return false;
+		}
 
 		return true;
 	}
@@ -504,7 +516,10 @@ public class Utils
 	public static boolean isAllowableDataBits (int dBits)
 	{
 		if ( dBits != 5 && dBits != 6
-			&& dBits != 7 && dBits != 8 ) return false;
+			&& dBits != 7 && dBits != 8 )
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -533,8 +548,14 @@ public class Utils
 			{
 				dirSep = System.getProperty ("file.separator", "/");	// NOI18N
 			} catch (Exception e) {}
-			if ( dirSep == null ) dirSep = File.separator;
-			if ( dirSep == null ) dirSep = "/";	// NOI18N
+			if ( dirSep == null )
+			{
+				dirSep = File.separator;
+			}
+			if ( dirSep == null )
+			{
+				dirSep = "/";	// NOI18N
+			}
 			String[] dirs = new String[7];
 			try
 			{
@@ -567,8 +588,14 @@ public class Utils
 			int i;
 			for ( i = 0; i < dirs.length; i++ )
 			{
-				if ( dirs[i] == null ) continue;
-				if ( dirs[i].isEmpty () ) continue;
+				if ( dirs[i] == null )
+				{
+					continue;
+				}
+				if ( dirs[i].isEmpty () )
+				{
+					continue;
+				}
 				try
 				{
 					// don't force any encodings, because the translated messages may
@@ -580,7 +607,10 @@ public class Utils
 				}
 				catch (Exception e) {}
 			}
-			if ( i == dirs.length ) Utils.handleException (ex, "stderr");	// NOI18N
+			if ( i == dirs.length )
+			{
+				Utils.handleException (ex, "stderr");	// NOI18N
+			}
 		}
 		return filename;
 	}
@@ -603,16 +633,23 @@ public class Utils
 			@Override
 			public boolean accept ( File f )
 			{
-				if ( f.isDirectory () ) return true;
+				if ( f.isDirectory () )
+				{
+					return true;
+				}
 				String name = f.getName ();
-				if ( name == null ) return false;
+				if ( name == null )
+				{
+					return false;
+				}
 				if ( name.contains (dot) && filetype != null )
 				{
 					if ( filetype.containsKey (name.substring
 						(name.lastIndexOf (dot)+1)
 						.toLowerCase (Locale.ENGLISH)))
-
+					{
 						return true;
+					}
 				}
 				return false;
 			}
@@ -653,12 +690,18 @@ public class Utils
 	public static void closeProgram (String filename, int retval)
 	{
 		// close logging
-		if ( System.err != null ) System.err.close ();
+		if ( System.err != null )
+		{
+			System.err.close ();
+		}
 		// remove the log file if empty
 		File log = new File (filename);
 		if ( log.exists () && log.length() == 0 )
 		{
-			if ( ! log.delete () && retval == 0 ) retval = 1;
+			if ( ! log.delete () && retval == 0 )
+			{
+				retval = 1;
+			}
 		}
 		System.exit (retval);
 	}
@@ -677,7 +720,10 @@ public class Utils
 			@Override
 			public synchronized void run ()
 			{
-				if ( status == null || s == null ) return;
+				if ( status == null || s == null )
+				{
+					return;
+				}
 				status.setText (s.toString ());
 				if ( s.equals (STATUS.READY) )
 				{
@@ -739,7 +785,10 @@ public class Utils
 		{
 			if ( me.getButton () == MouseEvent.BUTTON1 )
 			{
-				if ( table != null ) table.selectAll ();
+				if ( table != null )
+				{
+					table.selectAll ();
+				}
 			}
 		}
 	}
@@ -756,15 +805,33 @@ public class Utils
 		/** The RECEIVING state. */
 		RECEIVING;
 
+		private static final ResourceBundle rcBundle =
+			ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+
+		private static final String readyString =
+			rcBundle.getString("READY");
+
+		private static final String sendingString =
+			rcBundle.getString("SENDING");
+
+		private static final String recvString =
+			rcBundle.getString("RECEIVING");
+
 		@Override
 		public String toString ()
 		{
 			if ( this.equals (STATUS.READY) )
-				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("READY");
+			{
+				return readyString;
+			}
 			else if ( this.equals (STATUS.SENDING) )
-				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("SENDING");
+			{
+				return sendingString;
+			}
 			else if ( this.equals (STATUS.RECEIVING) )
-				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("RECEIVING");
+			{
+				return recvString;
+			}
 			return emptyStr;
 		}
 	}
@@ -797,7 +864,10 @@ public class Utils
 		 */
 		private void addKeyListeners (Component c)
 		{
-			if ( c == null ) return;
+			if ( c == null )
+			{
+				return;
+			}
 			c.addKeyListener (this);
 			if ( c instanceof Container )
 			{
@@ -807,7 +877,9 @@ public class Utils
 					for ( int i = 0; i < subComps.length; i++ )
 					{
 						if ( subComps[i] != null )
+						{
 							addKeyListeners (subComps[i]);
+						}
 					}
 				}
 			}
@@ -820,7 +892,10 @@ public class Utils
 		@Override
 		public void keyTyped (KeyEvent ke)
 		{
-			if ( ke == null || frame == null ) return;
+			if ( ke == null || frame == null )
+			{
+				return;
+			}
 			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
 			{
 				frame.dispose ();
@@ -832,7 +907,7 @@ public class Utils
 	 * Gets a copy of the filetypeIDs Hashtable.
 	 * @return the filetypeIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getFiletypeIDs ()
+	public static Hashtable<String, Integer> getFiletypeIDs ()
 	{
 		return new Hashtable<String, Integer> (filetypeIDs);
 	}
@@ -841,7 +916,7 @@ public class Utils
 	 * Gets a copy of the photofileIDs Hashtable.
 	 * @return the photofileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getPhotofileIDs ()
+	public static Hashtable<String, Integer> getPhotofileIDs ()
 	{
 		return new Hashtable<String, Integer> (photofileIDs);
 	}
@@ -850,7 +925,7 @@ public class Utils
 	 * Gets a copy of the ringfileIDs Hashtable.
 	 * @return the ringfileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getRingfileIDs ()
+	public static Hashtable<String, Integer> getRingfileIDs ()
 	{
 		return new Hashtable<String, Integer> (ringfileIDs);
 	}
@@ -859,7 +934,7 @@ public class Utils
 	 * Gets a copy of the addrfileIDs Hashtable.
 	 * @return the addrfileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getAddrfileIDs ()
+	public static Hashtable<String, Integer> getAddrfileIDs ()
 	{
 		return new Hashtable<String, Integer> (addrfileIDs);
 	}
@@ -868,7 +943,7 @@ public class Utils
 	 * Gets a copy of the todofileIDs Hashtable.
 	 * @return the todofileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getTodofileIDs ()
+	public static Hashtable<String, Integer> getTodofileIDs ()
 	{
 		return new Hashtable<String, Integer> (todofileIDs);
 	}
@@ -877,7 +952,7 @@ public class Utils
 	 * Gets a copy of the eventfileIDs Hashtable.
 	 * @return the eventfileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getEventfileIDs ()
+	public static Hashtable<String, Integer> getEventfileIDs ()
 	{
 		return new Hashtable<String, Integer> (eventfileIDs);
 	}
@@ -886,7 +961,7 @@ public class Utils
 	 * Gets a copy of the animfileIDs Hashtable.
 	 * @return the animfileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getAnimfileIDs ()
+	public static Hashtable<String, Integer> getAnimfileIDs ()
 	{
 		return new Hashtable<String, Integer> (animfileIDs);
 	}
@@ -895,7 +970,7 @@ public class Utils
 	 * Gets a copy of the javafileIDs Hashtable.
 	 * @return the javafileIDs Hashtable.
 	 */
-	public Hashtable<String, Integer> getJavafileIDs ()
+	public static Hashtable<String, Integer> getJavafileIDs ()
 	{
 		return new Hashtable<String, Integer> (javafileIDs);
 	}

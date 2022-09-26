@@ -151,8 +151,6 @@ You can also do one of the following:
 <ul>
  <li>RxTx Java Transmission package from <a href="http://rxtx.qbang.org/" hreflang="en">rxtx.qbang.org</a></li>
  <li>JDK, the <a href="http://java.sun.com" hreflang="en">Java SE Development Kit</a> &gt;= (1.)6.0</li>
- <li>the org.jdesktop.beansbinding package (contained in NetBeans, but perhaps
-	can be downloaded separately)</li>
 </ul>
 
 <p>
@@ -176,22 +174,15 @@ Compiling by hand (you may need to provide the full path to "javac"):
  <li>on Un*x shells try
   <pre>
 		cd JYMAG/src/BogDroSoft/jymag/
-		CLASSPATH="$CLASSPATH:&lt;path to netbeans&gt;/javaN/modules/ext/beansbinding-A.B.C.jar" javac *.java</pre>
+		javac *.java</pre>
   </li>
 
  <li>on MS Windows this could work:
   <pre>
 		cd JYMAG\src\BogDroSoft\jymag
-		set CLASSPATH=%CLASSPATH%;&lt;path to netbeans&gt;\javaN\modules\ext\beansbinding-A.B.C.jar
 		javac *.java</pre>
   </li>
 </ul>
-<p>
-Replace "&lt;path to netbeans&gt;" with the path to your NetBeans installation
-directory, "A.B.C" with your beansbinding file's version number, "N" with the
-correct number in your directory name. You can, of course, specify the direct
-path to the beansbinding JAR file, if you got it separately.
-</p>
 
 
 
@@ -285,6 +276,8 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
  <li><code>--port &lt;filename&gt;</code>		- sets the default port</li>
  <li><code>--scan</code>			- scans available ports for "OK"
 	    				  answers and exits the program</li>
+ <li><code>--send-cmd-file &lt;file&gt;</code>	- sends the contents of the given file
+					  (as commands or data or mix of these)</li>
  <li><code>--send-sms &lt;number&gt; &lt;msg&gt;</code>	- send the given &lt;msg&gt; message as an
 					  SMS to the given recipient &lt;number&gt;</li>
  <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,

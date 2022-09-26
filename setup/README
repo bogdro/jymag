@@ -67,8 +67,6 @@ Requirements for compiling:
 
 - JDK, the Java Development Kit >= (1.)6.0
 - RxTx Java Transmission package from www.rxtx.org
-- the org.jdesktop.beansbinding package (contained in NetBeans, but perhaps
-	can be downloaded separately)
 
 Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
  and click "Build Main Project" (or press F11) if it is your main project
@@ -85,17 +83,11 @@ Compiling by hand (you may need to provide the full path to "javac"):
 
 	- on Un*x shells try:
 		cd JYMAG/src/BogDroSoft/jymag/
-		CLASSPATH="$CLASSPATH:<path to netbeans>/javaN/modules/ext/beansbinding-A.B.C.jar" javac *.java
+		javac *.java
 
 	- on MS Windows this could work:
 		cd JYMAG\src\BogDroSoft\jymag
-		set CLASSPATH=%CLASSPATH%;<path to netbeans>\javaN\modules\ext\beansbinding-A.B.C.jar
 		javac *.java
-
-Replace "<path to netbeans>" with the path to your NetBeans installation
-directory, "A.B.C" with your beansbinding file's version number, "N" with the
-correct number in your directory name. You can, of course, specify the direct
-path to the beansbinding JAR file, if you got it separately.
 
 ========================= Usage (GUI)
 
@@ -165,6 +157,8 @@ The following command-line (case-insensitive) options are supported:
 	    --port <filename>		- sets the default port
 	    --scan			- scans available ports for "OK"
 	    				  answers and exits the program
+	    --send-cmd-file <file>	- sends the contents of the given file
+					  (as commands or data or mix of these)
 	    --send-sms <number> <msg>	- send the given <msg> message as an
 					  SMS to the given recipient <number>
 	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,

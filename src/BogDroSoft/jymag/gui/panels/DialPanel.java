@@ -1,7 +1,7 @@
 /*
  * DialPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2012 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2013 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,16 +25,20 @@
 
 package BogDroSoft.jymag.gui.panels;
 
-import BogDroSoft.jymag.DataTransporter;
-import BogDroSoft.jymag.MainWindow;
-import BogDroSoft.jymag.TransferUtils;
+import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.gui.MainWindow;
+import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.Utils;
 
 import java.awt.event.ItemEvent;
+import java.util.ResourceBundle;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.JSpinner;
 import javax.swing.SwingWorker;
 
 /**
@@ -45,19 +49,29 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 81L;
 
+	@SuppressWarnings("rawtypes")
 	private JComboBox portCombo;
+	@SuppressWarnings("rawtypes")
 	private JComboBox speedCombo;
+	@SuppressWarnings("rawtypes")
 	private JComboBox dataBitsCombo;
+	@SuppressWarnings("rawtypes")
 	private JComboBox stopBitsCombo;
+	@SuppressWarnings("rawtypes")
 	private JComboBox parityCombo;
 
 	private JCheckBox flowSoft;
 	private JCheckBox flowHard;
 
+	private MainWindow mw;
+
 	// synchronization variable:
 	private Object sync;
 
-	/** Creates new form DialPanel */
+	private static final ResourceBundle rcBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DialPanel");
+	private static final String exString = rcBundle.getString("Exception");
+
+	/** Creates new form DialPanel. */
 	public DialPanel()
 	{
 		initComponents();
@@ -110,6 +124,9 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                 toneDialRadio = new javax.swing.JRadioButton();
                 pulseDialRadio = new javax.swing.JRadioButton();
                 autoDialRadio = new javax.swing.JRadioButton();
+                answerBut = new javax.swing.JButton();
+                volumeUpBut = new javax.swing.JButton();
+                volumeDownBut = new javax.swing.JButton();
 
                 dialTypeGroup.add(dialNumRadio);
                 dialNumRadio.setSelected(true);
@@ -263,6 +280,30 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                 autoDialRadio.setSelected(true);
                 autoDialRadio.setText(bundle.getString("dial_method_auto")); // NOI18N
 
+                answerBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pickup.png"))); // NOI18N
+                answerBut.setText(bundle.getString("answer_call")); // NOI18N
+                answerBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                answerButActionPerformed(evt);
+                        }
+                });
+
+                volumeUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/volup.png"))); // NOI18N
+                volumeUpBut.setText(bundle.getString("volume_up")); // NOI18N
+                volumeUpBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                volumeUpButActionPerformed(evt);
+                        }
+                });
+
+                volumeDownBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/voldown.png"))); // NOI18N
+                volumeDownBut.setText(bundle.getString("volume_down")); // NOI18N
+                volumeDownBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                volumeDownButActionPerformed(evt);
+                        }
+                });
+
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
                 this.setLayout(layout);
                 layout.setHorizontalGroup(
@@ -285,10 +326,14 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addComponent(but0)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(butHash))
+                                                                .addComponent(butHash)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+                                                                .addComponent(volumeUpBut)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(volumeDownBut))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(numberField, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 341, Short.MAX_VALUE)
                                                                 .addComponent(dialBut))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -314,11 +359,14 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                                                                 .addComponent(but9)))
                                                                 .addGap(18, 18, 18)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(autoDialRadio)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(autoDialRadio)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 230, Short.MAX_VALUE)
+                                                                                .addComponent(answerBut))
                                                                         .addComponent(pulseDialRadio)
                                                                         .addGroup(layout.createSequentialGroup()
                                                                                 .addComponent(toneDialRadio)
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 263, Short.MAX_VALUE)
                                                                                 .addComponent(hangUpBut))))))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(dialCmdRadio)
@@ -326,6 +374,9 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                                 .addComponent(dialCmdField, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap())
                 );
+
+                layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {volumeDownBut, volumeUpBut});
+
                 layout.setVerticalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
@@ -368,8 +419,14 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(dialBut)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(hangUpBut)))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addComponent(hangUpBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(answerBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(volumeDownBut)
+                                                        .addComponent(volumeUpBut))))
+                                .addContainerGap(12, Short.MAX_VALUE))
                 );
 
                 numberField.getAccessibleContext().setAccessibleDescription(bundle.getString("acc_number_field")); // NOI18N
@@ -378,12 +435,16 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void numberButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_numberButActionPerformed
 	{//GEN-HEADEREND:event_numberButActionPerformed
-		if ( evt == null ) return;
+		if ( evt == null )
+		{
+			return;
+		}
 		Object source = evt.getSource ();
 		if ( source != null && (source instanceof JButton) )
 		{
 			numberField.setText (numberField.getText () + ((JButton)source).getText ());
 		}
+
 	}//GEN-LAST:event_numberButActionPerformed
 
 	private void dialButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_dialButActionPerformed
@@ -394,8 +455,14 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 			{
 				// dial a number
 				DataTransporter.DIAL_MODE mode = DataTransporter.DIAL_MODE.AUTO;
-				if ( toneDialRadio.isSelected () ) mode = DataTransporter.DIAL_MODE.TONE;
-				else if ( pulseDialRadio.isSelected () ) mode = DataTransporter.DIAL_MODE.PULSE;
+				if ( toneDialRadio.isSelected () )
+				{
+					mode = DataTransporter.DIAL_MODE.TONE;
+				}
+				else if ( pulseDialRadio.isSelected () )
+				{
+					mode = DataTransporter.DIAL_MODE.PULSE;
+				}
 				TransferUtils.dialNumber (numberField.getText (),
 					voiceRadio.isSelected (), mode,
 					TransferUtils.getIdentifierForPort
@@ -451,7 +518,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 			Utils.handleException (ex, "dialButActionPerformed");	// NOI18N
 			try
 			{
-				JOptionPane.showMessageDialog (null, ex.toString (),
+				JOptionPane.showMessageDialog (mw, ex.toString (),
 					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
 			} catch (Exception ex2) {}
 		}
@@ -512,31 +579,93 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		}
 	}//GEN-LAST:event_dialCmdRadioStateChanged
 
+	private void answerButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_answerButActionPerformed
+	{//GEN-HEADEREND:event_answerButActionPerformed
+		try
+		{
+			TransferUtils.answer (TransferUtils.getIdentifierForPort
+					(portCombo.getSelectedItem ().toString ()),
+				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
+				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
+				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
+				parityCombo.getSelectedIndex (),
+				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+				null, this, sync, false, false, false);
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "answerButActionPerformed");	// NOI18N
+		}
+	}//GEN-LAST:event_answerButActionPerformed
+
+	private void volumeUpButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_volumeUpButActionPerformed
+	{//GEN-HEADEREND:event_volumeUpButActionPerformed
+		try
+		{
+			TransferUtils.volumeUp (TransferUtils.getIdentifierForPort
+					(portCombo.getSelectedItem ().toString ()),
+				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
+				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
+				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
+				parityCombo.getSelectedIndex (),
+				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+				null, this, sync, false, false, false);
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "volumeUpButActionPerformed");	// NOI18N
+		}
+	}//GEN-LAST:event_volumeUpButActionPerformed
+
+	private void volumeDownButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_volumeDownButActionPerformed
+	{//GEN-HEADEREND:event_volumeDownButActionPerformed
+		try
+		{
+			TransferUtils.volumeDown (TransferUtils.getIdentifierForPort
+					(portCombo.getSelectedItem ().toString ()),
+				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
+				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
+				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
+				parityCombo.getSelectedIndex (),
+				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+				null, this, sync, false, false, false);
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "volumeDownButActionPerformed");	// NOI18N
+		}
+	}//GEN-LAST:event_volumeDownButActionPerformed
+
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void setPortCombo (JComboBox combo)
 	{
 		portCombo = combo;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void setSpeedCombo (JComboBox combo)
 	{
 		speedCombo = combo;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void setDataBitsCombo (JComboBox combo)
 	{
 		dataBitsCombo = combo;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void setStopBitsCombo (JComboBox combo)
 	{
 		stopBitsCombo = combo;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void setParityCombo (JComboBox combo)
 	{
 		parityCombo = combo;
@@ -560,7 +689,38 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		sync = synch;
 	}
 
+	@Override
+	public void setProgressBar (JProgressBar progressBar)
+	{
+		// not needed
+	}
+
+	@Override
+	public void setStatusLabel (JLabel status)
+	{
+		// not needed
+	}
+
+	@Override
+	public void setDestDir (String destDirName)
+	{
+		// not needed
+	}
+
+	@Override
+	public void setMainWindow (MainWindow mainWindow)
+	{
+		mw = mainWindow;
+	}
+
+	@Override
+	public void setFontSizeSpin (JSpinner fontSizeSpinner)
+	{
+		// not needed
+	}
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JButton answerBut;
         private javax.swing.JRadioButton autoDialRadio;
         private javax.swing.JButton but0;
         private javax.swing.JButton but1;
@@ -588,6 +748,8 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
         private javax.swing.ButtonGroup tonePulseDialGroup;
         private javax.swing.ButtonGroup voiceDataDialGroup;
         private javax.swing.JRadioButton voiceRadio;
+        private javax.swing.JButton volumeDownBut;
+        private javax.swing.JButton volumeUpBut;
         // End of variables declaration//GEN-END:variables
 
 }

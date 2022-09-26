@@ -1,5 +1,5 @@
 ; JYMAG version included in the installer. Must be all-numeric!
-!define VERSION 1.2
+!define VERSION 1.3
 
 ; The JYMAG publisher
 !define PUBLISHER "Bogdan 'bogdro' Drozdowski"
@@ -146,6 +146,7 @@ Section "JYMAG base files"
 	File "..\dist\JYMAG.jar"
 	File /r "..\dist\lib"
 	File "jymag.exe"
+	File "jymag-en.exe"
 	File /oname=README.txt "README"
 	File /oname=ChangeLog.txt "ChangeLog"
 	File /oname=AUTHORS.txt "AUTHORS"
@@ -164,6 +165,7 @@ SectionGroup "Shortcuts"
 		StrCpy $has_start_menu "1"
 		CreateDirectory "$SMPROGRAMS\JYMAG"
 		CreateShortCut "$SMPROGRAMS\JYMAG\JYMAG ${VERSION}.lnk" "$INSTDIR\jymag.exe"
+		CreateShortCut "$SMPROGRAMS\JYMAG\JYMAG ${VERSION} (English).lnk" "$INSTDIR\jymag-en.exe"
 		CreateShortCut "$SMPROGRAMS\JYMAG\Uninstall JYMAG.lnk" "$INSTDIR\uninstall.exe"
 
 	SectionEnd
@@ -280,6 +282,7 @@ Section "Uninstall"
 	Delete /REBOOTOK "$INSTDIR\README.txt"
 	Delete /REBOOTOK "$INSTDIR\JYMAG.jar"
 	Delete /REBOOTOK "$INSTDIR\jymag.exe"
+	Delete /REBOOTOK "$INSTDIR\jymag-en.exe"
 	Delete /REBOOTOK "$INSTDIR\jymag.log"
 	Delete /REBOOTOK "$INSTDIR\ChangeLog.txt"
 	Delete /REBOOTOK "$INSTDIR\AUTHORS.txt"

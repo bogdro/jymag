@@ -1,0 +1,35 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>JYMAG.jar</jar>
+  <outfile>jymag-en.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://jymag.sf.net</supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>jymag.ico</icon>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <opt>-Duser.language=en -Duser.country=US</opt>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.3.0.0</fileVersion>
+    <txtFileVersion>1.3</txtFileVersion>
+    <fileDescription>JYMAG launcher</fileDescription>
+    <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2013</copyright>
+    <productVersion>1.3.0.0</productVersion>
+    <txtProductVersion>1.3</txtProductVersion>
+    <productName>JYMAG</productName>
+    <companyName></companyName>
+    <internalName>JYMAG</internalName>
+    <originalFilename>JYMAG.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

@@ -154,8 +154,6 @@ Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 <ul>
  <li>RxTx z <a href="http://rxtx.qbang.org/" hreflang="en">rxtx.qbang.org</a></li>
  <li>JDK, <a href="http://java.sun.com" hreflang="en" lang="en">Java SE Development Kit</a> &gt;= (1.)6.0</li>
- <li>paczka org.jdesktop.beansbinding (zawarta w NetBeans, ale byæ mo¿e mo¿na j± pobraæ
-	osobno)</li>
 </ul>
 
 <p>
@@ -180,22 +178,15 @@ Kompilacja rêczna (mo¿e byæ wymagane podanie pe³nej
  <li>na Un*x spróbuj
   <pre>
 		cd JYMAG/src/BogDroSoft/jymag/
-		CLASSPATH="$CLASSPATH:&lt;¶cie¿ka do netbeans&gt;/javaN/modules/ext/beansbinding-A.B.C.jar" javac *.java</pre>
+		javac *.java</pre>
   </li>
 
  <li>na MS Windows to mo¿e zadzia³aæ:
   <pre>
 		cd JYMAG\src\BogDroSoft\jymag
-		set CLASSPATH=%CLASSPATH%;&lt;¶cie¿ka do netbeans&gt;\javaN\modules\ext\beansbinding-A.B.C.jar
 		javac *.java</pre>
   </li>
 </ul>
-<p>
-Zamieñ "&lt;¶cie¿ka do netbeans&gt;" na ¶cie¿kê do katalogu swojej instalacji NetBeans,
-"A.B.C" na swoj± wersjê pliku beansbinding, "N" na prawid³ow± liczbê w nazwie katalogu,
-który akurat masz. Mo¿esz, oczywi¶cie, podaæ bezpo¶redni± ¶cie¿kê
-do pliku JAR beansbinding, je¶li pobrano go oddzielnie.
-</p>
 
 
 
@@ -279,6 +270,8 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
  <li><code>--port &lt;nazwa&gt;</code>		- ustawia domy¶lny port</li>
  <li><code>--scan</code>			- skanuje dostêpne porty na odpowiedzi "OK"
 	    				  i wychodzi</li>
+ <li><code>--send-cmd-file &lt;plik&gt;</code>	- wysy³a zawarto¶æ podanego pliku (jako komendy,
+						 dane lub mieszankê)</li>
  <li><code>--send-sms &lt;numer&gt; &lt;tre¶æ&gt;</code>	- wy¶lij dan± &lt;tre¶æ&gt; jako SMS
 					  do odbiorcy o numerze &lt;numer&gt;</li>
  <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,

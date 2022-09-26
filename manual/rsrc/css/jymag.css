@@ -30,6 +30,11 @@ A:active	{
 			color: yellow;
 		}
 
+a:focus		{
+			border-style: none;
+			outline-width: 0px;
+		}
+
 pre		{
 /* 			font-family: monospace, "courier new", courier; */
 			background-color: #D0FFFF;
@@ -43,21 +48,25 @@ code, kbd	{
 		}
 
 
-/* Bez ramek naokolo obrazkow */
-img		{	border-style: none;		}
-/* Ale sa takie, co chca miec ramke */
+img		{
+			border-style: none;
+		}
+
+img:focus	{
+			border-style: none;
+			outline-width: 0px;
+		}
+
 img.ramka	{
 			border-style: solid;
 			border-color: blue;
 		}
 
-/* Graficzne zaznaczenie skrotow */
 acronym, abbr	{
 			border-bottom: 1px dotted black;
 			cursor:	help; 		/* CSS 2 */
 		}
 
-/* Informacja istotna */
 .wazne		{
 			/*text-transform: uppercase;*/
 			text-decoration: underline;
@@ -87,14 +96,12 @@ ol.rom		{	list-style-type: upper-roman;	}
 
 ol.alfa		{	list-style-type: lower-alpha;	}
 
-/* Naglowek w rozdziale */
 .nag		{
 			font-size: 200%;
 			text-align: center;
 			font-weight: normal;
 		}
 
-/* Tabela, jej naglowki i komorki maja byc z brzegami */
 table		{
  			width: 100%;
 			border-style: solid;
@@ -126,20 +133,11 @@ td.numpad	{
 			background-color: yellow;
 		}
 
-/* Linie przerwy miedzy wierszami tabeli beda wyswietlane tylko przez przegladarki tekstowe */
 td hr		{	display: none;			}
 td .niewidTD	{	display: none;			}
 
-/* Wynik wyszukiwania: */
-.traf		{
-			color: black;
-			font-weight: bold;
-			background-color: yellow;
-		}
 
-/* Cos, co ma byc umieszczone po lewej stronie ekranu */
 .lewa		{	float: left;			}
-/* Cos, co ma byc umieszczone po prawej stronie ekranu */
 .prawa		{	float: right;			}
 
 /* =============================================================== */
@@ -175,22 +173,16 @@ td .niewidTD	{	display: none;			}
 		}
 
 
-/* nie bedziemy drukowac linkow przeskakujacych ani nawigacyjnych */
   .bezdruk	{	display: none;			}
 
-/* Skroty juz nie beda podkreslone, bo i po co */
   acronym, abbr	{	border-bottom: none;		}
 
-/* Zeby nie bylo tak, ze naglowek jest na samym dnie strony jako ostatni napis.
-   Niestety, ze wzgledu na naglowek poczatkowy strony, nie mozna dac 'page-break-before: always' */
   .nag		{	page-break-after: avoid;	}
 
   tr		{	page-break-inside: avoid;	}
 
   td		{	page-break-inside: avoid;	}
-/* nie bedziemy drukowac linii */
   hr		{	display: none;			}
-/* nie bedziemy drukowac obrazkow */
   img		{	display: none;			}
 
   td.numpad	{
@@ -202,7 +194,6 @@ td .niewidTD	{	display: none;			}
 
 @media aural {
 
-/* bezpieczne domyslne wartosci, ale nie ustawiam voice-family */
   body		{
   			pitch-range: 50;
   			volume: soft;
@@ -214,13 +205,10 @@ td .niewidTD	{	display: none;			}
   			speak-numeral: continuous;
   		}
 
-/* skroty mowione litera po literze */
   acronym	{	speak: spell-out;		}
 
-/* przy czytaniu kazdej komorki tabeli czytany jest wlasciwy naglowek */
   table, td	{	speak-header: always;		}
 
-/* Informacje wazne troche glosniej i z naciskiem */
   .wazne	{
   			pitch: medium;
   			stress: 90;
@@ -228,10 +216,8 @@ td .niewidTD	{	display: none;			}
   			volume: medium;
 		}
 
-/* naglowki glosniej */
   .nag		{	volume: loud;			}
 
-/* nie bedziemy wymawiac linii */
   hr		{
   			speak: none;
   			display: none;

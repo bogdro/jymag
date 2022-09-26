@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2012 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2013 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,9 @@
 
 package BogDroSoft.jymag;
 
+import BogDroSoft.jymag.comm.TransferUtils;
+import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.gui.MainWindow;
 import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -115,6 +118,8 @@ public class CommandLineParser
 		b.getString("set_the_default_port")+
 		"\n--scan\t\t\t- "+	// NOI18N
 		b.getString("scan_available_ports")+
+		"\n--send-cmd-file <file>\t- "+	// NOI18N
+		b.getString("send_cmd_file")+
 		"\n--send-sms <number> <msg>\t- "+	// NOI18N
 		b.getString("send_sms")+
 		"\n--speed"+	// NOI18N
@@ -918,6 +923,28 @@ public class CommandLineParser
 				{
 					Utils.handleException (ex,
 						"cmdline.staticHangup()");	// NOI18N
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--send-cmd-file") )	// NOI18N
+			{
+				if ( i < args.length-1 )
+				{
+					try
+					{
+						int res = TransferUtils.sendFileAsCommands (
+							new File (args[i+1]),
+							TransferUtils.getIdentifierForPort
+							(portName), speed, dBits, sBits,
+							parity, flow, null, null, sync,
+							false, true, true);
+						Utils.closeProgram (logfile, res);
+					}
+					catch ( Exception ex )
+					{
+						Utils.handleException (ex,
+							"cmdline.sendCmdFile()");	// NOI18N
+					}
+					i++;
 				}
 			}
 		}	// for i
