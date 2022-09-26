@@ -1,7 +1,7 @@
 /*
  * DataTransporterTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -150,7 +150,7 @@ public class DataTransporterTest
 		Object[] extraTerminators = null;
 		byte[] expResult = null;
 		byte[] result = dt.recv (extraTerminators);
-		assertEquals (expResult, result);
+		assertArrayEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to fail.
 		fail ("The test case is a prototype.");
 	}

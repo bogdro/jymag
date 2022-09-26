@@ -1,7 +1,7 @@
 /*
  * JYMAGTransferHandler.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
 
 package BogDroSoft.jymag.gui;
 
-import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.Utils;
 import java.awt.datatransfer.DataFlavor;
@@ -36,8 +35,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.TransferHandler;
 
 /**
@@ -49,19 +46,6 @@ public class JYMAGTransferHandler extends TransferHandler
 {
 	private static final long serialVersionUID = 77L;
 
-	@SuppressWarnings("rawtypes")
-	private final JComboBox portCombo;
-	@SuppressWarnings("rawtypes")
-	private final JComboBox speedCombo;
-	@SuppressWarnings("rawtypes")
-	private final JComboBox dataBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private final JComboBox stopBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private final JComboBox parityCombo;
-	private final JCheckBox flowSoftBox;
-	private final JCheckBox flowHardBox;
-	private final Object sync;
 	private final MainWindow mw;
 
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
@@ -73,36 +57,14 @@ public class JYMAGTransferHandler extends TransferHandler
 	/**
 	 * Creates a new TransferHandler that takes its transfer
 	 *	parameters from the given fields.
-	 * @param ports The combo box with the list of the ports. Can't be null.
-	 * @param speeds The combo box with the list of the transfer rates. Can't be null.
-	 * @param dataBits The combo box with the number of data bits. Can't be null.
-	 * @param stopBits The combo box with the number of stop bits. Can't be null.
-	 * @param parities The combo box with the list of parity modes. Can't be null.
-	 * @param flowSoft The check box for software flow control. Can't be null.
-	 * @param flowHard The check box for hardware flow control. Can't be null.
-	 * @param synchro The synchronization variable. Can't be null.
 	 * @param parentFrame The parent frame.
 	 */
-	@SuppressWarnings("rawtypes")
-	public JYMAGTransferHandler (JComboBox ports, JComboBox speeds,
-		JComboBox dataBits, JComboBox stopBits, JComboBox parities,
-		JCheckBox flowSoft, JCheckBox flowHard, Object synchro,
-		MainWindow parentFrame)
+	public JYMAGTransferHandler (MainWindow parentFrame)
 	{
-		if ( ports == null || speeds == null || dataBits == null
-			|| stopBits == null || parities == null || flowSoft == null
-			|| flowHard == null || synchro == null || parentFrame == null)
+		if ( parentFrame == null)
 		{
 			throw new IllegalArgumentException ("JYMAGTransferHandler: null");	// NOI18N
 		}
-		portCombo = ports;
-		speedCombo = speeds;
-		dataBitsCombo = dataBits;
-		stopBitsCombo = stopBits;
-		parityCombo = parities;
-		flowSoftBox = flowSoft;
-		flowHardBox = flowHard;
-		sync = synchro;
 		mw = parentFrame;
 
 		// Linux:
@@ -282,11 +244,8 @@ public class JYMAGTransferHandler extends TransferHandler
 		{
 			// NOTE: create new TransferParameters each time,
 			// because the values of the GUI elements could have changed.
-			TransferParameters tp = new TransferParameters (
-				portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-				parityCombo, flowSoftBox, flowHardBox, sync);
 			mw.setSendingStatus ();
-			TransferUtils.uploadFile (f, tp,
+			TransferUtils.uploadFile (f, mw.getTransferParameters (),
 				null, mw, false, false, true);
 			mw.setReadyStatus ();
 		}

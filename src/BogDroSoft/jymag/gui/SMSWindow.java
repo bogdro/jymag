@@ -1,7 +1,7 @@
 /*
  * SMSWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@
 
 package BogDroSoft.jymag.gui;
 
-import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.comm.TransferParameters;
+import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.Utils;
 
@@ -33,8 +34,6 @@ import java.awt.Dimension;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
 
 /**
@@ -44,8 +43,7 @@ import javax.swing.SwingWorker;
 public class SMSWindow extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 80L;
-	private final DataTransporter dtr;
-	private final Object sync;
+	private final TransferParameters tp;
 	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
@@ -59,25 +57,22 @@ public class SMSWindow extends javax.swing.JDialog
 
 	/**
 	 * Creates new form SMSWindow.
-	 * @param dt The DataTransporter instance to use for communications.
-	 * Must already be open.
+	 * @param tParams The TransferParameters instance to use for communications.
 	 * @param parent The parent frame for this window.
-	 * @param synchro A synchronization variable.
 	 * @param fontSize The font size for this window.
 	 * @param msg the message to display, if any.
 	 */
-	public SMSWindow (DataTransporter dt, MainWindow parent,
-		Object synchro, float fontSize, PhoneMessage msg)
+	public SMSWindow (TransferParameters tParams, MainWindow parent,
+		float fontSize, PhoneMessage msg)
 	{
 		// make modal
 		super (parent, true);
 
-		dtr = dt;
-		sync = synchro;
+		tp = tParams;
 		mw = parent;
 		// "msg" is the message to display, if any. If present,
 		// transport parameters are not required
-		if ( msg == null && (dt == null || synchro == null) )
+		if ( msg == null && tp == null )
 		{
 			dispose ();
 			return;
@@ -94,7 +89,6 @@ public class SMSWindow extends javax.swing.JDialog
 			msgArea.setEditable (false);
 			phoneNumField.setText (msg.getRecipientNum ());
 			msgArea.setText (msg.getMessage ());
-			//dtr = null;
 		}
 
 		// change the size so that the scrollbars fit:
@@ -109,7 +103,7 @@ public class SMSWindow extends javax.swing.JDialog
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		/* add the Esc key listener to the frame and all components. */
-		new Utils.EscKeyListener (this);
+		new EscKeyListener (this).install();
 	}
 
 	/** This method is called from within the constructor to
@@ -242,7 +236,7 @@ public class SMSWindow extends javax.swing.JDialog
 	private void sendButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_sendButActionPerformed
 	{//GEN-HEADEREND:event_sendButActionPerformed
 
-		if ( dtr == null || ! sendBut.isEnabled () )
+		if ( tp == null || ! sendBut.isEnabled () )
 		{
 			return;
 		}
@@ -262,114 +256,38 @@ public class SMSWindow extends javax.swing.JDialog
 		sendBut.setEnabled (false);
 		mw.setSendingStatus ();
 
-		SwingWorker<Integer, Void> sw =
-			new SwingWorker<Integer, Void> ()
+		PhoneMessage msg = new PhoneMessage ();
+		msg.setMessage (messageBody);
+		msg.setRecipientNum (phoneNumber);
+		isFinished.set (false);
+		TransferUtils.sendMessage (msg, tp,
+			new Runnable ()
+		{
+			@Override
+			public synchronized void run ()
 			{
-				@Override
-				protected Integer doInBackground ()
-				{
-					try
-					{
-						isFinished.set (false);
-						int sent = -1;
-						synchronized (sync)
-						{
-							PhoneMessage msg = new PhoneMessage ();
-							msg.setMessage (messageBody);
-							msg.setRecipientNum (phoneNumber);
-							sent = dtr.sendMessage (msg);
-						}
-						return sent;
-					}
-					catch (Exception ex)
-					{
-						Utils.handleException (ex, "SMSWindow: send");	// NOI18N
-						return -1;
-					}
-					finally
-					{
-						isFinished.set (true);
-					}
-				}
+				phoneNumField.setEditable (true);
+				msgArea.setEditable (true);
+				sendBut.setEnabled (true);
+				closeBut.setEnabled (true);
+				isFinished.set (true);
+				mw.setReadyStatus ();
+			}
 
-				@Override
-				protected void done ()
-				{
-					try
-					{
-						Integer rcvd = get ();
-						if (rcvd != null)
-						{
-							if (rcvd.intValue () == 0)
-							{
-								try
-								{
-									JOptionPane.showMessageDialog (null, okString,
-										okString, JOptionPane.INFORMATION_MESSAGE);
-								}
-								catch (Exception ex2)
-								{
-									// Ignore. Everything went OK
-								}
-							}
-							else
-							{
-								try
-								{
-									JOptionPane.showMessageDialog (null,
-										sendError + space + rcvd.toString (),
-										errString, JOptionPane.ERROR_MESSAGE);
-								}
-								catch (Exception ex2)
-								{
-									Utils.handleException (ex2, "SMSWindow.send.SW.showMessageDialog"	// NOI18N
-										+ space + errString + space + sendError + space + rcvd.toString ());
-								}
-							}
-						}
-						else
-						{
-							try
-							{
-								JOptionPane.showMessageDialog (null,
-									sendError,// + space + rcvd.toString (),
-									errString, JOptionPane.ERROR_MESSAGE);
-							}
-							catch (Exception ex2)
-							{
-								Utils.handleException (ex2, "SMSWindow.send.SW.showMessageDialog"	// NOI18N
-									+ space + errString + space + sendError /*+ space + rcvd.toString ()*/);
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						Utils.handleException (ex, "SMSWindow.send.SW.done");	// NOI18N
-					}
-					phoneNumField.setEditable (true);
-					msgArea.setEditable (true);
-					sendBut.setEnabled (true);
-					closeBut.setEnabled (true);
-					mw.setReadyStatus ();
-				}
+			@Override
+			public String toString ()
+			{
+				return "SMSWindow.sendButActionPerformed.Runnable";	// NOI18N
+			}
+		}, this, false, false, false);
 
-				@Override
-				public String toString ()
-				{
-					return "SMSWindow.sendButActionPerformed.SwingWorker";	// NOI18N
-				}
-			};
-		sw.execute ();
 	}//GEN-LAST:event_sendButActionPerformed
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_fontSizeSpinStateChanged
 	{//GEN-HEADEREND:event_fontSizeSpinStateChanged
 
-		Object val = fontSizeSpin.getValue ();
-		if (val != null && val instanceof Number)
-		{
-			Utils.setFontSize (this, ((Number) val).floatValue ());
-		}
+		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
 	private void formWindowClosing (java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing

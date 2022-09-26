@@ -1,7 +1,7 @@
 /*
  * CapabilityWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -73,7 +73,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 		initComponents ();
 
 		/* add the Esc key listener to the frame and all components. */
-		new Utils.EscKeyListener (this);
+		new EscKeyListener (this).install();
 
 		Dimension size = getSize ();
 		if ( size != null )
@@ -276,7 +276,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 	private void getCapButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getCapButActionPerformed
 
 		capabText.setText ("");					// NOI18N
-		String type = null;
+		String type;
 
 		if ( abookCapRB.isSelected () )
 		{
@@ -327,7 +327,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 				try
 				{
 					isFinished.set (false);
-					String rcvd = null;
+					String rcvd;
 					synchronized (sync)
 					{
 						rcvd = dtr.getCapabilities (typeToGet);
@@ -391,11 +391,8 @@ public class CapabilityWindow extends javax.swing.JDialog
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
 
-		Object val = fontSizeSpin.getValue ();
-		if ( val != null && val instanceof Number )
-		{
-			Utils.setFontSize (this, ((Number)val).floatValue ());
-		}
+		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
 	private void formWindowClosing (java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing

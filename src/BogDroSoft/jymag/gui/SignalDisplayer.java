@@ -1,7 +1,7 @@
 /*
  * SignalDisplayer.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -88,7 +88,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 
 		fontSpin.setValue (fontSize);	// refresh the font in the window
 		/* add the Esc key listener to the frame and all components. */
-		new Utils.EscKeyListener (this);
+		new EscKeyListener (this).install();
 		// start the Thread:
 		runUpdater = true;
 		start ();
@@ -250,11 +250,8 @@ public class SignalDisplayer extends javax.swing.JFrame
 
 	private void fontSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSpinStateChanged
 
-		Object val = fontSpin.getValue ();
-		if ( val != null && val instanceof Number )
-		{
-			Utils.setFontSize (this, ((Number)val).floatValue ());
-		}
+		Utils.setFontSize (this, Utils.getFontSize (fontSpin));
+
 	}//GEN-LAST:event_fontSpinStateChanged
 
 	private void onTopCBItemStateChanged (java.awt.event.ItemEvent evt)//GEN-FIRST:event_onTopCBItemStateChanged

@@ -1,7 +1,7 @@
 /*
  * JavasPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -37,9 +37,6 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JFileChooser;
-import javax.swing.JComboBox;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
@@ -52,25 +49,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 85L;
 
-	@SuppressWarnings("rawtypes")
-	private JComboBox portCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox speedCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox dataBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox stopBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox parityCombo;
-
-	private JCheckBox flowSoft;
-	private JCheckBox flowHard;
         private JProgressBar progressBar;
-        private JLabel status;
-
-	// synchronization variable:
-	private Object sync;
-
 	private volatile MainWindow mw;
 
 	private Vector<PhoneElement> currentJavaElements;
@@ -167,14 +146,14 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 ) {
                         private static final long serialVersionUID = 74L;
-                        Class[] types = new Class [] {
+                        Class<?>[] types = new Class<?> [] {
                                 java.lang.String.class
                         };
                         boolean[] canEdit = new boolean [] {
                                 false
                         };
 
-                        public Class getColumnClass(int columnIndex) {
+                        public Class<?> getColumnClass(int columnIndex) {
                                 return types [columnIndex];
                         }
 
@@ -283,7 +262,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
 				final AtomicInteger threads = new AtomicInteger (0);
-				TransferParameters tp = getTransferParameters ();
+				TransferParameters tp = mw.getTransferParameters ();
 				for ( int i = 0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
@@ -403,7 +382,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
-				TransferParameters tp = getTransferParameters ();
+				TransferParameters tp = mw.getTransferParameters ();
 				for ( int i = 0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
@@ -439,76 +418,10 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 		}
 	}//GEN-LAST:event_deleteJavaButdeleteButActionPerformed
 
-	private TransferParameters getTransferParameters ()
-	{
-		return new TransferParameters (
-			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-			parityCombo, flowSoft, flowHard, sync);
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setPortCombo (JComboBox combo)
-	{
-		portCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setSpeedCombo (JComboBox combo)
-	{
-		speedCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setDataBitsCombo (JComboBox combo)
-	{
-		dataBitsCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setStopBitsCombo (JComboBox combo)
-	{
-		stopBitsCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setParityCombo (JComboBox combo)
-	{
-		parityCombo = combo;
-	}
-
-	@Override
-	public void setFlowSoftCheckbox (JCheckBox checkbox)
-	{
-		flowSoft = checkbox;
-	}
-
-	@Override
-	public void setFlowHardCheckbox (JCheckBox checkbox)
-	{
-		flowHard = checkbox;
-	}
-
-	@Override
-	public void setSync (Object synch)
-	{
-		sync = synch;
-	}
-
 	@Override
 	public void setProgressBar (JProgressBar mainProgressBar)
 	{
 		progressBar = mainProgressBar;
-	}
-
-	@Override
-	public void setStatusLabel (JLabel statusLabel)
-	{
-		status = statusLabel;
 	}
 
 	@Override
@@ -521,9 +434,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 	public void setMainWindow (MainWindow mainWindow)
 	{
 		mw = mainWindow;
-		javaTable.setTransferHandler (new JYMAGTransferHandler (
-			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-			parityCombo, flowSoft, flowHard, sync, mw));
+		javaTable.setTransferHandler (new JYMAGTransferHandler (mw));
 	}
 
 	@Override

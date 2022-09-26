@@ -1,11 +1,16 @@
 ; JYMAG version included in the installer. Must be all-numeric!
-!define VERSION 1.6
+;!define VERSION 1.7 ; now provided by 'make' on the command line
 
 ; The JYMAG publisher
 !define PUBLISHER "Bogdan 'bogdro' Drozdowski"
 
 ; The JYMAG website address
 !define JYMAGURL "http://jymag.sf.net"
+
+!define REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"
+
+SetCompressor /solid lzma
+;Unicode true; use when only newer Windowses will be supported
 
 !include "Sections.nsh"
 !include "FileFunc.nsh"
@@ -59,11 +64,11 @@ CRCCheck force
 	!endif
 !endif
 
-; the current year is now provided by 'make'
+; the current date is now provided by 'make' on the command line
 ;!searchparse /noerrors "${__DATE__}" "" YEAR "-"
-!define YEAR 2018
-!define MONTH 06
-!define DAYOFMONTH 09
+;!define YEAR 2020
+;!define MONTH 02
+;!define DAYOFMONTH 03
 
 VIAddVersionKey "ProductName" "JYMAG"
 VIAddVersionKey "Comments" "Installer created on ${YEAR}-${MONTH}-${DAYOFMONTH}, ${__TIME__} with the free Nullsoft Scriptable Install System, http://nsis.sf.net"
@@ -100,40 +105,35 @@ UninstPage instfiles
 
 Function afterInstall
 
+	; write the uninstaller before we calculate the installation size
+	WriteUninstaller "uninstall.exe"
+
 	StrCmp $is_removable "1" skip_reg
 
 		; Write the installation path into the registry
-		WriteRegStr HKLM "SOFTWARE\JYMAG" "Install_Dir" "$INSTDIR"
+		WriteRegStr   HKLM "SOFTWARE\JYMAG" "Install_Dir" "$INSTDIR"
 
-		; write unsintallation information for the Control Panel:
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"DisplayName" "JYMAG ${VERSION} ($INSTDIR)"
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"UninstallString" "$INSTDIR\uninstall.exe"
-		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"NoModify" 1
-		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"NoRepair" 1
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"InstallLocation" "$INSTDIR"
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"Publisher" "${PUBLISHER}"
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"HelpLink" "${JYMAGURL}"
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"URLUpdateInfo" "${JYMAGURL}"
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"URLInfoAbout" "${JYMAGURL}"
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"DisplayVerstion" "${VERSION}"
-		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"VersionMajor" ${VER_MAJOR}
-		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"\
-			"VersionMinor" ${VER_MINOR}
+		; write unintallation information for the Control Panel:
+		WriteRegStr   HKLM "${REG_KEY}" "DisplayIcon" "$INSTDIR\jymag-en.exe"
+		WriteRegStr   HKLM "${REG_KEY}" "DisplayName" "JYMAG ${VERSION} ($INSTDIR)"
+		WriteRegStr   HKLM "${REG_KEY}" "DisplayVersion" "${VERSION}"
+		WriteRegStr   HKLM "${REG_KEY}" "HelpLink" "${JYMAGURL}"
+		WriteRegStr   HKLM "${REG_KEY}" "InstallLocation" "$INSTDIR"
+		WriteRegDWORD HKLM "${REG_KEY}" "NoModify" 1
+		WriteRegDWORD HKLM "${REG_KEY}" "NoRepair" 1
+		WriteRegStr   HKLM "${REG_KEY}" "Publisher" "${PUBLISHER}"
+		WriteRegStr   HKLM "${REG_KEY}" "URLInfoAbout" "${JYMAGURL}"
+		WriteRegStr   HKLM "${REG_KEY}" "URLUpdateInfo" "${JYMAGURL}"
+		WriteRegStr   HKLM "${REG_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
+		WriteRegDWORD HKLM "${REG_KEY}" "VersionMajor" ${VER_MAJOR}
+		WriteRegDWORD HKLM "${REG_KEY}" "VersionMinor" ${VER_MINOR}
+
+		; get the (already-installed) directory size, in kilobytes
+		${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+
+		WriteRegDWORD HKLM "${REG_KEY}" "EstimatedSize" $0
 
 	skip_reg:
-
-		WriteUninstaller "uninstall.exe"
 
 FunctionEnd
 
@@ -278,7 +278,7 @@ Section "Uninstall"
 	; delete the last-installed directory information
 	DeleteRegKey HKLM "SOFTWARE\JYMAG"
 	; delete uninstallation information from the Control Panel:
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"
+	DeleteRegKey HKLM "${REG_KEY}"
 
 	SetRebootFlag false
 

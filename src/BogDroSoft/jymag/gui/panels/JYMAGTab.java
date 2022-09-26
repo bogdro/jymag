@@ -1,7 +1,7 @@
 /*
  * JYMAGTab.java, part of the JYMAG package.
  *
- * Copyright (C) 2012-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -27,9 +27,6 @@ package BogDroSoft.jymag.gui.panels;
 
 import BogDroSoft.jymag.gui.MainWindow;
 
-import javax.swing.JComboBox;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 
@@ -41,71 +38,10 @@ import javax.swing.JSpinner;
 public interface JYMAGTab
 {
 	/**
-	 * Sets the port list combo box field.
-	 * @param combo The component which the port name should be taken from.
-	 */
-	@SuppressWarnings("rawtypes")
-	public void setPortCombo (JComboBox combo);
-
-	/**
-	 * Sets the transmission speed combo box field.
-	 * @param combo The component which the transmission speed should be taken from.
-	 */
-	@SuppressWarnings("rawtypes")
-	public void setSpeedCombo (JComboBox combo);
-
-	/**
-	 * Sets the data bits' combo box field.
-	 * @param combo The component which the number of data bits should be taken from.
-	 */
-	@SuppressWarnings("rawtypes")
-	public void setDataBitsCombo (JComboBox combo);
-
-	/**
-	 * Sets the stop bits' combo box field.
-	 * @param combo The component which the number of stop bits should be taken from.
-	 */
-	@SuppressWarnings("rawtypes")
-	public void setStopBitsCombo (JComboBox combo);
-
-	/**
-	 * Sets the parity combo box field.
-	 * @param combo The component which the parity mode should be taken from.
-	 */
-	@SuppressWarnings("rawtypes")
-	public void setParityCombo (JComboBox combo);
-
-	/**
-	 * Sets the software flow control check box field.
-	 * @param checkbox The component that tells if software flow
-	 *	control should be enabled (yes, when selected).
-	 */
-	public void setFlowSoftCheckbox (JCheckBox checkbox);
-
-	/**
-	 * Sets the hardware flow control check box field.
-	 * @param checkbox The component that tells if hardware flow
-	 *	control should be enabled (yes, when selected).
-	 */
-	public void setFlowHardCheckbox (JCheckBox checkbox);
-
-	/**
-	 * Sets the data transmission synchronization variable.
-	 * @param synch The data transmission synchronization variable.
-	 */
-	public void setSync (Object synch);
-
-	/**
 	 * Sets the main progress bar component.
 	 * @param progressBar The main progress bar component.
 	 */
 	public void setProgressBar (JProgressBar progressBar);
-
-	/**
-	 * Sets the status label component.
-	 * @param status The status label component.
-	 */
-	public void setStatusLabel (JLabel status);
 
 	/**
 	 * Sets the destination directory for downloads.

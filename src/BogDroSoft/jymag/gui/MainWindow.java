@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -68,7 +68,9 @@ public class MainWindow extends JFrame
 	private final MainWindow mw = this;
 
 	/** Current version number as a String. */
-	public static final String verString = "1.6";	// NOI18N
+	public static final String JYMAG_VERSION =
+		ResourceBundle.getBundle("BogDroSoft/jymag/rsrc/version")	// NOI18N
+		.getString("VER");	// NOI18N
 
 	// synchronization variable:
 	private static final Object sync = new Object ();
@@ -142,6 +144,9 @@ public class MainWindow extends JFrame
 				return "MainWindow.cfgFileFilter";	// NOI18N
 			}
 		};
+	private final transient Utils.StatusChangeRunnable setReadyStatus;
+	private final transient Utils.StatusChangeRunnable setSendingStatus;
+	private final transient Utils.StatusChangeRunnable setReceivingStatus;
 	// ------------ i18n stuff
 	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
 	private static final String noAnsString = mwBundle.getString("No_answers_received");
@@ -188,7 +193,8 @@ public class MainWindow extends JFrame
 					|| name.contains ("Image") // NOI18N
 					)
 				{
-					ths[i].setUncaughtExceptionHandler (Utils.handler);
+					ths[i].setUncaughtExceptionHandler (
+						new Utils.UncExHndlr (this));
 				}
 			}
 		}
@@ -210,7 +216,7 @@ public class MainWindow extends JFrame
 
 		initComponents ();
 
-		setTitle (getTitle () + " " + verString);	// NOI18N
+		setTitle (getTitle () + " " + JYMAG_VERSION);	// NOI18N
 		fontSizeSpin.setValue (fontSizeSpin.getValue ());	// refresh the font in the window
 		firmware.setText (pressScanMsg);
 		phone.setText (pressScanMsg);
@@ -219,19 +225,14 @@ public class MainWindow extends JFrame
 		setReadyStatus ();
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
-		Vector<String> portList = TransferUtils.getSerialPortNames ();
-		if ( portList != null )
-		{
-			int listLen = portList.size ();
-			for ( int i = 0; i < listLen; i++ )
-			{
-				portCombo.addItem (portList.get (i));
-			}
-		}
+		setPorts ();
 		updateControls ();
+		setReadyStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.READY);
+		setSendingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.SENDING);
+		setReceivingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.RECEIVING);
 
 		/* add the Esc key listener to the frame and all components. */
-		new Utils.EscKeyListener (this);
+		new EscKeyListener (this).install();
 		setPanelConnections (this);
 	}
 
@@ -719,12 +720,7 @@ public class MainWindow extends JFrame
 		setSendingStatus ();
 		progressBar.setValue (0);
 		progressBar.setMinimum (0);
-		int max = 0;
-		Vector<String> ports = TransferUtils.getSerialPortNames ();
-		if ( ports != null )
-		{
-			max = ports.size ();
-		}
+		int max = setPorts ();
 		progressBar.setMaximum (max);
 		// always create new:
 		firmwares = new HashMap<String, String> (max);
@@ -820,13 +816,8 @@ public class MainWindow extends JFrame
 
 		try
 		{
-			float fontSize = 12;
-			Object val = fontSizeSpin.getValue ();
-			if ( val != null && val instanceof Number )
-			{
-				fontSize = ((Number)val).floatValue ();
-			}
-			new AboutBox (this, true, fontSize).setVisible (true);
+			new AboutBox (this, true, Utils.getFontSize (fontSizeSpin))
+				.setVisible (true);
 		}
 		catch (Throwable ex)
 		{
@@ -893,13 +884,8 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			float fontSize = 12;
-			Object val = fontSizeSpin.getValue ();
-			if ( val != null && val instanceof Number )
-			{
-				fontSize = ((Number)val).floatValue ();
-			}
-			new RawCommunicator (dt, this, sync, fontSize).setVisible (true);
+			new RawCommunicator (dt, this, sync, Utils.getFontSize (fontSizeSpin))
+				.setVisible (true);
 			dt.close ();
 		}
 		catch (Throwable ex)
@@ -926,13 +912,8 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			float fontSize = 12;
-			Object val = fontSizeSpin.getValue ();
-			if ( val != null && val instanceof Number )
-			{
-				fontSize = ((Number)val).floatValue ();
-			}
-			new CapabilityWindow (dt, this, sync, fontSize).setVisible (true);
+			new CapabilityWindow (dt, this, sync, Utils.getFontSize (fontSizeSpin))
+				.setVisible (true);
 			dt.close ();
 		}
 		catch (Throwable ex)
@@ -1098,11 +1079,7 @@ public class MainWindow extends JFrame
 				cfg.setWidth (getWidth ());
 				cfg.setHeight (getHeight ());
 				cfg.setIsMaximized ((getExtendedState () & JFrame.MAXIMIZED_BOTH) != 0);
-				Object val = fontSizeSpin.getValue ();
-				if ( val != null && val instanceof Number )
-				{
-					cfg.setFontSizeValue (((Number)val).intValue ());
-				}
+				cfg.setFontSizeValue ((int)Utils.getFontSize(fontSizeSpin));
 				cfg.setSelectedTab (tabPane.getSelectedIndex());
 				cfg.write ();
 			}
@@ -1115,11 +1092,8 @@ public class MainWindow extends JFrame
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
 
-		Object val = fontSizeSpin.getValue ();
-		if ( val != null && val instanceof Number )
-		{
-			Utils.setFontSize (this, ((Number)val).floatValue ());
-		}
+		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
 	private void signalButtonActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_signalButtonActionPerformed
@@ -1131,13 +1105,8 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			float fontSize = 12;
-			Object val = fontSizeSpin.getValue ();
-			if ( val != null && val instanceof Number )
-			{
-				fontSize = ((Number)val).floatValue ();
-			}
-			new SignalDisplayer (dt, this, sync, fontSize).setVisible (true);
+			new SignalDisplayer (dt, this, sync, Utils.getFontSize (fontSizeSpin))
+				.setVisible (true);
 			//dt.close ();	// do NOT close, because the window is NOT modal
 		}
 		catch (Throwable ex)
@@ -1165,6 +1134,20 @@ public class MainWindow extends JFrame
 		final DefaultTableModel dtm,
 		final Vector<PhoneElement> placeForData)
 	{
+		TransferParameters tp = getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
 			setReceivingStatus ();
@@ -1172,7 +1155,6 @@ public class MainWindow extends JFrame
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
 
-			TransferParameters tp = getTransferParameters ();
 			TransferUtils.downloadList (ofWhat, tp,
 				new Runnable ()
 				{
@@ -1244,7 +1226,7 @@ public class MainWindow extends JFrame
 	public void setSendingStatus ()
 	{
 		disablePortControls ();
-		Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+		Utils.changeGUI(setSendingStatus);
 	}
 
 	/**
@@ -1253,7 +1235,7 @@ public class MainWindow extends JFrame
 	public void setReceivingStatus ()
 	{
 		disablePortControls ();
-		Utils.updateStatusLabel (status, Utils.STATUS.RECEIVING);
+		Utils.changeGUI(setReceivingStatus);
 	}
 
 	/**
@@ -1262,7 +1244,7 @@ public class MainWindow extends JFrame
 	public void setReadyStatus ()
 	{
 		enablePortControls ();
-		Utils.updateStatusLabel (status, Utils.STATUS.READY);
+		Utils.changeGUI(setReadyStatus);
 		progressBar.setValue (0);
 	}
 
@@ -1273,11 +1255,11 @@ public class MainWindow extends JFrame
 			portCombo.setSelectedItem (portName);
 		}
 // 		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
-		if ( Math.abs (sBits-2.0f) < 0.0001 )
+		if ( Math.abs (sBits - 2.0f) < 0.0001 )
 		{
 			stopBitsCombo.setSelectedIndex (2);
 		}
-		else if ( Math.abs (sBits-1.5f) < 0.0001 )
+		else if ( Math.abs (sBits - 1.5f) < 0.0001 )
 		{
 			stopBitsCombo.setSelectedIndex (1);
 		}
@@ -1387,7 +1369,7 @@ public class MainWindow extends JFrame
 	 * Component (recursively, if it's a Container).
 	 * @param c The Component with Components that will be connected to the main window.
 	 */
-	public void setPanelConnections (Component c)
+	private void setPanelConnections (Component c)
 	{
 		if ( c == null )
 		{
@@ -1396,16 +1378,7 @@ public class MainWindow extends JFrame
 		if ( c instanceof JYMAGTab )
 		{
 			JYMAGTab tab = (JYMAGTab)c;
-			tab.setPortCombo (portCombo);
-			tab.setSpeedCombo (speedCombo);
-			tab.setDataBitsCombo (dataBitsCombo);
-			tab.setStopBitsCombo (stopBitsCombo);
-			tab.setParityCombo (parityCombo);
-			tab.setFlowSoftCheckbox (flowSoft);
-			tab.setFlowHardCheckbox (flowHard);
-			tab.setSync (sync);
 			tab.setProgressBar (progressBar);
-			tab.setStatusLabel (status);
 			tab.setDestDir (destDirName);
 			tab.setMainWindow (this);
 			tab.setFontSizeSpin (fontSizeSpin);
@@ -1426,7 +1399,28 @@ public class MainWindow extends JFrame
 		}
 	}
 
-	private TransferParameters getTransferParameters ()
+	@SuppressWarnings("unchecked")
+	private int setPorts ()
+	{
+		Vector<String> portList = TransferUtils.getSerialPortNames ();
+		if ( portList != null )
+		{
+			int listLen = portList.size ();
+			portCombo.removeAllItems ();
+			for ( int i = 0; i < listLen; i++ )
+			{
+				portCombo.addItem (portList.get (i));
+			}
+			return listLen;
+		}
+		return 0;
+	}
+
+	/**
+	 * Gets a TransferParameters instance for the current settings.
+	 * @return a TransferParameters instance for the current settings.
+	 */
+	public TransferParameters getTransferParameters ()
 	{
 		return new TransferParameters (
 			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
@@ -1511,6 +1505,7 @@ public class MainWindow extends JFrame
         private BogDroSoft.jymag.gui.panels.AddrBookPanel addrBookPanel;
         private BogDroSoft.jymag.gui.panels.AlarmPanel alarmPanel;
         private javax.swing.JLabel bpsLabel;
+	@SuppressWarnings("rawtypes")
         private javax.swing.JComboBox dataBitsCombo;
         private javax.swing.JLabel databitsLabel;
         private BogDroSoft.jymag.gui.panels.DialPanel dialPanel;
@@ -1539,11 +1534,13 @@ public class MainWindow extends JFrame
         private BogDroSoft.jymag.gui.panels.JavasPanel javasPanel;
         private javax.swing.JButton loadConfBut;
         private BogDroSoft.jymag.gui.panels.MoviePanel moviePanel;
+	@SuppressWarnings("rawtypes")
         private javax.swing.JComboBox parityCombo;
         private javax.swing.JLabel parityLabel;
         private javax.swing.JLabel phone;
         private javax.swing.JLabel phoneTypeLabel;
         private BogDroSoft.jymag.gui.panels.PhotoPanel photoPanel;
+	@SuppressWarnings("rawtypes")
         private javax.swing.JComboBox portCombo;
         private javax.swing.JLabel portLabel;
         private final javax.swing.JProgressBar progressBar = new javax.swing.JProgressBar();
@@ -1554,10 +1551,12 @@ public class MainWindow extends JFrame
         private javax.swing.JButton saveConfBut;
         private javax.swing.JButton scanButton;
         private javax.swing.JButton signalButton;
+	@SuppressWarnings("rawtypes")
         private javax.swing.JComboBox speedCombo;
         private javax.swing.JLabel speedLabel;
         private final javax.swing.JLabel status = new javax.swing.JLabel();
         private javax.swing.JLabel statusLabel;
+	@SuppressWarnings("rawtypes")
         private javax.swing.JComboBox stopBitsCombo;
         private javax.swing.JLabel stopbitsLabel;
         private javax.swing.JLabel subsNum;

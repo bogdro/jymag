@@ -17,10 +17,12 @@ Requirements:
 	* http://rxtx.qbang.org
 	* http://users.frii.com/jarvi/rxtx/download.html
 	* http://mfizz.com/oss/rxtx-for-java
+  or any equivalent
 - JRE, the Java SE Runtime Environment >= (1.)6.0
 - permissions to use the serial ports
-- port locking permissions may be required by RxTx. Adding the user running
-  JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
+- port locking permissions may be required by RxTx. On Un*x, adding the user
+  running JYMAG to the "uucp" and "lock" user groups should be enough. If not,
+  add write permissions to the /var/lock directory.
 
 Using NetBeans: open the JYMAG directory as a NetBeans Project
  and click "Run" (or press F6).
@@ -46,10 +48,12 @@ Requirements:
 	* http://rxtx.qbang.org
 	* http://users.frii.com/jarvi/rxtx/download.html
 	* http://mfizz.com/oss/rxtx-for-java
+  or any equivalent
 - JRE, the Java Runtime Environment >= (1.)6.0
 - permissions to use the serial ports
-- port locking permissions may be required by RxTx. Adding the user running
-  JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
+- port locking permissions may be required by RxTx. On Un*x, adding the user
+  running JYMAG to the "uucp" and "lock" user groups should be enough. If not,
+  add write permissions to the /var/lock directory.
 
 Using NetBeans: open the JYMAG folder as a NetBeans Project,
  right-click the project's root element in the project's tree on the
@@ -79,6 +83,7 @@ Requirements for compiling:
 	* http://rxtx.qbang.org
 	* http://users.frii.com/jarvi/rxtx/download.html
 	* http://mfizz.com/oss/rxtx-for-java
+  or any equivalent
 
 Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
  and click "Build Main Project" (or press F11) if it is your main project

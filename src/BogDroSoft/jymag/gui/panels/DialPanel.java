@@ -1,7 +1,7 @@
 /*
  * DialPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2012-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -34,9 +34,6 @@ import BogDroSoft.jymag.Utils;
 import java.awt.event.ItemEvent;
 import java.util.ResourceBundle;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
@@ -50,24 +47,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 81L;
 
-	@SuppressWarnings("rawtypes")
-	private JComboBox portCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox speedCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox dataBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox stopBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox parityCombo;
-
-	private JCheckBox flowSoft;
-	private JCheckBox flowHard;
-
 	private volatile MainWindow mw;
-
-	// synchronization variable:
-	private Object sync;
 
 	private static final ResourceBundle rcBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DialPanel");
 	private static final String exString = rcBundle.getString("Exception");
@@ -452,9 +432,23 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void dialButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_dialButActionPerformed
 	{//GEN-HEADEREND:event_dialButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
-			TransferParameters tp = getTransferParameters ();
 			if ( dialNumRadio.isSelected () )
 			{
 				// dial a number
@@ -526,9 +520,23 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void hangUpButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_hangUpButActionPerformed
 	{//GEN-HEADEREND:event_hangUpButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
-			TransferParameters tp = getTransferParameters ();
 			TransferUtils.hangup (tp,
 				null, this, false, false, false);
 		}
@@ -572,9 +580,23 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void answerButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_answerButActionPerformed
 	{//GEN-HEADEREND:event_answerButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
-			TransferParameters tp = getTransferParameters ();
 			TransferUtils.answer (tp,
 				null, this, false, false, false);
 		}
@@ -586,9 +608,23 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void volumeUpButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_volumeUpButActionPerformed
 	{//GEN-HEADEREND:event_volumeUpButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
-			TransferParameters tp = getTransferParameters ();
 			TransferUtils.volumeUp (tp,
 				null, this, false, false, false);
 		}
@@ -600,9 +636,23 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void volumeDownButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_volumeDownButActionPerformed
 	{//GEN-HEADEREND:event_volumeDownButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
-			TransferParameters tp = getTransferParameters ();
 			TransferUtils.volumeDown (tp,
 				null, this, false, false, false);
 		}
@@ -662,74 +712,8 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		dialCmdField.setEnabled (true);
 	}
 
-	private TransferParameters getTransferParameters ()
-	{
-		return new TransferParameters (
-			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-			parityCombo, flowSoft, flowHard, sync);
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setPortCombo (JComboBox combo)
-	{
-		portCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setSpeedCombo (JComboBox combo)
-	{
-		speedCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setDataBitsCombo (JComboBox combo)
-	{
-		dataBitsCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setStopBitsCombo (JComboBox combo)
-	{
-		stopBitsCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setParityCombo (JComboBox combo)
-	{
-		parityCombo = combo;
-	}
-
-	@Override
-	public void setFlowSoftCheckbox (JCheckBox checkbox)
-	{
-		flowSoft = checkbox;
-	}
-
-	@Override
-	public void setFlowHardCheckbox (JCheckBox checkbox)
-	{
-		flowHard = checkbox;
-	}
-
-	@Override
-	public void setSync (Object synch)
-	{
-		sync = synch;
-	}
-
 	@Override
 	public void setProgressBar (JProgressBar progressBar)
-	{
-		// not needed
-	}
-
-	@Override
-	public void setStatusLabel (JLabel status)
 	{
 		// not needed
 	}

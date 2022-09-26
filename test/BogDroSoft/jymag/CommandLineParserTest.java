@@ -1,7 +1,7 @@
 /*
  * CommandLineParserTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
  */
 public class CommandLineParserTest
 {
-	private static final Object sync = new Object();
+	private static final Object SYNC = new Object();
 
 	public CommandLineParserTest ()
 	{
@@ -73,7 +73,7 @@ public class CommandLineParserTest
 		System.out.println ("getDstDirName");
 		String expResult = "testDir";
 		String[] params = {"--download-dir", expResult};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		String result = CommandLineParser.getDstDirName ();
 		assertEquals (expResult, result);
 	}
@@ -87,7 +87,7 @@ public class CommandLineParserTest
 		System.out.println ("getDBits");
 		int expResult = 7;
 		String[] params = {"--databits", String.valueOf (expResult)};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		int result = CommandLineParser.getDBits ();
 		assertEquals (expResult, result);
 	}
@@ -101,7 +101,7 @@ public class CommandLineParserTest
 		System.out.println ("getSBits");
 		float expResult = 1.5F;
 		String[] params = {"--stopbits", String.valueOf (expResult)};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		float result = CommandLineParser.getSBits ();
 		assertEquals (expResult, result, 0.0001);
 	}
@@ -115,7 +115,7 @@ public class CommandLineParserTest
 		System.out.println ("getSpeed");
 		int expResult = 1200;
 		String[] params = {"--speed", String.valueOf (expResult)};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		int result = CommandLineParser.getSpeed ();
 		assertEquals (expResult, result);
 	}
@@ -129,7 +129,7 @@ public class CommandLineParserTest
 		System.out.println ("getFlowMode");
 		int expResult = 1;
 		String[] params = {"--flow", "soft"};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		int result = CommandLineParser.getFlowMode ();
 		assertEquals (expResult, result);
 	}
@@ -143,7 +143,7 @@ public class CommandLineParserTest
 		System.out.println ("getParityMode");
 		int expResult = 2;
 		String[] params = {"--parity", "odd"};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		int result = CommandLineParser.getParityMode ();
 		assertEquals (expResult, result);
 	}
@@ -157,7 +157,7 @@ public class CommandLineParserTest
 		System.out.println ("getPortName");
 		String expResult = "testPort";
 		String[] params = {"--port", expResult};
-		CommandLineParser.parse (params, sync);
+		CommandLineParser.parse (params, SYNC);
 		String result = CommandLineParser.getPortName ();
 		assertEquals (expResult, result);
 	}
@@ -170,6 +170,6 @@ public class CommandLineParserTest
 	{
 		System.out.println ("parse");
 		String[] args = null;
-		CommandLineParser.parse (args, sync);
+		CommandLineParser.parse (args, SYNC);
 	}
 }

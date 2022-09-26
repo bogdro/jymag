@@ -1,7 +1,7 @@
 /*
  * RawCommunicator.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -113,7 +112,7 @@ public class RawCommunicator extends javax.swing.JDialog
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		/* add the Esc key listener to the frame and all components. */
-		new Utils.EscKeyListener (this);
+		new EscKeyListener (this).install();
 
 		/* start the signal listening Thread. */
 		start ();
@@ -453,11 +452,8 @@ public class RawCommunicator extends javax.swing.JDialog
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
 
-		Object val = fontSizeSpin.getValue ();
-		if ( val != null && val instanceof Number )
-		{
-			Utils.setFontSize (this, ((Number)val).floatValue ());
-		}
+		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
 	private void rtsButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_rtsButActionPerformed

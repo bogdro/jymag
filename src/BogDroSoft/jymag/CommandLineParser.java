@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -305,9 +305,8 @@ public class CommandLineParser
 	 */
 	private static int getElementsOfType (String type, Object sync)
 	{
-		TransferParameters tp = getTransferParameters (sync);
 		return TransferUtils.downloadFiles (
-			type, tp, null, null,
+			type, getTransferParameters (sync), null, null,
 			false, true, true, destDirName, deleteAfterDownload);
 	}
 
@@ -334,7 +333,7 @@ public class CommandLineParser
 	}
 
 	/**
-	 * Gets all the TODO entries from the phone to the directory specified
+	 * Gets all the TO-DO entries from the phone to the directory specified
 	 *	on the command line or to the current directory.
 	 * @param sync The synchronization object.
 	 * @return 0 on success.
@@ -391,10 +390,11 @@ public class CommandLineParser
 
 		for ( int i = 0; i < args.length; i++ )
 		{
-			if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--help")	// NOI18N
-				|| args[i].toLowerCase (Locale.ENGLISH).equals ("-h")	// NOI18N
-				|| args[i].toLowerCase (Locale.ENGLISH).equals ("-?")	// NOI18N
-				|| args[i].toLowerCase (Locale.ENGLISH).equals ("/?") )	// NOI18N
+			String currentArg = args[i].toLowerCase (Locale.ENGLISH);
+			if ( currentArg.equals ("--help")	// NOI18N
+				|| currentArg.equals ("-h")	// NOI18N
+				|| currentArg.equals ("-?")	// NOI18N
+				|| currentArg.equals ("/?") )	// NOI18N
 			{
 				System.out.println ("JYMAG (Java Your Music and Graphics) " + progIntroStr +	// NOI18N
 					"\n\n*** " + rxtxReqStr + " ***\n\n" +	// NOI18N
@@ -405,8 +405,8 @@ public class CommandLineParser
 					);
 				Starter.closeProgram (0);
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--license")	// NOI18N
-				|| args[i].toLowerCase (Locale.ENGLISH).equals ("--licence") )	// NOI18N
+			else if ( currentArg.equals ("--license")	// NOI18N
+				|| currentArg.equals ("--licence") )	// NOI18N
 			{
 				System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +	// NOI18N
 					"\nSee http://jymag.sf.net\n" +	// NOI18N
@@ -427,13 +427,13 @@ public class CommandLineParser
 					"               USA\n");	// NOI18N
 				Starter.closeProgram (0);
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--version")	// NOI18N
-				|| args[i].toLowerCase (Locale.ENGLISH).equals ("-v") )	// NOI18N
+			else if ( currentArg.equals ("--version")	// NOI18N
+				|| currentArg.equals ("-v") )	// NOI18N
 			{
-				System.out.println ("JYMAG " + verWord + " " + MainWindow.verString);	// NOI18N
+				System.out.println ("JYMAG " + verWord + " " + MainWindow.JYMAG_VERSION);	// NOI18N
 				Starter.closeProgram (0);
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--port") )	// NOI18N
+			else if ( currentArg.equals ("--port") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -441,36 +441,37 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--parity") )	// NOI18N
+			else if ( currentArg.equals ("--parity") )	// NOI18N
 			{
 				parity = 0;
 				if ( i < args.length-1 )
 				{
+					String nextArg = args[i+1].toLowerCase (Locale.ENGLISH);
 					// <none, even, odd, space, mark>
-					if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("none") )	// NOI18N
+					if ( nextArg.equals ("none") )	// NOI18N
 					{
 						parity = 0;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("even") )	// NOI18N
+					else if ( nextArg.equals ("even") )	// NOI18N
 					{
 						parity = 1;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("odd") )	// NOI18N
+					else if ( nextArg.equals ("odd") )	// NOI18N
 					{
 						parity = 2;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("space") )	// NOI18N
+					else if ( nextArg.equals ("space") )	// NOI18N
 					{
 						parity = 3;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("mark") )	// NOI18N
+					else if ( nextArg.equals ("mark") )	// NOI18N
 					{
 						parity = 4;
 					}
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--databits") )	// NOI18N
+			else if ( currentArg.equals ("--databits") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -491,7 +492,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--speed") )	// NOI18N
+			else if ( currentArg.equals ("--speed") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -512,17 +513,18 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--stopbits") )	// NOI18N
+			else if ( currentArg.equals ("--stopbits") )	// NOI18N
 			{
 				sBits = 1;
 				if ( i < args.length-1 )
 				{
-					if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("2") )	// NOI18N
+					String nextArg = args[i+1].toLowerCase (Locale.ENGLISH);
+					if ( nextArg.equals ("2") )	// NOI18N
 					{
 						sBits = 2;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("1.5")	// NOI18N
-						|| args[i+1].toLowerCase (Locale.ENGLISH).equals ("1,5") )	// NOI18N
+					else if ( nextArg.equals ("1.5")	// NOI18N
+						|| nextArg.equals ("1,5") )	// NOI18N
 					{
 						sBits = 1.5f;
 					}
@@ -533,50 +535,50 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--flow") )	// NOI18N
+			else if ( currentArg.equals ("--flow") )	// NOI18N
 			{
 				flow = 0;
 				if ( i < args.length-1 )
 				{
+					String nextArg = args[i+1].toLowerCase (Locale.ENGLISH);
 					// <none,soft,hard>
-					if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("none") )	// NOI18N
+					if ( nextArg.equals ("none") )	// NOI18N
 					{
 						flow = 0;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("soft") )	// NOI18N
+					else if ( nextArg.equals ("soft") )	// NOI18N
 					{
 						flow = 1;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("hard") )	// NOI18N
+					else if ( nextArg.equals ("hard") )	// NOI18N
 					{
 						flow = 2;
 					}
-					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("soft+hard")	// NOI18N
-						|| args[i+1].toLowerCase (Locale.ENGLISH).equals ("hard+soft") )	// NOI18N
+					else if ( nextArg.equals ("soft+hard")	// NOI18N
+						|| nextArg.equals ("hard+soft") )	// NOI18N
 					{
 						flow = 3;
 					}
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--scan") )	// NOI18N
+			else if ( currentArg.equals ("--scan") )	// NOI18N
 			{
-				TransferParameters tp = getTransferParameters (sync);
 				Starter.closeProgram (
-					TransferUtils.scanPorts (false, tp,
+					TransferUtils.scanPorts (false,
+						getTransferParameters (sync),
 						null, null, null, null, null, null));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--update-alarm") )	// NOI18N
+			else if ( currentArg.equals ("--update-alarm") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.uploadAlarm (
 							PhoneAlarm.parseReponse (args[i+1]),
-							tp, null, null,
-							false, true, true);
+							getTransferParameters (sync),
+							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
@@ -587,17 +589,16 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-alarm") )	// NOI18N
+			else if ( currentArg.equals ("--delete-alarm") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.deleteAlarm (
 							Integer.parseInt (args[i+1]),
-							tp, null, null,
-							false, true, true);
+							getTransferParameters (sync),
+							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
@@ -608,15 +609,14 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-alarms") )	// NOI18N
+			else if ( currentArg.equals ("--list-alarms") )	// NOI18N
 			{
 				try
 				{
-					TransferParameters tp = getTransferParameters (sync);
 					Vector<PhoneAlarm> vmsg = new Vector<PhoneAlarm> ();
 					int res = TransferUtils.downloadAlarmList (
-						tp, null, null,
-						false, true, true, null, vmsg);
+						getTransferParameters (sync),
+						null, null, false, true, true, null, vmsg);
 					for ( int j = 0; j < vmsg.size (); j++ )
 					{
 						if ( vmsg.get (j) == null )
@@ -633,7 +633,7 @@ public class CommandLineParser
 						"cmdline.downloadAlarmList()");	// NOI18N
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-elements") )	// NOI18N
+			else if ( currentArg.equals ("--list-elements") )	// NOI18N
 			{
 				try
 				{
@@ -680,7 +680,7 @@ public class CommandLineParser
 						"cmdline.downloadList()");	// NOI18N
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-element") )	// NOI18N
+			else if ( currentArg.equals ("--delete-element") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -688,10 +688,9 @@ public class CommandLineParser
 					{
 						// only the ID is important
 						PhoneElement pe = new PhoneElement(args[i+1], "", "");
-						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.deleteFile (pe,
-							tp, null, null,
-							false, true, true);
+							getTransferParameters (sync),
+							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
@@ -702,14 +701,13 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-sms") )	// NOI18N
+			else if ( currentArg.equals ("--list-sms") )	// NOI18N
 			{
 				try
 				{
-					TransferParameters tp = getTransferParameters (sync);
 					Vector<PhoneMessage> vmsg = new Vector<PhoneMessage> ();
 					int res = TransferUtils.downloadMessageList (
-						tp, null, null,
+						getTransferParameters (sync), null, null,
 						false, true, true, null, vmsg);
 					for ( int j = 0; j < vmsg.size (); j++ )
 					{
@@ -727,20 +725,19 @@ public class CommandLineParser
 						"cmdline.downloadMessageList()");	// NOI18N
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--send-sms") )	// NOI18N
+			else if ( currentArg.equals ("--send-sms") )	// NOI18N
 			{
 				// we need 2 more elements: the recipient's number and the message body
 				if ( i < args.length-2 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						PhoneMessage pmsg = new PhoneMessage ();
 						pmsg.setRecipientNum (args[i+1]);
 						pmsg.setMessage (args[i+2]);
 						int res = TransferUtils.sendMessage (pmsg,
-							tp, null, null,
-							false, true, true);
+							getTransferParameters (sync),
+							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
@@ -752,18 +749,17 @@ public class CommandLineParser
 					i+=2;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-sms") )	// NOI18N
+			else if ( currentArg.equals ("--delete-sms") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						PhoneMessage pmsg = new PhoneMessage ();
 						pmsg.setID (args[i+1]);
 						int res = TransferUtils.deleteMessage (pmsg,
-							tp, null, null,
-							false, true, true);
+							getTransferParameters (sync),
+							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
@@ -774,15 +770,16 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--upload") )	// NOI18N
+			else if ( currentArg.equals ("--upload") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
-						int res = TransferUtils.uploadFile (new File (args[i+1]),
-							tp, null, null, false, true, true);
+						int res = TransferUtils.uploadFile (
+							new File (args[i+1]),
+							getTransferParameters (sync),
+							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
@@ -793,31 +790,31 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-photos") )	// NOI18N
+			else if ( currentArg.equals ("--download-all-photos") )	// NOI18N
 			{
 				Starter.closeProgram (getAllPics (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-ringtones") )	// NOI18N
+			else if ( currentArg.equals ("--download-all-ringtones") )	// NOI18N
 			{
 				Starter.closeProgram (getAllRings (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-todo") )	// NOI18N
+			else if ( currentArg.equals ("--download-all-todo") )	// NOI18N
 			{
 				Starter.closeProgram (getAllTODOs (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-events") )	// NOI18N
+			else if ( currentArg.equals ("--download-all-events") )	// NOI18N
 			{
 				Starter.closeProgram (getAllEvents (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-vcards") )	// NOI18N
+			else if ( currentArg.equals ("--download-all-vcards") )	// NOI18N
 			{
 				Starter.closeProgram (getAllVcards (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-animations") )	// NOI18N
+			else if ( currentArg.equals ("--download-all-animations") )	// NOI18N
 			{
 				Starter.closeProgram (getAllAnimations (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all") )	// NOI18N
+			else if ( currentArg.equals ("--download-all") )	// NOI18N
 			{
 				Starter.closeProgram (
 					getAllPics (sync)
@@ -828,7 +825,7 @@ public class CommandLineParser
 					+ getAllAnimations (sync)
 					);
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-dir") )	// NOI18N
+			else if ( currentArg.equals ("--download-dir") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -836,11 +833,11 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-after-download") )	// NOI18N
+			else if ( currentArg.equals ("--delete-after-download") )	// NOI18N
 			{
 				deleteAfterDownload = true;
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--lang") )	// NOI18N
+			else if ( currentArg.equals ("--lang") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -878,23 +875,22 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--conf") )	// NOI18N
+			else if ( currentArg.equals ("--conf") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					readConfig (new File (args[i+1]));
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--dial-voice") )	// NOI18N
+			else if ( currentArg.equals ("--dial-voice") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.dialNumber (args[i+1],
 							true, DataTransporter.DIAL_MODE.AUTO,
-							tp, null, null,
+							getTransferParameters (sync), null, null,
 							false, true, true);
 						Starter.closeProgram (res);
 					}
@@ -906,16 +902,15 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--dial-data") )	// NOI18N
+			else if ( currentArg.equals ("--dial-data") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.dialNumber (args[i+1],
 							false, DataTransporter.DIAL_MODE.AUTO,
-							tp, null, null,
+							getTransferParameters (sync), null, null,
 							false, true, true);
 						Starter.closeProgram (res);
 					}
@@ -927,13 +922,12 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--hangup") )	// NOI18N
+			else if ( currentArg.equals ("--hangup") )	// NOI18N
 			{
 				try
 				{
-					TransferParameters tp = getTransferParameters (sync);
 					int res = TransferUtils.hangup (
-						tp, null, null,
+						getTransferParameters (sync), null, null,
 						false, true, true);
 					Starter.closeProgram (res);
 				}
@@ -943,16 +937,15 @@ public class CommandLineParser
 						"cmdline.staticHangup()");	// NOI18N
 				}
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--send-cmd-file") )	// NOI18N
+			else if ( currentArg.equals ("--send-cmd-file") )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					try
 					{
-						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.sendFileAsCommands (
 							new File (args[i+1]),
-							tp, null, null,
+							getTransferParameters (sync), null, null,
 							false, true, true);
 						Starter.closeProgram (res);
 					}

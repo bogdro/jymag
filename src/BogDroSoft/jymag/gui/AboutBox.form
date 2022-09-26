@@ -15,6 +15,7 @@
   </AccessibilityProperties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -31,7 +32,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane2" alignment="0" pref="684" max="32767" attributes="0"/>
+          <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -50,7 +51,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" max="-2" attributes="0">
+                  <Group type="102" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
@@ -304,8 +305,8 @@
               <SubComponents>
                 <Component class="javax.swing.JTextArea" name="licenseArea">
                   <Properties>
-                    <Property name="columns" type="int" value="20"/>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="3"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                       <Connection code="getFileContents (getClass ().getClassLoader ().getResourceAsStream (&quot;BogDroSoft/jymag/rsrc/GNU-GPLv3.txt&quot; /* NOI18N */))" type="code"/>

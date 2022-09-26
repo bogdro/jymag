@@ -1,7 +1,7 @@
 /*
  * PhoneMessage.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -90,13 +90,6 @@ public class PhoneMessage
 	private static final String toStringNumber = "";					// NOI18N
 	private static final String toStringDateTime = "";					// NOI18N
 	private static final String toStringBody = "";						// NOI18N
-
-	/**
-	 * Creates a new PhoneMessage.
-	 */
-	public PhoneMessage ()
-	{
-	}
 
 	/* ==================================================== */
 

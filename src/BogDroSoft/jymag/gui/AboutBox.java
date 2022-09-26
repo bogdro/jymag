@@ -1,7 +1,7 @@
 /*
  * AboutBox.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@ import java.awt.event.MouseEvent;
 import java.io.InputStream;
 import java.net.URI;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 /**
  * The "About..." window box, containing the program name, its version number,
@@ -46,13 +47,18 @@ public class AboutBox extends javax.swing.JDialog
 	private static final String host1 = "jymag.sf.net";			// NOI18N
 	private static final String path1 = "/";				// NOI18N
 	private static final String www1Addr = "http://" + host1 + path1;	// NOI18N
-	private static final String host2 = "rudy.mif.pg.gda.pl";		// NOI18N
-	private static final String path2 = "/~bogdro/soft";			// NOI18N
+	private static final String host2 = "bogdro.evai.pl";			// NOI18N
+	private static final String path2 = "/soft";				// NOI18N
 	private static final String www2Addr = "http://" + host2 + path2;	// NOI18N
-	private static final String host3 = "rudy.mif.pg.gda.pl";		// NOI18N
-	private static final String path3 = "/~bogdro/inne";			// NOI18N
+	private static final String host3 = "bogdro.evai.pl";			// NOI18N
+	private static final String path3 = "/inne";				// NOI18N
 	private static final String www3Addr = "http://" + host3 + path3;	// NOI18N
 	private static final String httpProto = "http";				// NOI18N
+	private static final URI URI_MAILTO =
+		createURI("mailto", emailAddr + "?subject=SOFT - JYMAG");	// NOI18N
+	private static final URI URI_WWW1 = createWebURI(host1, path1);
+	private static final URI URI_WWW2 = createWebURI(host2, path2);
+	private static final URI URI_WWW3 = createWebURI(host3, path3);
 
 	/**
 	 * Creates new form AboutBox.
@@ -83,7 +89,7 @@ public class AboutBox extends javax.swing.JDialog
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		/* add the Esc key listener to the frame and all components. */
-		new Utils.EscKeyListener (this);
+		new EscKeyListener (this).install();
 	}
 
 	/**
@@ -121,7 +127,7 @@ public class AboutBox extends javax.swing.JDialog
                 setModal(true);
 
                 jymagLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
-                jymagLabel.setText("JYMAG - Java Your Music And Graphics " /* NOI18N */ + MainWindow.verString);
+                jymagLabel.setText("JYMAG - Java Your Music And Graphics " /* NOI18N */ + MainWindow.JYMAG_VERSION);
                 jymagLabel.setIconTextGap(40);
 
                 authorLabel.setText(bundle.getString("author")); // NOI18N
@@ -314,8 +320,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.MAIL) )
 						{
-							d.mail (new URI ("mailto",	// NOI18N
-								emailAddr + "?subject=SOFT - JYMAG", null));	// NOI18N
+							d.mail (URI_MAILTO);	// NOI18N
 						}
 					}
 				}
@@ -340,8 +345,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
 						{
-							Desktop.getDesktop ().browse (new URI (httpProto, null,
-								host1, 80, path1, null, null));
+							Desktop.getDesktop ().browse (URI_WWW1);
 						}
 					}
 				}
@@ -366,11 +370,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
 						{
-							Desktop.getDesktop ().browse (new URI (httpProto, null,
-								host2, 80, path2, null, null));
-							//Desktop.getDesktop ().browse (new URI (www2Addr));
-							//Desktop.getDesktop ().browse (new URI ("http",	// NOI18N
-							//	host2, path2, null));
+							Desktop.getDesktop ().browse (URI_WWW2);
 						}
 					}
 				}
@@ -395,8 +395,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
 						{
-							Desktop.getDesktop ().browse (new URI (httpProto, null,
-								host3, 80, path3, null, null));
+							Desktop.getDesktop ().browse (URI_WWW3);
 						}
 					}
 				}
@@ -410,11 +409,8 @@ public class AboutBox extends javax.swing.JDialog
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
 
-		Object val = fontSizeSpin.getValue ();
-		if ( val != null && val instanceof Number )
-		{
-			Utils.setFontSize (this, ((Number)val).floatValue ());
-		}
+		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
 	/*
@@ -465,7 +461,7 @@ public class AboutBox extends javax.swing.JDialog
 			try
 			{
 				wasRead = is.read (read);
-				ret.append (new String (read, 0, wasRead, "UTF-8"));
+				ret.append (new String (read, 0, wasRead, "UTF-8"));	// NOI18N
 			}
 			catch (Exception ex)
 			{
@@ -482,6 +478,50 @@ public class AboutBox extends javax.swing.JDialog
 			Utils.handleException (ex, "InputStream.close");	// NOI18N
 		}
 		return ret.toString ();
+	}
+	
+	private static URI createURI (String uriType, String uri)
+	{
+		try
+		{
+			return new URI (uriType, uri, null);
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "AboutBox.createURI: '" + uri + "'");	// NOI18N
+			try
+			{
+				JOptionPane.showMessageDialog (null, ex.toString (),
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return null;
+		}
+	}
+
+	private static URI createWebURI (String webHost, String webPage)
+	{
+		try
+		{
+			return new URI (httpProto, null, webHost, 80, webPage, null, null);
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "AboutBox.createWebURI: '" + webHost + webPage + "'");	// NOI18N
+			try
+			{
+				JOptionPane.showMessageDialog (null, ex.toString (),
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return null;
+		}
 	}
 
         // Variables declaration - do not modify//GEN-BEGIN:variables

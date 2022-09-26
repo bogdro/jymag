@@ -1,7 +1,7 @@
 /*
  * UtilsTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,14 +25,14 @@
 
 package BogDroSoft.jymag;
 
-import BogDroSoft.jymag.Utils.STATUS;
-import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.filechooser.FileFilter;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -296,48 +296,6 @@ public class UtilsTest
 	}
 
 	/**
-	 * Test of updateStatusLabel method, of class Utils.
-	 */
-	@Test
-	public void testUpdateStatusLabel ()
-	{
-		System.out.println ("updateStatusLabel");
-		JLabel status = new JLabel ("testLabel");
-		STATUS s = null;
-		Utils.updateStatusLabel (status, s);
-		String result = status.getText ();
-		String expResult = "testLabel";
-		assertEquals (expResult, result);
-
-		s = STATUS.READY;
-		Utils.updateStatusLabel (status, s);
-		result = status.getText ();
-		expResult = s.toString ();
-		assertEquals (expResult, result);
-		Color cResult = status.getForeground ();
-		Color cExpResult = new Color (0, 204, 0);
-		assertEquals (cResult, cExpResult);
-
-		s = STATUS.SENDING;
-		Utils.updateStatusLabel (status, s);
-		result = status.getText ();
-		expResult = s.toString ();
-		assertEquals (expResult, result);
-		cResult = status.getForeground ();
-		cExpResult = Color.BLUE;
-		assertEquals (cResult, cExpResult);
-
-		s = STATUS.RECEIVING;
-		Utils.updateStatusLabel (status, s);
-		result = status.getText ();
-		expResult = s.toString ();
-		assertEquals (expResult, result);
-		cResult = status.getForeground ();
-		cExpResult = Color.BLUE;
-		assertEquals (cResult, cExpResult);
-	}
-
-	/**
 	 * Test of createOpenFileChooser method, of class Utils.
 	 */
 	@Test
@@ -466,6 +424,61 @@ public class UtilsTest
 		assertNotNull (result);
 		assertTrue (result.containsKey ("jad"));
 		assertFalse (result.containsKey ("wav"));
+	}
+
+	/**
+	 * Test of convertCalendarMonthToReal method, of class Utils.
+	 */
+	@Test
+	public void testConvertCalendarMonthToReal ()
+	{
+		System.out.println ("convertCalendarMonthToReal");
+		assertEquals(1, Utils.convertCalendarMonthToReal(Calendar.JANUARY));
+		assertEquals(2, Utils.convertCalendarMonthToReal(Calendar.FEBRUARY));
+		assertEquals(3, Utils.convertCalendarMonthToReal(Calendar.MARCH));
+		assertEquals(4, Utils.convertCalendarMonthToReal(Calendar.APRIL));
+		assertEquals(5, Utils.convertCalendarMonthToReal(Calendar.MAY));
+		assertEquals(6, Utils.convertCalendarMonthToReal(Calendar.JUNE));
+		assertEquals(7, Utils.convertCalendarMonthToReal(Calendar.JULY));
+		assertEquals(8, Utils.convertCalendarMonthToReal(Calendar.AUGUST));
+		assertEquals(9, Utils.convertCalendarMonthToReal(Calendar.SEPTEMBER));
+		assertEquals(10, Utils.convertCalendarMonthToReal(Calendar.OCTOBER));
+		assertEquals(11, Utils.convertCalendarMonthToReal(Calendar.NOVEMBER));
+		assertEquals(12, Utils.convertCalendarMonthToReal(Calendar.DECEMBER));
+	}
+
+	/**
+	 * Test of convertRealMonthToCalendar method, of class Utils.
+	 */
+	@Test
+	public void testConvertRealMonthToCalendar ()
+	{
+		System.out.println ("convertRealMonthToCalendar");
+		assertEquals(Calendar.JANUARY, Utils.convertRealMonthToCalendar(1));
+		assertEquals(Calendar.FEBRUARY, Utils.convertRealMonthToCalendar(2));
+		assertEquals(Calendar.MARCH, Utils.convertRealMonthToCalendar(3));
+		assertEquals(Calendar.APRIL, Utils.convertRealMonthToCalendar(4));
+		assertEquals(Calendar.MAY, Utils.convertRealMonthToCalendar(5));
+		assertEquals(Calendar.JUNE, Utils.convertRealMonthToCalendar(6));
+		assertEquals(Calendar.JULY, Utils.convertRealMonthToCalendar(7));
+		assertEquals(Calendar.AUGUST, Utils.convertRealMonthToCalendar(8));
+		assertEquals(Calendar.SEPTEMBER, Utils.convertRealMonthToCalendar(9));
+		assertEquals(Calendar.OCTOBER, Utils.convertRealMonthToCalendar(10));
+		assertEquals(Calendar.NOVEMBER, Utils.convertRealMonthToCalendar(11));
+		assertEquals(Calendar.DECEMBER, Utils.convertRealMonthToCalendar(12));
+	}
+
+	/**
+	 * Test of getFontSize method, of class Utils.
+	 */
+	@Test
+	public void testGetFontSize ()
+	{
+		int fontSize = 25;
+		System.out.println ("getFontSize");
+		JSpinner spin = new JSpinner();
+		spin.setValue(Integer.valueOf(fontSize));
+		assertTrue(Math.abs(fontSize - Utils.getFontSize(spin)) < 0.001);
 	}
 
 }

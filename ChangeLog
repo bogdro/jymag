@@ -1,3 +1,76 @@
+2020-02-05	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.7:
+	  Re-set the list of current ports when "Scan ports" is clicked.
+	  The user interface shouldn't freeze on exceptions now. Other
+	  improvements in the user interface. Other fixes and improvements in
+	  code. Fixes and improvements in packaging, windows installer and in
+	  project properties (NetBeans project upgraded to a minimum Java
+	  version of 1.6, which was the requirement anyway). Minor updates in
+	  translations. Updates in unit tests. Updates in documentation.
+	* MainWindow.java (MainWindow, scanButtonActionPerformed, setPorts):
+	  re-set the list of current ports when "Scan ports" is clicked. No
+	  need to restart JYMAG anymore when new ports are added to the system.
+	* CommandLineParser.java (parse): call toLowerCase() just once.
+	* MainWindow.java (setSendingStatus, setReceivingStatus,
+	  setReadyStatus), Utils.java (StatusChangeRunnable): make just 3
+	  instances of Runnable to update the status label in the main window.
+	  Remove the method  Utils.updateStatusLabel() that created a new
+	  instance each time.
+	* AboutBox.java: made the URIs constant class fields and updated them.
+	* PhoneMessage.java: removed unnecessary constructor.
+	* JYMAGTab.java, *Panel.java, MainWindow.java,
+	  JYMAGTransferHandler.java: removed the dependency of the panel
+	  classes on the connection components of the main window - now
+	  TransferParameters are passed instead.
+	* Utils.java (handleException, displayExceptionLine): a single method
+	  to display a line on a stack trace.
+	* MainWindow.java (putListInTable), AlarmPanel.java
+	  (getAlarmListButActionPerformed), SMSPanel.java
+	  (getSmsListButActionPerformed, uploadSmsButActionPerformed),
+	  DialPanel.java (dialButActionPerformed, hangUpButActionPerformed,
+	  answerButActionPerformed, volumeUpButActionPerformed,
+	  volumeDownButActionPerformed): display an error when no ports are
+	  available/selected, instead of attempting the operation.
+	* Utils.java (getFontSize), MainWindow.java (aboutButActionPerformed,
+	  rawButActionPerformed, getCapButActionPerformed,
+	  saveConfButActionPerformed, fontSizeSpinStateChanged,
+	  signalButtonActionPerformed),
+	  RawCommunicator.java (fontSizeSpinStateChanged),
+	  SMSWindow.java (fontSizeSpinStateChanged),
+	  CapabilityWindow.java (fontSizeSpinStateChanged),
+	  SignalDisplayer.java (fontSpinStateChanged),
+	  SMSPanel.java (downloadSmsButActionPerformed,
+	  uploadSmsButActionPerformed),
+	  AboutBox.java (fontSizeSpinStateChanged): use common code to read
+	  the selected font size of the window.
+	* JYMAGFileFilter.java, Utils.java (createOpenFileChooser): moved the
+	  file filter to a separate class, fixed appending to the description,
+	  copying the Map contents, fixed finding the file extension.
+	* EscKeyListener.java, Utils.java: moved the EscKeyListener inner
+	  class to its separate file. Make the constructor just save the frame
+	  and add a new method to actually install the listener in the frame
+	  (better readbility, avoid IDE warnings).
+	* MainWindow.java (MainWindow), Utils.java (UncExHndlr): make the
+	  uncaught exception handler for GUI threads repaint the source window.
+	  This may help in cases the GUI gets irresponsive e.g. after a failed
+	  file upload or other exceptions.
+	* MainWindow.java, Makefile, version.properties: a new file to hold the
+	  program's version in a single place.
+	* Makefile: build the packages in the current directory to avoid the
+	  need to join commands with "&&". Removed calling 'sed' on the NSIS
+	  file and use command-line defines instead to avoid EOL changes.
+	  Fixed changing the <productVersion> tag in launch4j files. Other
+	  minor updates.
+	* test/UtilsTest.java: removed tests for removed methods, added new.
+	* jymag.nsi: fixed typo "DisplayVerstion". Explicitly enabling LZMA
+	  compression. Removed !defines for values now provided by 'make' on
+	  the command line. Added a registry entry to show the program's size
+	  in the Control Panel. The registry location is now a named constant.
+	* jymag.desktop: updated by and for new Dolphin
+	* README, manual/*/readme.html: allow equivalents of RxTx to be used,
+	  more details about port locking permissions.
+
 2018-06-03	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 1.6:

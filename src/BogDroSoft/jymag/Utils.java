@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 package BogDroSoft.jymag;
 
+import BogDroSoft.jymag.gui.JYMAGFileFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -34,20 +35,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowListener;
-import java.io.File;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * A utility class, containing some useful methods and fields.
@@ -112,7 +110,6 @@ public class Utils
 	private static final String emptyStr = "";				// NOI18N
 	private static final String dash = "-";					// NOI18N
 	private static final String colon = ":";				// NOI18N
-	private static final String comma = ",";				// NOI18N
 	private static final String zero = "0";					// NOI18N
 	private static final String space = " ";				// NOI18N
 	private static final String apos = "'";					// NOI18N
@@ -125,7 +122,6 @@ public class Utils
 	private static final String lParen = "(";				// NOI18N
 	private static final String rParen = ")";				// NOI18N
 	private static final String unknFile = "<Unknown file>";		// NOI18N
-	private static final String allFileNames = "*.";			// NOI18N
 
 	static
 	{
@@ -346,6 +342,32 @@ public class Utils
 		return -1;
 	}
 
+	private static void displayExceptionLine (String line, boolean newLine)
+	{
+		if ( line == null || (System.out == null && System.err == null) )
+		{
+			return;
+		}
+		if ( System.out != null )
+		{
+			System.out.print (line);
+			if (newLine)
+			{
+				System.out.println ();
+			}
+			System.out.flush ();
+		}
+		if ( System.err != null )
+		{
+			System.err.print (line);
+			if (newLine)
+			{
+				System.err.println ();
+			}
+			System.err.flush ();
+		}
+	}
+
 	/**
 	 * Displays all the important information about exceptions.
 	 * @param ex The exception to display.
@@ -368,22 +390,13 @@ public class Utils
 			int second = c.get (Calendar.SECOND);
 
 			String time = c.get (Calendar.YEAR) + dash
-				+ ((month<10)?  zero : emptyStr ) + month  + dash
-				+ ((day<10)?    zero : emptyStr ) + day    + space
-				+ ((hour<10)?   zero : emptyStr ) + hour   + colon
-				+ ((minute<10)? zero : emptyStr ) + minute + colon
-				+ ((second<10)? zero : emptyStr ) + second + colon + space;
+				+ ((month  < 10)? zero : emptyStr ) + month  + dash
+				+ ((day    < 10)? zero : emptyStr ) + day    + space
+				+ ((hour   < 10)? zero : emptyStr ) + hour   + colon
+				+ ((minute < 10)? zero : emptyStr ) + minute + colon
+				+ ((second < 10)? zero : emptyStr ) + second + colon + space;
 
-			if ( System.out != null )
-			{
-				System.out.print (time + ex);
-				System.out.flush ();
-			}
-			if ( System.err != null )
-			{
-				System.err.print (time + ex);
-				System.err.flush ();
-			}
+			displayExceptionLine (time + ex, false);
 		}
 		catch (Throwable e)
 		{
@@ -395,16 +408,7 @@ public class Utils
 			String msg = ex.getMessage ();
 			if ( msg != null )
 			{
-				if ( System.out != null )
-				{
-					System.out.print (msgStart + msg + apos);
-					System.out.flush ();
-				}
-				if ( System.err != null )
-				{
-					System.err.print (msgStart + msg + apos);
-					System.err.flush ();
-				}
+				displayExceptionLine (msgStart + msg + apos, false);
 			}
 		}
 		catch (Throwable e)
@@ -416,16 +420,7 @@ public class Utils
 		{
 			if ( data != null )
 			{
-				if ( System.out != null )
-				{
-					System.out.print (dataStart + data.toString () + apos);
-					System.out.flush ();
-				}
-				if ( System.err != null )
-				{
-					System.err.print (dataStart + data.toString () + apos);
-					System.err.flush ();
-				}
+				displayExceptionLine (dataStart + data.toString () + apos, false);
 			}
 		}
 		catch (Throwable e)
@@ -435,16 +430,7 @@ public class Utils
 
 		try
 		{
-			if ( System.out != null )
-			{
-				System.out.println ();
-				System.out.flush ();
-			}
-			if ( System.err != null )
-			{
-				System.err.println ();
-				System.err.flush ();
-			}
+			displayExceptionLine (emptyStr, true);
 		}
 		catch (Throwable e)
 		{
@@ -454,7 +440,7 @@ public class Utils
 		StackTraceElement[] ste = ex.getStackTrace ();
 		if ( ste != null )
 		{
-			for ( int i=0; i < ste.length; i++ )
+			for ( int i = 0; i < ste.length; i++ )
 			{
 				if ( ste[i] != null )
 				{
@@ -497,16 +483,7 @@ public class Utils
 						}
 						toShow += colon + String.valueOf (line) + rParen;
 
-						if ( System.out != null )
-						{
-							System.out.println (toShow);
-							System.out.flush ();
-						}
-						if ( System.err != null )
-						{
-							System.err.println (toShow);
-							System.err.flush ();
-						}
+						displayExceptionLine (toShow, true);
 					}
 					catch (Throwable e)
 					{
@@ -656,7 +633,7 @@ public class Utils
 	/**
 	 * Crates a file chooser for opening single files of the given type.
 	 * @param description The description to display in the filters list.
-	 * @param filetype The Map with file extensiotns as keys.
+	 * @param filetype The Map with file extensions as keys.
 	 * @return The file chooser for opening of selected file types.
 	 */
 	public static JFileChooser createOpenFileChooser (
@@ -668,44 +645,6 @@ public class Utils
 		fc.setDialogType (JFileChooser.OPEN_DIALOG);
 		fc.setFileFilter (new JYMAGFileFilter (description, filetype));
 		return fc;
-	}
-
-	private static final Color greenStatusColour = new Color (0, 204, 0)/*Color.GREEN*/;
-
-	/**
-	 * Sets the given status label.
-	 * @param status The label to set.
-	 * @param s The status to set on the label.
-	 */
-	public static void updateStatusLabel (final JLabel status, final STATUS s)
-	{
-		Utils.changeGUI (new Runnable ()
-		{
-			@Override
-			public synchronized void run ()
-			{
-				if ( status == null || s == null )
-				{
-					return;
-				}
-				status.setText (s.toString ());
-				if ( s.equals (STATUS.READY) )
-				{
-					status.setForeground (greenStatusColour);
-				}
-				else
-				{
-					status.setForeground (Color.BLUE);
-				}
-				status.validate ();
-			}
-
-			@Override
-			public String toString ()
-			{
-				return "Utils.updateStatusLabel.Runnable";	// NOI18N
-			}
-		});
 	}
 
 	/**
@@ -731,6 +670,26 @@ public class Utils
 	}
 
 	/**
+	 * Returns the font size as intepreted from the given spinner.
+	 * @param spinner the spinner to read the font size from.
+	 * @return the font size as intepreted from the given spinner,
+	 *	or a default value.
+	 */
+	public static float getFontSize (JSpinner spinner)
+	{
+		float fontSize = 12;
+		if ( spinner != null )
+		{
+			Object val = spinner.getValue ();
+			if ( val != null && (val instanceof Number) )
+			{
+				fontSize = ((Number)val).floatValue ();
+			}
+		}
+		return fontSize;
+	}
+
+	/**
 	 * A sample uncaught-exception handler instance for threads.
 	 */
 	public static final UncExHndlr handler = new UncExHndlr ();
@@ -740,6 +699,17 @@ public class Utils
 	 */
 	public static class UncExHndlr implements Thread.UncaughtExceptionHandler
 	{
+		private final Component target;
+
+		public UncExHndlr ()
+		{
+			target = null;
+		}
+		
+		public UncExHndlr (Component c)
+		{
+			target = c;
+		}
 		/**
 		 * Called when an uncaught exception occurrs.
 		 * @param t The thread, in which the exception occurred.
@@ -752,6 +722,13 @@ public class Utils
 			{
 				handleException (ex, "Utils.UncaughtExceptionHandler: Thread="	// NOI18N
 					+ ((t != null)? t.getName() : "?"));	// NOI18N
+			} catch (Throwable th) {}
+			try
+			{
+				if ( target != null )
+				{
+					target.paintAll(target.getGraphics());
+				}
 			} catch (Throwable th) {}
 		}
 
@@ -767,7 +744,7 @@ public class Utils
 	 */
 	public static class TableMouseListener extends MouseAdapter
 	{
-		private JTable table;
+		private final JTable table;
 
 		/**
 		 * Creates a new TableMouseListener for the given JTable.
@@ -840,166 +817,44 @@ public class Utils
 		}
 	}
 
-	/**
-	 * A class that closes the window when the Esc key is pressed. Must
-	 * be registered on all elements of the window that are desired to
-	 * catch this key.
-	 */
-	public static class EscKeyListener extends KeyAdapter
+	private static final Color greenStatusColour = new Color (0, 204, 0)/*Color.GREEN*/;
+
+	public static class StatusChangeRunnable implements Runnable
 	{
-		private Window frame; // need Window for dispose().
+		private final JLabel statusLabel;
+		private final STATUS statusValue;
+		private final Color c;
 
-		/**
-		 * Creates an EscKeyListener for the given Window.
-		 * @param wFrame The frame to connect this listener to. All
-		 *	of the frame's Components will have this listener
-		 *	installed, too.
-		 */
-		public EscKeyListener (Window wFrame)
+		public StatusChangeRunnable(JLabel status, STATUS s)
 		{
-			frame = wFrame;
-			addKeyListeners (frame);
-		}
-
-		/**
-		 * Recursively adds this keylistener to the given Component
-		 *	and all its subcomponents.
-		 * @param c The Component with Components that will have this keylistener.
-		 */
-		private void addKeyListeners (Component c)
-		{
-			if ( c == null )
+			if ( status == null || s == null )
 			{
-				return;
+				throw new IllegalArgumentException("StatusChangeRunnable:StatusChangeRunnable():null");	// NOI18N
 			}
-			c.addKeyListener (this);
-			if ( c instanceof Container )
+			statusLabel = status;
+			statusValue = s;
+			if ( STATUS.READY.equals(s) )
 			{
-				Component[] subComps = ((Container)c).getComponents ();
-				if ( subComps != null )
-				{
-					for ( int i = 0; i < subComps.length; i++ )
-					{
-						if ( subComps[i] != null )
-						{
-							addKeyListeners (subComps[i]);
-						}
-					}
-				}
+				c = greenStatusColour;
+			}
+			else
+			{
+				c = Color.BLUE;
 			}
 		}
 
-		/**
-		 * Receives key-typed events (called when the user types a key).
-		 * @param ke The key-typed event.
-		 */
 		@Override
-		public void keyTyped (KeyEvent ke)
+		public synchronized void run ()
 		{
-			if ( ke == null || frame == null )
-			{
-				return;
-			}
-			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
-			{
-				WindowListener[] listeners = frame.getWindowListeners ();
-				if ( listeners != null )
-				{
-					for ( int i = 0; i < listeners.length; i++ )
-					{
-						if ( listeners[i] == null )
-						{
-							continue;
-						}
-						listeners[i].windowClosing (null);
-					}
-				}
-				frame.dispose ();
-			}
+			statusLabel.setText (statusValue.toString ());
+			statusLabel.setForeground (c);
+			statusLabel.validate ();
 		}
 
 		@Override
 		public String toString ()
 		{
-			return "Utils.EscKeyListener(" + frame.getName () + ")";	// NOI18N
-		}
-	}
-
-	/**
-	 * A FileFilter implementation for UI file chooser windows.
-	 */
-	public static class JYMAGFileFilter extends FileFilter
-	{
-		private final String filterDescription;
-		private final Map<String, Integer> filterFiletypes;
-
-		/**
-		 * Creates a JYMAGFileFilter instance.
-		 * @param description the description of the filter.
-		 * @param filetype the types of the files to be accepted by the filter.
-		 */
-		public JYMAGFileFilter (String description, Map<String, Integer> filetype)
-		{
-			StringBuilder desc = new StringBuilder (200);
-			if ( description != null )
-			{
-				desc.append (description);
-			}
-			if ( filetype != null )
-			{
-				Iterator<String> keys = filetype.keySet ().iterator ();
-				if ( keys != null )
-				{
-					desc.append (space + lParen);
-					while ( keys.hasNext () )
-					{
-						desc.append (allFileNames + keys.next ());
-						if ( keys.hasNext () )
-						{
-							desc.append (comma + space);
-						}
-					}
-					desc.append (rParen);
-				}
-			}
-			filterDescription = desc.toString ();
-			filterFiletypes = filetype;
-		}
-
-		@Override
-		public boolean accept ( File f )
-		{
-			if ( f.isDirectory () )
-			{
-				return true;
-			}
-			String name = f.getName ();
-			if ( name == null )
-			{
-				return false;
-			}
-			if ( name.contains (dot) && filterFiletypes != null )
-			{
-				if ( filterFiletypes.containsKey (name.substring
-					(name.lastIndexOf (dot)+1)
-					.toLowerCase (Locale.ENGLISH)))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public String getDescription ()
-		{
-			return filterDescription;
-		}
-
-		@Override
-		public String toString ()
-		{
-			return "Utils.JYMAGFileFilter(" + filterDescription + ")";	// NOI18N
+			return "Utils.StatusChangeRunnable." + statusValue;	// NOI18N
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  * SMSPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2020 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@ package BogDroSoft.jymag.gui.panels;
 
 import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.Utils;
-import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.MainWindow;
@@ -36,9 +35,6 @@ import BogDroSoft.jymag.gui.SMSWindow;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.JComboBox;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
@@ -51,25 +47,8 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 89L;
 
-	@SuppressWarnings("rawtypes")
-	private JComboBox portCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox speedCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox dataBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox stopBitsCombo;
-	@SuppressWarnings("rawtypes")
-	private JComboBox parityCombo;
-
-	private JCheckBox flowSoft;
-	private JCheckBox flowHard;
         private JProgressBar progressBar;
-        private JLabel status;
 	private JSpinner fontSizeSpin;
-
-	// synchronization variable:
-	private Object sync;
 
 	private volatile MainWindow mw;
 
@@ -147,14 +126,14 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 ) {
                         private static final long serialVersionUID = 79L;
-                        Class[] types = new Class [] {
+                        Class<?>[] types = new Class<?> [] {
                                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
                         };
                         boolean[] canEdit = new boolean [] {
                                 false, false, false, false, false
                         };
 
-                        public Class getColumnClass(int columnIndex) {
+                        public Class<?> getColumnClass(int columnIndex) {
                                 return types [columnIndex];
                         }
 
@@ -205,6 +184,21 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void getSmsListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getSmsListButActionPerformed
 	{//GEN-HEADEREND:event_getSmsListButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
 			mw.setReceivingStatus ();
@@ -216,7 +210,6 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 				currentMessageElements = new Vector<PhoneMessage> (10);
 			}
 
-			TransferParameters tp = getTransferParameters ();
 			TransferUtils.downloadMessageList (tp,
 				new Runnable ()
 			{
@@ -256,14 +249,9 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 			{
 				try
 				{
-					float fontSize = 12;
-					Object val = fontSizeSpin.getValue ();
-					if ( val != null && val instanceof Number )
-					{
-						fontSize = ((Number)val).floatValue ();
-					}
-					new SMSWindow (null, mw, null, fontSize,
-						currentMessageElements.get (selectedRows[i])).setVisible (true);
+					new SMSWindow (null, mw, Utils.getFontSize (fontSizeSpin),
+						currentMessageElements.get (selectedRows[i]))
+						.setVisible (true);
 				}
 				catch (Throwable ex)
 				{
@@ -284,37 +272,25 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private void uploadSmsButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_uploadSmsButActionPerformed
 	{//GEN-HEADEREND:event_uploadSmsButActionPerformed
+
+		TransferParameters tp = mw.getTransferParameters ();
+		if ( tp == null || tp.getId () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return;
+		}
 		try
 		{
-			if ( portCombo.getSelectedItem () == null )
-			{
-				try
-				{
-					JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-						MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-				}
-				catch (Exception ex2)
-				{
-					// don't display exceptions about displaying exceptions
-				}
-				return;
-			}
-			DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()));
-			dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
-				);
-			float fontSize = 12;
-			Object val = fontSizeSpin.getValue ();
-			if ( val != null && val instanceof Number )
-			{
-				fontSize = ((Number)val).floatValue ();
-			}
-			new SMSWindow (dt, mw, sync, fontSize, null).setVisible (true);
-			dt.close ();
+			new SMSWindow (tp, mw, Utils.getFontSize (fontSizeSpin), null)
+				.setVisible (true);
 		}
 		catch (Throwable ex)
 		{
@@ -360,7 +336,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
-				TransferParameters tp = getTransferParameters ();
+				TransferParameters tp = mw.getTransferParameters ();
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
@@ -396,76 +372,10 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 		}
 	}//GEN-LAST:event_deleteSmsButdeleteButActionPerformed
 
-	private TransferParameters getTransferParameters ()
-	{
-		return new TransferParameters (
-			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-			parityCombo, flowSoft, flowHard, sync);
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setPortCombo (JComboBox combo)
-	{
-		portCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setSpeedCombo (JComboBox combo)
-	{
-		speedCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setDataBitsCombo (JComboBox combo)
-	{
-		dataBitsCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setStopBitsCombo (JComboBox combo)
-	{
-		stopBitsCombo = combo;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void setParityCombo (JComboBox combo)
-	{
-		parityCombo = combo;
-	}
-
-	@Override
-	public void setFlowSoftCheckbox (JCheckBox checkbox)
-	{
-		flowSoft = checkbox;
-	}
-
-	@Override
-	public void setFlowHardCheckbox (JCheckBox checkbox)
-	{
-		flowHard = checkbox;
-	}
-
-	@Override
-	public void setSync (Object synch)
-	{
-		sync = synch;
-	}
-
 	@Override
 	public void setProgressBar (JProgressBar mainProgressBar)
 	{
 		progressBar = mainProgressBar;
-	}
-
-	@Override
-	public void setStatusLabel (JLabel statusLabel)
-	{
-		status = statusLabel;
 	}
 
 	@Override
