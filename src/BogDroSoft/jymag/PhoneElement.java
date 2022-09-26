@@ -63,11 +63,11 @@ public class PhoneElement
 	 */
 	public String getExt ()
 	{
-		     if ( type.equals ("FGIF") ) return "gif";
-		else if ( type.equals ("JPEG") ) return "jpg";
-		else if ( type.equals ("MIDI") ) return "mid";
-		else if ( type.equals ("VCRD") ) return "vcf";
-		else if ( type.equals ("VCAL") ) return "ics";
+		     if ( type.equals ("FGIF") ) return "gif";	// NOI18N
+		else if ( type.equals ("JPEG") ) return "jpg";	// NOI18N
+		else if ( type.equals ("MIDI") ) return "mid";	// NOI18N
+		else if ( type.equals ("VCRD") ) return "vcf";	// NOI18N
+		else if ( type.equals ("VCAL") ) return "ics";	// NOI18N
 		else return type.toLowerCase ();
 	}
 
@@ -77,6 +77,6 @@ public class PhoneElement
 	 */
 	public String getFilename ()
 	{
-		return filename.replaceAll ("\\s", "_");
+		return filename.replaceAll ("\\s", "_");	// NOI18N
 	}
 }

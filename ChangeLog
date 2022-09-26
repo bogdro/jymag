@@ -1,3 +1,18 @@
+2008-04-08	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.4:
+	  - icons moved to a separate directory/package
+	  - a new window, for manual command sending. Pressing Esc anywhere 
+	    exits this window
+	  - added the possibility to remove elements from the phone
+	  - added a command-line option to delete the downloaded elements after
+	    successful downloading
+	  - pressing Esc anywhere in the main window closes the program
+	  - marked non-translatable strings
+	* DataTransporter.java: added a maximum number of command sending/
+	  data receiving attempts. This fixes the hanging. Fixed bug with
+	  unrecognised file type - the contents was written twice.
+
 2008-03-30	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.3:
@@ -12,8 +27,9 @@
 	* PhoneElement.java (getExt): added preferred file extensions for
 	  vCards and vCalendars/iCalendars.
 	* MainWindow.java (getElementsOfType): fixed bug with too early port
-	  closing, fixed bug with file choosers. Better layout in maximized
-	  window.
+	  closing
+	* MainWindow.java: fixed bug with file choosers. Better layout in
+	  maximized window.
 
 2008-03-26	Bogdan Drozdowski <bogdandr@op.pl>
 

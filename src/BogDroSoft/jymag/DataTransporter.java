@@ -49,6 +49,7 @@ public class DataTransporter implements SerialPortEventListener
 	private SerialPort s;
 	private InputStream inputStream;
 	private OutputStream outputStream;
+	private final int MAX_TRIALS = 3;
 
 	// i18n stuff:
 	private final String ansString = "answer";
@@ -78,7 +79,7 @@ public class DataTransporter implements SerialPortEventListener
 	public void open (int speed, int dataBits, float stopBits, int parity,
 		int flowControl) throws Exception
 	{
-		s = (SerialPort) portID.open ("JYMAG", 2000);
+		s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
 		inputStream  = s.getInputStream  ();
 		outputStream = s.getOutputStream ();
 
@@ -135,7 +136,7 @@ public class DataTransporter implements SerialPortEventListener
 			}
 			else
 			{
-					res = this.joinArrays (res, recvData (extraTerminators));
+				res = this.joinArrays (res, recvData (extraTerminators));
 			}
 		}
 		catch (InterruptedException intex)
@@ -195,11 +196,11 @@ public class DataTransporter implements SerialPortEventListener
 				String curr = new String (readBuffer, 0, wasRead);
 				res = this.joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 				if (
-					   curr.trim ().startsWith ("OK")
-					|| curr.trim ().startsWith ("ERROR")
-					|| curr.trim ().endsWith ("OK")
-					|| curr.trim ().endsWith ("ERROR")
-					|| curr.trim ().endsWith ("NO CARRIER")
+					   curr.trim ().startsWith ("OK")	// NOI18N
+					|| curr.trim ().startsWith ("ERROR")	// NOI18N
+					|| curr.trim ().endsWith ("OK")		// NOI18N
+					|| curr.trim ().endsWith ("ERROR")	// NOI18N
+					|| curr.trim ().endsWith ("NO CARRIER")	// NOI18N
 					|| isTerminatorPresent ( curr.trim (), extraTerminators )
 					)
 				{
@@ -244,9 +245,9 @@ public class DataTransporter implements SerialPortEventListener
 	public int putFile (File f, String newName)
 	{
 		// check if type is supported.
-		if ( ! f.getName ().contains (".")) return -8;
+		if ( ! f.getName ().contains (".")) return -8;	// NOI18N
 		if ( ! MainWindow.filetypeIDs.containsKey (f.getName ().substring
-			(f.getName ().lastIndexOf (".")+1)
+			(f.getName ().lastIndexOf (".")+1)	// NOI18N
 			.toLowerCase ()))
 		{
 			return -9;
@@ -254,6 +255,8 @@ public class DataTransporter implements SerialPortEventListener
 
 		// stage variable, useful when an exception is caught.
 		int stage = 0;
+		// number of attempts.
+		int trials = 0;
 		try
 		{
 			String rcvd;
@@ -262,22 +265,23 @@ public class DataTransporter implements SerialPortEventListener
 			// init file upload
 			do
 			{
-				send ("AT+KDOBJ=1,1\r".getBytes ());
+				send ("AT+KDOBJ=1,1\r".getBytes ());	// NOI18N
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
-			if ( ! rcvd.contains ("OK") )
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( ! rcvd.contains ("OK") )	// NOI18N
 			{
-				System.out.println (ansString + "1=" + rcvd);
+				System.out.println (ansString + "1=" + rcvd);	// NOI18N
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
 				}
 				catch ( Exception e ) {}
@@ -285,25 +289,27 @@ public class DataTransporter implements SerialPortEventListener
 			}
 
 			stage++;
+			trials = 0;
 			// send filename length (the last parameter)
 			do
 			{
-				send ( ("AT+KDOBJ=2,1,3,0," + newName.length () + "\r").getBytes ());
-				recvdB = recv (new String[] { "CONNECT" });
+				send ( ("AT+KDOBJ=2,1,3,0," + newName.length () + "\r").getBytes ());	// NOI18N
+				recvdB = recv (new String[] { "CONNECT" });	// NOI18N
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
-			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
 			{
-				System.out.println (ansString + "2=" + rcvd);
+				System.out.println (ansString + "2=" + rcvd);	// NOI18N
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
 				}
 				catch ( Exception e ) {}
@@ -311,25 +317,27 @@ public class DataTransporter implements SerialPortEventListener
 			}
 
 			stage++;
+			trials = 0;
 			// send filename
 			do
 			{
-				send ( (newName+"\r").getBytes ());
+				send ( (newName+"\r").getBytes ());	// NOI18N
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
-			if ( ! rcvd.contains ("OK") )
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( ! rcvd.contains ("OK") )	// NOI18N
 			{
-				System.out.println (ansString + "3=" + rcvd);
+				System.out.println (ansString + "3=" + rcvd);	// NOI18N
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
 				}
 				catch ( Exception e ) {}
@@ -337,30 +345,32 @@ public class DataTransporter implements SerialPortEventListener
 			}
 
 			stage++;
+			trials = 0;
 			// send file type (4th param) and length (5th parameter)
 			do
 			{
-				send ( ("AT+KDOBJ=2,1,0,"
+				send ( ("AT+KDOBJ=2,1,0,"	// NOI18N
 					+ MainWindow.filetypeIDs.get
 						(f.getName ().substring
-							(f.getName ().lastIndexOf (".")+1)
+							(f.getName ().lastIndexOf (".")+1)	// NOI18N
 						.toLowerCase ()).intValue ()
-					+ "," + f.length () + "\r").getBytes ());
-				recvdB = recv (new String[] { "CONNECT" });
+					+ "," + f.length () + "\r").getBytes ());	// NOI18N
+				recvdB = recv (new String[] { "CONNECT" });	// NOI18N
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
-			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
 			{
-				System.out.println (ansString + "4=" + rcvd);
+				System.out.println (ansString + "4=" + rcvd);	// NOI18N
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
 				}
 				catch ( Exception e ) {}
@@ -372,6 +382,7 @@ public class DataTransporter implements SerialPortEventListener
 			byte[] contents = new byte[10240];
 			int read = -1;
 			stage++;
+			trials = 0;
 			do
 			{
 				read = fis.read (contents);
@@ -385,18 +396,19 @@ public class DataTransporter implements SerialPortEventListener
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
-			if ( ! rcvd.contains ("OK") )
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( ! rcvd.contains ("OK") )	// NOI18N
 			{
-				System.out.println (ansString + "5=" + rcvd);
+				System.out.println (ansString + "5=" + rcvd);	// NOI18N
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
 				}
 				catch ( Exception e ) {}
@@ -404,25 +416,27 @@ public class DataTransporter implements SerialPortEventListener
 			}
 
 			stage++;
+			trials = 0;
 			// close file upload
 			do
 			{
-				send ("AT+KDOBJ=1,0\r".getBytes ());
+				send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
-			if ( ! rcvd.contains ("OK") )
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( ! rcvd.contains ("OK") )	// NOI18N
 			{
-				System.out.println (ansString + "6=" + rcvd);
+				System.out.println (ansString + "6=" + rcvd);	// NOI18N
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
 				}
 				catch ( Exception e ) {}
@@ -436,8 +450,8 @@ public class DataTransporter implements SerialPortEventListener
 				try
 				{
 					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());
-					byte[] recvdB = recv (null);
+					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
+					recv (null);
 				}
 				catch ( Exception e ) {}
 			}
@@ -460,10 +474,11 @@ public class DataTransporter implements SerialPortEventListener
 		{
 			String rcvd;
 			byte[] recvdB;
+			int trials = 0;
 			do
 			{
 				// send file retrieve command
-				send (("AT+KPSR=\"" + el.getID () + "\"\r").getBytes ());
+				send (("AT+KPSR=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
 				/*
 				 * Receiving format:
 				 * AT+KPSR="<ID repeated>"
@@ -476,11 +491,13 @@ public class DataTransporter implements SerialPortEventListener
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("NO CARRIER") ) return -2;	// NOI18N
 
 			// check file type
 			Matcher photoMatcher = MainWindow.photoContentsPattern.matcher (rcvd);
@@ -570,7 +587,6 @@ public class DataTransporter implements SerialPortEventListener
 				FileOutputStream fos = new FileOutputStream (f);
 				fos.write (recvdB, genMatcher.start (1),
 					genMatcher.end (1) - genMatcher.start (1));
-				fos.write (recvdB);
 				fos.close ();
 			}
 		}
@@ -594,47 +610,56 @@ public class DataTransporter implements SerialPortEventListener
 		try
 		{
 			byte[] rcvdB;
-			String rcvd = "";
+			String rcvd = "";	// NOI18N
+			int trials = 0;
 			/*
 			do
 			{
-				send ("ATZ\r".getBytes ());
+				send ("ATZ\r".getBytes ());	// NOI18N
 				rcvd = recv ();
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
+			trials = 0;
 			do
 			{
-				send ("AT115200\r".getBytes ());
+				send ("AT115200\r".getBytes ());	// NOI18N
 				rcvd = recv ();
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
 			 */
+			trials = 0;
 			do
 			{
 				// set charset information
-				send ("AT+CSCS=\"8859-1\"\r".getBytes ());
+				send ("AT+CSCS=\"8859-1\"\r".getBytes ());	// NOI18N
 				rcvdB = recv (null);
 				rcvd += new String(rcvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
 
-			if ( ! rcvd.contains ("OK") ) return res;
+			if ( ! rcvd.contains ("OK") ) return res;	// NOI18N
+			trials = 0;
 			do
 			{
 				// send "get list" command
-				send (("AT+KPSL=\"" + ofWhat + "\",1\r").getBytes ());
+				send (("AT+KPSL=\"" + ofWhat + "\",1\r").getBytes ());	// NOI18N
 			/*
 			 * Receiving format:
 			 * +KPSL: "5303650005022001FFFF",1,2016,"PICTURES","FGIF","0000065535","","Zzz"
@@ -644,21 +669,23 @@ public class DataTransporter implements SerialPortEventListener
 				rcvdB = recv (null);
 				rcvd += new String(rcvdB);
 
-				if ( rcvd.trim ().equals ("") )
+				if ( rcvd.trim ().equals ("") )	// NOI18N
 				{
 					reopen ();
+					trials++;
 				}
-			} while (rcvd.trim ().equals (""));
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
 
 			Matcher m;
 			// split into lines
-			String[] lines = rcvd.split ("[\\r\\n]{1,2}");
+			String[] lines = rcvd.split ("[\\r\\n]{1,2}");	// NOI18N
 			for ( int i=0; i < lines.length; i++ )
 			{
 				m = MainWindow.listPattern.matcher (lines[i]);
 				if ( m.matches () )
 				{
-					if ( m.group (2).equals ("0"))
+					if ( m.group (2).equals ("0"))	// NOI18N
 						res.add (new PhoneElement (m.group (1),
 							m.group (3), m.group (4) ));
 				}
@@ -670,6 +697,42 @@ public class DataTransporter implements SerialPortEventListener
 			ex.printStackTrace ();
 		}
 		return res;
+	}
+
+	/**
+	 * Deletes the specified object from the phone.
+	 * @param el The element to delete.
+	 * @return 0 in case of success.
+	 */
+	public int deleteFile (PhoneElement el)
+	{
+		try
+		{
+			String rcvd;
+			byte[] recvdB;
+			int trials = 0;
+			do
+			{
+				// send file retrieve command
+				send (("AT+KPSD=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
+
+				recvdB = recv (null);
+				rcvd = new String (recvdB);
+
+				if ( rcvd.trim ().equals ("") )	// NOI18N
+				{
+					reopen ();
+					trials++;
+				}
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+		}
+		catch ( Exception ex )
+		{
+			System.out.println (ex);
+			ex.printStackTrace ();
+			return -1;
+		}
+		return 0;
 	}
 
 	/**
@@ -685,7 +748,7 @@ public class DataTransporter implements SerialPortEventListener
 		try
 		{
 			s.close ();
-			s = (SerialPort) portID.open ("JYMAG", 2000);
+			s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
 			inputStream  = s.getInputStream  ();
 			outputStream = s.getOutputStream ();
 			s.setSerialPortParams ( bps, dbits, sbits, parity );
@@ -707,11 +770,11 @@ public class DataTransporter implements SerialPortEventListener
 		try
 		{
 			// 3 times gets bigger probability for an answer
-			send ("AT\r".getBytes ());
-			send ("AT\r".getBytes ());
-			send ("AT\r".getBytes ());
+			send ("AT\r".getBytes ());	// NOI18N
+			send ("AT\r".getBytes ());	// NOI18N
+			send ("AT\r".getBytes ());	// NOI18N
 			String res = new String (recv (null));
-			if ( res.contains ("OK") )
+			if ( res.contains ("OK") )	// NOI18N
 			{
 				return 0;
 			}
@@ -756,5 +819,4 @@ public class DataTransporter implements SerialPortEventListener
 			break;
 		}
 	}
-
 }

@@ -40,7 +40,7 @@ No need to connect to the phone. Start by selecting the tab you're
  interested in (photos, ringtones, ...). Click on "Get list" to connect
  to the phone and get the list of elements. Select the elements you wish
  to download and click "Download selected". The downloaded files will
- show up in the JYMAG program's folder.
+ show up in selected folder.
 To upload an element, simply click the "Upload" button. Getting the
  list isn't necessary.
 
@@ -65,19 +65,21 @@ The following command-line (case-insensitive) options are supported:
 					  and exits the program
 	    --download-all-ringtones	- downloads all ringtones from the phone
 					  and exits the program
-	    --download-all-todo		- downloads all to-do tasks from the 
+	    --download-all-todo		- downloads all to-do tasks from the
 					  phone and exits the program
-	    --download-all-events	- downloads all events from the phone 
+	    --download-all-events	- downloads all events from the phone
 					  and exits the program
-	    --download-all-vcards	- downloads all addressbook entries 
+	    --download-all-vcards	- downloads all addressbook entries
 					  from the phone and exits the program
 	    --download-all		- combines all "download" options
 					  and exits the program
+	    --delete-after-download     - delete the downloaded elements if 
+					  downloaded succesfully
 
 
 ========================= Currently supported operations:
 
-1) Getting lists of: pictures, ringtones, addressbook entries, 
+1) Getting lists of: pictures, ringtones, addressbook entries,
    to-do tasks and events
 2) Downloading:
    a) pictures: JPG
@@ -88,6 +90,8 @@ The following command-line (case-insensitive) options are supported:
 3) Uploading:
    a) pictures: JPG, GIF, BMP, PNG
    b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)
+4) Deleting pictures, ringtones, addressbook entries,
+   to-do tasks and events
 
 ========================= Converting ringtones
 
@@ -121,9 +125,5 @@ I haven't tried all that (my 30-second ringtones are rejected).
    Click "Scan ports". If an answer is received, the correct port should be
    selected in the combo box. If not, an error will show up. Try closing
    the program and starting it at least 3 more times. If no success, check
-   your drivers and connection. If the program crashes (missing icon),
-   select your port manually.
+   your drivers and connection.
 
-3. Getting the list(s) or scanning hangs the program.
-   Try a few times. I've tried to limit the waiting time, but my method
-   apparently doesn't work all the time.
