@@ -63,9 +63,11 @@ public class PhoneElement
 	 */
 	public String getExt ()
 	{
-		if ( type.equals ("FGIF") ) return "gif";
+		     if ( type.equals ("FGIF") ) return "gif";
 		else if ( type.equals ("JPEG") ) return "jpg";
 		else if ( type.equals ("MIDI") ) return "mid";
+		else if ( type.equals ("VCRD") ) return "vcf";
+		else if ( type.equals ("VCAL") ) return "ics";
 		else return type.toLowerCase ();
 	}
 

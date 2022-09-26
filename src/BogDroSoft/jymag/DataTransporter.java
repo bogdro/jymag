@@ -65,11 +65,13 @@ public class DataTransporter implements SerialPortEventListener
 
 	/**
 	 * Opens the port for communications.
-	 * @param speed Communication speen, in BPS.
+	 * @param speed Communication speen, in bauds (bits per second).
 	 * @param dataBits Number of data bits (5, 6, 7 or 8).
 	 * @param stopBits Number of stop bits (1, 1.5 or 2).
-	 * @param parity Parity checking type.
-	 * @param flowControl Flow control type.
+	 * @param parity Parity checking type (0 - none, 1 - even, 2 - odd,
+	 *	3 - space, 4 - mark).
+	 * @param flowControl Flow control type (0 - none, 1 - software XON/XOFF,
+	 	2 - hardware CTS/RTS).
 	 * @throws java.lang.Exception in case port opening or registering an
 	 * event listener failed.
 	 */
@@ -86,8 +88,8 @@ public class DataTransporter implements SerialPortEventListener
 		else if ( dataBits == 5 ) dBits = SerialPort.DATABITS_5;
 
 		int sBits = SerialPort.STOPBITS_1;
-		if ( stopBits == 1.5f ) sBits = SerialPort.STOPBITS_1_5;
-		else if ( stopBits == 2.0f ) sBits = SerialPort.STOPBITS_2;
+		if ( Math.abs (stopBits - 1.5f) < 0.0001 ) sBits = SerialPort.STOPBITS_1_5;
+		else if ( Math.abs (stopBits - 2.0f) < 0.0001 ) sBits = SerialPort.STOPBITS_2;
 
 		int par = SerialPort.PARITY_NONE;
 		// Combo: none, even, odd, space, mark
@@ -98,9 +100,9 @@ public class DataTransporter implements SerialPortEventListener
 
 		int flow = SerialPort.FLOWCONTROL_NONE;
 		// Combo: none, XONN/XOFF, RTS/CTS
-		if ( flowControl == 1 ) par = SerialPort.FLOWCONTROL_XONXOFF_IN
+		if ( flowControl == 1 ) flow = SerialPort.FLOWCONTROL_XONXOFF_IN
 			+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
-		else if ( flowControl == 2 ) par = SerialPort.FLOWCONTROL_RTSCTS_IN
+		else if ( flowControl == 2 ) flow = SerialPort.FLOWCONTROL_RTSCTS_IN
 			+ SerialPort.FLOWCONTROL_RTSCTS_OUT;
 
 		s.setSerialPortParams (speed, dBits, sBits, par);
@@ -222,6 +224,7 @@ public class DataTransporter implements SerialPortEventListener
 	public void send (byte[] b) throws IOException
 	{
 		outputStream.write (b);
+		outputStream.flush ();
 	}
 
 	/**
@@ -481,12 +484,14 @@ public class DataTransporter implements SerialPortEventListener
 
 			// check file type
 			Matcher photoMatcher = MainWindow.photoContentsPattern.matcher (rcvd);
-			Matcher midiMatcher = MainWindow.midiContentsPattern.matcher (rcvd);
-			Matcher amrMatcher = MainWindow.amrContentsPattern.matcher (rcvd);
-			Matcher bmpMatcher = MainWindow.bmpContentsPattern.matcher (rcvd);
-			Matcher gifMatcher = MainWindow.gifContentsPattern.matcher (rcvd);
-			Matcher pngMatcher = MainWindow.pngContentsPattern.matcher (rcvd);
-			Matcher wavMatcher = MainWindow.wavContentsPattern.matcher (rcvd);
+			Matcher midiMatcher  = MainWindow.midiContentsPattern.matcher  (rcvd);
+			Matcher amrMatcher   = MainWindow.amrContentsPattern.matcher   (rcvd);
+			Matcher bmpMatcher   = MainWindow.bmpContentsPattern.matcher   (rcvd);
+			Matcher gifMatcher   = MainWindow.gifContentsPattern.matcher   (rcvd);
+			Matcher pngMatcher   = MainWindow.pngContentsPattern.matcher   (rcvd);
+			Matcher wavMatcher   = MainWindow.wavContentsPattern.matcher   (rcvd);
+			Matcher vCalMatcher  = MainWindow.vCalContentsPattern.matcher  (rcvd);
+			Matcher vCardMatcher = MainWindow.vCardContentsPattern.matcher (rcvd);
 
 			Matcher genMatcher = MainWindow.generalContentsPattern.matcher (rcvd);
 			if ( photoMatcher.matches () )
@@ -542,6 +547,22 @@ public class DataTransporter implements SerialPortEventListener
 				//fos.write (midiMatcher.group (1).getBytes ());
 				fos.write (recvdB, pngMatcher.start (1),
 					pngMatcher.end (1) - pngMatcher.start (1));
+				fos.close ();
+			}
+			else if ( vCalMatcher.matches () )
+			{
+				FileOutputStream fos = new FileOutputStream (f);
+				//fos.write (midiMatcher.group (1).getBytes ());
+				fos.write (recvdB, vCalMatcher.start (1),
+					vCalMatcher.end (1) - vCalMatcher.start (1));
+				fos.close ();
+			}
+			else if ( vCardMatcher.matches () )
+			{
+				FileOutputStream fos = new FileOutputStream (f);
+				//fos.write (midiMatcher.group (1).getBytes ());
+				fos.write (recvdB, vCardMatcher.start (1),
+					vCardMatcher.end (1) - vCardMatcher.start (1));
 				fos.close ();
 			}
 			else if ( genMatcher.matches () )
@@ -671,9 +692,9 @@ public class DataTransporter implements SerialPortEventListener
 			s.setFlowControlMode ( flow );
 
 			s.addEventListener (this);
+			s.notifyOnDataAvailable (true);
 		}
 		catch (Exception ex) {}
-		s.notifyOnDataAvailable (true);
 	}
 
 	/**
@@ -735,4 +756,5 @@ public class DataTransporter implements SerialPortEventListener
 			break;
 		}
 	}
+
 }

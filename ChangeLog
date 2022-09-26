@@ -1,3 +1,20 @@
+2008-03-30	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.3:
+	  - downloading addressbook entries (vCards)
+	  - downloading "to do" tasks
+	  - downloading events (like reminders)
+	  - fixed bug with the "current" elements
+	  - added Web address of JYMAG in the "About" box
+	  - added icons to buttons
+	* Datatransporter.java (open): fixed a serious bug in port parameter
+	  setting, better checking for float equality in stop bits setting.
+	* PhoneElement.java (getExt): added preferred file extensions for
+	  vCards and vCalendars/iCalendars.
+	* MainWindow.java (getElementsOfType): fixed bug with too early port
+	  closing, fixed bug with file choosers. Better layout in maximized
+	  window.
+
 2008-03-26	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.2:
@@ -27,6 +44,7 @@
 	  - messages displayed in more than 1 place moved to dedicated variables
 	  - most Strings for translations moved to dedicated variables
 	  - remember last used directory (during the current session)
+	  - pattern creation moved to main().
 	* DataTransporter.java (test): now sending "AT" three times
 	* DataTransporter.java (putFile): double check if the file has a
 	  supported extension

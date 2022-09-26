@@ -65,16 +65,26 @@ The following command-line (case-insensitive) options are supported:
 					  and exits the program
 	    --download-all-ringtones	- downloads all ringtones from the phone
 					  and exits the program
+	    --download-all-todo		- downloads all to-do tasks from the 
+					  phone and exits the program
+	    --download-all-events	- downloads all events from the phone 
+					  and exits the program
+	    --download-all-vcards	- downloads all addressbook entries 
+					  from the phone and exits the program
 	    --download-all		- combines all "download" options
 					  and exits the program
 
 
 ========================= Currently supported operations:
 
-1) Getting lists of: pictures and ringtones
+1) Getting lists of: pictures, ringtones, addressbook entries, 
+   to-do tasks and events
 2) Downloading:
    a) pictures: JPG
    b) ringtones: MIDI, AMR, WAV
+   c) addressbook entries (vCards)
+   d) to-do tasks
+   e) events (reminders, ...)
 3) Uploading:
    a) pictures: JPG, GIF, BMP, PNG
    b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)

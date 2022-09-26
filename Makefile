@@ -2,7 +2,7 @@
 # JYMAG hand-made Makefile for creating distribution packages.
 #
 
-VER	= 0.2
+VER	= 0.3
 
 dist:	dist-src dist-bin
 
