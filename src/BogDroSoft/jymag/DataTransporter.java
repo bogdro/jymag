@@ -50,6 +50,9 @@ public class DataTransporter implements SerialPortEventListener
 	private InputStream inputStream;
 	private OutputStream outputStream;
 
+	// i18n stuff:
+	private final String ansString = "answer";
+
 	/**
 	 * Creates a new instance of DataTransporter, using defaults.
 	 * @param id Port identifier for the port which will be used to
@@ -100,8 +103,8 @@ public class DataTransporter implements SerialPortEventListener
 		else if ( flowControl == 2 ) par = SerialPort.FLOWCONTROL_RTSCTS_IN
 			+ SerialPort.FLOWCONTROL_RTSCTS_OUT;
 
-		s.setSerialPortParams ( speed, dBits, sBits, par );
-		s.setFlowControlMode ( flow );
+		s.setSerialPortParams (speed, dBits, sBits, par);
+		s.setFlowControlMode (flow);
 
 		s.addEventListener (this);
 		s.notifyOnDataAvailable (true);
@@ -110,7 +113,7 @@ public class DataTransporter implements SerialPortEventListener
 	/**
 	 * Receives data from the port (waits at most 5 seconds).
 	 * @param extraTerminators Any extra elements that are a mark of transmission end.
-	 * @return A String created from the received bytes.
+	 * @return The received bytes.
 	 */
 	public byte[] recv (Object[] extraTerminators)
 	{
@@ -145,6 +148,12 @@ public class DataTransporter implements SerialPortEventListener
 		return res;
 	}
 
+	/**
+	 * Checks if the given String contains anything from the array (converted to Strings).
+	 * @param haystack The String to look in.
+	 * @param needles The elements to search for.
+	 * @return true, if contains.
+	 */
 	private boolean isTerminatorPresent (String haystack, Object[] needles)
 	{
 		if ( needles != null && haystack != null )
@@ -157,6 +166,13 @@ public class DataTransporter implements SerialPortEventListener
 		return false;
 	}
 
+	/**
+	 * Receives data from the port with checking for terminators, but with no
+	 *	waiting (the data is assumed being ready). This is the worker function
+	 *	that actually does the reading.
+	 * @param extraTerminators Any extra elements that are a mark of transmission end.
+	 * @return The received bytes.
+	 */
 	private byte[] recvData (Object[] extraTerminators)
 	{
 		byte[] res = new byte[0];
@@ -166,6 +182,7 @@ public class DataTransporter implements SerialPortEventListener
 			{
 				int wasRead;
 				byte[] readBuffer;
+				// wait for synchro and read
 				synchronized (inputStream)
 				{
 					readBuffer = new byte[inputStream.available ()];
@@ -182,7 +199,6 @@ public class DataTransporter implements SerialPortEventListener
 					|| curr.trim ().endsWith ("ERROR")
 					|| curr.trim ().endsWith ("NO CARRIER")
 					|| isTerminatorPresent ( curr.trim (), extraTerminators )
-					//|| res.contains ("CONNECT")
 					)
 				{
 					break;
@@ -224,12 +240,23 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public int putFile (File f, String newName)
 	{
+		// check if type is supported.
+		if ( ! f.getName ().contains (".")) return -8;
+		if ( ! MainWindow.filetypeIDs.containsKey (f.getName ().substring
+			(f.getName ().lastIndexOf (".")+1)
+			.toLowerCase ()))
+		{
+			return -9;
+		}
+
+		// stage variable, useful when an exception is caught.
 		int stage = 0;
 		try
 		{
 			String rcvd;
 			byte[] recvdB;
 
+			// init file upload
 			do
 			{
 				send ("AT+KDOBJ=1,1\r".getBytes ());
@@ -243,9 +270,10 @@ public class DataTransporter implements SerialPortEventListener
 			} while (rcvd.trim ().equals (""));
 			if ( ! rcvd.contains ("OK") )
 			{
-				System.out.println ("answer1=" + rcvd);
+				System.out.println (ansString + "1=" + rcvd);
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					recvdB = recv (null);
 				}
@@ -254,6 +282,7 @@ public class DataTransporter implements SerialPortEventListener
 			}
 
 			stage++;
+			// send filename length (the last parameter)
 			do
 			{
 				send ( ("AT+KDOBJ=2,1,3,0," + newName.length () + "\r").getBytes ());
@@ -267,9 +296,10 @@ public class DataTransporter implements SerialPortEventListener
 			} while (rcvd.trim ().equals (""));
 			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )
 			{
-				System.out.println ("answer2=" + rcvd);
+				System.out.println (ansString + "2=" + rcvd);
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					recvdB = recv (null);
 				}
@@ -278,6 +308,7 @@ public class DataTransporter implements SerialPortEventListener
 			}
 
 			stage++;
+			// send filename
 			do
 			{
 				send ( (newName+"\r").getBytes ());
@@ -291,9 +322,10 @@ public class DataTransporter implements SerialPortEventListener
 			} while (rcvd.trim ().equals (""));
 			if ( ! rcvd.contains ("OK") )
 			{
-				System.out.println ("answer3=" + rcvd);
+				System.out.println (ansString + "3=" + rcvd);
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					recvdB = recv (null);
 				}
@@ -301,8 +333,8 @@ public class DataTransporter implements SerialPortEventListener
 				return -3;
 			}
 
-System.out.println("3, r=" + rcvd);
 			stage++;
+			// send file type (4th param) and length (5th parameter)
 			do
 			{
 				send ( ("AT+KDOBJ=2,1,0,"
@@ -319,12 +351,12 @@ System.out.println("3, r=" + rcvd);
 					reopen ();
 				}
 			} while (rcvd.trim ().equals (""));
-System.out.println("4, r=" + rcvd);
 			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )
 			{
-				System.out.println ("answer4=" + rcvd);
+				System.out.println (ansString + "4=" + rcvd);
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					recvdB = recv (null);
 				}
@@ -355,12 +387,12 @@ System.out.println("4, r=" + rcvd);
 					reopen ();
 				}
 			} while (rcvd.trim ().equals (""));
-System.out.println("5, r=" + rcvd);
 			if ( ! rcvd.contains ("OK") )
 			{
-				System.out.println ("answer5=" + rcvd);
+				System.out.println (ansString + "5=" + rcvd);
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					recvdB = recv (null);
 				}
@@ -369,6 +401,7 @@ System.out.println("5, r=" + rcvd);
 			}
 
 			stage++;
+			// close file upload
 			do
 			{
 				send ("AT+KDOBJ=1,0\r".getBytes ());
@@ -380,12 +413,12 @@ System.out.println("5, r=" + rcvd);
 					reopen ();
 				}
 			} while (rcvd.trim ().equals (""));
-System.out.println("6, r=" + rcvd);
 			if ( ! rcvd.contains ("OK") )
 			{
-				System.out.println ("answer6=" + rcvd);
+				System.out.println (ansString + "6=" + rcvd);
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					recvdB = recv (null);
 				}
@@ -399,6 +432,7 @@ System.out.println("6, r=" + rcvd);
 			{
 				try
 				{
+					// close file upload
 					send ("AT+KDOBJ=1,0\r".getBytes ());
 					byte[] recvdB = recv (null);
 				}
@@ -425,6 +459,7 @@ System.out.println("6, r=" + rcvd);
 			byte[] recvdB;
 			do
 			{
+				// send file retrieve command
 				send (("AT+KPSR=\"" + el.getID () + "\"\r").getBytes ());
 				/*
 				 * Receiving format:
@@ -434,6 +469,7 @@ System.out.println("6, r=" + rcvd);
 				 * <binary data>
 				 * NO CARRIER
 				 */
+				// receive file data
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
@@ -443,12 +479,14 @@ System.out.println("6, r=" + rcvd);
 				}
 			} while (rcvd.trim ().equals (""));
 
+			// check file type
 			Matcher photoMatcher = MainWindow.photoContentsPattern.matcher (rcvd);
 			Matcher midiMatcher = MainWindow.midiContentsPattern.matcher (rcvd);
 			Matcher amrMatcher = MainWindow.amrContentsPattern.matcher (rcvd);
 			Matcher bmpMatcher = MainWindow.bmpContentsPattern.matcher (rcvd);
 			Matcher gifMatcher = MainWindow.gifContentsPattern.matcher (rcvd);
 			Matcher pngMatcher = MainWindow.pngContentsPattern.matcher (rcvd);
+			Matcher wavMatcher = MainWindow.wavContentsPattern.matcher (rcvd);
 
 			Matcher genMatcher = MainWindow.generalContentsPattern.matcher (rcvd);
 			if ( photoMatcher.matches () )
@@ -472,6 +510,14 @@ System.out.println("6, r=" + rcvd);
 				//fos.write (midiMatcher.group (1).getBytes ());
 				fos.write (recvdB, amrMatcher.start (1),
 					amrMatcher.end (1) - amrMatcher.start (1));
+				fos.close ();
+			}
+			else if ( wavMatcher.matches () )
+			{
+				FileOutputStream fos = new FileOutputStream (f);
+				//fos.write (midiMatcher.group (1).getBytes ());
+				fos.write (recvdB, wavMatcher.start (1),
+					wavMatcher.end (1) - wavMatcher.start (1));
 				fos.close ();
 			}
 			else if ( bmpMatcher.matches () )
@@ -552,6 +598,7 @@ System.out.println("6, r=" + rcvd);
 			 */
 			do
 			{
+				// set charset information
 				send ("AT+CSCS=\"8859-1\"\r".getBytes ());
 				rcvdB = recv (null);
 				rcvd += new String(rcvdB);
@@ -565,6 +612,7 @@ System.out.println("6, r=" + rcvd);
 			if ( ! rcvd.contains ("OK") ) return res;
 			do
 			{
+				// send "get list" command
 				send (("AT+KPSL=\"" + ofWhat + "\",1\r").getBytes ());
 			/*
 			 * Receiving format:
@@ -582,6 +630,7 @@ System.out.println("6, r=" + rcvd);
 			} while (rcvd.trim ().equals (""));
 
 			Matcher m;
+			// split into lines
 			String[] lines = rcvd.split ("[\\r\\n]{1,2}");
 			for ( int i=0; i < lines.length; i++ )
 			{
@@ -602,6 +651,9 @@ System.out.println("6, r=" + rcvd);
 		return res;
 	}
 
+	/**
+	 * Reopens the transmission port, saving its parameters.
+	 */
 	private void reopen ()
 	{
 		int bps = s.getBaudRate ();
@@ -633,6 +685,9 @@ System.out.println("6, r=" + rcvd);
 	{
 		try
 		{
+			// 3 times gets bigger probability for an answer
+			send ("AT\r".getBytes ());
+			send ("AT\r".getBytes ());
 			send ("AT\r".getBytes ());
 			String res = new String (recv (null));
 			if ( res.contains ("OK") )
@@ -648,6 +703,12 @@ System.out.println("6, r=" + rcvd);
 		return -1;
 	}
 
+	/**
+	 * This function joins 2 arrays of bytes together.
+	 * @param orig The first array.
+	 * @param toAdd The array to add.
+	 * @return an array starting with "orig" followed by "toAdd".
+	 */
 	private byte[] joinArrays (byte[] orig, byte[] toAdd)
 	{
 		if ( orig == null ) return toAdd;

@@ -26,7 +26,7 @@
 package BogDroSoft.jymag;
 
 /**
- * This class represents an element in the phone (picture, ringtone, ...)
+ * This class represents an element in the phone (picture, ringtone, ...).
  * @author Bogdan Drozdowski
  */
 public class PhoneElement
@@ -52,7 +52,7 @@ public class PhoneElement
 	 * Returns this element's ID number in the phone.
 	 * @return This element's ID number in the phone.
 	 */
-	public String getID()
+	public String getID ()
 	{
 		return new String (id);
 	}
@@ -61,7 +61,7 @@ public class PhoneElement
 	 * Returns the file extension suitable for this element.
 	 * @return A file extension suitable for this element.
 	 */
-	public String getExt()
+	public String getExt ()
 	{
 		if ( type.equals ("FGIF") ) return "gif";
 		else if ( type.equals ("JPEG") ) return "jpg";
@@ -73,7 +73,7 @@ public class PhoneElement
 	 * Returns the filename with all blanks replaced with underscores.
 	 * @return The file name for this element.
 	 */
-	public String getFilename()
+	public String getFilename ()
 	{
 		return filename.replaceAll ("\\s", "_");
 	}

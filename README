@@ -7,10 +7,12 @@ License: GPLv3+
 
 ========================= Running
 
+You NEED RxTx Java Transmission package from www.rxtx.org to run this program.
+
 Using NetBeans: open the JYMAG folder as a NetBeans Project
  and hit "Run".
 
-By hand:
+By hand (after unpacking):
 	java -jar JYMAG/dist/JYMAG.jar
 
 ========================= Compiling (if necessary)
@@ -28,27 +30,54 @@ Compiling by hand: try
 	cd JYMAG/src/BogDroSoft/jymag/
 	java *.java
 
-========================= Using
+========================= Using (GUI)
 
 Phone setup: conecct it to the computer using a cable or IrDA or
  whatever works. Switch the transmission on. If using a cable, select
- Automatic speed in the configuration.
+ "Automatic speed" in the configuration.
 
 No need to connect to the phone. Start by selecting the tab you're
  interested in (photos, ringtones, ...). Click on "Get list" to connect
  to the phone and get the list of elements. Select the elements you wish
  to download and click "Download selected". The downloaded files will
  show up in the JYMAG program's folder.
+To upload an element, simply click the "Upload" button. Getting the
+ list isn't necessary.
+
+========================= Using (command line)
+
+The following command-line (case-insensitive) options are supported:
+	    --download-dir <dir>	- sets the default directory
+	    --flow <none,soft,hard>	- sets the flow control mode
+	    --port <filename>		- sets the default port
+	    --parity <none, even, odd, space, mark>	- sets the parity mode
+	    --databits <5,6,7,8>	- sets the number of data bits
+	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
+		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
+		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
+			- sets the port speed
+	    --stopbits <1,1.5,2>	- sets the number of stop bits
+	    --upload <filename>		- uploads the given file to the phone
+					  and exits the program
+	    --scan			- scans available ports for "OK" answers
+					  and exits the program
+	    --download-all-photos	- downloads all photos from the phone
+					  and exits the program
+	    --download-all-ringtones	- downloads all ringtones from the phone
+					  and exits the program
+	    --download-all		- combines all "download" options
+					  and exits the program
+
 
 ========================= Currently supported operations:
 
 1) Getting lists of: pictures and ringtones
 2) Downloading:
    a) pictures: JPG
-   b) ringtones: MIDI, AMR
+   b) ringtones: MIDI, AMR, WAV
 3) Uploading:
    a) pictures: JPG, GIF, BMP, PNG
-   b) ringtones: MIDI
+   b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)
 
 ========================= Converting ringtones
 
@@ -58,6 +87,17 @@ Some ringtones received from the phone may be in AMR format. You can
  attached to the "Mobile Media Converter" like this:
 
  ffmpeg -i Ring.amr -ar 44100 Ring.wav
+
+To convert a ringtone to a WAV format accepted by the phone, use the
+ following command:
+
+ ffmpeg -i <ringtone file> -ar 8000 -t 10 -ac 1
+	-acodec adpcm_ima_wav <output file>.wav
+
+(the number after "-t" is the ringtone duration in seconds). I've only been
+able to upload ringtones created with the above command. It may be possible
+to upload longer ringtones, in greater sampling rates, stereo, ..., but
+I haven't tried all that (my 30-second ringtones are rejected).
 
 ========================= If not working
 

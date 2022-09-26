@@ -1,3 +1,36 @@
+2008-03-26	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.2:
+	  - uploading and downloading WAV ringtones
+	* README: add a command to convert ringtones to accepted WAV format,
+	  new command-line options included
+	* MainWindow.java:
+	  - fixed bug with multiple "Get list" clicking.
+	  - fixed bug with multiple port selection
+	  - allowing file saving into another directory
+	  - new command-line options:
+	    --download-dir <dir>	- sets the default directory
+	    --flow <none,soft,hard>	- sets the flow control mode
+	    --port <filename>		- sets the default port
+	    --parity <none, even, odd, space, mark>	- sets the parity mode
+	    --databits <5,6,7,8>	- sets the number of data bits
+	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
+		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
+		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
+					- sets the port speed
+	    --stopbits <1,1.5,2>	- sets the number of stop bits
+	    --upload <filename>		- uploads the given file to the phone
+	    --scan			- scans available ports for answers
+	    --download-all-photos	- downloads all photos from the phone
+	    --download-all-ringtones	- downloads all ringtones from the phone
+	    --download-all		- always combines all "download" options
+	  - messages displayed in more than 1 place moved to dedicated variables
+	  - most Strings for translations moved to dedicated variables
+	  - remember last used directory (during the current session)
+	* DataTransporter.java (test): now sending "AT" three times
+	* DataTransporter.java (putFile): double check if the file has a
+	  supported extension
+
 2008-03-22	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.1 features:
@@ -9,6 +42,5 @@
 	  - retrieveing MIDI and AMR ringtones
 	  - uploading JPG, GIF, BMP and PNG pictures
 	  - uploading MIDI ringtones
-	  - command-line options: --help,-h,-?,/?, --version, -v,
+	  - command-line options: --help, -h, -?, /?, --version, -v,
 	    --license, --licence
-

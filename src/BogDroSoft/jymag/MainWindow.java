@@ -44,108 +44,116 @@ import javax.swing.table.DefaultTableModel;
 public class MainWindow extends javax.swing.JFrame
 {
 	private static final long serialVersionUID = 65L;
-	Vector<PhoneElement> currentElements;
+	private static final String verString = "0.2";
+	private Vector<PhoneElement> currentElements;
 
+	/**
+	 * A pattern describing the format of lists of elements received from
+	 * the phone.
+	 */
 	public static Pattern listPattern;
+	/**A pattern describing the format of JPG pictures received from the phone. */
 	public static Pattern photoContentsPattern;
+	/**A pattern describing the format of MIDI ringtones received from the phone. */
 	public static Pattern midiContentsPattern;
+	/**A pattern describing the format of AMR ringtones received from the phone. */
 	public static Pattern amrContentsPattern;
+	/**A pattern describing the format of unknown contents received from the phone. */
 	public static Pattern generalContentsPattern;
+	/**A pattern describing the format of BMP pictures received from the phone. */
 	public static Pattern bmpContentsPattern;
+	/**A pattern describing the format of GIF pictures received from the phone. */
 	public static Pattern gifContentsPattern;
+	/**A pattern describing the format of PNG pictures received from the phone. */
 	public static Pattern pngContentsPattern;
+	/**A pattern describing the format of WAV pictures received from the phone. */
+	public static Pattern wavContentsPattern;
 
-	public static Hashtable<String, Integer> filetypeIDs;
-	private Hashtable<String, Integer> photofileIDs;
-	private Hashtable<String, Integer> ringfileIDs;
+	/**
+	 * A Hashtable containing file ID numbers connected to the given file
+	 * extensions, used for file uploading.
+	 */
+	public  static Hashtable<String, Integer> filetypeIDs;
+	private static Hashtable<String, Integer> photofileIDs;
+	private static Hashtable<String, Integer> ringfileIDs;
+	
+	private String lastSelDir;
+
+	// ------------ i18n stuff
+	private static String noAnsString = "No answers received";
+	private static String errString = "Error";
+	private static String multiAnsString = "Multiple answers received. Select the correct port.";
+	private static String whichString = "Which one?";
+	private static String exOverString = " exists. Overwrite?";
+	private static String suppOperThank = "Supported opertations:\n" +
+			"1) Getting lists of: pictures and ringtones\n" +
+			"2) Downloading:\n" +
+			"   a) pictures: JPG, GIF, BMP, PNG\n" +
+			"   b) ringtones: MIDI, AMR, WAV\n" +
+			"3) Uploading:\n" +
+			"   a) pictures: JPG, GIF, BMP, PNG\n" +
+			"   b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)\n" +
+			"\n" +
+			"Run with --help for a list of command-line options.\n\n" +
+			"Thanks to:";
+	private static String aboutStr = "About";
+	private static String freeMPASStr = "a Free 'My Pictures and Sounds' replacement.";
+	private static String verWord = "Version";
+	private static String picsString = "Pictures";
+	private static String soundsString = "Sounds";
+	private static String getListStr = "Getting list of ";
+	private static String getFileStr = "Getting file";
+	private static String unsuppType = "Unsupported file type:";
+	private static String tryPortStr = "Trying port ";
+	private static String gotAnsStr = "Got answer!";
+	private static String noAnsStr = "No answers received";
+	private static String progIntroStr = "is a program " +
+		"for retrieving and sending multimedia from and to a Sagem mobile phone.";
+	private static String rxtxReqStr = "You need the RxTx Java Transmission package from www.rxtx.org";
+	private static String cmdLineStr = "Command-line options:\n" +
+		"--help, -h, -?, /?\t- display help\n" +
+		"--licence, --license\t- display license information\n" +
+		"--version, -v\t\t- display version\n" +
+		"--download-dir <dir>\t- set the default directory\n" +
+		"--flow <none,soft,hard>\t- set the flow control mode\n" +
+		"--port <filename>\t- set the default port\n" +
+		"--parity <none,even,odd,space,mark>\t- set the parity mode\n" +
+		"--databits <5,6,7,8>\t- set the number of data bits\n" +
+		"--speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,\n" +
+		"\t230400, 460800, 500000, 576000, 921600, 1000000, 1152000,\n" +
+		"\t1500000, 2000000, 2500000, 3000000, 3500000, 4000000>\n" +
+		"\t\t\t- set the port speed\n" +
+		"--stopbits <1,1.5,2>\t- set the number of stop bits\n" +
+		"--upload <filename>\t- upload the given file to the phone and exit\n" +
+		"--scan\t\t\t- scan available ports for \"OK\" answers and exit\n" +
+		"--download-all-photos\t- download all photos from the phone and exit\n" +
+		"--download-all-ringtones - download all ringtones from the phone and exit\n" +
+		"--download-all\t\t- combine all \"download\" options and exit\n" +
+		"\nJYMAG exits with 0 code if command-line operation" +
+		" (download, upload or scan) was successful.";
+
+	// error messages for file upload:
+	private static String msg1 = "File upload init failed";
+	private static String msg2 = "Sending file name's length failed";
+	private static String msg3 = "Sending file name failed";
+	private static String msg4 = "Format not suported by phone";
+	private static String msg5 = "File not accepted (too big?)";
+	private static String msg6 = "Closing transmission failed";
+	private static String msg7 = "Format not suported by JYMAG";
+	// ------------
+
+	// read from the command-line:
+	private static String destDirName;
+	private static int dBits = 8;
+	private static float sBits = 1;
+	private static int speed = 115200;
+	private static int flow = 0;
+	private static int parity = 0;
+	private static String portName;
 
 	/** Creates new form MainWindow */
         public MainWindow ()
         {
-		/*
-		 * List receiving format:
-		 * +KPSL: "5303650005022001FFFF",1,2016,"PICTURES","FGIF","0000065535","","Zzz"
-				Id	    HIDDEN,LENG, CATEGORY, CONTENT, LOCATION  FLAG, NAME
-		 */
-		listPattern = Pattern.compile ("\\s*\\+KPSL:\\s*\\" + '"'
-				+ "([0-9A-Fa-f]+)" + "\\" + '"' + ",(\\d+),\\d+,\\" + '"'
-				+ "\\w+\\" + '"' + ",\\" + '"' + "(\\w+)\\"+ '"'
-				+ ",[^,]+,[^,]+,\\"+ '"' + "([^\"]+)\\" + '"');
-		/*
-		 * Element receiving format:
-		 * AT+KPSR="<ID repeated>"
-		 * +KPSR: 49203
-		 * CONNECT
-		 * <binary data>
-		 * NO CARRIER
-		 */
-		String jpegHeader = new String (new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff} );
-		photoContentsPattern = Pattern.compile
-			(".*" + jpegHeader + ".*(" + jpegHeader + ".*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-		String midiHeader = new String (new byte[] { (byte) 0x4d, (byte) 0x54, (byte) 0x68} );
-		midiContentsPattern = Pattern.compile
-			(".*(" + midiHeader + ".*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-		amrContentsPattern = Pattern.compile
-			(".*(#!AMR.*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-		generalContentsPattern = Pattern.compile
-			(".*CONNECT\\s(.*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-		bmpContentsPattern = Pattern.compile
-			(".*(BM.*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-		gifContentsPattern = Pattern.compile
-			(".*(GIF.*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-		String pngHeader = new String (new byte[] { (byte) 0x89, (byte) 0x50,
-			(byte) 0x4E, (byte) 0x47} );
-		pngContentsPattern = Pattern.compile
-			(".*(" + pngHeader + ".*)\\s+NO\\s+CARRIER\\s*",
-			Pattern.DOTALL
-			//| Pattern.MULTILINE
-			);
-
-		ringfileIDs = new Hashtable<String, Integer> (6);
-		// seem to do something: 1, 201-202, 205-207
-		// rejected: 3-12, 17, 20-22, 30-32, 40-42, 50-52, 60-62,
-		//	70-72, 80-82, 90-101, 106-111, 200, 203-204, 208-2012
-		//	120-122
-		ringfileIDs.put ("wav" ,   1);
-//		ringfileIDs.put ("amr" ,   212);
-		ringfileIDs.put ("mid" ,   2);
-		ringfileIDs.put ("midi",   2);
-		//ringfileIDs.put ("rmi" ,   2);	// ?
-		//ringfileIDs.put ("kar" ,   2);	// ?
-//		ringfileIDs.put ("imy" ,   4);	// ?
-
-		photofileIDs = new Hashtable<String, Integer> (6);
-		photofileIDs.put ("bmp" , 102);
-		photofileIDs.put ("png" , 103);
-		photofileIDs.put ("jpg" , 104);
-		photofileIDs.put ("jpeg", 104);
-		photofileIDs.put ("jpe" , 104);
-		photofileIDs.put ("gif" , 105);
-
-		filetypeIDs = new Hashtable<String, Integer> (ringfileIDs.size ()
-			+ photofileIDs.size ());
-		filetypeIDs.putAll (this.photofileIDs);
-		filetypeIDs.putAll (this.ringfileIDs);
-		// TODO: AMR, mp3, vCard, vTODO, vEvent
-
 		initComponents ();
                 Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 
@@ -156,8 +164,20 @@ public class MainWindow extends javax.swing.JFrame
 			if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
 			{
 				this.portCombo.addItem (id.getName ());
+				if ( portName != null )
+				{
+					if ( id.getName ().equals (portName) )
+					{
+						this.portCombo.setSelectedItem (id.getName ());
+					}
+				}
 			}
 		}
+		this.dataBitsCombo.setSelectedItem (String.valueOf (dBits));
+		this.stopBitsCombo.setSelectedItem (String.valueOf (sBits));
+		this.speedCombo.setSelectedItem (String.valueOf (speed));
+		this.flowCombo.setSelectedIndex (flow);
+		this.parityCombo.setSelectedIndex (parity);
         }
 
         /**
@@ -167,8 +187,8 @@ public class MainWindow extends javax.swing.JFrame
          * always regenerated by the Form Editor.
          */
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-        private void initComponents() {
-
+        private void initComponents()
+        {
                 portCombo = new javax.swing.JComboBox();
                 speedCombo = new javax.swing.JComboBox();
                 dataBitsCombo = new javax.swing.JComboBox();
@@ -376,7 +396,7 @@ public class MainWindow extends javax.swing.JFrame
 
                 jLabel3.setText("Data bits:");
 
-                jLabel4.setText("Parity bits:");
+                jLabel4.setText("Parity:");
 
                 jLabel5.setText("Stop bits:");
 
@@ -472,8 +492,8 @@ public class MainWindow extends javax.swing.JFrame
                 pack();
         }// </editor-fold>//GEN-END:initComponents
 
-	private void scanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scanButtonActionPerformed
-
+	private void scanButtonActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_scanButtonActionPerformed
 		Vector<CommPortIdentifier> active = new Vector<CommPortIdentifier> (1);
 
                 Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
@@ -504,7 +524,7 @@ public class MainWindow extends javax.swing.JFrame
 		}
 		if (active.size () == 0)
 		{
-			JOptionPane.showMessageDialog (this, "No answers received", "Error",
+			JOptionPane.showMessageDialog (this, noAnsString, errString,
 				JOptionPane.ERROR_MESSAGE);
 		}
 		else if (active.size () == 1)
@@ -513,15 +533,20 @@ public class MainWindow extends javax.swing.JFrame
 		}
 		else
 		{
+			Vector<String> names = new Vector<String> (active.size ());
+			for ( int i=0; i < active.size (); i++ )
+			{
+				names.add ( active.get (i).getName () );
+			}
 			// let the user choose
 			int res = JOptionPane.showOptionDialog (this,
-				"Multiple answers received. Select the correct port.",
-				"Which one?",
+				multiAnsString,
+				whichString,
 				JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
-				active.toArray (),
-				active.get(0).getName ());
+				names.toArray (),
+				active.get (0).getName ());
 			if ( res != JOptionPane.CLOSED_OPTION )
 				this.portCombo.setSelectedIndex (res);
 			else
@@ -529,10 +554,12 @@ public class MainWindow extends javax.swing.JFrame
 		}
 	}//GEN-LAST:event_scanButtonActionPerformed
 
-	private void getPhotoListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getPhotoListButtonActionPerformed
-
+	private void getPhotoListButtonActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_getPhotoListButtonActionPerformed
 		try
 		{
+			DefaultTableModel tm = (DefaultTableModel) this.photoTable.getModel ();
+			tm.setRowCount (0);
 			CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 				(this.portCombo.getSelectedItem ().toString ());
 			DataTransporter dt = new DataTransporter (id);
@@ -546,7 +573,6 @@ public class MainWindow extends javax.swing.JFrame
 			dt.close ();
 			if ( currentElements != null )
 			{
-				DefaultTableModel tm = (DefaultTableModel) this.photoTable.getModel ();
 				for ( int i=0; i < currentElements.size (); i++ )
 				{
 					tm.addRow (new String[] {currentElements.get (i).getFilename ()
@@ -559,10 +585,10 @@ public class MainWindow extends javax.swing.JFrame
 			System.out.println (ex);
 			ex.printStackTrace ();
 		}
-}//GEN-LAST:event_getPhotoListButtonActionPerformed
+	}//GEN-LAST:event_getPhotoListButtonActionPerformed
 
-	private void downloadButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButActionPerformed
-
+	private void downloadButActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_downloadButActionPerformed
 		int[] selectedRows;
 		if ( this.tabPane.getSelectedIndex () == 0 )
 		{
@@ -575,44 +601,74 @@ public class MainWindow extends javax.swing.JFrame
 		if ( selectedRows == null ) return;
 		if ( selectedRows.length == 0 ) return;
 
-		try
+		JFileChooser jfc = new JFileChooser ();
+		jfc.setMultiSelectionEnabled (rootPaneCheckingEnabled);
+		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
+		jfc.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
+		if ( destDirName != null )
 		{
-			CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
-				(this.portCombo.getSelectedItem ().toString ());
-			DataTransporter dt = new DataTransporter (id);
-			dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
-				Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				flowCombo.getSelectedIndex ()
-				);
-			for ( int i=0; i < selectedRows.length; i++ )
+			if ( destDirName.length () > 0 )
 			{
-				File received = new File (currentElements.get (selectedRows[i]).getFilename ()
-						+ "." + currentElements.get (selectedRows[i]).getExt ());
-				if ( received.exists () )
-				{
-					int res = JOptionPane.showConfirmDialog (this,
-						currentElements.get (selectedRows[i]).getFilename ()
-						+ "." + currentElements.get (selectedRows[i]).getExt () +
-						" exists. Overwrite?");
-					if ( res != JOptionPane.YES_OPTION ) continue;
-				}
-				dt.getFile (received, currentElements.get (selectedRows[i]));
+				File d = new File (destDirName);
+				jfc.setCurrentDirectory (d);
+				jfc.setSelectedFile (d);
 			}
-			dt.close ();
 		}
-		catch (Exception ex)
+		if ( lastSelDir != null )
 		{
-			System.out.println (ex);
-			ex.printStackTrace ();
+			File d = new File (lastSelDir);
+			jfc.setCurrentDirectory (d);
+			jfc.setSelectedFile (d);
 		}
-}//GEN-LAST:event_downloadButActionPerformed
+		int dialogRes = jfc.showOpenDialog (this);
 
-	private void getRingListbutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getRingListbutActionPerformed
+		if ( dialogRes == JFileChooser.APPROVE_OPTION )
+		{
+			try
+			{
+				File destDir = jfc.getSelectedFile ();
+				lastSelDir = destDir.getAbsolutePath ();
+				CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+					(this.portCombo.getSelectedItem ().toString ());
+				DataTransporter dt = new DataTransporter (id);
+				dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
+					Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
+					Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
+					parityCombo.getSelectedIndex (),
+					flowCombo.getSelectedIndex ()
+					);
+				for ( int i=0; i < selectedRows.length; i++ )
+				{
+					File received = new File (
+						destDir.getAbsolutePath () + File.separator
+						+ currentElements.get (selectedRows[i]).getFilename ()
+						+ "." + currentElements.get (selectedRows[i]).getExt ());
+					if ( received.exists () )
+					{
+						int res = JOptionPane.showConfirmDialog (this,
+							currentElements.get (selectedRows[i]).getFilename ()
+							+ "." + currentElements.get (selectedRows[i]).getExt () +
+							exOverString);
+						if ( res != JOptionPane.YES_OPTION ) continue;
+					}
+					dt.getFile (received, currentElements.get (selectedRows[i]));
+				}
+				dt.close ();
+			}
+			catch (Exception ex)
+			{
+				System.out.println (ex);
+				ex.printStackTrace ();
+			}
+		}
+	}//GEN-LAST:event_downloadButActionPerformed
 
+	private void getRingListbutActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_getRingListbutActionPerformed
 		try
 		{
+			DefaultTableModel tm = (DefaultTableModel) this.ringTable.getModel ();
+			tm.setRowCount (0);
 			CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 				(this.portCombo.getSelectedItem ().toString ());
 			DataTransporter dt = new DataTransporter (id);
@@ -626,7 +682,6 @@ public class MainWindow extends javax.swing.JFrame
 			dt.close ();
 			if ( currentElements != null )
 			{
-				DefaultTableModel tm = (DefaultTableModel) this.ringTable.getModel ();
 				for ( int i=0; i < currentElements.size (); i++ )
 				{
 					tm.addRow (new String[] {currentElements.get (i).getFilename ()
@@ -641,31 +696,24 @@ public class MainWindow extends javax.swing.JFrame
 		}
 	}//GEN-LAST:event_getRingListbutActionPerformed
 
-	private void aboutButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButActionPerformed
-
+	private void aboutButActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_aboutButActionPerformed
 		JOptionPane.showMessageDialog (this,
-			"JYMAG - Java Your Music and Graphics - a Free 'My Pictures and Sounds' replacement.\n" +
+			"JYMAG - Java Your Music and Graphics - " + freeMPASStr + "\n" +
+			verWord + ": " + verString + "\n" +
 			"Author: Bogdan Drozdowski, bogdandr@op.pl\n" +
 			"License: GPLv3+\n\n" +
-			"Supported opertations:\n" +
-			"1) Getting lists of: pictures and ringtones\n" +
-			"2) Downloading:\n" +
-			"   a) pictures: JPG, GIF, BMP, PNG\n" +
-			"   b) ringtones: MIDI, AMR\n" +
-			"3) Uploading:\n" +
-			"   a) pictures: JPG, GIF, BMP, PNG\n" +
-			"   b) ringtones: MIDI\n" +
-			"\n" +
-			"Thanks to: Sharp (sharpy+at+xox.pl) for GetPic.pl\n"+
+			suppOperThank +
+			"\nSharp (sharpy+at+xox.pl) for GetPic.pl\n"+
 			"sebtx452 @ gmail.com for wxPicSound\n" +
 			"MIKSOFT for \"Mobile Media Converter\"\n" +
 			"\"ffmpeg project\" for ffmpeg",
-			"About", JOptionPane.INFORMATION_MESSAGE );
+			aboutStr, JOptionPane.INFORMATION_MESSAGE );
 
 	}//GEN-LAST:event_aboutButActionPerformed
 
-	private void uploadPhotoButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadPhotoButActionPerformed
-
+	private void uploadPhotoButActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_uploadPhotoButActionPerformed
 		JFileChooser jfc = new JFileChooser ();
 		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
@@ -685,10 +733,11 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return "Pictures";
+				return picsString;
 			}
 		} );
 
+		jfc.setAcceptAllFileFilterUsed (false);
 		jfc.setDialogType (JFileChooser.SAVE_DIALOG);
 		int dialogRes = jfc.showOpenDialog (this);
 
@@ -713,10 +762,18 @@ public class MainWindow extends javax.swing.JFrame
 				dt.close ();
 				if ( put != 0 )
 				{
-					JOptionPane.showMessageDialog (this,
-					"Error " + put,
-					"Error", JOptionPane.ERROR_MESSAGE );
+					String msg = String.valueOf (put);
+					if ( put == -1 ) msg = msg1;
+					else if ( put == -2 ) msg = msg2;
+					else if ( put == -3 ) msg = msg3;
+					else if ( put == -4 ) msg = msg4;
+					else if ( put == -5 ) msg = msg5;
+					else if ( put == -6 ) msg = msg6;
+					else if ( put == -7 ) msg = msg7;
 
+					JOptionPane.showMessageDialog (this,
+					errString + ": " + msg,
+					errString, JOptionPane.ERROR_MESSAGE );
 				}
 			}
 			catch (Exception ex)
@@ -727,8 +784,8 @@ public class MainWindow extends javax.swing.JFrame
 		}
 	}//GEN-LAST:event_uploadPhotoButActionPerformed
 
-	private void uploadRingButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadRingButActionPerformed
-
+	private void uploadRingButActionPerformed (java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_uploadRingButActionPerformed
 		JFileChooser jfc = new JFileChooser ();
 		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
 		{
@@ -748,10 +805,11 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return "Sounds";
+				return soundsString;
 			}
 		} );
 
+		jfc.setMultiSelectionEnabled(rootPaneCheckingEnabled);
 		jfc.setDialogType (JFileChooser.SAVE_DIALOG);
 		int dialogRes = jfc.showOpenDialog (this);
 
@@ -776,9 +834,18 @@ public class MainWindow extends javax.swing.JFrame
 				dt.close ();
 				if ( put != 0 )
 				{
+					String msg = String.valueOf (put);
+					if ( put == -1 ) msg = msg1;
+					else if ( put == -2 ) msg = msg2;
+					else if ( put == -3 ) msg = msg3;
+					else if ( put == -4 ) msg = msg4;
+					else if ( put == -5 ) msg = msg5;
+					else if ( put == -6 ) msg = msg6;
+					else if ( put == -7 ) msg = msg7;
+
 					JOptionPane.showMessageDialog (this,
-					"Error " + put,
-					"Error", JOptionPane.ERROR_MESSAGE );
+					errString + ": " + msg,
+					errString, JOptionPane.ERROR_MESSAGE );
 				}
 			}
 			catch (Exception ex)
@@ -789,38 +856,298 @@ public class MainWindow extends javax.swing.JFrame
 		}
 	}//GEN-LAST:event_uploadRingButActionPerformed
 
+	private static int getElementsOfType (String type)
+	{
+		int ret = 0;
+		try
+		{
+			if ( portName == null )
+			{
+		                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+
+				while (portList.hasMoreElements ())
+				{
+					CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
+
+					if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
+					{
+						portName = id.getName ();
+					}
+				}
+			}
+			if ( destDirName == null )
+			{
+				destDirName = ".";
+			}
+			CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+				(portName);
+			DataTransporter dt = new DataTransporter (id);
+			dt.open (speed, dBits, sBits, parity, flow);
+			System.out.println (getListStr + type);
+			Vector<PhoneElement> elems = dt.getList (type);
+			dt.close ();
+			if ( elems != null )
+			{
+				for ( int i=0; i < elems.size (); i++ )
+				{
+					File received = new File (
+						destDirName + File.separator
+						+ elems.get (i).getFilename ()
+						+ "." + elems.get (i).getExt ());
+					System.out.println (getFileStr + " '"
+						+ elems.get (i).getFilename ()
+						+ "." + elems.get (i).getExt ()
+						+ "'");
+					int res = dt.getFile (received, elems.get (i));
+					if ( res != 0 )
+					{
+						ret = res;
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			System.out.println (ex);
+			ex.printStackTrace ();
+		}
+		return ret;
+	}
+
+	private static int getAllPics ()
+	{
+		return getElementsOfType ("PICTURES");
+	}
+
+	private static int getAllRings ()
+	{
+		return getElementsOfType ("RINGTONES");
+	}
+
+	private static int getAllTODOs ()
+	{
+		return getElementsOfType ("VTODO");
+	}
+
+	private static int getAllEvents ()
+	{
+		return getElementsOfType ("VEVENT");
+	}
+
+	private static int getAllVcards ()
+	{
+		return getElementsOfType ("VCARDS");
+	}
+
+	private static int upload (File f) throws Exception
+	{
+		if ( f == null ) return -7;
+		if ( ! f.exists () || ! f.canRead () || ! f.isFile ()) return -8;
+		if ( ! f.getName ().contains (".") ) return -9;
+		if ( ! filetypeIDs.containsKey (f.getName ().substring
+			(f.getName ().lastIndexOf (".")+1)
+			.toLowerCase ()))
+		{
+			System.out.println (unsuppType+" '"
+				+f.getName ().substring
+				(f.getName ().lastIndexOf (".")+1)
+				.toLowerCase () + "'");
+			return -10;
+		}
+
+		if ( portName == null )
+		{
+	                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+
+			while (portList.hasMoreElements ())
+			{
+				CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
+
+				if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
+				{
+					portName = id.getName ();
+				}
+			}
+		}
+		CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+			(portName);
+		DataTransporter dt = new DataTransporter (id);
+		dt.open (speed, dBits, sBits, parity, flow);
+
+		int put = dt.putFile (f, f.getName ().substring
+			(0, f.getName ().indexOf (".")).replaceAll ("\\s", ""));
+
+		dt.close ();
+		if ( put != 0 )
+		{
+			String msg = String.valueOf (put);
+			if ( put == -1 ) msg = msg1;
+			else if ( put == -2 ) msg = msg2;
+			else if ( put == -3 ) msg = msg3;
+			else if ( put == -4 ) msg = msg4;
+			else if ( put == -5 ) msg = msg5;
+			else if ( put == -6 ) msg = msg6;
+			else if ( put == -7 ) msg = msg7;
+
+			System.out.println ( errString+": " + msg );
+		}
+		return put;
+	}
+
+	private static int scanPorts ()
+	{
+		int active = 0;
+
+                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+		while (portList.hasMoreElements ())
+		{
+			CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
+
+			if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
+			{
+				// scan ports for "AT"-"OK"
+				System.out.print (tryPortStr + id.getName () + "...");
+				try
+				{
+					DataTransporter dt = new DataTransporter (id);
+					dt.open (speed, dBits, sBits, parity, flow);
+					if ( dt.test () == 0 )
+					{
+						System.out.print (gotAnsStr);
+						active++;
+					}
+					System.out.println ();
+					dt.close ();
+				}
+				catch (Exception ex) {}
+			}
+		}
+		if (active == 0)
+		{
+			System.out.println (noAnsStr);
+			return -1;
+		}
+		return 0;
+	}
+
         /**
          * Program starting point.
          * @param args the command line arguments.
          */
         public static void main (String args[])
         {
+		/*
+		 * List receiving format:
+		 * +KPSL: "5303650005022001FFFF",1,2016,"PICTURES","FGIF","0000065535","","Zzz"
+				Id	    HIDDEN,LENG, CATEGORY, CONTENT, LOCATION  FLAG, NAME
+		 */
+		listPattern = Pattern.compile ("\\s*\\+KPSL:\\s*\\" + '"'
+				+ "([0-9A-Fa-f]+)" + "\\" + '"' + ",(\\d+),\\d+,\\" + '"'
+				+ "\\w+\\" + '"' + ",\\" + '"' + "(\\w+)\\"+ '"'
+				+ ",[^,]+,[^,]+,\\"+ '"' + "([^\"]+)\\" + '"');
+		/*
+		 * Element receiving format:
+		 * AT+KPSR="<ID repeated>"
+		 * +KPSR: 49203
+		 * CONNECT
+		 * <binary data>
+		 * NO CARRIER
+		 */
+		String jpegHeader = new String (new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff} );
+		photoContentsPattern = Pattern.compile
+			(".*" + jpegHeader + ".*(" + jpegHeader + ".*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		String midiHeader = new String (new byte[] { (byte) 0x4d, (byte) 0x54, (byte) 0x68} );
+		midiContentsPattern = Pattern.compile
+			(".*(" + midiHeader + ".*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		amrContentsPattern = Pattern.compile
+			(".*(#!AMR.*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		generalContentsPattern = Pattern.compile
+			(".*CONNECT\\s(.*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		bmpContentsPattern = Pattern.compile
+			(".*(BM.*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		gifContentsPattern = Pattern.compile
+			(".*(GIF.*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		String pngHeader = new String (new byte[] { (byte) 0x89, (byte) 0x50,
+			(byte) 0x4E, (byte) 0x47} );
+		pngContentsPattern = Pattern.compile
+			(".*(" + pngHeader + ".*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+		wavContentsPattern = Pattern.compile
+			(".*(RIFF.*)\\s+NO\\s+CARRIER\\s*",
+			Pattern.DOTALL
+			//| Pattern.MULTILINE
+			);
+
+		ringfileIDs = new Hashtable<String, Integer> (6);
+		// seem to do something: 201-202, 205-207
+		// rejected: 3-12, 17, 20-22, 30-32, 40-42, 50-52, 60-62,
+		//	70-72, 80-82, 90-101, 106-111, 200, 203-204, 208-2012
+		//	120-122
+		ringfileIDs.put ("wav" ,   1);
+//		ringfileIDs.put ("amr" ,   212);
+		ringfileIDs.put ("mid" ,   2);
+		ringfileIDs.put ("midi",   2);
+		//ringfileIDs.put ("rmi" ,   2);	// ?
+		//ringfileIDs.put ("kar" ,   2);	// ?
+//		ringfileIDs.put ("imy" ,   4);	// ?
+
+		photofileIDs = new Hashtable<String, Integer> (6);
+		photofileIDs.put ("bmp" , 102);
+		photofileIDs.put ("png" , 103);
+		photofileIDs.put ("jpg" , 104);
+		photofileIDs.put ("jpeg", 104);
+		photofileIDs.put ("jpe" , 104);
+		photofileIDs.put ("gif" , 105);
+
+		filetypeIDs = new Hashtable<String, Integer> (ringfileIDs.size ()
+			+ photofileIDs.size ());
+		filetypeIDs.putAll (photofileIDs);
+		filetypeIDs.putAll (ringfileIDs);
+		// TODO: AMR, mp3?, vCard, vTODO, vEvent
+
 		if ( args != null )
 		{
 			for ( int i=0; i < args.length; i++ )
 			{
-				if ( args[i].equals ("--help") || args[i].equals ("-h")
-					|| args[i].equals ("-?") || args[i].equals ("/?") )
+				if ( args[i].toLowerCase ().equals ("--help")
+					|| args[i].toLowerCase ().equals ("-h")
+					|| args[i].toLowerCase ().equals ("-?")
+					|| args[i].toLowerCase ().equals ("/?") )
 				{
-					System.out.println ("JYMAG (Java Your Music and Graphics) is a program " +
-						"for retrieving and sending multimedia from and to a Sagem mobile phone.\n" +
-						"You need the RxTx Java Transmission package from www.rxtx.org\n" +
+					System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +
+						"\n\n*** " + rxtxReqStr +" ***\n\n" +
 						"Author: Bogdan Drozdowski, bogdandr @ op . pl\n" +
 						"License: GPLv3+\n" +
 				                "See http://rudy.mif.pg.gda.pl/~bogdro/soft\n\n" +
-						"Command-line options:\n" +
-						"--help, -h, -?, /?\tdisplay help\n" +
-						"--licence, --license\tdisplay license\n" +
-						"--version, -v\t\tdisplay version\n"
+				                cmdLineStr
 						);
 					System.exit (0);
 				}
-				else if ( args[i].equals ("--license")
-					|| args[i].equals ("--licence") )
+				else if ( args[i].toLowerCase ().equals ("--license")
+					|| args[i].toLowerCase ().equals ("--licence") )
 				{
-					System.out.println ("JYMAG (Java Your Music and Graphics) is a program " +
-						"for retrieving and sending multimedia from and to a Sagem mobile phone.\n" +
-						"See http://rudy.mif.pg.gda.pl/~bogdro/soft\n" +
+					System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +
+						"\nSee http://rudy.mif.pg.gda.pl/~bogdro/soft\n" +
 						"Author: Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl.\n\n" +
 						"    This program is free software; you can redistribute it and/or\n" +
 						"    modify it under the terms of the GNU General Public License\n" +
@@ -838,12 +1165,202 @@ public class MainWindow extends javax.swing.JFrame
 						"               USA\n");
 					System.exit (0);
 				}
-				else if ( args[i].equals ("--version")  || args[i].equals ("-v") )
+				else if ( args[i].toLowerCase ().equals ("--version")
+					|| args[i].toLowerCase ().equals ("-v") )
 				{
-					System.out.println ("JYMAG version 0.1");
+					System.out.println ("JYMAG " + verWord + " " + verString);
 					System.exit (0);
 				}
-			}
+				else if ( args[i].toLowerCase ().equals ("--port"))
+				{
+					if ( i < args.length-1 )
+					{
+						portName = args[i+1];
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--parity"))
+				{
+					if ( i < args.length-1 )
+					{
+						// <none, even, odd, space, mark>
+						if ( args[i+1].toLowerCase ().equals ("none"))
+						{
+							parity = 0;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("even"))
+						{
+							parity = 1;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("odd"))
+						{
+							parity = 2;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("space"))
+						{
+							parity = 3;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("mark"))
+						{
+							parity = 4;
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--databits"))
+				{
+					if ( i < args.length-1 )
+					{
+						try
+						{
+							dBits = Integer.parseInt (args[i+1]);
+						} catch (Exception ex) {}
+						if ( dBits != 5 && dBits != 6
+							&& dBits != 7 && dBits != 8 )
+						{
+							dBits = 8;
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--speed"))
+				{
+					if ( i < args.length-1 )
+					{
+						try
+						{
+							speed = Integer.parseInt (args[i+1]);
+						} catch (Exception ex) {}
+						if ( speed != 1200
+							&& speed != 2400
+							&& speed != 4800
+							&& speed != 9600
+							&& speed != 19200
+							&& speed != 38400
+							&& speed != 57600
+							&& speed != 115200
+							&& speed != 230400
+							&& speed != 460800
+							&& speed != 500000
+							&& speed != 576000
+							&& speed != 921600
+							&& speed != 1000000
+							&& speed != 1152000
+							&& speed != 1500000
+							&& speed != 2000000
+							&& speed != 2500000
+							&& speed != 3000000
+							&& speed != 3500000
+							&& speed != 4000000
+							)
+						{
+							speed = 115200;
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--stopbits"))
+				{
+					if ( i < args.length-1 )
+					{
+						if ( args[i+1].toLowerCase ().equals ("2"))
+						{
+							sBits = 2;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("1.5")
+							|| args[i+1].toLowerCase ().equals ("1,5") )
+						{
+							sBits = 1.5f;
+						}
+						else
+						{
+							sBits = 1;
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--flow"))
+				{
+					if ( i < args.length-1 )
+					{
+						// <none,soft,hard>
+						if ( args[i+1].toLowerCase ().equals ("none"))
+						{
+							flow = 0;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("soft"))
+						{
+							flow = 1;
+						}
+						else if ( args[i+1].toLowerCase ().equals ("hard"))
+						{
+							flow = 2;
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--scan"))
+				{
+					System.exit (scanPorts ());
+				}
+				else if ( args[i].toLowerCase ().equals ("--upload"))
+				{
+					if ( i < args.length-1 )
+					{
+						try
+						{
+							int res = upload ( new File (args[i+1]) );
+							System.exit (res);
+						}
+						catch ( Exception ex )
+						{
+							System.out.println (ex);
+							ex.printStackTrace ();
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase ().equals ("--download-all-photos"))
+				{
+					System.exit (getAllPics ());
+				}
+				else if ( args[i].toLowerCase ().equals ("--download-all-ringtones"))
+				{
+					System.exit (getAllRings ());
+				}
+				/*
+				else if ( args[i].toLowerCase ().equals ("--download-all-todo"))
+				{
+					System.exit (getAllTODOs ());
+				}
+				else if ( args[i].toLowerCase ().equals ("--download-all-events"))
+				{
+					System.exit (getAllEvents ());
+				}
+				else if ( args[i].toLowerCase ().equals ("--download-all-vcards"))
+				{
+					System.exit (getAllVcards ());
+				} // */
+				else if ( args[i].toLowerCase ().equals ("--download-all"))
+				{
+					System.exit (getAllPics ()
+						+ getAllRings ()
+						/*
+						+ getAllTODOs ()
+						+ getAllEvents ()
+						+ getAllVcards ()
+						*/
+						);
+				}
+				else if ( args[i].toLowerCase ().equals ("--download-dir"))
+				{
+					if ( i < args.length-1 )
+					{
+						destDirName = args[i+1];
+						i++;
+					}
+				}
+			}	// for i
 		}
 		try
 		{
