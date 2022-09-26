@@ -1,7 +1,7 @@
 /*
  * TransferUtils.java, part of the JYMAG package.
  *
- * Copyright (C) 2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ package BogDroSoft.jymag;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
+import java.awt.Component;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -37,7 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
@@ -110,7 +110,7 @@ public class TransferUtils
 	public static int uploadFile (final File f, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( f == null ) return -7;
@@ -203,7 +203,11 @@ public class TransferUtils
 									errString + colon + space + msg,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -265,7 +269,7 @@ public class TransferUtils
 		final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( f == null ) return -7;
@@ -332,7 +336,11 @@ public class TransferUtils
 									+ f.getName (),
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -396,7 +404,7 @@ public class TransferUtils
 	public static int deleteFile (final PhoneElement element, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( element == null ) return -7;
@@ -454,7 +462,11 @@ public class TransferUtils
 									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -516,7 +528,7 @@ public class TransferUtils
 	public static int uploadAlarm (final PhoneAlarm alarm, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( alarm == null ) return -7;
@@ -574,7 +586,11 @@ public class TransferUtils
 									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -636,7 +652,7 @@ public class TransferUtils
 	public static int deleteAlarm (final int alarmNo, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( alarmNo <= 0 ) return -7;
@@ -693,7 +709,11 @@ public class TransferUtils
 									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -775,7 +795,7 @@ public class TransferUtils
 	public static int downloadFiles (final String type, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor, final String destDir,
 		final boolean deleteAfterDownload)
 	{
@@ -863,7 +883,11 @@ public class TransferUtils
 									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -926,7 +950,7 @@ public class TransferUtils
 	public static int downloadList (final String ofWhat, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor,
 		final DefaultTableModel dtm, final Vector<PhoneElement> placeForData)
 	{
@@ -1004,7 +1028,11 @@ public class TransferUtils
 									errString + colon + space + downloadMsg2,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 						result.set (-2);
 					}
@@ -1066,7 +1094,7 @@ public class TransferUtils
 	public static int downloadAlarmList (final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor,
 		final JTable alarms, final Vector<PhoneAlarm> placeForData)
 	{
@@ -1195,7 +1223,11 @@ public class TransferUtils
 									errString + colon + space + downloadMsg2,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 						result.set (-2);
 					}
@@ -1257,7 +1289,7 @@ public class TransferUtils
 	public static int downloadMessageList (final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor,
 		final JTable messages, final Vector<PhoneMessage> placeForData)
 	{
@@ -1372,7 +1404,11 @@ public class TransferUtils
 									errString + colon + space + downloadMsg2,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 						result.set (-2);
 					}
@@ -1433,7 +1469,7 @@ public class TransferUtils
 	public static int deleteMessage (final PhoneMessage element, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( element == null ) return -7;
@@ -1491,7 +1527,11 @@ public class TransferUtils
 									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -1553,7 +1593,7 @@ public class TransferUtils
 	public static int sendMessage (final PhoneMessage element, final CommPortIdentifier id,
 		final int speed, final int dataBits, final float stopBits,
 		final int parity, final int flow, final Runnable onDone,
-		final JFrame parent, final Object sync, final boolean quiet,
+		final Component parent, final Object sync, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
 		if ( element == null ) return -7;
@@ -1611,7 +1651,11 @@ public class TransferUtils
 									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
-							catch (Exception ex) {}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
 						}
 					}
 				}
@@ -1633,6 +1677,252 @@ public class TransferUtils
 						Utils.handleException (ex,
 							"TU.sendMessage.SW.done: "	// NOI18N
 							+ element.getRecipientNum ());
+					}
+				}
+				isDone.set (true);
+			}
+		};
+		sw.execute ();
+		if ( waitFor )
+		{
+			while ( ! isDone.get () )
+			{
+				try
+				{
+					Thread.sleep (10);
+				} catch (InterruptedException ex) {}
+			}
+		}
+		return result.get ();
+	}
+
+	/**
+	 * Dials the given number through the phone.
+	 * @param number the number to dial. Must be non-null.
+	 * @param isVoice whether the connection is for voice or data. Voice connections
+	 *	will be initiated by adding a semicolon to the end of the number.
+	 * @param dialMode The dial mode (tone, pulse, auto). Defaults to "auto" if null.
+	 * @param id The port ID to use.
+	 * @param speed The port speed.
+	 * @param dataBits The number of data bits.
+	 * @param stopBits The number of stop bits.
+	 * @param parity The parity mode.
+	 * @param flow The flow control mode.
+	 * @param onDone The code to run at transfer end.
+	 * @param parent The parent frame for displaying messages.
+	 * @param sync The synchronization object.
+	 * @param quiet If TRUE, no messages will be displayed.
+	 * @param quietGUI If TRUE, no messageboxes will be displayed.
+	 * @param waitFor If TRUE, the background thread will be waited for.
+	 * @return the result of the task (if it has finished before the
+	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
+	 */
+	public static int dialNumber (final String number, final boolean isVoice,
+		final DataTransporter.DIAL_MODE dialMode, final CommPortIdentifier id,
+		final int speed, final int dataBits, final float stopBits,
+		final int parity, final int flow, final Runnable onDone,
+		final Component parent, final Object sync, final boolean quiet,
+		final boolean quietGUI, final boolean waitFor)
+	{
+		if ( number == null ) return -7;
+
+		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
+
+		SwingWorker<Integer, Void> sw =
+			new SwingWorker<Integer, Void> ()
+		{
+			@Override
+			protected Integer doInBackground ()
+			{
+				synchronized (sync)
+				{
+					try
+					{
+						final DataTransporter dt = new DataTransporter (id);
+						dt.open (speed, dataBits, stopBits,
+							parity, flow);
+						int ret = dt.dialNumber (number, isVoice, dialMode);
+						dt.close ();
+						return ret;
+					}
+					catch (Exception e)
+					{
+						Utils.handleException (e,
+							"TU.dialNumber.SW.doInBackground: "	// NOI18N
+							+ number);
+					}
+					return -1;
+				}
+			}
+
+			@Override
+			protected void done ()
+			{
+				try
+				{
+					int put = 0;
+					Integer res = get ();
+					if ( res != null ) put = res.intValue ();
+					result.set (put);
+					if ( put != 0 )
+					{
+						if ( ! quiet )
+						{
+							System.out.println (errString + colon + space + uploadMsg11);
+						}
+						if ( ! quietGUI )
+						{
+							try
+							{
+								JOptionPane.showMessageDialog (parent,
+									errString + colon + space + uploadMsg11,
+									errString, JOptionPane.ERROR_MESSAGE );
+							}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex,
+						"TU.dialNumber.SW.done: "	// NOI18N
+						+ number);
+					result.set (-10);
+				}
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.dialNumber.SW.done: "	// NOI18N
+							+ number);
+					}
+				}
+				isDone.set (true);
+			}
+		};
+		sw.execute ();
+		if ( waitFor )
+		{
+			while ( ! isDone.get () )
+			{
+				try
+				{
+					Thread.sleep (10);
+				} catch (InterruptedException ex) {}
+			}
+		}
+		return result.get ();
+	}
+
+	/**
+	 * Hangs the phone up (stops the current call).
+	 * @param id The port ID to use.
+	 * @param speed The port speed.
+	 * @param dataBits The number of data bits.
+	 * @param stopBits The number of stop bits.
+	 * @param parity The parity mode.
+	 * @param flow The flow control mode.
+	 * @param onDone The code to run at transfer end.
+	 * @param parent The parent frame for displaying messages.
+	 * @param sync The synchronization object.
+	 * @param quiet If TRUE, no messages will be displayed.
+	 * @param quietGUI If TRUE, no messageboxes will be displayed.
+	 * @param waitFor If TRUE, the background thread will be waited for.
+	 * @return the result of the task (if it has finished before the
+	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
+	 */
+	public static int hangup (final CommPortIdentifier id,
+		final int speed, final int dataBits, final float stopBits,
+		final int parity, final int flow, final Runnable onDone,
+		final Component parent, final Object sync, final boolean quiet,
+		final boolean quietGUI, final boolean waitFor)
+	{
+		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
+
+		SwingWorker<Integer, Void> sw =
+			new SwingWorker<Integer, Void> ()
+		{
+			@Override
+			protected Integer doInBackground ()
+			{
+				synchronized (sync)
+				{
+					try
+					{
+						final DataTransporter dt = new DataTransporter (id);
+						dt.open (speed, dataBits, stopBits,
+							parity, flow);
+						int ret = dt.hangup ();
+						dt.close ();
+						return ret;
+					}
+					catch (Exception e)
+					{
+						Utils.handleException (e,
+							"TU.hangup.SW.doInBackground");	// NOI18N
+					}
+					return -1;
+				}
+			}
+
+			@Override
+			protected void done ()
+			{
+				try
+				{
+					int put = 0;
+					Integer res = get ();
+					if ( res != null ) put = res.intValue ();
+					result.set (put);
+					if ( put != 0 )
+					{
+						if ( ! quiet )
+						{
+							System.out.println (errString + colon + space + uploadMsg11);
+						}
+						if ( ! quietGUI )
+						{
+							try
+							{
+								JOptionPane.showMessageDialog (parent,
+									errString + colon + space + uploadMsg11,
+									errString, JOptionPane.ERROR_MESSAGE );
+							}
+							catch (Exception ex)
+							{
+								Utils.handleException (ex,
+									"JOptionPane.showMessageDialog");	// NOI18N
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex,
+						"TU.hangup.SW.done");	// NOI18N
+					result.set (-10);
+				}
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.hangup.SW.done");	// NOI18N
 					}
 				}
 				isDone.set (true);

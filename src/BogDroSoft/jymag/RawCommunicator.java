@@ -1,7 +1,7 @@
 /*
  * RawCommunicator.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -60,10 +61,11 @@ public class RawCommunicator extends javax.swing.JDialog
 	private JFileChooser fc;
 
 	// ------------ i18n stuff
-	private static final String exString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator").getString("Exception");
-	private static final String fileNotReadMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator").getString("file_not_readable");
-	private static final String noFileMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator").getString("no_file_sel");
-	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static final ResourceBundle rcBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator");
+	private static final String exString = rcBundle.getString("Exception");
+	private static final String fileNotReadMsg = rcBundle.getString("file_not_readable");
+	private static final String noFileMsg = rcBundle.getString("no_file_sel");
+	private static final String errString = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
 
 	private static final String emptyStr = "";					// NOI18N
 	private static final String CRStr = "\r";					// NOI18N
@@ -132,6 +134,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 fontSizeSpin = new javax.swing.JSpinner();
                 fontSizeLab = new javax.swing.JLabel();
                 sendFileBut = new javax.swing.JButton();
+                clearBut = new javax.swing.JButton();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator"); // NOI18N
@@ -226,6 +229,14 @@ public class RawCommunicator extends javax.swing.JDialog
                         }
                 });
 
+                clearBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/clear.png"))); // NOI18N
+                clearBut.setText(bundle.getString("clear_but_text")); // NOI18N
+                clearBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                clearButActionPerformed(evt);
+                        }
+                });
+
                 javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
                 jPanel1.setLayout(jPanel1Layout);
                 jPanel1Layout.setHorizontalGroup(
@@ -242,9 +253,10 @@ public class RawCommunicator extends javax.swing.JDialog
                                                 .addComponent(dsrLabel, javax.swing.GroupLayout.Alignment.TRAILING)
                                                 .addComponent(ctsLabel, javax.swing.GroupLayout.Alignment.TRAILING)
                                                 .addComponent(dcdLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(dtrBut, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(sendFileBut, javax.swing.GroupLayout.Alignment.TRAILING))
-                                        .addComponent(rtsBut, javax.swing.GroupLayout.Alignment.TRAILING))
+                                                .addComponent(dtrBut, javax.swing.GroupLayout.Alignment.TRAILING))
+                                        .addComponent(rtsBut, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(sendFileBut, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(clearBut, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addContainerGap())
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -271,9 +283,11 @@ public class RawCommunicator extends javax.swing.JDialog
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(fontSizeSpin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(fontSizeLab))
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(sendFileBut)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(clearBut)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
                                 .addComponent(rtsBut)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(dtrBut)
@@ -305,6 +319,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
                 fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("font_label")); // NOI18N
                 sendFileBut.getAccessibleContext().setAccessibleName(bundle.getString("access_send_file")); // NOI18N
+                clearBut.getAccessibleContext().setAccessibleName(bundle.getString("access_clear_but_text")); // NOI18N
 
                 jScrollPane4.setViewportView(jPanel1);
 
@@ -351,11 +366,15 @@ public class RawCommunicator extends javax.swing.JDialog
 					String rcvd = emptyStr;
 					synchronized (sync)
 					{
+						// don't force any encodings, because the command may
+						// be in another encoding
 						dtr.send ((cmd+CRStr).getBytes ());
 						int trial = 0;
 						do
 						{
 							byte[] recvdB = dtr.recv (null);
+							// don't force any encodings, because the reply may
+							// be in another encoding
 							if ( recvdB != null ) rcvd = new String (recvdB);
 							trial++;
 						} while (rcvd.trim ().equals (emptyStr)
@@ -536,6 +555,11 @@ public class RawCommunicator extends javax.swing.JDialog
 		}
 	}//GEN-LAST:event_sendFileButActionPerformed
 
+	private void clearButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_clearButActionPerformed
+	{//GEN-HEADEREND:event_clearButActionPerformed
+		answerArea.setText (emptyStr);
+	}//GEN-LAST:event_clearButActionPerformed
+
 	private void exit ()
 	{
 		if ( updater != null )
@@ -673,6 +697,7 @@ public class RawCommunicator extends javax.swing.JDialog
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JTextArea answerArea;
+        private javax.swing.JButton clearBut;
         private javax.swing.JButton closeBut;
         private javax.swing.JTextArea cmdArea;
         private final javax.swing.JLabel ctsLabel = new javax.swing.JLabel();

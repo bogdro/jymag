@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -62,49 +62,49 @@ public class Utils
 	 * A Hashtable containing all ID numbers connected to the given file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> filetypeIDs;
+	/*public*/ final static Hashtable<String, Integer> filetypeIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given photo file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> photofileIDs;
+	/*public*/ final static Hashtable<String, Integer> photofileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given ringtone file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> ringfileIDs;
+	/*public*/ final static Hashtable<String, Integer> ringfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given addressbook file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> addrfileIDs;
+	/*public*/ final static Hashtable<String, Integer> addrfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given to-do file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> todofileIDs;
+	/*public*/ final static Hashtable<String, Integer> todofileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given event file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> eventfileIDs;
+	/*public*/ final static Hashtable<String, Integer> eventfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given animation/video file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> animfileIDs;
+	/*public*/ final static Hashtable<String, Integer> animfileIDs;
 
 	/**
 	 * A Hashtable containing ID numbers connected to the given Java file
 	 * extensions, used for file uploading.
 	 */
-	public final static Hashtable<String, Integer> javafileIDs;
+	/*public*/ final static Hashtable<String, Integer> javafileIDs;
 
 	private static final String emptyStr = "";				// NOI18N
 	private static final String dash = "-";					// NOI18N
@@ -522,6 +522,8 @@ public class Utils
 		}
 		try
 		{
+			// don't force any encodings, because the translated messages may
+			// be in another encoding
 			System.setErr (new PrintStream (new File (filename)));
 		}
 		catch (Exception ex)
@@ -569,6 +571,8 @@ public class Utils
 				if ( dirs[i].isEmpty () ) continue;
 				try
 				{
+					// don't force any encodings, because the translated messages may
+					// be in another encoding
 					System.setErr (new PrintStream (new File (
 						dirs[i] + dirSep + filename)));
 					filename = dirs[i] + dirSep + filename;
@@ -616,20 +620,26 @@ public class Utils
 			@Override
 			public String getDescription ()
 			{
-				String desc = (description != null)? description : emptyStr;
+				StringBuilder desc = new StringBuilder (200);
+				if ( description != null )
+				{
+					desc.append (description);
+				}
 				Enumeration<String> keys = filetype.keys ();
 				if ( keys != null )
 				{
-					desc += space + lParen;
+					desc.append (space + lParen);
 					while ( keys.hasMoreElements () )
 					{
-						desc += allFileNames + keys.nextElement () + comma + space;
+						desc.append (allFileNames + keys.nextElement ());
+						if ( keys.hasMoreElements () )
+						{
+							desc.append (comma + space);
+						}
 					}
-					// remove the last comma and space
-					desc = desc.substring (0, desc.length () - 2);
-					desc += rParen;
+					desc.append (rParen);
 				}
-				return desc;
+				return desc.toString ();
 			}
 		});
 		return fc;
@@ -646,7 +656,10 @@ public class Utils
 		if ( System.err != null ) System.err.close ();
 		// remove the log file if empty
 		File log = new File (filename);
-		if ( log.exists () && log.length() == 0 ) log.delete ();
+		if ( log.exists () && log.length() == 0 )
+		{
+			if ( ! log.delete () && retval == 0 ) retval = 1;
+		}
 		System.exit (retval);
 	}
 
@@ -813,5 +826,77 @@ public class Utils
 				frame.dispose ();
 			}
 		}
+	}
+
+	/**
+	 * Gets a copy of the filetypeIDs Hashtable.
+	 * @return the filetypeIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getFiletypeIDs ()
+	{
+		return new Hashtable<String, Integer> (filetypeIDs);
+	}
+
+	/**
+	 * Gets a copy of the photofileIDs Hashtable.
+	 * @return the photofileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getPhotofileIDs ()
+	{
+		return new Hashtable<String, Integer> (photofileIDs);
+	}
+
+	/**
+	 * Gets a copy of the ringfileIDs Hashtable.
+	 * @return the ringfileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getRingfileIDs ()
+	{
+		return new Hashtable<String, Integer> (ringfileIDs);
+	}
+
+	/**
+	 * Gets a copy of the addrfileIDs Hashtable.
+	 * @return the addrfileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getAddrfileIDs ()
+	{
+		return new Hashtable<String, Integer> (addrfileIDs);
+	}
+
+	/**
+	 * Gets a copy of the todofileIDs Hashtable.
+	 * @return the todofileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getTodofileIDs ()
+	{
+		return new Hashtable<String, Integer> (todofileIDs);
+	}
+
+	/**
+	 * Gets a copy of the eventfileIDs Hashtable.
+	 * @return the eventfileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getEventfileIDs ()
+	{
+		return new Hashtable<String, Integer> (eventfileIDs);
+	}
+
+	/**
+	 * Gets a copy of the animfileIDs Hashtable.
+	 * @return the animfileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getAnimfileIDs ()
+	{
+		return new Hashtable<String, Integer> (animfileIDs);
+	}
+
+	/**
+	 * Gets a copy of the javafileIDs Hashtable.
+	 * @return the javafileIDs Hashtable.
+	 */
+	public Hashtable<String, Integer> getJavafileIDs ()
+	{
+		return new Hashtable<String, Integer> (javafileIDs);
 	}
 }

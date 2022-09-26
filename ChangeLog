@@ -1,3 +1,55 @@
+2012-06-30	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.2:
+	  Dialing numbers. GUI improvements. Fixed some of the warnings
+	  found by the "findbugs" program (not all will be fixed).
+	* SMSWindow.java (sendButActionPerformed): fixed a null pointer
+	  dereference.
+	* DataTransporter.java (getFile): closing the file on error
+	* Utils.java: made the Hashtables package-protected and available
+	  with get*() methods.
+	* MainWindow.java (loadConfButActionPerformed): corrected reading
+	  the configuration values. Method is now synchronized.
+	* PhoneAlarm.java: using a constand field for the integer zero
+	  (which represents all days for an alarm). Less relying on particular
+	  implementations (using a general Set instead of HashSet if possible).
+	* AboutBox.java (getFileContents): using a StringBuilder to improve
+	  performance and memory usage.
+	* Utils.java (createOpenFileChooser): using a StringBuilder to improve
+	  performance and memory usage.
+	* DataTransporter.java (tryCommand): using a StringBuilder to improve
+	  performance and memory usage.
+	* Makefile: added targets for making the JYMAG jar and javadocs, added
+	  a "clean" target, simplified the Makefile. Moved to Bzip2 from Gzip
+	  to decrease the archives' sizes. Added targets for building the
+	  wrapper exe (launch4j) and installer (NSIS) for Windows.
+	* CapabilityWindow.java (getCapButActionPerformed): disabling the
+	  "Get" button when waiting for the answer to the previous operation.
+	* SignalDisplayer.java: made the lowest power level label aligned with
+	  the level bar.
+	* RawCommunicator.java: added a "Clear" button that clears the answer
+	  area without clearing the current command and the sent commands'
+	  fields.
+	* MainWindow.java: corrected the size of the tab pane and its
+	  subelements so the buttons on the right don't cover it when the
+	  font size decreases. A new tab for dialing numbers.
+	* TransferUtils.java: using "Component" instead of "JFrame" in
+	  methods' parameters. Added methods that dial a number and hang up.
+	* DataTransporter.java: added methods that dial a number and hang up.
+	* MainWindow.java, RawCommunicator.java, SMSWindow.java: using a
+	  single instance of the resource bundle with messages.
+	* DialPanel.java: a panel for dialing numbers (contents of the
+	  dialing tab in MainWindow.java).
+	* CommandLineParser.java (parse): recognising new command-line
+	  options: --dial-voice, --dial-data, --hangup.
+	* README, manual/en/readme.html, manual/pl/readme.html: added new
+	  command-line options, fixed typos.
+	* setup/jymag.nsi: corrected the "send to" shorcut
+	* run.bat, run-en.bat: corrected the end-of-line sequence and
+	  replaced "java" with "javaw"
+	* manual/*/{index.html,main_window.html,manual_cmd.html,
+	  tables.html}: updated with new features and screenshots.
+
 2011-11-06	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 1.1:

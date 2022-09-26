@@ -1,7 +1,7 @@
 /*
  * SMSWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@
 package BogDroSoft.jymag;
 
 import java.awt.Dimension;
+import java.util.ResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -41,9 +42,11 @@ public class SMSWindow extends javax.swing.JDialog
 	private final DataTransporter dtr;
 	private final Object sync;
 
-	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
-	private static final String okString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow").getString("message_sent");
-	private static final String sendError = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow").getString("send_error");
+	// ------------ i18n stuff
+	private static final ResourceBundle swBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow");
+	private static final String errString = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static final String okString = swBundle.getString("message_sent");
+	private static final String sendError = swBundle.getString("send_error");
 
 	private static final String space = " ";	// NOI18N
 
@@ -304,7 +307,7 @@ public class SMSWindow extends javax.swing.JDialog
 							catch (Exception ex2)
 							{
 								Utils.handleException (ex2, "SMSWindow.send.SW.showMessageDialog"	// NOI18N
-									+ space + errString + space + sendError + space + rcvd.toString ());
+									+ space + errString + space + sendError /*+ space + rcvd.toString ()*/);
 							}
 						}
 					}

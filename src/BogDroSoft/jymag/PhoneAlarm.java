@@ -1,7 +1,7 @@
 /*
  * PhoneAlarm.java, part of the JYMAG package.
  *
- * Copyright (C) 2010-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2010-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 package BogDroSoft.jymag;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,7 +42,7 @@ public class PhoneAlarm
 	private Calendar time;
 	private boolean oneTime;
 	private boolean forAllDays;
-	private HashSet<Integer> days;
+	private Set<Integer> days;
 	private int number;
 
 	// alarm recurrences could also show up here
@@ -50,6 +51,7 @@ public class PhoneAlarm
 			+ "(\\d{2}):(\\d{2}):(\\d{2})\"?(\\s*,(\\d+))?(\\s*,\""			// NOI18N
 			+ "(\\d)((,\\d))+\")?\\s*.*",						// NOI18N
 			Pattern.CASE_INSENSITIVE);
+
 	private static final Pattern timePattern
 		= Pattern.compile ("(\\+CALA:)?(\\s*)?\"?(\\d{2}):(\\d{2}):(\\d{2})\"?"		// NOI18N
 			+ "(\\s*,(\\d+))?(\\s*,\"(\\d)((,\\d)+)\")?\\s*.*",			// NOI18N
@@ -69,7 +71,9 @@ public class PhoneAlarm
 	private static final String toStringDateTime = "";					// NOI18N
 	private static final String toStringDays = "";						// NOI18N
 
-	private static final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
+
+	private final static Integer ALL_DAYS = Integer.valueOf (0);
 
 	/**
 	 * Creates a new instance of PhoneAlarm.
@@ -121,7 +125,7 @@ public class PhoneAlarm
 	 * @param alarmNumber The number of the alarm.
 	 */
 	public PhoneAlarm (Calendar alarmTime, boolean isOneTimeAlarm,
-		boolean isForAllDays, Set<Integer> alarmDays, int alarmNumber)
+		boolean isForAllDays, Set<? extends Integer> alarmDays, int alarmNumber)
 	{
 		if ( alarmTime == null )
 			throw new NullPointerException ("PhoneAlarm.PhoneAlarm:alarmTime==null");	// NOI18N
@@ -138,7 +142,7 @@ public class PhoneAlarm
 			if ( alarmDays != null )
 			{
 				days = new HashSet<Integer> (alarmDays);
-				if ( alarmDays.contains (new Integer (0)) ) forAllDays = true;
+				if ( alarmDays.contains (ALL_DAYS) ) forAllDays = true;
 			}
 		}
 		number = alarmNumber;
@@ -214,7 +218,7 @@ public class PhoneAlarm
 			String[] recurrs = daysString.split (comma);
 			if ( recurrs != null )
 			{
-				HashSet<Integer> tmpDays = new HashSet<Integer> (8);
+				Set<Integer> tmpDays = new HashSet<Integer> (8);
 				if ( tmpDays != null )
 				{
 					for ( int i = 0; i < recurrs.length; i++ )
@@ -230,7 +234,7 @@ public class PhoneAlarm
 					{
 						forAllDays = true;
 					}
-					else if ( tmpDays.contains (new Integer (0)) )
+					else if ( tmpDays.contains (ALL_DAYS) )
 					{
 						forAllDays = true;
 					}
@@ -326,7 +330,7 @@ public class PhoneAlarm
 	 */
 	public synchronized void setDays (int[] alarmDays)
 	{
-		if ( (! forAllDays) && (! oneTime) &&alarmDays == null )
+		if ( (! forAllDays) && (! oneTime) && alarmDays == null )
 			throw new NullPointerException ("PhoneAlarm.setDays:alarmDays==null");	// NOI18N
 		if ( alarmDays != null )
 		{
@@ -334,7 +338,7 @@ public class PhoneAlarm
 			for ( int i = 0; i < alarmDays.length; i++ )
 			{
 				days.add (alarmDays[i]);
-				if ( alarmDays[i] == 0 ) forAllDays = true;
+				if ( alarmDays[i] == ALL_DAYS.intValue () ) forAllDays = true;
 			}
 		}
 		else days = null;
@@ -352,7 +356,7 @@ public class PhoneAlarm
 		if ( alarmDays != null )
 		{
 			days = new HashSet<Integer> (alarmDays);
-			if ( alarmDays.contains (new Integer (0)) ) forAllDays = true;
+			if ( alarmDays.contains (ALL_DAYS) ) forAllDays = true;
 		}
 		else days = null;
 	}
@@ -449,24 +453,24 @@ public class PhoneAlarm
 	public synchronized String getDaysString ()
 	{
 		if ( days == null ) return empty;
-		if ( days.contains (new Integer (0)) )
+		if ( days.contains (ALL_DAYS) )
 		{
 			return zero;
 		}
 		else
 		{
-			String result = empty;
+			StringBuilder result = new StringBuilder (20);
 			Iterator<Integer> it = days.iterator ();
 			if ( it != null )
 			{
 				while ( it.hasNext () )
 				{
-					result += it.next ().toString ();
-					if ( it.hasNext () ) result += comma;
+					result.append (it.next ().toString ());
+					if ( it.hasNext () ) result.append (comma);
 				}
 			}
-			if ( result.isEmpty () ) result = zero;
-			return result;
+			if ( result.length () == 0 ) result.append (zero);
+			return result.toString ();
 		}
 	}
 
@@ -584,7 +588,7 @@ public class PhoneAlarm
 			int second;
 			int alNumber = 0;
 			int firstrec = -1;
-			HashSet<Integer> tmpDays = null;
+			Set<Integer> tmpDays = null;
 
 			try
 			{
@@ -670,7 +674,7 @@ public class PhoneAlarm
 				{
 					isForAllDays = true;
 				}
-				else if ( tmpDays.contains (new Integer (0)) )
+				else if ( tmpDays.contains (ALL_DAYS) )
 				{
 					isForAllDays = true;
 				}

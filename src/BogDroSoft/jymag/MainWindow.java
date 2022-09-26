@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,10 @@
 
 package BogDroSoft.jymag;
 
+import BogDroSoft.jymag.gui.panels.JYMAGTab;
+
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.Insets;
@@ -33,6 +37,7 @@ import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.util.Hashtable;
+import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JFileChooser;
@@ -55,7 +60,7 @@ public class MainWindow extends JFrame
 	private final MainWindow mw = this;
 
 	/** Current version number as a String. */
-	public static final String verString = "1.1";	// NOI18N
+	public static final String verString = "1.2";	// NOI18N
 	private Vector<PhoneElement> currentRingElements;
 	private Vector<PhoneElement> currentPhotoElements;
 	private Vector<PhoneElement> currentAddrElements;
@@ -88,24 +93,25 @@ public class MainWindow extends JFrame
 	private JFileChooser cfgFC;
 
 	// ------------ i18n stuff
-	private static final String noAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
-	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
-	private static final String multiAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Multiple_answers");
-	private static final String whichString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Which_one");
-	private static final String exOverString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("_exists._Overwrite");
-	private static final String overwriteStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Overwrite?");
-	private static final String picsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_pictures");
-	private static final String soundsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_sounds");
-	private static final String addrString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_addressbook_files");
-	private static final String todoString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_to-do_files");
-	private static final String eventString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_event_and_task_files");
-	private static final String animString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_animation/video_files");
-	private static final String javaString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_Java_files");
-	private static final String deleteQuestion = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("want_to_delete");
-	private static final String questionString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Question");
-	private static final String fileNotWriteMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Cant_write_to_file");
+	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String noAnsString = mwBundle.getString("No_answers_received");
+	public static final String errString = mwBundle.getString("Error");
+	private static final String multiAnsString = mwBundle.getString("Multiple_answers");
+	private static final String whichString = mwBundle.getString("Which_one");
+	private static final String exOverString = mwBundle.getString("_exists._Overwrite");
+	private static final String overwriteStr = mwBundle.getString("Overwrite?");
+	private static final String picsString = mwBundle.getString("Supported_pictures");
+	private static final String soundsString = mwBundle.getString("Supported_sounds");
+	private static final String addrString = mwBundle.getString("Supported_addressbook_files");
+	private static final String todoString = mwBundle.getString("Supported_to-do_files");
+	private static final String eventString = mwBundle.getString("Supported_event_and_task_files");
+	private static final String animString = mwBundle.getString("Supported_animation/video_files");
+	private static final String javaString = mwBundle.getString("Supported_Java_files");
+	private static final String deleteQuestion = mwBundle.getString("want_to_delete");
+	private static final String questionString = mwBundle.getString("Question");
+	private static final String fileNotWriteMsg = mwBundle.getString("Cant_write_to_file");
 
-	private static final String pressScanMsg = "(" + java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("(press_Scan)") + ")";	// NOI18N
+	private static final String pressScanMsg = "(" + mwBundle.getString("(press_Scan)") + ")";	// NOI18N
 
 	// ------------ static variables for command-line
 
@@ -234,6 +240,7 @@ public class MainWindow extends JFrame
 
 		/* add the Esc key listener to the frame and all components. */
 		new Utils.EscKeyListener (this);
+		setPanelConnections (this);
 	}
 
 	/**
@@ -341,6 +348,8 @@ public class MainWindow extends JFrame
                 downloadSmsBut = new javax.swing.JButton();
                 uploadSmsBut = new javax.swing.JButton();
                 deleteSmsBut = new javax.swing.JButton();
+                jScrollPane20 = new javax.swing.JScrollPane();
+                dialPanel = new BogDroSoft.jymag.gui.panels.DialPanel();
                 phoneTypeLabel = new javax.swing.JLabel();
                 flowHard = new javax.swing.JCheckBox();
                 dataBitsCombo = new javax.swing.JComboBox();
@@ -530,7 +539,7 @@ public class MainWindow extends JFrame
                 photoPaneLayout.setVerticalGroup(
                         photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getPhotoListBut)
@@ -639,7 +648,7 @@ public class MainWindow extends JFrame
                 ringPaneLayout.setVerticalGroup(
                         ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getRingListBut)
@@ -748,7 +757,7 @@ public class MainWindow extends JFrame
                 addrBookPaneLayout.setVerticalGroup(
                         addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getAddrListBut)
@@ -857,7 +866,7 @@ public class MainWindow extends JFrame
                 todoPaneLayout.setVerticalGroup(
                         todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getTodoListBut)
@@ -966,7 +975,7 @@ public class MainWindow extends JFrame
                 eventPaneLayout.setVerticalGroup(
                         eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getEventListBut)
@@ -1075,7 +1084,7 @@ public class MainWindow extends JFrame
                 animPaneLayout.setVerticalGroup(
                         animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, animPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getAnimListBut)
@@ -1187,7 +1196,7 @@ public class MainWindow extends JFrame
                 javaPaneLayout.setVerticalGroup(
                         javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, javaPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(getJavaListBut)
@@ -1299,7 +1308,7 @@ public class MainWindow extends JFrame
         alarmPaneLayout.setVerticalGroup(
                 alarmPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, alarmPaneLayout.createSequentialGroup()
-                        .addComponent(jScrollPane17, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                        .addComponent(jScrollPane17, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(alarmPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(downloadAlarmBut)
@@ -1406,7 +1415,7 @@ public class MainWindow extends JFrame
         smsPaneLayout.setVerticalGroup(
                 smsPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, smsPaneLayout.createSequentialGroup()
-                        .addComponent(jScrollPane19, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                        .addComponent(jScrollPane19, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(smsPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(getSmsListBut)
@@ -1424,6 +1433,10 @@ public class MainWindow extends JFrame
         jScrollPane18.setViewportView(smsPane);
 
         tabPane.addTab(bundle.getString("SMS"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/sms.png")), jScrollPane18); // NOI18N
+
+        jScrollPane20.setViewportView(dialPanel);
+
+        tabPane.addTab(bundle.getString("tab_dial"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/dialtab.png")), jScrollPane20); // NOI18N
 
         phoneTypeLabel.setText(bundle.getString("Phone_type:")); // NOI18N
 
@@ -1642,8 +1655,8 @@ public class MainWindow extends JFrame
                                                 .addComponent(rawBut)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(getCapBut)))
-                                .addGap(29, 29, 29)
-                                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+                                .addGap(58, 58, 58)
+                                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
                                 .addContainerGap()))
         );
 
@@ -1691,7 +1704,7 @@ public class MainWindow extends JFrame
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane15, javax.swing.GroupLayout.DEFAULT_SIZE, 1001, Short.MAX_VALUE)
+                .addComponent(jScrollPane15, javax.swing.GroupLayout.DEFAULT_SIZE, 1062, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2541,7 +2554,7 @@ public class MainWindow extends JFrame
 		Utils.closeProgram (logFile, 0);
 	}//GEN-LAST:event_exitButActionPerformed
 
-	private void loadConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfButActionPerformed
+	private synchronized void loadConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfButActionPerformed
 
 		if ( cfgFC == null )
 		{
@@ -2598,7 +2611,7 @@ public class MainWindow extends JFrame
 				y = cfg.getY ();
 
 				updateControls ();
-				fontSizeSpin.setValue (new Integer (cfg.getFontSizeValue ()).floatValue ());
+				fontSizeSpin.setValue ((float)cfg.getFontSizeValue ());
 			}
 			catch (Exception ex)
 			{
@@ -2607,7 +2620,7 @@ public class MainWindow extends JFrame
 		}
 	}//GEN-LAST:event_loadConfButActionPerformed
 
-	private void saveConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfButActionPerformed
+	private synchronized void saveConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfButActionPerformed
 
 		if ( cfgFC == null )
 		{
@@ -2994,7 +3007,12 @@ public class MainWindow extends JFrame
 				gc = getGraphicsConfiguration ();
 				Toolkit tk = Toolkit.getDefaultToolkit ();
 				if ( tk != null ) is = tk.getScreenInsets (gc);
-			} catch (Exception ex) {}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex,
+					"MainWindow:updateControls:GraphicsConfiguration/Toolkit");	// NOI18N
+			}
 			int maxX = 800;
 			int maxY = 600;
 			if ( gc != null )
@@ -3041,6 +3059,42 @@ public class MainWindow extends JFrame
 			}
 		}
 		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
+	}
+
+	/**
+	 * Sets the elements from the main window on the tabs' panels' components in the given
+	 * Component (recursively, if it's a Container).
+	 * @param c The Component with Components that will be connected to the main window.
+	 */
+	public void setPanelConnections (Component c)
+	{
+		if ( c == null ) return;
+		if ( c instanceof JYMAGTab )
+		{
+			JYMAGTab tab = (JYMAGTab)c;
+			tab.setPortCombo (portCombo);
+			tab.setSpeedCombo (speedCombo);
+			tab.setDataBitsCombo (dataBitsCombo);
+			tab.setStopBitsCombo (stopBitsCombo);
+			tab.setParityCombo (parityCombo);
+			tab.setFlowSoftCheckbox (flowSoft);
+			tab.setFlowHardCheckbox (flowHard);
+			tab.setSync (sync);
+		}
+		if ( c instanceof Container )
+		{
+			Component[] subComps = ((Container)c).getComponents ();
+			if ( subComps != null )
+			{
+				for ( int i = 0; i < subComps.length; i++ )
+				{
+					if ( subComps[i] != null )
+					{
+						setPanelConnections (subComps[i]);
+					}
+				}
+			}
+		}
 	}
 
 	// =============================== static methods
@@ -3104,6 +3158,7 @@ public class MainWindow extends JFrame
         private javax.swing.JButton deleteRingBut;
         private javax.swing.JButton deleteSmsBut;
         private javax.swing.JButton deleteTodoBut;
+        private BogDroSoft.jymag.gui.panels.DialPanel dialPanel;
         private javax.swing.JButton downloadAddrBut;
         private javax.swing.JButton downloadAlarmBut;
         private javax.swing.JButton downloadAnimBut;
@@ -3146,6 +3201,7 @@ public class MainWindow extends JFrame
         private javax.swing.JScrollPane jScrollPane18;
         private javax.swing.JScrollPane jScrollPane19;
         private javax.swing.JScrollPane jScrollPane2;
+        private javax.swing.JScrollPane jScrollPane20;
         private javax.swing.JScrollPane jScrollPane3;
         private javax.swing.JScrollPane jScrollPane4;
         private javax.swing.JScrollPane jScrollPane5;

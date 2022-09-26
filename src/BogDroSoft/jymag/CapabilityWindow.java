@@ -1,7 +1,7 @@
 /*
  * CapabilityWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -276,6 +276,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 		else return;
 
 		final String typeToGet = type;
+		getCapBut.setEnabled (false);
 
 		SwingWorker<String, Void> sw =
 			new SwingWorker<String, Void> ()
@@ -322,6 +323,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 				{
 					Utils.handleException (ex, "CapabilityWindow.getCapabilities.SW.done");	// NOI18N
 				}
+				getCapBut.setEnabled (true);
 			}
 		};
 		sw.execute ();

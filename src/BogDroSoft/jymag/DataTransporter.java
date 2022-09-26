@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -57,36 +57,56 @@ public class DataTransporter
 	/** DT_TIMEOUT betwenn up/download stages, in milliseconds. */
 	private static final int DT_TIMEOUT = 250;
 
+	/** The firmware version Pattern. */
 	private static final Pattern verPattern
 		= Pattern.compile ("\\s*\\+KPSV:\\s*(.+)");				// NOI18N
+	/** The PIN status Pattern. */
 	private static final Pattern PINPattern
 		= Pattern.compile ("\\s*\\+CPIN:\\s*(.+)");				// NOI18N
+	/** The alarm number Pattern. */
 	private static final Pattern alnumPattern
 		= Pattern.compile ("\\s*\\+CALA:\\s*\\((.+)\\),\\((.+)\\)");		// NOI18N
+	/** The signal power Pattern. */
 	private static final Pattern sigPowerPattern
 		= Pattern.compile ("\\s*\\+CSQ:\\s*(\\d+),(\\d+).*");			// NOI18N
+
+	/** The default encoding for commands. */
+	public static final String defaultEncoding = "US-ASCII";
+
+	/** A String with a single Carriage Return character. */
+	public static final String CRStr = "\r";					// NOI18N
+	/** An empty String. */
+	public static final String emptyStr = "";					// NOI18N
+	/** A String with a single dot. */
+	public static final String dot = ".";						// NOI18N
+	/** A String with a quotation character and a Carriage Return. */
+	public static final String dquotCR = "\"\r";					// NOI18N
+	/** A String with a single comma character. */
+	public static final String commaStr = ",";					// NOI18N
+	/** A String with a single "double quote" character. */
+	public static final String dquot = "\"";					// NOI18N
+	/** A String with a comma followed by a space. */
+	public static final String commaSpace = ", ";					// NOI18N
+	/** A String with a single semicolon. */
+	public static final String semicolon = ";";					// NOI18N
 
 	private static final String OKStr = "OK";					// NOI18N
 	private static final String ERRORStr = "ERROR";					// NOI18N
 	private static final String NOCARStr = "NO CARRIER";				// NOI18N
 	private static final String CONNStr = "CONNECT";				// NOI18N
-	private static final String CRStr = "\r";					// NOI18N
-	private static final String emptyStr = "";					// NOI18N
-	private static final byte[] transferResetBytes = "AT+KDOBJ=1,0\r".getBytes ();	// NOI18N
+	private static final String transferResetBytes = "AT+KDOBJ=1,0\r";		// NOI18N
 	private static final String transferInitCmd = "AT+KDOBJ=1,1\r";			// NOI18N
 	private static final String transferFileLenCmd = "AT+KDOBJ=2,1,3,0,";		// NOI18N
 	private static final String transferFileTypeCmd = "AT+KDOBJ=2,1,0,";		// NOI18N
 	private static final String transferFileEndCmd = "AT+KDOBJ=1,0\r";		// NOI18N
-	private static final String dot = ".";						// NOI18N
 	private static final String fileRetrCmdStart = "AT+KPSR=\"";			// NOI18N
-	private static final String dquotCR = "\"\r";					// NOI18N
 	private static final String charsetCmd = "AT+CSCS=\"8859-1\"\r";		// NOI18N
 	private static final String listCmdStart = "AT+KPSL=\"";			// NOI18N
 	private static final String listCmdEnd = "\",1\r";				// NOI18N
 	private static final String newlineRegEx = "[\\r\\n]{1,2}";			// NOI18N
 	private static final String delCmdStart = "AT+KPSD=\"";				// NOI18N
 	private static final String portOpenProgName = "JYMAG";				// NOI18N
-	private static final byte[] ATCmdBytes = "AT\r".getBytes ();			// NOI18N
+	private static final String ATCmdBytes = "AT\r";				// NOI18N
 	private static final String versionCmd = "AT+KPSV\r";				// NOI18N
 	private static final String imeiCmd = "ATIMEI\r";				// NOI18N
 	private static final String imeiReply = "ATIMEI";				// NOI18N
@@ -96,11 +116,8 @@ public class DataTransporter
 	private static final String serialNumReply = "CGSN";				// NOI18N
 	private static final String subsNumCmd = "AT+CNUM\r";				// NOI18N
 	private static final String subsNumReplyRegex = "\\+CNUM: ";			// NOI18N
-	private static final String commaStr = ",";					// NOI18N
-	private static final String dquot = "\"";					// NOI18N
-	private static final String commaSpace = ", ";					// NOI18N
 	private static final String capabCmd = "AT+KPSCAP=\"";				// NOI18N
-	private static final byte[] poweroffCmd = "AT*PSCPOF\r".getBytes ();		// NOI18N
+	private static final String poweroffCmd = "AT*PSCPOF\r";			// NOI18N
 	private static final String pinStatusCmd = "AT+CPIN?\r";			// NOI18N
 	private static final String sendPINCmdStart = "AT+CPIN=";			// NOI18N
 	private static final String alarmNumCmd = "AT+CALA=?\r";			// NOI18N
@@ -117,6 +134,10 @@ public class DataTransporter
 	private static final String msgTextModeCmd = "AT+CMGF=1\r";			// NOI18N
 	private static final String msgStorageCmd = "AT+CPMS=";				// NOI18N
 	private static final String msgPrompt = ">";					// NOI18N
+	private static final String dialCommandAuto = "ATD";				// NOI18N
+	private static final String dialCommandTone = "ATDT";				// NOI18N
+	private static final String dialCommandPulse = "ATDP";				// NOI18N
+	private static final String hangupCommand = "ATH\r";				// NOI18N
 
 	private final SPL spl = new SPL ();
 
@@ -427,6 +448,8 @@ public class DataTransporter
 							wasRead = inputStream.read (readBuffer);
 						}
 						if ( wasRead < 0 ) break;
+						// don't force any encodings, because the file data may
+						// be invalid in any given encoding
 						String curr = new String (readBuffer, 0, wasRead);
 						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 						if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
@@ -445,6 +468,8 @@ public class DataTransporter
 						wasRead = inputStream.read (readBuffer);
 					}
 					if ( wasRead < 0 ) break;
+					// don't force any encodings, because the file data may
+					// be invalid in any given encoding
 					String curr = new String (readBuffer, 0, wasRead);
 					res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 					if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
@@ -471,6 +496,8 @@ public class DataTransporter
 							wasRead = inputStream.read (readBuffer);
 						}
 						if ( wasRead < 0 ) break;
+						// don't force any encodings, because the file data may
+						// be invalid in any given encoding
 						String curr = new String (readBuffer, 0, wasRead);
 						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 						if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
@@ -479,7 +506,7 @@ public class DataTransporter
 						}
 					}
 				}
-				catch (Exception ex) {}
+				catch (IOException ex) {}
 			}
 			catch (Exception ex)
 			{
@@ -568,9 +595,9 @@ public class DataTransporter
 			try
 			{
 				// reset file upload
-				send (transferResetBytes);
+				send (transferResetBytes.getBytes (defaultEncoding));
 				recvdB = recv (null);
-				rcvd = new String (recvdB);
+				rcvd = new String (recvdB, defaultEncoding);
 
 				if ( rcvd.isEmpty ()
 					|| (! rcvd.contains (OKStr)
@@ -668,7 +695,7 @@ public class DataTransporter
 				do
 				{
 					recvdB = recv (null);
-					rcvd = new String (recvdB);
+					rcvd = new String (recvdB, defaultEncoding);
 
 					if ( rcvd.trim ().isEmpty () )
 					{
@@ -760,6 +787,7 @@ public class DataTransporter
 	public int getFile (File f, PhoneElement el)
 	{
 		if ( f == null || el == null ) return -3;
+		FileOutputStream fos = null;
 		try
 		{
 			String rcvd;
@@ -772,7 +800,7 @@ public class DataTransporter
 					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
 				// send file retrieve command
-				send ((fileRetrCmdStart + el.getID () + dquotCR).getBytes ());
+				send ((fileRetrCmdStart + el.getID () + dquotCR).getBytes (defaultEncoding));
 				/*
 				 * Receiving format:
 				 * AT+KPSR="<ID repeated>"
@@ -783,6 +811,8 @@ public class DataTransporter
 				 */
 				// receive file data
 				recvdB = recv (null);
+				// don't force any encodings, because the file data may
+				// be invalid in any given encoding
 				rcvd = new String (recvdB);
 
 				if ( rcvd.trim ().isEmpty () || recvdB.length == 0 )
@@ -796,14 +826,14 @@ public class DataTransporter
 				|| ! rcvd.contains (NOCARStr) ) return -2;
 
 			// check file type
-			FileOutputStream fos = new FileOutputStream (f);
+			fos = new FileOutputStream (f);
 			if ( findBytes (recvdB, JPG) >= 0 )
 			{
 				// check if single or double match
 				int pos = findBytes (recvdB, JPG);
 				int pos2 = findBytes (Arrays.copyOfRange (recvdB, pos+1, recvdB.length),
 					JPG);
-				if ( pos2 >= 0 && (recvdB[pos+1+pos2+2] == 0xff ||
+				if ( pos2 >= 0 && ((recvdB[pos+1+pos2+2] & 0xff) == 0xff ||
 					recvdB[pos+1+pos2+2] == -1) )
 				{
 					fos.write (recvdB, pos+1+pos2,
@@ -986,11 +1016,19 @@ public class DataTransporter
 			fos.close ();
 			return 0;
 		}
-		catch ( Exception ex )
+		catch ( IOException ex )
 		{
 			Utils.handleException (ex, "DataTransporter.getFile:"	// NOI18N
 				+ f.getName () + ", id="	// NOI18N
 				+ el.getID ());
+			try
+			{
+				if ( fos != null ) fos.close ();
+			}
+			catch (Exception exc)
+			{
+				Utils.handleException (ex, "DataTransporter.getFile:fos.close");
+			}
 			return -1;
 		}
 	}
@@ -1004,10 +1042,8 @@ public class DataTransporter
 	 */
 	private String tryCommand (String cmd, Object[] extraTerminators)
 	{
-		String rcvd = emptyStr;
-
-		if ( cmd == null ) return rcvd;
-
+		if ( cmd == null ) return emptyStr;
+		StringBuilder rcvd = new StringBuilder (10000);
 		byte[] recvdB;
 		int trials = 0;
 		do
@@ -1020,7 +1056,7 @@ public class DataTransporter
 			try
 			{
 				// send the command
-				send (cmd.getBytes ());
+				send (cmd.getBytes (defaultEncoding));
 
 				recvdB = recv (extraTerminators);
 			}
@@ -1031,15 +1067,17 @@ public class DataTransporter
 				trials++;
 				continue;
 			}
-			rcvd += new String (recvdB);
+			// don't force any encodings, because the reply may
+			// be in another encoding
+			rcvd.append (new String (recvdB));
 
-			if ( rcvd.trim ().isEmpty () )
+			if ( rcvd.toString ().trim ().isEmpty () )
 			{
 				reopen ();
 				trials++;
 			}
-		} while (rcvd.trim ().isEmpty () && trials < MAX_TRIALS);
-		return rcvd;
+		} while (rcvd.toString ().trim ().isEmpty () && trials < MAX_TRIALS);
+		return rcvd.toString ();
 	}
 
 	/**
@@ -1170,11 +1208,13 @@ public class DataTransporter
 	{
 		try
 		{
-			byte[] cmd = ATCmdBytes;
+			byte[] cmd = ATCmdBytes.getBytes (defaultEncoding);
 			// 3 times gets bigger probability for an answer
 			send (cmd);
 			send (cmd);
 			send (cmd);
+			// don't force any encodings, because the reply may
+			// contain trash that may be invalid in any given encoding
 			String res = new String (recv (null));
 			if ( res.contains (OKStr) )
 			{
@@ -1415,7 +1455,7 @@ public class DataTransporter
 	{
 		try
 		{
-			send (poweroffCmd);
+			send (poweroffCmd.getBytes (defaultEncoding));
 		}
 		catch (Exception ex)
 		{
@@ -1908,6 +1948,72 @@ public class DataTransporter
 	}
 
 	/**
+	 * Dials the specified number.
+	 * @param number the number to dial. Must be non-null.
+	 * @param isVoice whether the connection is for voice or data. Voice connections
+	 *	will be initiated by adding a semicolon to the end of the number.
+	 * @param dialMode The dial mode (tone, pulse, auto). Defaults to "auto" if null.
+	 * @return 0 in case of success or a negative value in case of error.
+	 */
+	public int dialNumber (String number, boolean isVoice, DIAL_MODE dialMode)
+	{
+		if ( number == null ) return -1;
+		String command = dialCommandAuto;
+		if ( dialMode != null && DIAL_MODE.TONE.equals (dialMode) )
+		{
+			command = dialCommandTone;
+		}
+		if ( dialMode != null && DIAL_MODE.PULSE.equals (dialMode) )
+		{
+			command = dialCommandPulse;
+		}
+		command += number;
+		if ( isVoice )
+		{
+			command += semicolon;
+		}
+		try
+		{
+			// reset file upload
+			send ((command + CRStr).getBytes (defaultEncoding));
+			byte[] recvdB = recv (null);
+			String rcvd = new String (recvdB, defaultEncoding);
+
+			if ( rcvd.isEmpty ()
+				|| rcvd.contains (ERRORStr)
+				|| rcvd.contains (NOCARStr))
+			{
+				return -3;
+			}
+			return 0;
+		}
+		catch ( Exception e )
+		{
+			Utils.handleException (e, "DataTransporter.dialNumber");	// NOI18N
+			return -2;
+		}
+	}
+
+	/**
+	 * Hangs the phone up (stops the current call).
+	 * @return 0 in case of success.
+	 */
+	public int hangup ()
+	{
+		try
+		{
+			String rcvd = tryCommand (hangupCommand, null);
+			if ( ! rcvd.contains (OKStr) ) return -2;
+			return 0;
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.hangup");	// NOI18N
+			return -1;
+		}
+	}
+
+	/**
 	 * This function joins 2 arrays of bytes together.
 	 * @param orig The first array.
 	 * @param toAdd The array to add.
@@ -1999,5 +2105,18 @@ public class DataTransporter
 		MT,
 		/** Phone memory storage. */
 		ME;
+	}
+
+	/**
+	 * The Enumeration of the dialing modes.
+	 */
+	public static enum DIAL_MODE
+	{
+		/** Automatic select (ATD command). */
+		AUTO,
+		/** Tone dialing (ATDT command). */
+		TONE,
+		/** Pulse dialing (ATDP command). */
+		PULSE;
 	}
 }

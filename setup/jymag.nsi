@@ -1,5 +1,5 @@
 ; JYMAG version included in the installer. Must be all-numeric!
-!define VERSION "1.1"
+!define VERSION 1.2
 
 ; The JYMAG publisher
 !define PUBLISHER "Bogdan 'bogdro' Drozdowski"
@@ -190,7 +190,7 @@ SectionGroup "Shortcuts"
 		FileOpen $0 "jymag-sendto.bat" "w"
 		IfErrors file_error
 
-			FileWrite $0 'start java -jar "$INSTDIR\JYMAG.jar" --upload %1 %2 %3 %4 %5 %6 %7 %8 %9$\r$\n'
+			FileWrite $0 'start java -jar "$INSTDIR\JYMAG.jar" --upload %*$\r$\n'
 
 			FileClose $0
 

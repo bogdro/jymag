@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -67,6 +67,10 @@ public class CommandLineParser
 		b.getString("delete_element") +
 		"\n--delete-sms <N>\t- "+	// NOI18N
 		b.getString("delete_sms")+
+		"\n--dial-data <number>\t- "+	// NOI18N
+		b.getString("help_dial_data")+
+		"\n--dial-voice <number>\t- "+	// NOI18N
+		b.getString("help_dial_voice")+
 		"\n--download-dir <dir>\t- "+	// NOI18N
 		b.getString("set_default_download_dir")+
 		"\n--download-all-animations\t- "+	// NOI18N
@@ -85,6 +89,8 @@ public class CommandLineParser
 		b.getString("combine_all_download")+
 		"\n--flow <none,soft,hard,soft+hard>\t- "+	// NOI18N
 		b.getString("set_the_flow_control_mode")+
+		"\n--hangup\t\t- "+	// NOI18N
+		b.getString("help_hangup")+
 		"\n--help, -h, -?, /?\t- "+	// NOI18N
 		b.getString("display_help")+
 		"\n--lang LL_CC_VV\t\t- "+	// NOI18N
@@ -851,6 +857,67 @@ public class CommandLineParser
 				if ( i < args.length-1 )
 				{
 					readConfig (new File (args[i+1]));
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--dial-voice") )	// NOI18N
+			{
+				if ( i < args.length-1 )
+				{
+					try
+					{
+						int res = TransferUtils.dialNumber (args[i+1],
+							true, DataTransporter.DIAL_MODE.AUTO,
+							TransferUtils.getIdentifierForPort
+							(portName), speed, dBits, sBits,
+							parity, flow, null, null, sync,
+							false, true, true);
+						Utils.closeProgram (logfile, res);
+					}
+					catch ( Exception ex )
+					{
+						Utils.handleException (ex,
+							"cmdline.staticDialVoice(" + args[i+1] + ")");	// NOI18N
+					}
+					i++;
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--dial-data") )	// NOI18N
+			{
+				if ( i < args.length-1 )
+				{
+					try
+					{
+						int res = TransferUtils.dialNumber (args[i+1],
+							false, DataTransporter.DIAL_MODE.AUTO,
+							TransferUtils.getIdentifierForPort
+							(portName), speed, dBits, sBits,
+							parity, flow, null, null, sync,
+							false, true, true);
+						Utils.closeProgram (logfile, res);
+					}
+					catch ( Exception ex )
+					{
+						Utils.handleException (ex,
+							"cmdline.staticDialData(" + args[i+1] + ")");	// NOI18N
+					}
+					i++;
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--hangup") )	// NOI18N
+			{
+				try
+				{
+					int res = TransferUtils.hangup (
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true);
+					Utils.closeProgram (logfile, res);
+				}
+				catch ( Exception ex )
+				{
+					Utils.handleException (ex,
+						"cmdline.staticHangup()");	// NOI18N
 				}
 			}
 		}	// for i

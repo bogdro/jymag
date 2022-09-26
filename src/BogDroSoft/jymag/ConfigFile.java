@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 public class ConfigFile
 {
 	private File cfgFile;
-	private static String newLine = null;
+	private volatile static String newLine = null;
 	private static final String defaultNewLine = "\n";		// NOI18N
 
 	// communication parameters:
@@ -110,7 +110,10 @@ public class ConfigFile
 			{
 				newLine = System.getProperty ("line.separator"); // NOI18N
 			}
-			catch (Exception ex) {}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "ConfigFile:System.getProperty");	// NOI18N
+			}
 			if ( newLine == null )
 			{
 				newLine = defaultNewLine;
@@ -142,6 +145,7 @@ public class ConfigFile
 		isMax = true;
 		fontSize = 12;
 
+		// don't force any encodings, because the file may be in a different encoding
 		BufferedReader br = new BufferedReader (new FileReader (cfgFile));
 		String line;
 		do
@@ -326,6 +330,7 @@ public class ConfigFile
 	 */
 	public void write () throws Exception
 	{
+		// don't force any encodings, because the filesystems' names may be in a different encoding
 		PrintWriter pw = new PrintWriter (cfgFile);
 		pw.println (
 			  "port = " + port + newLine	// NOI18N

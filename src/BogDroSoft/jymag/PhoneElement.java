@@ -1,7 +1,7 @@
 /*
  * PhoneElement.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -37,8 +37,6 @@ public class PhoneElement
 	private String type;
 	private String filename;
 
-	private static final byte[] quot = new byte[] { '"' };					// NOI18N
-
 	private static final String comma = ",";						// NOI18N
 	private static final String dot = ".";							// NOI18N
 	private static final String toStringStart = "PhoneElement[";				// NOI18N
@@ -55,9 +53,9 @@ public class PhoneElement
 	 */
 	public PhoneElement (String ID, String format, String name)
 	{
-		id = new String (ID);
-		type = new String (format);
-		filename = new String (name);
+		id = ID;
+		type = format;
+		filename = name;
 	}
 
 	/**
@@ -66,7 +64,7 @@ public class PhoneElement
 	 */
 	public synchronized String getID ()
 	{
-		return new String (id);
+		return id;
 	}
 
 	/**
@@ -125,7 +123,7 @@ public class PhoneElement
 			.replaceAll ("\\\\", "_")		// NOI18N
 			.replaceAll (":", "_")			// NOI18N
 			.replaceAll (";", "_")			// NOI18N
-			.replaceAll (new String (quot), "_")	// NOI18N
+			.replaceAll ("\"", "_")			// NOI18N
 			.replaceAll ("'", "_")			// NOI18N
 			.replaceAll ("<", "_")			// NOI18N
 			.replaceAll (">", "_")			// NOI18N

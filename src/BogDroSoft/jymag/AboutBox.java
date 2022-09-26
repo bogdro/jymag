@@ -1,7 +1,7 @@
 /*
  * AboutBox.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2012 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -446,7 +446,7 @@ public class AboutBox extends javax.swing.JDialog
 
 	private String getFileContents (InputStream is)
 	{
-		String ret = "";	// NOI18N
+		StringBuilder ret = new StringBuilder (40000);
 		byte[] read = new byte[1024];
 		int wasRead;
 		do
@@ -454,7 +454,7 @@ public class AboutBox extends javax.swing.JDialog
 			try
 			{
 				wasRead = is.read (read);
-				ret += new String (read, 0, wasRead);
+				ret.append (new String (read, 0, wasRead, "UTF-8"));
 			}
 			catch (Exception ex)
 			{
@@ -470,7 +470,7 @@ public class AboutBox extends javax.swing.JDialog
 		{
 			Utils.handleException (ex, "InputStream.close");	// NOI18N
 		}
-		return ret;
+		return ret.toString ();
 	}
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
