@@ -1,7 +1,7 @@
 /*
  * JYMAGTransferHandler.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 package BogDroSoft.jymag.gui;
 
+import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.Utils;
 import java.awt.datatransfer.DataFlavor;
@@ -141,7 +142,7 @@ public class JYMAGTransferHandler extends TransferHandler
 		{
 			return false;
 		}
-		// MS Windows:
+		// MS Windows, some Linux systems:
 		if ( support.isDataFlavorSupported (DataFlavor.javaFileListFlavor) )
 		{
 			return true;
@@ -174,14 +175,15 @@ public class JYMAGTransferHandler extends TransferHandler
 		Transferable t = support.getTransferable ();
 		try
 		{
-			// MS Windows:
+			// MS Windows, some Linux systems:
 			if ( t.isDataFlavorSupported (DataFlavor.javaFileListFlavor) )
 			{
 				Object data = t.getTransferData (DataFlavor.javaFileListFlavor);
 				if ( data != null && data instanceof List<?> )
 				{
 					List<?> fileList = (List<?>) data;
-					for ( int i = 0; i < fileList.size (); i++ )
+					int fileListSize = fileList.size ();
+					for ( int i = 0; i < fileListSize; i++ )
 					{
 						Object f = fileList.get (i);
 						if ( f != null && f instanceof File )
@@ -203,8 +205,9 @@ public class JYMAGTransferHandler extends TransferHandler
 						String[] fileURIs = data.toString ().split (newLines);
 						if ( fileURIs != null )
 						{
-							for ( String s : fileURIs )
+							for ( int i = 0; i < fileURIs.length; i++ )
 							{
+								String s = fileURIs[i];
 								if ( s == null )
 								{
 									continue;
@@ -225,6 +228,7 @@ public class JYMAGTransferHandler extends TransferHandler
 								}
 							}
 						}
+						return true;
 					}
 				}
 			}
@@ -262,23 +266,22 @@ public class JYMAGTransferHandler extends TransferHandler
 			File[] files = f.listFiles ();
 			if ( files != null )
 			{
-				for ( File cf : files )
+				for ( int i = 0; i < files.length; i++ )
 				{
-					importSingleFile (cf);
+					importSingleFile (files[i]);
 				}
 			}
 			return;
 		}
 		if ( f.isFile () )
 		{
-			TransferUtils.uploadFile (f, TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoftBox.isSelected ())? 1 : 0) + ((flowHardBox.isSelected ())? 2 : 0),
-				null, parent, sync, false, false, true);
+			// NOTE: create new TransferParameters each time,
+			// because the values of the GUI elements could have changed.
+			TransferParameters tp = new TransferParameters (
+				portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
+				parityCombo, flowSoftBox, flowHardBox, sync);
+			TransferUtils.uploadFile (f, tp,
+				null, parent, false, false, true);
 		}
 	}
 }

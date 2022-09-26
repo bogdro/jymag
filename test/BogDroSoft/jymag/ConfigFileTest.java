@@ -1,7 +1,7 @@
 /*
  * ConfigFileTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -69,6 +69,8 @@ public class ConfigFileTest
 
 	/**
 	 * Test of read method, of class ConfigFile.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testRead () throws Exception
@@ -109,6 +111,8 @@ public class ConfigFileTest
 
 	/**
 	 * Test of write method, of class ConfigFile.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	@Ignore("Will be tested in the testRead() test")

@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -37,9 +37,11 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
@@ -61,52 +63,52 @@ public class Utils
 	public final static Pattern listPattern;
 
 	/**
-	 * A Hashtable containing all ID numbers connected to the given file
+	 * A Map containing all ID numbers connected to the given file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> filetypeIDs;
+	private final static Map<String, Integer> filetypeIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given photo file
+	 * A Map containing ID numbers connected to the given photo file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> photofileIDs;
+	private final static Map<String, Integer> photofileIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given ringtone file
+	 * A Map containing ID numbers connected to the given ringtone file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> ringfileIDs;
+	private final static Map<String, Integer> ringfileIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given addressbook file
+	 * A Map containing ID numbers connected to the given addressbook file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> addrfileIDs;
+	private final static Map<String, Integer> addrfileIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given to-do file
+	 * A Map containing ID numbers connected to the given to-do file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> todofileIDs;
+	private final static Map<String, Integer> todofileIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given event file
+	 * A Map containing ID numbers connected to the given event file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> eventfileIDs;
+	private final static Map<String, Integer> eventfileIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given animation/video file
+	 * A Map containing ID numbers connected to the given animation/video file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> animfileIDs;
+	private final static Map<String, Integer> animfileIDs;
 
 	/**
-	 * A Hashtable containing ID numbers connected to the given Java file
+	 * A Map containing ID numbers connected to the given Java file
 	 * extensions, used for file uploading.
 	 */
-	private final static Hashtable<String, Integer> javafileIDs;
+	private final static Map<String, Integer> javafileIDs;
 
 	private static final String emptyStr = "";				// NOI18N
 	private static final String dash = "-";					// NOI18N
@@ -138,97 +140,211 @@ public class Utils
 				+ "\\w+\\" + '"' + ",\\" + '"' + "(\\w+)\\"+ '"'	// NOI18N
 				+ ",[^,]+,[^,]+,\\"+ '"' + "([^\"]+)\\" + '"');	// NOI18N
 
-		ringfileIDs = new Hashtable<String, Integer> (12);
-		ringfileIDs.put ("wav" ,   1);		// NOI18N
-		ringfileIDs.put ("mid" ,   2);		// NOI18N
-		ringfileIDs.put ("midi",   2);		// NOI18N
-		//ringfileIDs.put ("rmi" ,   2);// ?	// NOI18N
-		//ringfileIDs.put ("kar" ,   2);// ?	// NOI18N
-		ringfileIDs.put ("amr" ,  14);		// NOI18N
+		Map<String, Integer> tempMap = new HashMap<String, Integer> (12);
+		tempMap.put ("wav" ,   1);		// NOI18N
+		tempMap.put ("mid" ,   2);		// NOI18N
+		tempMap.put ("midi",   2);		// NOI18N
+		//tempMap.put ("rmi" ,   2);// ?	// NOI18N
+		//tempMap.put ("kar" ,   2);// ?	// NOI18N
+		tempMap.put ("amr" ,  14);		// NOI18N
 		// UNCHECKED:
-		ringfileIDs.put ("mp3" ,   3);		// NOI18N
-		ringfileIDs.put ("imy" ,   4);		// NOI18N
-		ringfileIDs.put ("asg1",   5);		// NOI18N
-		ringfileIDs.put ("asg2",   6);		// NOI18N
-		ringfileIDs.put ("mfi" ,  15);		// NOI18N
-		ringfileIDs.put ("aac" ,  17);		// NOI18N
-		ringfileIDs.put ("m4a" ,  17);		// NOI18N
-		ringfileIDs.put ("awb" ,  18);		// NOI18N
+		tempMap.put ("mp3" ,   3);		// NOI18N
+		tempMap.put ("imy" ,   4);		// NOI18N
+		tempMap.put ("asg1",   5);		// NOI18N
+		tempMap.put ("asg2",   6);		// NOI18N
+		tempMap.put ("mfi" ,  15);		// NOI18N
+		tempMap.put ("aac" ,  17);		// NOI18N
+		tempMap.put ("m4a" ,  17);		// NOI18N
+		tempMap.put ("awb" ,  18);		// NOI18N
+		ringfileIDs = Collections.unmodifiableMap (tempMap);
 
-		photofileIDs = new Hashtable<String, Integer> (16);
-		photofileIDs.put ("wbmp", 101);		// NOI18N
-		photofileIDs.put ("bmp" , 102);		// NOI18N
-		photofileIDs.put ("png" , 103);		// NOI18N
-		photofileIDs.put ("jpg" , 104);		// NOI18N
-		photofileIDs.put ("jpeg", 104);		// NOI18N
-		photofileIDs.put ("jpe" , 104);		// NOI18N
-		photofileIDs.put ("jif" , 104);		// NOI18N
-		photofileIDs.put ("gif" , 105);		// NOI18N
+		tempMap = new HashMap<String, Integer> (16);
+		tempMap.put ("wbmp", 101);		// NOI18N
+		tempMap.put ("bmp" , 102);		// NOI18N
+		tempMap.put ("png" , 103);		// NOI18N
+		tempMap.put ("jpg" , 104);		// NOI18N
+		tempMap.put ("jpeg", 104);		// NOI18N
+		tempMap.put ("jpe" , 104);		// NOI18N
+		tempMap.put ("jif" , 104);		// NOI18N
+		tempMap.put ("gif" , 105);		// NOI18N
 		// UNCHECKED:
-		photofileIDs.put ("tif" , 106);		// NOI18N
-		photofileIDs.put ("tiff", 106);		// NOI18N
-		photofileIDs.put ("pct" , 107);		// NOI18N
-		photofileIDs.put ("pict", 107);		// NOI18N
-		photofileIDs.put ("ai"  , 108);		// NOI18N
-		photofileIDs.put ("eps" , 108);		// NOI18N
-		photofileIDs.put ("ps"  , 108);		// NOI18N
-		photofileIDs.put ("ems_gr", 109 );	// NOI18N
+		tempMap.put ("tif" , 106);		// NOI18N
+		tempMap.put ("tiff", 106);		// NOI18N
+		tempMap.put ("pct" , 107);		// NOI18N
+		tempMap.put ("pict", 107);		// NOI18N
+		tempMap.put ("ai"  , 108);		// NOI18N
+		tempMap.put ("eps" , 108);		// NOI18N
+		tempMap.put ("ps"  , 108);		// NOI18N
+		tempMap.put ("ems_gr", 109 );	// NOI18N
+		photofileIDs = Collections.unmodifiableMap (tempMap);
 
-		addrfileIDs = new Hashtable<String, Integer> (3);
-		addrfileIDs.put  ("vcf"  , 220);	// NOI18N
-		addrfileIDs.put  ("vcard", 220);	// NOI18N
-		addrfileIDs.put  ("vcrd" , 220);	// NOI18N
+		tempMap = new HashMap<String, Integer> (3);
+		tempMap.put  ("vcf"  , 220);	// NOI18N
+		tempMap.put  ("vcard", 220);	// NOI18N
+		tempMap.put  ("vcrd" , 220);	// NOI18N
+		addrfileIDs = Collections.unmodifiableMap (tempMap);
 
-		todofileIDs = new Hashtable<String, Integer> (5);
-		todofileIDs.put  ("ics" , 221);		// NOI18N
-		todofileIDs.put  ("ical", 221);		// NOI18N
-		todofileIDs.put  ("ifb" , 221);		// NOI18N
-		todofileIDs.put  ("icalendar", 221);	// NOI18N
-		todofileIDs.put  ("vcs" , 221);		// NOI18N
+		tempMap = new HashMap<String, Integer> (5);
+		tempMap.put  ("ics" , 221);		// NOI18N
+		tempMap.put  ("ical", 221);		// NOI18N
+		tempMap.put  ("ifb" , 221);		// NOI18N
+		tempMap.put  ("icalendar", 221);	// NOI18N
+		tempMap.put  ("vcs" , 221);		// NOI18N
+		todofileIDs = Collections.unmodifiableMap (tempMap);
 
-		eventfileIDs = new Hashtable<String, Integer> (todofileIDs.size ());
-		eventfileIDs.putAll (todofileIDs);
+		tempMap = new HashMap<String, Integer> (todofileIDs.size ());
+		tempMap.putAll (todofileIDs);
+		eventfileIDs = Collections.unmodifiableMap (tempMap);
 
-		animfileIDs = new Hashtable<String, Integer> (15);
-		animfileIDs.put  ("gif" , 105);		// NOI18N
-		animfileIDs.put  ("mng" , 202);		// NOI18N
+		tempMap = new HashMap<String, Integer> (15);
+		tempMap.put  ("gif" , 105);		// NOI18N
+		tempMap.put  ("mng" , 202);		// NOI18N
 		// UNCHECKED:
-		animfileIDs.put  ("sg1" , 203);		// NOI18N
-		animfileIDs.put  ("sg2" , 204);		// NOI18N
-		animfileIDs.put  ("ems_an", 205);	// NOI18N
-		animfileIDs.put  ("ssa" , 206);		// NOI18N
-		animfileIDs.put  ("mjpg", 207);		// NOI18N
-		animfileIDs.put  ("mjpeg",207);		// NOI18N
-		animfileIDs.put  ("avi" , 231);		// NOI18N
-		animfileIDs.put  ("mp4" , 232);		// NOI18N
-		animfileIDs.put  ("mpeg", 232);		// NOI18N
-		animfileIDs.put  ("mpg" , 232);		// NOI18N
-		animfileIDs.put  ("3gp" , 233);		// NOI18N
-		animfileIDs.put  ("3gpp", 233);		// NOI18N
-		animfileIDs.put  ("3g2" , 233);		// NOI18N
+		tempMap.put  ("sg1" , 203);		// NOI18N
+		tempMap.put  ("sg2" , 204);		// NOI18N
+		tempMap.put  ("ems_an", 205);	// NOI18N
+		tempMap.put  ("ssa" , 206);		// NOI18N
+		tempMap.put  ("mjpg", 207);		// NOI18N
+		tempMap.put  ("mjpeg",207);		// NOI18N
+		tempMap.put  ("avi" , 231);		// NOI18N
+		tempMap.put  ("mp4" , 232);		// NOI18N
+		tempMap.put  ("mpeg", 232);		// NOI18N
+		tempMap.put  ("mpg" , 232);		// NOI18N
+		tempMap.put  ("3gp" , 233);		// NOI18N
+		tempMap.put  ("3gpp", 233);		// NOI18N
+		tempMap.put  ("3g2" , 233);		// NOI18N
+		animfileIDs = Collections.unmodifiableMap (tempMap);
 
-		javafileIDs = new Hashtable<String, Integer> (3);
+		tempMap = new HashMap<String, Integer> (3);
 		// UNCHECKED:
-		javafileIDs.put  ("jar" , 1001);	// NOI18N
-		javafileIDs.put  ("jad" , 1002);	// NOI18N
-		javafileIDs.put  ("jam" , 1003);	// NOI18N
+		tempMap.put  ("jar" , 1001);	// NOI18N
+		tempMap.put  ("jad" , 1002);	// NOI18N
+		tempMap.put  ("jam" , 1003);	// NOI18N
+		javafileIDs = Collections.unmodifiableMap (tempMap);
 
-		filetypeIDs = new Hashtable<String, Integer> (ringfileIDs.size ()
+		tempMap = new HashMap<String, Integer> (ringfileIDs.size ()
 			+ photofileIDs.size () + addrfileIDs.size ()
 			+ todofileIDs.size () + eventfileIDs.size ()
 			+ animfileIDs.size () + javafileIDs.size ());
-		filetypeIDs.putAll (photofileIDs);
-		filetypeIDs.putAll (ringfileIDs);
-		filetypeIDs.putAll (addrfileIDs);
-		filetypeIDs.putAll (todofileIDs);
-		filetypeIDs.putAll (eventfileIDs);
-		filetypeIDs.putAll (animfileIDs);
-		filetypeIDs.putAll (javafileIDs);
+		tempMap.putAll (photofileIDs);
+		tempMap.putAll (ringfileIDs);
+		tempMap.putAll (addrfileIDs);
+		tempMap.putAll (todofileIDs);
+		tempMap.putAll (eventfileIDs);
+		tempMap.putAll (animfileIDs);
+		tempMap.putAll (javafileIDs);
+		filetypeIDs = Collections.unmodifiableMap (tempMap);
 	}
 
 	private Utils ()
 	{
 		// non-instantiable
+	}
+
+	public static int convertCalendarMonthToReal (int month)
+	{
+		if ( month == Calendar.JANUARY )
+		{
+			return 1;
+		}
+		else if ( month == Calendar.FEBRUARY )
+		{
+			return 2;
+		}
+		else if ( month == Calendar.MARCH )
+		{
+			return 3;
+		}
+		else if ( month == Calendar.APRIL )
+		{
+			return 4;
+		}
+		else if ( month == Calendar.MAY )
+		{
+			return 5;
+		}
+		else if ( month == Calendar.JUNE )
+		{
+			return 6;
+		}
+		else if ( month == Calendar.JULY )
+		{
+			return 7;
+		}
+		else if ( month == Calendar.AUGUST )
+		{
+			return 8;
+		}
+		else if ( month == Calendar.SEPTEMBER )
+		{
+			return 9;
+		}
+		else if ( month == Calendar.OCTOBER )
+		{
+			return 10;
+		}
+		else if ( month == Calendar.NOVEMBER )
+		{
+			return 11;
+		}
+		else if ( month == Calendar.DECEMBER )
+		{
+			return 12;
+		}
+		return -1;
+	}
+
+	public static int convertRealMonthToCalendar (int month)
+	{
+		if ( month == 1 )
+		{
+			return Calendar.JANUARY;
+		}
+		else if ( month == 2 )
+		{
+			return Calendar.FEBRUARY;
+		}
+		else if ( month == 3 )
+		{
+			return Calendar.MARCH;
+		}
+		else if ( month == 4 )
+		{
+			return Calendar.APRIL;
+		}
+		else if ( month == 5 )
+		{
+			return Calendar.MAY;
+		}
+		else if ( month == 6 )
+		{
+			return Calendar.JUNE;
+		}
+		else if ( month == 7 )
+		{
+			return Calendar.JULY;
+		}
+		else if ( month == 8 )
+		{
+			return Calendar.AUGUST;
+		}
+		else if ( month == 9 )
+		{
+			return Calendar.SEPTEMBER;
+		}
+		else if ( month == 10 )
+		{
+			return Calendar.OCTOBER;
+		}
+		else if ( month == 11 )
+		{
+			return Calendar.NOVEMBER;
+		}
+		else if ( month == 12 )
+		{
+			return Calendar.DECEMBER;
+		}
+		return -1;
 	}
 
 	/**
@@ -246,59 +362,11 @@ public class Utils
 		{
 			Calendar c = Calendar.getInstance ();
 
-			int month  = c.get (Calendar.MONTH);
+			int month  = convertCalendarMonthToReal (c.get (Calendar.MONTH));
 			int day    = c.get (Calendar.DAY_OF_MONTH);
 			int hour   = c.get (Calendar.HOUR_OF_DAY);
 			int minute = c.get (Calendar.MINUTE);
 			int second = c.get (Calendar.SECOND);
-			if ( month == Calendar.JANUARY )
-			{
-				month =  1;
-			}
-			else if ( month == Calendar.FEBRUARY )
-			{
-				month =  2;
-			}
-			else if ( month == Calendar.MARCH )
-			{
-				month =  3;
-			}
-			else if ( month == Calendar.APRIL )
-			{
-				month =  4;
-			}
-			else if ( month == Calendar.MAY )
-			{
-				month =  5;
-			}
-			else if ( month == Calendar.JUNE )
-			{
-				month =  6;
-			}
-			else if ( month == Calendar.JULY )
-			{
-				month =  7;
-			}
-			else if ( month == Calendar.AUGUST )
-			{
-				month =  8;
-			}
-			else if ( month == Calendar.SEPTEMBER )
-			{
-				month =  9;
-			}
-			else if ( month == Calendar.OCTOBER )
-			{
-				month = 10;
-			}
-			else if ( month == Calendar.NOVEMBER )
-			{
-				month = 11;
-			}
-			else if ( month == Calendar.DECEMBER )
-			{
-				month = 12;
-			}
 
 			String time = c.get (Calendar.YEAR) + dash
 				+ ((month<10)?  zero : emptyStr ) + month  + dash
@@ -402,7 +470,7 @@ public class Utils
 						{
 							// let's display only our files
 							if ( ! clazz.startsWith
-								("BogDro") )
+								("BogDro") )	// NOI18N
 							{
 								continue;
 							}
@@ -542,32 +610,28 @@ public class Utils
 	 */
 	public static boolean isAllowableSpeed (int speed)
 	{
-		if ( speed != 1200
-			&& speed != 2400
-			&& speed != 4800
-			&& speed != 9600
-			&& speed != 19200
-			&& speed != 38400
-			&& speed != 57600
-			&& speed != 115200
-			&& speed != 230400
-			&& speed != 460800
-			&& speed != 500000
-			&& speed != 576000
-			&& speed != 921600
-			&& speed != 1000000
-			&& speed != 1152000
-			&& speed != 1500000
-			&& speed != 2000000
-			&& speed != 2500000
-			&& speed != 3000000
-			&& speed != 3500000
-			&& speed != 4000000 )
-		{
-			return false;
-		}
-
-		return true;
+		return
+			speed == 1200 ||
+			speed == 2400 ||
+			speed == 4800 ||
+			speed == 9600 ||
+			speed == 19200 ||
+			speed == 38400 ||
+			speed == 57600 ||
+			speed == 115200 ||
+			speed == 230400 ||
+			speed == 460800 ||
+			speed == 500000 ||
+			speed == 576000 ||
+			speed == 921600 ||
+			speed == 1000000 ||
+			speed == 1152000 ||
+			speed == 1500000 ||
+			speed == 2000000 ||
+			speed == 2500000 ||
+			speed == 3000000 ||
+			speed == 3500000 ||
+			speed == 4000000;
 	}
 
 	/**
@@ -577,12 +641,11 @@ public class Utils
 	 */
 	public static boolean isAllowableDataBits (int dBits)
 	{
-		if ( dBits != 5 && dBits != 6
-			&& dBits != 7 && dBits != 8 )
-		{
-			return false;
-		}
-		return true;
+		return
+			dBits == 5 ||
+			dBits == 6 ||
+			dBits == 7 ||
+			dBits == 8;
 	}
 
 	/**
@@ -680,11 +743,11 @@ public class Utils
 	/**
 	 * Crates a file chooser for opening single files of the given type.
 	 * @param description The description to display in the filters list.
-	 * @param filetype The Hashtable with file extensiotns as keys.
+	 * @param filetype The Map with file extensiotns as keys.
 	 * @return The file chooser for opening of selected file types.
 	 */
 	public static JFileChooser createOpenFileChooser (
-		final String description, final Hashtable<String, Integer> filetype)
+		final String description, final Map<String, Integer> filetype)
 	{
 		JFileChooser fc = new JFileChooser ();
 		fc.setAcceptAllFileFilterUsed (false);
@@ -726,14 +789,14 @@ public class Utils
 				}
 				if ( filetype != null )
 				{
-					Enumeration<String> keys = filetype.keys ();
+					Iterator<String> keys = filetype.keySet ().iterator ();
 					if ( keys != null )
 					{
 						desc.append (space + lParen);
-						while ( keys.hasMoreElements () )
+						while ( keys.hasNext () )
 						{
-							desc.append (allFileNames + keys.nextElement ());
-							if ( keys.hasMoreElements () )
+							desc.append (allFileNames + keys.next ());
+							if ( keys.hasNext () )
 							{
 								desc.append (comma + space);
 							}
@@ -874,16 +937,16 @@ public class Utils
 		RECEIVING;
 
 		private static final ResourceBundle rcBundle =
-			ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+			ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
 
 		private static final String readyString =
-			rcBundle.getString("READY");
+			rcBundle.getString("READY");		// NOI18N
 
 		private static final String sendingString =
-			rcBundle.getString("SENDING");
+			rcBundle.getString("SENDING");		// NOI18N
 
 		private static final String recvString =
-			rcBundle.getString("RECEIVING");
+			rcBundle.getString("RECEIVING");	// NOI18N
 
 		@Override
 		public String toString ()
@@ -984,74 +1047,74 @@ public class Utils
 	}
 
 	/**
-	 * Gets a copy of the filetypeIDs Hashtable.
-	 * @return the filetypeIDs Hashtable.
+	 * Gets the filetypeIDs map.
+	 * @return the filetypeIDs map.
 	 */
-	public static Hashtable<String, Integer> getFiletypeIDs ()
+	public static Map<String, Integer> getFiletypeIDs ()
 	{
-		return new Hashtable<String, Integer> (filetypeIDs);
+		return filetypeIDs;
 	}
 
 	/**
-	 * Gets a copy of the photofileIDs Hashtable.
-	 * @return the photofileIDs Hashtable.
+	 * Gets the photofileIDs map.
+	 * @return the photofileIDs map.
 	 */
-	public static Hashtable<String, Integer> getPhotofileIDs ()
+	public static Map<String, Integer> getPhotofileIDs ()
 	{
-		return new Hashtable<String, Integer> (photofileIDs);
+		return photofileIDs;
 	}
 
 	/**
-	 * Gets a copy of the ringfileIDs Hashtable.
-	 * @return the ringfileIDs Hashtable.
+	 * Gets the ringfileIDs map.
+	 * @return the ringfileIDs map.
 	 */
-	public static Hashtable<String, Integer> getRingfileIDs ()
+	public static Map<String, Integer> getRingfileIDs ()
 	{
-		return new Hashtable<String, Integer> (ringfileIDs);
+		return ringfileIDs;
 	}
 
 	/**
-	 * Gets a copy of the addrfileIDs Hashtable.
-	 * @return the addrfileIDs Hashtable.
+	 * Gets the addrfileIDs map.
+	 * @return the addrfileIDs map.
 	 */
-	public static Hashtable<String, Integer> getAddrfileIDs ()
+	public static Map<String, Integer> getAddrfileIDs ()
 	{
-		return new Hashtable<String, Integer> (addrfileIDs);
+		return addrfileIDs;
 	}
 
 	/**
-	 * Gets a copy of the todofileIDs Hashtable.
-	 * @return the todofileIDs Hashtable.
+	 * Gets the todofileIDs map.
+	 * @return the todofileIDs map.
 	 */
-	public static Hashtable<String, Integer> getTodofileIDs ()
+	public static Map<String, Integer> getTodofileIDs ()
 	{
-		return new Hashtable<String, Integer> (todofileIDs);
+		return todofileIDs;
 	}
 
 	/**
-	 * Gets a copy of the eventfileIDs Hashtable.
-	 * @return the eventfileIDs Hashtable.
+	 * Gets the eventfileIDs map.
+	 * @return the eventfileIDs map.
 	 */
-	public static Hashtable<String, Integer> getEventfileIDs ()
+	public static Map<String, Integer> getEventfileIDs ()
 	{
-		return new Hashtable<String, Integer> (eventfileIDs);
+		return eventfileIDs;
 	}
 
 	/**
-	 * Gets a copy of the animfileIDs Hashtable.
-	 * @return the animfileIDs Hashtable.
+	 * Gets the animfileIDs map.
+	 * @return the animfileIDs map.
 	 */
-	public static Hashtable<String, Integer> getAnimfileIDs ()
+	public static Map<String, Integer> getAnimfileIDs ()
 	{
-		return new Hashtable<String, Integer> (animfileIDs);
+		return animfileIDs;
 	}
 
 	/**
-	 * Gets a copy of the javafileIDs Hashtable.
-	 * @return the javafileIDs Hashtable.
+	 * Gets the javafileIDs map.
+	 * @return the javafileIDs map.
 	 */
-	public static Hashtable<String, Integer> getJavafileIDs ()
+	public static Map<String, Integer> getJavafileIDs ()
 	{
-		return new Hashtable<String, Integer> (javafileIDs);
+		return javafileIDs;
 	}
 }

@@ -1,7 +1,7 @@
 #
 # JYMAG hand-made Makefile for creating distribution packages.
 # Best with GNU make.
-# Copyright (C) 2008-2014 Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl
+# Copyright (C) 2008-2016 Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -47,11 +47,9 @@ GNUPG_OPTS	= --yes --digest-algo RIPEMD160 -ba
 PERL		= perl
 PERL_OPTS	= -e
 
-# www.htmldoc.org, www.msweet.org/projects.php?Z1
-HTMLDOC		= htmldoc
-HTMLDOC_OPTS 	= --charset iso-8859-2 -t pdf14 --encryption --duplex --permissions none,print \
-	--compression=9 --links --linkcolor blue \
-	--linkstyle underline --header 'd.c' --footer '1.h' --webpage
+# pdfgen.sh is a wrapper around htmldoc
+# (www.htmldoc.org, www.msweet.org/projects.php?Z1)
+PDFGEN		= pdfgen.sh
 
 # Apache Ant (ant.apache.org)
 ANT		= ant
@@ -68,6 +66,11 @@ UPX		= upx
 # URL of a Timestamping Authority
 TSAURL		= http://time.certum.pl/
 #TSAURL		= http://timestamp.verisign.com/scripts/timstamp.dll
+#TSAURL		= http://timestamp.comodoca.com
+#TSAURL		= http://timestamp.digicert.com
+#TSAURL		= http://tsa.izenpe.com/
+#TSAURL		= http://tsa.starfieldtech.com/
+#TSAURL		= http://timestamp.globalsign.com/scripts/timstamp.dll
 
 # osslsigncode-bogdro.sh is a wrapper around osslsigncode (osslsigncode.sf.net)
 # that provides the default certificate. Osslsigncode allows digital signing
@@ -84,12 +87,15 @@ JARSIGN		= jarsigner
 JARSIGN_ALIAS	= 'bogdan drozdowski (bogdandr@op.pl)'
 JARSIGN_OPTS	= -digestalg SHA-512 -sigalg SHA512withRSA -tsa $(TSAURL)
 
+# pdfsign.sh is a wrapper around PortableSigner (portablesigner.sf.net)
+PDFSIGNER	= pdfsign.sh
+
 ###########################################################################
 # Internal variables
 ###########################################################################
 
 # JYMAG version
-VER		= 1.4
+VER		= 1.5
 
 # The current year, month and day of month used for formatting the dates.
 # Watch out for values < 10.
@@ -115,7 +121,9 @@ FILE_ARCH_BIN = JYMAG-bin-$(VER).$(PACK_EXT)
 FILE_ARCH_JAVADOC = JYMAG-javadoc-$(VER).$(PACK_EXT)
 
 FILE_MANUAL_EN = JYMAG-manual-EN.pdf
+FILE_MANUAL_EN_SIGNED = JYMAG-manual-EN-signed.pdf
 FILE_MANUAL_PL = JYMAG-manual-PL.pdf
+FILE_MANUAL_PL_SIGNED = JYMAG-manual-PL-signed.pdf
 
 FILE_INSTALLER = Setup-JYMAG-$(VER).exe
 FILE_INSTALLER_SIGNED = Setup-JYMAG-$(VER)-signed.exe
@@ -132,8 +140,9 @@ DIR_TMP_DIST = JYMAG-$(VER)
 # Targets
 ###########################################################################
 
-# NOTE - using "&&" is required, because we're changing directories and we want
-# the subsequent commands to be executed in the directory we've just changed to.
+# NOTE - using "&&" is required, because we're changing directories and
+# we want the subsequent commands to be executed in the directory we've
+# just changed to.
 # This won't work if we write separate commands one per line, because each
 # is run in its own subshell, so changing directories wouldn't affect the
 # subsequent commands.
@@ -144,31 +153,32 @@ all:	jar
 # Distribution packages
 ###########################################################################
 
-# dist-src should be last, because it deletes elements used by the other targets
+# dist-src should be last, because it deletes elements used by other targets
 dist:	dist-javadoc dist-bin installer installer-signed dist-src
 
-dist-src:	../$(FILE_ARCH_SRC) Makefile
+dist-src:	../$(FILE_ARCH_SRC)
 
 # better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
 # some systems don't like it
 ../$(FILE_ARCH_SRC): clean Makefile
 	cd .. && \
-	$(DEL) $(FILE_ARCH_SRC) $(FILE_ARCH_SRC).asc && \
+	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_SRC) $(FILE_ARCH_SRC).asc && \
 	$(COPY) JYMAG $(DIR_TMP_DIST) && \
 	$(TOUCH) $(PACK_EXCL_SRC) && \
 	$(PACK) $(FILE_ARCH_SRC) $(PACK_OTPS) $(DIR_TMP_DIST) && \
 	$(DEL) $(DIR_TMP_DIST) && \
 	$(GNUPG) $(GNUPG_OPTS) $(FILE_ARCH_SRC)
 
-dist-bin:	../$(FILE_ARCH_BIN) Makefile
+dist-bin:	../$(FILE_ARCH_BIN) test
 
 # better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
 # some systems don't like it
 ../$(FILE_ARCH_BIN):	manual jar Makefile
 	$(DEL) dist/javadoc && \
 	cd .. && \
-	$(DEL) $(FILE_ARCH_BIN) $(FILE_ARCH_BIN).asc && \
+	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_BIN) $(FILE_ARCH_BIN).asc && \
 	$(COPY) JYMAG $(DIR_TMP_DIST) && \
+	$(TOUCH) $(PACK_EXCL_SRC) && \
 	$(PACK) $(FILE_ARCH_BIN) $(PACK_OTPS) \
 		$(DIR_TMP_DIST)/AUTHORS	\
 		$(DIR_TMP_DIST)/COPYING	\
@@ -185,19 +195,20 @@ dist-bin:	../$(FILE_ARCH_BIN) Makefile
 	$(DEL) $(DIR_TMP_DIST) && \
 	$(GNUPG) $(GNUPG_OPTS) $(FILE_ARCH_BIN)
 
-dist-javadoc:	../$(FILE_ARCH_JAVADOC) Makefile
+dist-javadoc:	../$(FILE_ARCH_JAVADOC)
 
 # better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
 # some systems don't like it
 ../$(FILE_ARCH_JAVADOC):	dist/javadoc Makefile
 	cd .. && \
-	$(DEL) $(FILE_ARCH_JAVADOC) $(FILE_ARCH_JAVADOC).asc && \
+	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_JAVADOC) $(FILE_ARCH_JAVADOC).asc && \
 	$(COPY) JYMAG $(DIR_TMP_DIST) && \
+	$(TOUCH) $(PACK_EXCL_SRC) && \
 	$(PACK) $(FILE_ARCH_JAVADOC) $(PACK_OTPS) $(DIR_TMP_DIST)/dist/javadoc && \
 	$(DEL) $(DIR_TMP_DIST) && \
 	$(GNUPG) $(GNUPG_OPTS) $(FILE_ARCH_JAVADOC)
 
-dist/javadoc:	$(shell find src)
+dist/javadoc:	$(shell find src) Makefile
 	$(DEL) dist/javadoc
 	$(ANT) javadoc
 
@@ -205,11 +216,11 @@ dist/javadoc:	$(shell find src)
 # Manuals
 ###########################################################################
 
-manual: $(FILE_MANUAL_EN) $(FILE_MANUAL_PL) Makefile
+manual: $(FILE_MANUAL_EN) $(FILE_MANUAL_PL)
 
 $(FILE_MANUAL_EN): manual/en/*.html manual/rsrc/css/* manual/en/rsrc/* \
 	manual/pl/rsrc/* manual/rsrc/license.html Makefile
-	$(HTMLDOC) $(HTMLDOC_OPTS) -f $(FILE_MANUAL_EN) \
+	$(PDFGEN) $(FILE_MANUAL_EN) \
 		manual/en/index.html \
 		manual/en/readme.html \
 		manual/en/main_window.html \
@@ -219,10 +230,12 @@ $(FILE_MANUAL_EN): manual/en/*.html manual/rsrc/css/* manual/en/rsrc/* \
 		manual/en/manual_cmd.html \
 		manual/en/signal_power.html \
 		manual/rsrc/license.html
+	$(PDFSIGNER) $(FILE_MANUAL_EN_SIGNED) $(FILE_MANUAL_EN)
+	$(MOVE) $(FILE_MANUAL_EN_SIGNED)  $(FILE_MANUAL_EN)
 
 $(FILE_MANUAL_PL): manual/pl/*.html manual/rsrc/css/* manual/en/rsrc/* \
 	manual/pl/rsrc/* manual/rsrc/license.html Makefile
-	$(HTMLDOC) $(HTMLDOC_OPTS) -f $(FILE_MANUAL_PL) \
+	$(PDFGEN) $(FILE_MANUAL_PL) \
 		manual/pl/index.html \
 		manual/pl/readme.html \
 		manual/pl/main_window.html \
@@ -232,7 +245,12 @@ $(FILE_MANUAL_PL): manual/pl/*.html manual/rsrc/css/* manual/en/rsrc/* \
 		manual/pl/manual_cmd.html \
 		manual/pl/signal_power.html \
 		manual/rsrc/license.html
+	$(PDFSIGNER) $(FILE_MANUAL_PL_SIGNED) $(FILE_MANUAL_PL)
+	$(MOVE) $(FILE_MANUAL_PL_SIGNED)  $(FILE_MANUAL_PL)
 
+manual-clean:
+	$(DEL) $(FILE_MANUAL_EN)
+	$(DEL) $(FILE_MANUAL_PL)
 
 ###########################################################################
 # Application
@@ -240,14 +258,17 @@ $(FILE_MANUAL_PL): manual/pl/*.html manual/rsrc/css/* manual/en/rsrc/* \
 
 jar: $(FILE_PROGRAM)
 
-$(FILE_PROGRAM):	$(shell find src) build.xml nbproject/build-impl.xml
+$(FILE_PROGRAM):	$(shell find src) build.xml \
+	nbproject/build-impl.xml Makefile
 	$(ANT) jar
+	$(TOUCH) $(FILE_PROGRAM)
 
 ###########################################################################
 # Installer
 ###########################################################################
 
-installer:	jar manual $(FILE_L4J_EXE) $(FILE_L4J_EXE_EN) setup/$(FILE_INSTALLER) Makefile
+installer:	jar manual test $(FILE_L4J_EXE) $(FILE_L4J_EXE_EN) \
+	setup/$(FILE_INSTALLER)
 
 $(FILE_L4J_EXE):	$(FILE_L4J_CONFIG) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_FILEVERSION) $(FILE_L4J_CONFIG)
@@ -256,6 +277,7 @@ $(FILE_L4J_EXE):	$(FILE_L4J_CONFIG) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_TXTPRODUCTVERSION) $(FILE_L4J_CONFIG)
 	$(SED) $(SED_OPTS) $(SED_FIX_COPYRIGHT) $(FILE_L4J_CONFIG)
 	$(LAUNCH4J) $(PWD)/$(FILE_L4J_CONFIG)
+	$(DEL) ../jymag-$(VER).exe
 	$(COPY) $@ ../jymag-$(VER).exe
 
 $(FILE_L4J_EXE_EN):	$(FILE_L4J_CONFIG_EN) setup/jymag.ico Makefile
@@ -265,10 +287,11 @@ $(FILE_L4J_EXE_EN):	$(FILE_L4J_CONFIG_EN) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_TXTPRODUCTVERSION) $(FILE_L4J_CONFIG_EN)
 	$(SED) $(SED_OPTS) $(SED_FIX_COPYRIGHT) $(FILE_L4J_CONFIG_EN)
 	$(LAUNCH4J) $(PWD)/$(FILE_L4J_CONFIG_EN)
+	$(DEL) ../jymag-en-$(VER).exe
 	$(COPY) $@ ../jymag-en-$(VER).exe
 
-setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog INSTALL \
-		COPYING README THANKS jar Makefile
+setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog \
+		INSTALL COPYING README THANKS jar Makefile
 	$(COPY) AUTHORS setup/AUTHORS
 	$(COPY) ChangeLog setup/ChangeLog
 	$(COPY) INSTALL setup/INSTALL
@@ -289,8 +312,21 @@ setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog INSTALL \
 	#$(UPX) setup/$(FILE_INSTALLER)
 	#$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in $@ -out $@-signed.exe
 	#$(MOVE) $@-signed.exe $@
+	$(DEL) ../$(FILE_INSTALLER)
 	$(COPY) $@ ..
 	$(GNUPG) $(GNUPG_OPTS) ../$(FILE_INSTALLER)
+
+installer-clean:
+	$(DEL) setup/$(FILE_INSTALLER)
+	$(DEL) $(FILE_PROGRAM)
+	$(DEL) $(FILE_L4J_EXE)
+	$(DEL) $(FILE_L4J_EXE_EN)
+	$(DEL) setup/AUTHORS
+	$(DEL) setup/ChangeLog
+	$(DEL) setup/INSTALL
+	$(DEL) setup/license.txt
+	$(DEL) setup/README
+	$(DEL) setup/THANKS
 
 ###########################################################################
 # Signed installer
@@ -302,16 +338,16 @@ setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog INSTALL \
 
 jar-signed: jar $(FILE_PROGRAM_SIGNED)
 
-$(FILE_PROGRAM_SIGNED): jar
+$(FILE_PROGRAM_SIGNED): jar Makefile
 	$(JARSIGN) -signedjar $@ $(JARSIGN_OPTS) $(FILE_PROGRAM) $(JARSIGN_ALIAS)
 	$(MOVE) $@ $(FILE_PROGRAM)
 	$(TOUCH) $(FILE_ANY_SOURCE_FILE)
 
-installer-signed:	jar-signed installer manual $(FILE_L4J_EXE) $(FILE_L4J_EXE_EN) \
-		setup/$(FILE_INSTALLER_SIGNED) Makefile
+installer-signed:	jar-signed installer manual $(FILE_L4J_EXE) \
+		$(FILE_L4J_EXE_EN) setup/$(FILE_INSTALLER_SIGNED)
 
-setup/$(FILE_INSTALLER_SIGNED):	installer $(FILE_INSTALLER_CFG) AUTHORS ChangeLog INSTALL \
-		COPYING README THANKS jar-signed Makefile
+setup/$(FILE_INSTALLER_SIGNED):	installer $(FILE_INSTALLER_CFG) AUTHORS \
+		ChangeLog INSTALL COPYING README THANKS jar-signed Makefile
 	$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in $(FILE_L4J_EXE) -out $(FILE_L4J_EXE_SIGNED)
 	$(MOVE) $(FILE_L4J_EXE_SIGNED) $(FILE_L4J_EXE)
 	$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in $(FILE_L4J_EXE_EN) -out $(FILE_L4J_EXE_SIGNED_EN)
@@ -319,25 +355,33 @@ setup/$(FILE_INSTALLER_SIGNED):	installer $(FILE_INSTALLER_CFG) AUTHORS ChangeLo
 	$(NSIS) $(FILE_INSTALLER_CFG)
 	$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in setup/$(FILE_INSTALLER) -out $@
 	#$(MOVE) $@ setup/$(FILE_INSTALLER)
+	$(DEL) ../$(FILE_INSTALLER_SIGNED)
 	$(COPY) $@ ..
 	$(GNUPG) $(GNUPG_OPTS) ../$(FILE_INSTALLER_SIGNED)
 	$(TOUCH) $(FILE_L4J_CONFIG) $(FILE_L4J_CONFIG_EN) $(FILE_INSTALLER_CFG)
 
-
+installer-signed-clean:
+	$(DEL) setup/$(FILE_INSTALLER_SIGNED)
+	$(DEL) $(FILE_PROGRAM_SIGNED)
+	$(DEL) $(FILE_L4J_EXE_SIGNED)
+	$(DEL) $(FILE_L4J_EXE_SIGNED_EN)
 
 ###########################################################################
 # Other targets
 ###########################################################################
+
+javadoc-clean:
+	$(DEL) dist/javadoc
 
 check:	test
 
 test:
 	$(ANT) test
 
-clean:
+clean:	installer-signed-clean installer-clean manual-clean javadoc-clean
 	$(ANT) clean
-	$(DEL) setup/*.exe JYMAG-manual-*.pdf dist/javadoc
 
 .PHONY:	all dist dist-src dist-bin dist-javadoc manual jar clean installer \
-		jar-signed installer-signed check test
+	jar-signed installer-signed check test installer-signed-clean \
+	installer-clean manual-clean javadoc-clean
 

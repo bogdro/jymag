@@ -1,7 +1,7 @@
 /*
  * DialPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2012-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -26,8 +26,9 @@
 package BogDroSoft.jymag.gui.panels;
 
 import BogDroSoft.jymag.comm.DataTransporter;
-import BogDroSoft.jymag.gui.MainWindow;
+import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
+import BogDroSoft.jymag.gui.MainWindow;
 import BogDroSoft.jymag.Utils;
 
 import java.awt.event.ItemEvent;
@@ -453,6 +454,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_dialButActionPerformed
 		try
 		{
+			TransferParameters tp = getTransferParameters ();
 			if ( dialNumRadio.isSelected () )
 			{
 				// dial a number
@@ -467,25 +469,15 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 				}
 				TransferUtils.dialNumber (numberField.getText (),
 					voiceRadio.isSelected (), mode,
-					TransferUtils.getIdentifierForPort
-						(portCombo.getSelectedItem ().toString ()),
-					Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-					Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-					Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-					parityCombo.getSelectedIndex (),
-					((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
-					null, this, sync, false, false, false);
+					tp, null, this, false, false, false);
 			}
 			else
 			{
-				final DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()));
-				dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-					Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-					Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-					parityCombo.getSelectedIndex (),
-					((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
-					);
+				final DataTransporter dt =
+					new DataTransporter (tp.getId ());
+				dt.open (tp.getSpeed (), tp.getDataBits (),
+					tp.getStopBits (),
+					tp.getParity (), tp.getFlow ());
 				final byte[] cmd = (dialCmdField.getText () + DataTransporter.CRStr)
 					.getBytes (DataTransporter.defaultEncoding);
 				// send a custom command
@@ -530,14 +522,9 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_hangUpButActionPerformed
 		try
 		{
-			TransferUtils.hangup (TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
-				null, this, sync, false, false, false);
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.hangup (tp,
+				null, this, false, false, false);
 		}
 		catch (Exception ex)
 		{
@@ -581,14 +568,9 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_answerButActionPerformed
 		try
 		{
-			TransferUtils.answer (TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
-				null, this, sync, false, false, false);
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.answer (tp,
+				null, this, false, false, false);
 		}
 		catch (Exception ex)
 		{
@@ -600,14 +582,9 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_volumeUpButActionPerformed
 		try
 		{
-			TransferUtils.volumeUp (TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
-				null, this, sync, false, false, false);
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.volumeUp (tp,
+				null, this, false, false, false);
 		}
 		catch (Exception ex)
 		{
@@ -619,14 +596,9 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_volumeDownButActionPerformed
 		try
 		{
-			TransferUtils.volumeDown (TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
-				null, this, sync, false, false, false);
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.volumeDown (tp,
+				null, this, false, false, false);
 		}
 		catch (Exception ex)
 		{
@@ -682,6 +654,13 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		autoDialRadio.setEnabled (false);
 
 		dialCmdField.setEnabled (true);
+	}
+
+	private TransferParameters getTransferParameters ()
+	{
+		return new TransferParameters (
+			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
+			parityCombo, flowSoft, flowHard, sync);
 	}
 
 	@Override

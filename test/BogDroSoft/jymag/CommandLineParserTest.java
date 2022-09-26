@@ -1,7 +1,7 @@
 /*
  * CommandLineParserTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

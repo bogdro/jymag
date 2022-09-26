@@ -21,12 +21,12 @@
     <opt>-Duser.language=en -Duser.country=US</opt>
   </jre>
   <versionInfo>
-    <fileVersion>1.4.0.0</fileVersion>
-    <txtFileVersion>1.4</txtFileVersion>
+    <fileVersion>1.5.0.0</fileVersion>
+    <txtFileVersion>1.5</txtFileVersion>
     <fileDescription>JYMAG launcher</fileDescription>
-    <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2014</copyright>
+    <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2016</copyright>
     <productVersion>1.4.0.0</productVersion>
-    <txtProductVersion>1.4</txtProductVersion>
+    <txtProductVersion>1.5</txtProductVersion>
     <productName>JYMAG</productName>
     <companyName></companyName>
     <internalName>JYMAG</internalName>

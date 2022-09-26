@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@
 package BogDroSoft.jymag;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
@@ -38,9 +39,7 @@ import java.util.regex.Pattern;
  */
 public class ConfigFile
 {
-	private File cfgFile;
-	private static final String newLine;
-	private static final String defaultNewLine = "\n";	// NOI18N
+	private final File cfgFile;
 	private static final String emptyString = "";		// NOI18N
 
 	// communication parameters:
@@ -103,28 +102,6 @@ public class ConfigFile
 	private Matcher fontSizeM;
 	private Matcher selectedTabM;
 	private Matcher commentM;
-
-	static
-	{
-		String tmpNewLine = null;
-		try
-		{
-			tmpNewLine = System.getProperty ("line.separator"); // NOI18N
-		}
-		catch (Exception ex)
-		{
-			Utils.handleException (ex, "ConfigFile:System.getProperty");	// NOI18N
-		}
-		if ( tmpNewLine == null )
-		{
-			tmpNewLine = defaultNewLine;
-		}
-		else if ( tmpNewLine.isEmpty () )
-		{
-			tmpNewLine = defaultNewLine;
-		}
-		newLine = tmpNewLine;
-	}
 
 	/**
 	 * Creates a new instance of ConfigFile.
@@ -402,27 +379,40 @@ public class ConfigFile
 	public void write () throws Exception
 	{
 		// don't force any encodings, because the filesystems' names may be in a different encoding
-		PrintWriter pw = new PrintWriter (cfgFile);
-		pw.println (
-			  "port = " + port + newLine	// NOI18N
-			+ "speed = " + speed + newLine	// NOI18N
-			+ "databits = " + dBits + newLine	// NOI18N
-			+ "# Parity: 0=none, 1=even, 2=odd, 3=space, 4=mark." + newLine	// NOI18N
-			+ "parity = " + parity + newLine	// NOI18N
-			+ "# Stop bits: 0=1 bit, 1=1.5 bits, 2=2 bits." + newLine	// NOI18N
-			+ "stopbits = " + sBits + newLine	// NOI18N
-			+ "# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware."	// NOI18N
-			+ newLine	// NOI18N
-			+ "flowcontrol = " + flowCtl + newLine	// NOI18N
-			+ "x = " + x + newLine	// NOI18N
-			+ "y = " + y + newLine	// NOI18N
-			+ "width = " + width + newLine	// NOI18N
-			+ "height = " + height + newLine	// NOI18N
-			+ "ismax = " + ((isMax)? 1 : 0) + newLine	// NOI18N
-			+ "font_size = " + fontSize + newLine						// NOI18N
-			+ "tab = " + selectedTab + newLine						// NOI18N
-		);
-		pw.close ();
+		BufferedWriter w = new BufferedWriter(new PrintWriter (cfgFile));
+		w.write ("port = " + port);	// NOI18N
+		w.newLine ();
+		w.write ("speed = " + speed);	// NOI18N
+		w.newLine ();
+		w.write ("databits = " + dBits);	// NOI18N
+		w.newLine ();
+		w.write ("# Parity: 0=none, 1=even, 2=odd, 3=space, 4=mark.");	// NOI18N
+		w.newLine ();
+		w.write ("parity = " + parity);	// NOI18N
+		w.newLine ();
+		w.write ("# Stop bits: 0=1 bit, 1=1.5 bits, 2=2 bits.");	// NOI18N
+		w.newLine ();
+		w.write ("stopbits = " + sBits);	// NOI18N
+		w.newLine ();
+		w.write ("# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware.");	// NOI18N
+		w.newLine ();
+		w.write ("flowcontrol = " + flowCtl);	// NOI18N
+		w.newLine ();
+		w.write ("x = " + x);	// NOI18N
+		w.newLine ();
+		w.write ("y = " + y);	// NOI18N
+		w.newLine ();
+		w.write ("width = " + width);	// NOI18N
+		w.newLine ();
+		w.write ("height = " + height);	// NOI18N
+		w.newLine ();
+		w.write ("ismax = " + ((isMax)? 1 : 0));	// NOI18N
+		w.newLine ();
+		w.write ("font_size = " + fontSize);	// NOI18N
+		w.newLine ();
+		w.write ("tab = " + selectedTab);	// NOI18N
+		w.newLine ();
+		w.close ();
 	}
 
 	// ================ setters:

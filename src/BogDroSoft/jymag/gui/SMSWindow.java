@@ -1,7 +1,7 @@
 /*
  * SMSWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -69,6 +69,8 @@ public class SMSWindow extends javax.swing.JDialog
 
 		dtr = dt;
 		sync = synchro;
+		// "msg" is the message to display, if any. If present,
+		// transport parameters are not required
 		if ( msg == null && (dt == null || synchro == null) )
 		{
 			dispose ();

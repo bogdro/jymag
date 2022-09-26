@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -370,7 +370,7 @@ public class DataTransporter
 	{
 		if ( portID == null )
 		{
-			throw new NullPointerException ("DataTransporter.open: portID == null");	// NOI18N
+			throw new IllegalArgumentException ("DataTransporter.open: portID == null");	// NOI18N
 		}
 		String portName = portID.getName ();
 		if ( ! portName.startsWith ("COM") )	// NOI18N
@@ -385,7 +385,7 @@ public class DataTransporter
 		s = (SerialPort) portID.open (portOpenProgName, 2000);
 		synchronized (inputStreamLock)
 		{
-			inputStream  = s.getInputStream  ();
+			inputStream  = s.getInputStream ();
 		}
 		outputStream = s.getOutputStream ();
 
@@ -1691,8 +1691,13 @@ public class DataTransporter
 		{
 			try
 			{
-				return rcvd.substring (rcvd.indexOf (CONNStr)+7,
-					rcvd.indexOf (NOCARStr));
+				int connIndex = rcvd.indexOf (CONNStr);
+				int endIndex = rcvd.indexOf (NOCARStr);
+				if ( connIndex >= 0 && endIndex >= 0 )
+				{
+					return rcvd.substring (connIndex+7,
+						endIndex);
+				}
 			}
 			catch (Exception ex)
 			{

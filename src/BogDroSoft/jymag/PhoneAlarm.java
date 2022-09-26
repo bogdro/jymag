@@ -1,7 +1,7 @@
 /*
  * PhoneAlarm.java, part of the JYMAG package.
  *
- * Copyright (C) 2010-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2010-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -73,7 +73,7 @@ public class PhoneAlarm
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
-	private final static Integer ALL_DAYS = Integer.valueOf (0);
+	private static final Integer ALL_DAYS = Integer.valueOf (0);
 
 	/**
 	 * Creates a new instance of PhoneAlarm.
@@ -89,11 +89,11 @@ public class PhoneAlarm
 	{
 		if ( alarmTime == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.PhoneAlarm:alarmTime==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:alarmTime==null");	// NOI18N
 		}
 		if ( (! isForAllDays) && (! isOneTimeAlarm) && alarmDays == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.PhoneAlarm:alarmDays==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:alarmDays==null");	// NOI18N
 		}
 
 		time = alarmTime;
@@ -106,16 +106,12 @@ public class PhoneAlarm
 		}
 		else
 		{
-			if ( alarmDays != null )
+			days = makeSetFromArray (alarmDays);
+			if ( days != null )
 			{
-				days = new HashSet<Integer> (alarmDays.length);
-				for ( int i = 0 ; i < alarmDays.length; i++ )
+				if ( days.contains (ALL_DAYS) )
 				{
-					days.add (alarmDays[i]);
-					if ( alarmDays[i] == 0 )
-					{
-						forAllDays = true;
-					}
+					forAllDays = true;
 				}
 			}
 		}
@@ -136,11 +132,11 @@ public class PhoneAlarm
 	{
 		if ( alarmTime == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.PhoneAlarm:alarmTime==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:alarmTime==null");	// NOI18N
 		}
 		if ( (! isForAllDays) && (! isOneTimeAlarm) && alarmDays == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.PhoneAlarm:alarmDays==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:alarmDays==null");	// NOI18N
 		}
 
 		time = alarmTime;
@@ -179,7 +175,7 @@ public class PhoneAlarm
 	{
 		if ( timeString == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.PhoneAlarm:timeString==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:timeString==null");	// NOI18N
 		}
 		number = alarmNumber;
 		time = Calendar.getInstance ();
@@ -194,66 +190,14 @@ public class PhoneAlarm
 		else
 		{
 			String[] parts = dateString.split (slash);
-			if ( parts == null )
-			{
-				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:dateString: " + dateString);	// NOI18N
-			}
 			if ( parts.length != 3 )
 			{
 				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:dateString: " + dateString);	// NOI18N
 			}
 			oneTime = false;
-			int month = Integer.parseInt (parts[1]);
+			int month = Utils.convertRealMonthToCalendar (Integer.parseInt (parts[1]));
 			int day = Integer.parseInt (parts[0]);
 			int year = Integer.parseInt (parts[2]);
-			if ( month == 1 )
-			{
-				month = Calendar.JANUARY;
-			}
-			else if ( month == 2 )
-			{
-				month = Calendar.FEBRUARY;
-			}
-			else if ( month == 3 )
-			{
-				month = Calendar.MARCH;
-			}
-			else if ( month == 4 )
-			{
-				month = Calendar.APRIL;
-			}
-			else if ( month == 5 )
-			{
-				month = Calendar.MAY;
-			}
-			else if ( month == 6 )
-			{
-				month = Calendar.JUNE;
-			}
-			else if ( month == 7 )
-			{
-				month = Calendar.JULY;
-			}
-			else if ( month == 8 )
-			{
-				month = Calendar.AUGUST;
-			}
-			else if ( month == 9 )
-			{
-				month = Calendar.SEPTEMBER;
-			}
-			else if ( month == 10 )
-			{
-				month = Calendar.OCTOBER;
-			}
-			else if ( month == 11 )
-			{
-				month = Calendar.NOVEMBER;
-			}
-			else if ( month == 12 )
-			{
-				month = Calendar.DECEMBER;
-			}
 			time.set (Calendar.MONTH, month);
 			time.set (Calendar.DAY_OF_MONTH, day);
 			if ( year < 80 )
@@ -272,10 +216,6 @@ public class PhoneAlarm
 		else
 		{
 			String[] parts = timeString.split (colon);
-			if ( parts == null )
-			{
-				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:timeString: " + timeString);	// NOI18N
-			}
 			if ( parts.length != 3 )
 			{
 				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:timeString: " + timeString);	// NOI18N
@@ -299,30 +239,21 @@ public class PhoneAlarm
 			String[] recurrs = daysString.split (comma);
 			if ( recurrs != null )
 			{
-				Set<Integer> tmpDays = new HashSet<Integer> (8);
-				for ( int i = 0; i < recurrs.length; i++ )
+				Set<Integer> tmpDays = makeSetFromArray (recurrs);
+				if ( tmpDays != null )
 				{
-					if ( recurrs[i] == null )
+					if ( tmpDays.isEmpty () )
 					{
-						continue;
+						forAllDays = true;
 					}
-					if ( recurrs[i].isEmpty () )
+					else if ( tmpDays.contains (ALL_DAYS) )
 					{
-						continue;
+						forAllDays = true;
 					}
-					tmpDays.add (Integer.valueOf (recurrs[i]));
-				}
-				if ( tmpDays.size () == 0 )
-				{
-					forAllDays = true;
-				}
-				else if ( tmpDays.contains (ALL_DAYS) )
-				{
-					forAllDays = true;
-				}
-				else
-				{
-					days = tmpDays;
+					else
+					{
+						days = tmpDays;
+					}
 				}
 			}
 		}
@@ -390,7 +321,7 @@ public class PhoneAlarm
 	{
 		if ( c == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.setTime:alarmTime==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.setTime:alarmTime==null");	// NOI18N
 		}
 		time = c;
 	}
@@ -422,23 +353,15 @@ public class PhoneAlarm
 	{
 		if ( (! forAllDays) && (! oneTime) && alarmDays == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.setDays:alarmDays==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.setDays:alarmDays==null");	// NOI18N
 		}
-		if ( alarmDays != null )
+		days = makeSetFromArray (alarmDays);
+		if ( days != null )
 		{
-			days = new HashSet<Integer> (8);
-			for ( int i = 0; i < alarmDays.length; i++ )
+			if ( days.contains (ALL_DAYS) )
 			{
-				days.add (alarmDays[i]);
-				if ( alarmDays[i] == ALL_DAYS.intValue () )
-				{
-					forAllDays = true;
-				}
+				forAllDays = true;
 			}
-		}
-		else
-		{
-			days = null;
 		}
 	}
 
@@ -451,7 +374,7 @@ public class PhoneAlarm
 	{
 		if ( (! forAllDays) && (! oneTime) && alarmDays == null )
 		{
-			throw new NullPointerException ("PhoneAlarm.setDays:alarmDays==null");	// NOI18N
+			throw new IllegalArgumentException ("PhoneAlarm.setDays:alarmDays==null");	// NOI18N
 		}
 		if ( alarmDays != null )
 		{
@@ -516,56 +439,9 @@ public class PhoneAlarm
 		if ( oneTime )
 		{
 			int year  = time.get (Calendar.YEAR) % 100;
-			int month = time.get (Calendar.MONTH);
+			int month = Utils.convertCalendarMonthToReal (time.get (Calendar.MONTH));
 			int day   = time.get (Calendar.DAY_OF_MONTH);
-			if ( month == Calendar.JANUARY )
-			{
-				month =  1;
-			}
-			else if ( month == Calendar.FEBRUARY )
-			{
-				month =  2;
-			}
-			else if ( month == Calendar.MARCH )
-			{
-				month =  3;
-			}
-			else if ( month == Calendar.APRIL )
-			{
-				month =  4;
-			}
-			else if ( month == Calendar.MAY )
-			{
-				month =  5;
-			}
-			else if ( month == Calendar.JUNE )
-			{
-				month =  6;
-			}
-			else if ( month == Calendar.JULY )
-			{
-				month =  7;
-			}
-			else if ( month == Calendar.AUGUST )
-			{
-				month =  8;
-			}
-			else if ( month == Calendar.SEPTEMBER )
-			{
-				month =  9;
-			}
-			else if ( month == Calendar.OCTOBER )
-			{
-				month = 10;
-			}
-			else if ( month == Calendar.NOVEMBER )
-			{
-				month = 11;
-			}
-			else if ( month == Calendar.DECEMBER )
-			{
-				month = 12;
-			}
+
 			return ((day<10)? zero : empty ) + day + slash
 				+ ((month<10)? zero : empty ) + month + slash
 				+ ((year<10)? zero : empty ) + year;
@@ -628,6 +504,53 @@ public class PhoneAlarm
 			}
 			return result.toString ();
 		}
+	}
+
+	/**
+	 * Converts the given integer array into a Set of Integers.
+	 * @param arr the array to convert.
+	 * @return a Set of Integers from the array.
+	 */
+	private static Set<Integer> makeSetFromArray (int[] arr)
+	{
+		Set<Integer> ret = null;
+		if ( arr != null )
+		{
+			ret = new HashSet<Integer> (arr.length);
+			for ( int i = 0 ; i < arr.length; i++ )
+			{
+				ret.add (Integer.valueOf (arr[i]));
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Converts the non-empty elements of the given String array
+	 * into a Set of Integers.
+	 * @param arr the array to convert.
+	 * @return a Set of Integers parsed from the array.
+	 */
+	private static Set<Integer> makeSetFromArray (String[] arr)
+	{
+		Set<Integer> ret = null;
+		if ( arr != null )
+		{
+			ret = new HashSet<Integer> (arr.length);
+			for ( int i = 0 ; i < arr.length; i++ )
+			{
+				if ( arr[i] == null )
+				{
+					continue;
+				}
+				if ( arr[i].isEmpty () )
+				{
+					continue;
+				}
+				ret.add (Integer.valueOf (arr[i]));
+			}
+		}
+		return ret;
 	}
 
 	/**
@@ -720,55 +643,7 @@ public class PhoneAlarm
 				return null;
 			}
 
-			if ( month == 1 )
-			{
-				month = Calendar.JANUARY;
-			}
-			else if ( month == 2 )
-			{
-				month = Calendar.FEBRUARY;
-			}
-			else if ( month == 3 )
-			{
-				month = Calendar.MARCH;
-			}
-			else if ( month == 4 )
-			{
-				month = Calendar.APRIL;
-			}
-			else if ( month == 5 )
-			{
-				month = Calendar.MAY;
-			}
-			else if ( month == 6 )
-			{
-				month = Calendar.JUNE;
-			}
-			else if ( month == 7 )
-			{
-				month = Calendar.JULY;
-			}
-			else if ( month == 8 )
-			{
-				month = Calendar.AUGUST;
-			}
-			else if ( month == 9 )
-			{
-				month = Calendar.SEPTEMBER;
-			}
-			else if ( month == 10 )
-			{
-				month = Calendar.OCTOBER;
-			}
-			else if ( month == 11 )
-			{
-				month = Calendar.NOVEMBER;
-			}
-			else if ( month == 12 )
-			{
-				month = Calendar.DECEMBER;
-			}
-			c.set (Calendar.MONTH, month);
+			c.set (Calendar.MONTH, Utils.convertRealMonthToCalendar (month));
 			c.set (Calendar.DAY_OF_MONTH, day);
 			c.set (Calendar.HOUR_OF_DAY, hour);
 			c.set (Calendar.MINUTE, minute);
@@ -857,22 +732,10 @@ public class PhoneAlarm
 					String[] recurrs = g10.split (comma);
 					if ( recurrs != null )
 					{
-						tmpDays = new HashSet<Integer> (8);
-						if ( firstrec != -1 )
+						tmpDays = makeSetFromArray (recurrs);
+						if ( tmpDays != null && firstrec != -1 )
 						{
-							tmpDays.add (firstrec);
-						}
-						for ( int i = 0; i < recurrs.length; i++ )
-						{
-							if ( recurrs[i] == null )
-							{
-								continue;
-							}
-							if ( recurrs[i].isEmpty () )
-							{
-								continue;
-							}
-							tmpDays.add (Integer.valueOf (recurrs[i]));
+							tmpDays.add (Integer.valueOf (firstrec));
 						}
 					}
 				}
@@ -890,7 +753,7 @@ public class PhoneAlarm
 			boolean isForAllDays = false;
 			if ( tmpDays != null )
 			{
-				if ( tmpDays.size () == 0 )
+				if ( tmpDays.isEmpty () )
 				{
 					isForAllDays = true;
 				}

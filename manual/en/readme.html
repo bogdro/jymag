@@ -256,7 +256,8 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
 <p>The following command-line (case-insensitive) options are supported:</p>
 <ul>
  <li><code>--conf &lt;file&gt;</code>		- read configuration from &lt;file&gt;</li>
- <li><code>--databits &lt;5,6,7,8&gt;</code>	- sets the number of data bits</li>
+ <li><code>--databits &lt;5,6,7,8&gt;</code>	- sets the number of data bits
+					  (default: 8)</li>
  <li><code>--delete-after-download</code>     - delete the downloaded elements if
 					  downloaded successfully</li>
  <li><code>--delete-alarm &lt;N&gt;</code>          - delete the alarm number N</li>
@@ -279,7 +280,8 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
  <li><code>--download-all</code>		- combines all "download" options
 					  and exits</li>
  <li><code>--download-dir &lt;dir&gt;</code>	- sets the default download directory</li>
- <li><code>--flow &lt;none,soft,hard,soft+hard&gt;</code>	- sets the flow control mode</li>
+ <li><code>--flow &lt;none,soft,hard,soft+hard&gt;</code>	- sets the flow control mode
+					  (default: none)</li>
  <li><code>--hangup</code>			- stops the current call, if any</li>
  <li><code>--help</code>			- display help</li>
  <li><code>--lang LL_CC_VV</code>		- select the language to use by JYMAG:
@@ -291,7 +293,8 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
  <li><code>--list-alarms</code>			- display the alarms in the phone</li>
  <li><code>--list-elements</code>			- display the elements (files) in the phone</li>
  <li><code>--list-sms</code>			- display the SMS messages in the phone</li>
- <li><code>--parity &lt;none, even, odd, space, mark&gt;</code>	- sets the parity mode</li>
+ <li><code>--parity &lt;none, even, odd, space, mark&gt;</code>	- sets the parity mode
+					  (default: none)</li>
  <li><code>--port &lt;filename&gt;</code>		- sets the default port</li>
  <li><code>--scan</code>			- scans available ports for "OK"
 	    				  answers and exits the program</li>
@@ -302,8 +305,10 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
  <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000&gt;</code>
-					- sets the port speed</li>
- <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- sets the number of stop bits</li>
+					- sets the port speed
+					  (default: 115200)</li>
+ <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- sets the number of stop bits
+					  (default: 1)</li>
  <li><code>--update-alarm "DD/MM/YY,HH:MM:SS",N,"days"</code>	- updates the given
 					  alarm in the phone. N is the alarm
 					  number. Days are comma-separated

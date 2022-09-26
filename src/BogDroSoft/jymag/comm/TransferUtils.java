@@ -1,7 +1,7 @@
 /*
  * TransferUtils.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
@@ -54,30 +54,30 @@ import javax.swing.SwingWorker;
 public class TransferUtils
 {
 	// ------------ i18n stuff
-	private static final ResourceBundle rb = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final ResourceBundle rb = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
 
-	private static final String tryPortStr   = rb.getString("Trying_port_");
-	private static final String gotAnsStr    = rb.getString("Got_answer!");
-	private static final String noAnsStr     = rb.getString("No_answers_received");
-	private static final String errString    = rb.getString("Error");
-	private static final String unsuppType   = rb.getString("Unsupported_file_type:");
-	private static final String getFileStr   = rb.getString("Getting_file");
+	private static final String tryPortStr   = rb.getString("Trying_port_");				// NOI18N
+	private static final String gotAnsStr    = rb.getString("Got_answer!");					// NOI18N
+	private static final String noAnsStr     = rb.getString("No_answers_received");				// NOI18N
+	private static final String errString    = rb.getString("Error");					// NOI18N
+	private static final String unsuppType   = rb.getString("Unsupported_file_type:");			// NOI18N
+	private static final String getFileStr   = rb.getString("Getting_file");				// NOI18N
 	// error messages for file upload:
-	private static final String uploadMsg1   = rb.getString("File_upload_init_failed");
-	private static final String uploadMsg2   = rb.getString("Sending_file_names_length_failed");
-	private static final String uploadMsg3   = rb.getString("Sending_file_name_failed");
-	private static final String uploadMsg4   = rb.getString("Format_not_suported_by_phone");
-	private static final String uploadMsg5   = rb.getString("File_not_accepted");
-	private static final String uploadMsg6   = rb.getString("Closing_transmission_failed");
-	private static final String uploadMsg7   = rb.getString("Exception_occurred");
-	private static final String uploadMsg8   = rb.getString("Incorrect_parameter");
-	private static final String uploadMsg9   = rb.getString("Format_not_suported_by_JYMAG");
-	private static final String uploadMsg10  = rb.getString("Number_of_attempts_exceeded");
-	private static final String uploadMsg11  = rb.getString("Incorrect_parameter");
+	private static final String uploadMsg1   = rb.getString("File_upload_init_failed");			// NOI18N
+	private static final String uploadMsg2   = rb.getString("Sending_file_names_length_failed");		// NOI18N
+	private static final String uploadMsg3   = rb.getString("Sending_file_name_failed");			// NOI18N
+	private static final String uploadMsg4   = rb.getString("Format_not_suported_by_phone");		// NOI18N
+	private static final String uploadMsg5   = rb.getString("File_not_accepted");				// NOI18N
+	private static final String uploadMsg6   = rb.getString("Closing_transmission_failed");			// NOI18N
+	private static final String uploadMsg7   = rb.getString("Exception_occurred");				// NOI18N
+	private static final String uploadMsg8   = rb.getString("Incorrect_parameter");				// NOI18N
+	private static final String uploadMsg9   = rb.getString("Format_not_suported_by_JYMAG");		// NOI18N
+	private static final String uploadMsg10  = rb.getString("Number_of_attempts_exceeded");			// NOI18N
+	private static final String uploadMsg11  = rb.getString("Incorrect_parameter");				// NOI18N
 	// error messages for file download:
-	private static final String downloadMsg1 = rb.getString("Exception_occurred");
-	private static final String downloadMsg2 = rb.getString("No_data");
-	private static final String downloadMsg3 = rb.getString("Incorrect_parameter");
+	private static final String downloadMsg1 = rb.getString("Exception_occurred");				// NOI18N
+	private static final String downloadMsg2 = rb.getString("No_data");					// NOI18N
+	private static final String downloadMsg3 = rb.getString("Incorrect_parameter");				// NOI18N
 
 	private static final String emptyStr = "";				// NOI18N
 	private static final String comma = ",";				// NOI18N
@@ -109,7 +109,7 @@ public class TransferUtils
 		private Component opParentFrame;
 
 		/**
-		 * The constructor, setting basic data.
+		 * The TUOperation constructor, setting basic data.
 		 * @param name the name of this operation.
 		 * @param errorParams a description or value of any paramters.
 		 * @param onDone the code to run after performing the operation.
@@ -131,7 +131,7 @@ public class TransferUtils
 			if ( sync == null )
 			{
 				throw new IllegalArgumentException (
-					"TUOperation.TUOperation: sync==null");
+					"TUOperation.TUOperation: sync==null");		// NOI18N
 			}
 			opName = name;
 			opErrorParams = errorParams;
@@ -286,10 +286,14 @@ public class TransferUtils
 			}
 
 			@Override
-			protected void done ()
+			public synchronized void done ()
 			{
 				try
 				{
+					if ( isDone.get () )
+					{
+						return;
+					}
 					int put = 0;
 					T res = get ();
 					if ( res != null )
@@ -345,7 +349,7 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU." + op.getName ()		// NOI18N
-						+ ".SW.done:"	// NOI18N
+						+ ".SW.done:"			// NOI18N
 						+ op.getErrorParams ());
 					result.set (-10);
 				}
@@ -357,7 +361,7 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU." + op.getName ()		// NOI18N
-						+ ".SW.onDone:"	// NOI18N
+						+ ".SW.onDone:"			// NOI18N
 						+ op.getErrorParams ());
 				}
 				isDone.set (true);
@@ -366,15 +370,18 @@ public class TransferUtils
 		sw.execute ();
 		if ( op.isWaitFor () )
 		{
-			while ( ! isDone.get () )
+			while ( ! sw.isDone () )
 			{
-				try
+				if ( ! isDone.get () )
 				{
-					Thread.sleep (10);
-				}
-				catch (InterruptedException ex)
-				{
-					// ignore - just wait again
+					try
+					{
+						Thread.sleep (10);
+					}
+					catch (InterruptedException ex)
+					{
+						// ignore - just wait again
+					}
 				}
 			}
 		}
@@ -384,28 +391,20 @@ public class TransferUtils
 	/**
 	 * Uploads the given file to the phone.
 	 * @param f The file to upload. Can't be null.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int uploadFile (final File f, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int uploadFile (final File f, final TransferParameters tp,
+		final Runnable onDone, final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( f == null )
+		if ( f == null || tp == null )
 		{
 			return -7;
 		}
@@ -435,16 +434,17 @@ public class TransferUtils
 		}
 
 		return performOperation (new TUOperation<Integer>
-			("uploadFile", fname, onDone, waitFor, sync,
+			("uploadFile", fname, onDone, waitFor, tp.getSync (),		// NOI18N
 			quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.putFile (f, fname.substring
 						(0, fname.indexOf (dot))
 						.replaceAll (filenameForbiddenCharsRegex,
@@ -511,15 +511,9 @@ public class TransferUtils
 	 * Downloads the given file from the phone.
 	 * @param f The file to save the data to. Can't be null.
 	 * @param element The element to download.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -527,13 +521,11 @@ public class TransferUtils
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
 	public static int downloadFile (final File f, final PhoneElement element,
-		final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( f == null )
+		if ( f == null || tp == null )
 		{
 			return -7;
 		}
@@ -547,17 +539,18 @@ public class TransferUtils
 		}
 
 		return performOperation (new TUOperation<Integer>
-			("downloadFile", element.getFilename ()	// NOI18N
+			("downloadFile", element.getFilename ()			// NOI18N
 			+ comma + space + f.getName (), onDone, waitFor,
-			sync, quiet, quietGUI, parent)
+			tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.getFile (f, element);
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -587,43 +580,37 @@ public class TransferUtils
 	/**
 	 * Delete the given element from the phone.
 	 * @param element The element to delete.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int deleteFile (final PhoneElement element, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int deleteFile (final PhoneElement element,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( element == null )
+		if ( element == null || tp == null )
 		{
 			return -7;
 		}
 
 		return performOperation (new TUOperation<Integer>
-			("deleteFile", element.getFilename (),	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("deleteFile", element.getFilename (),			// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.deleteFile (element);
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -640,43 +627,37 @@ public class TransferUtils
 	/**
 	 * Uploads the given alarm to the phone.
 	 * @param alarm The alarm to upload. Can't be null.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int uploadAlarm (final PhoneAlarm alarm, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int uploadAlarm (final PhoneAlarm alarm,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( alarm == null )
+		if ( alarm == null || tp == null )
 		{
 			return -7;
 		}
 
 		return performOperation (new TUOperation<Integer>
 			("uploadAlarm", alarm.getAlarmString (),	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.addAlarm (alarm);
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -693,43 +674,37 @@ public class TransferUtils
 	/**
 	 * Delete the given alarm from the phone.
 	 * @param alarmNo The alarm number to delete.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int deleteAlarm (final int alarmNo, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int deleteAlarm (final int alarmNo,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( alarmNo <= 0 )
+		if ( alarmNo <= 0 || tp == null )
 		{
 			return -7;
 		}
 
 		return performOperation (new TUOperation<Integer>
 			("deleteAlarm", String.valueOf(alarmNo),	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.deleteAlarm (alarmNo);
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -751,50 +726,22 @@ public class TransferUtils
 	 */
 	private static boolean isAllowedType (String type)
 	{
-		if ( type == null )
-		{
-			return false;
-		}
-		if ( type.equals ("PICTURES") )		// NOI18N
-		{
-			return true;
-		}
-		if ( type.equals ("RINGTONES") )	// NOI18N
-		{
-			return true;
-		}
-		if ( type.equals ("VTODO") )		// NOI18N
-		{
-			return true;
-		}
-		if ( type.equals ("VEVENT") )		// NOI18N
-		{
-			return true;
-		}
-		if ( type.equals ("VCARDS") )		// NOI18N
-		{
-			return true;
-		}
-		if ( type.equals ("ANIMATIONS") )	// NOI18N
-		{
-			return true;
-		}
-		return false;
+		return
+			"PICTURES".equals (type) ||	// NOI18N
+			"RINGTONES".equals (type) ||	// NOI18N
+			"VTODO".equals (type) ||	// NOI18N
+			"VEVENT".equals (type) ||	// NOI18N
+			"VCARDS".equals (type) ||	// NOI18N
+			"ANIMATIONS".equals (type);	// NOI18N
 	}
 
 	/**
 	 * Downloads files of the given type from the phone.
 	 * @param type The type of the files to download. One of
 	 *	PICTURES, RINGTONES, VTODO, VEVENT, VCARDS, ANIMATIONS. Can't be null.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -804,34 +751,34 @@ public class TransferUtils
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int downloadFiles (final String type, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int downloadFiles (final String type,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor, final String destDir,
 		final boolean deleteAfterDownload)
 	{
-		if ( ! isAllowedType (type) )
+		if ( tp == null || ! isAllowedType (type) )
 		{
 			return -8;
 		}
 
 		return performOperation (new TUOperation<Integer>
-			("downloadFiles", type,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("downloadFiles", type,			// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					int ret = 0;
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					Vector<PhoneElement> elems = dt.getList (type);
 					if ( elems != null )
 					{
-						for ( int i=0; i < elems.size (); i++ )
+						for ( int i = 0; i < elems.size (); i++ )
 						{
 							File received = new File (
 								destDir + File.separator
@@ -871,15 +818,9 @@ public class TransferUtils
 	 * Downloads the list of files of the given type from the phone.
 	 * @param ofWhat The type of the files to download. One of
 	 *	PICTURES, RINGTONES, VTODO, VEVENT, VCARDS, ANIMATIONS. Can't be null.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -888,29 +829,29 @@ public class TransferUtils
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int downloadList (final String ofWhat, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int downloadList (final String ofWhat,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor,
 		final DefaultTableModel dtm, final Vector<PhoneElement> placeForData)
 	{
-		if ( ! isAllowedType (ofWhat) )
+		if ( tp == null || ! isAllowedType (ofWhat) )
 		{
 			return -8;
 		}
 
 		return performOperation (new TUOperation<Vector<PhoneElement>>
 			("downloadList", ofWhat,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Vector<PhoneElement> perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					Vector<PhoneElement> elems = dt.getList (ofWhat);
 					dt.close ();
 					return elems;
@@ -947,15 +888,9 @@ public class TransferUtils
 
 	/**
 	 * Downloads the list of alarms from the phone.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -964,26 +899,31 @@ public class TransferUtils
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int downloadAlarmList (final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int downloadAlarmList (
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor,
 		final JTable alarms, final Vector<PhoneAlarm> placeForData)
 	{
+		if ( tp == null )
+		{
+			return -7;
+		}
+
 		final AtomicInteger alarmNumber = new AtomicInteger (0);
 
 		return performOperation (new TUOperation<Vector<PhoneAlarm>>
-			("downloadAlarmList", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("downloadAlarmList", emptyStr,			// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Vector<PhoneAlarm> perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					alarmNumber.set (dt.getNumberOfAlarms ());
 					Vector<PhoneAlarm> elems = dt.getAlarms ();
 					dt.close ();
@@ -1030,10 +970,10 @@ public class TransferUtils
 						{
 							dtm.setColumnIdentifiers (new String[]
 							{
-								rb.getString("Alarm_number"),
-								rb.getString("Alarm_date"),
-								rb.getString("Alarm_time"),
-								rb.getString("Alarm_days")
+								rb.getString("Alarm_number"),		// NOI18N
+								rb.getString("Alarm_date"),		// NOI18N
+								rb.getString("Alarm_time"),		// NOI18N
+								rb.getString("Alarm_days")		// NOI18N
 							});
 						}
 						dtm.setRowCount (0);
@@ -1093,15 +1033,9 @@ public class TransferUtils
 
 	/**
 	 * Downloads the list of messages from the phone.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -1110,24 +1044,29 @@ public class TransferUtils
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int downloadMessageList (final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int downloadMessageList (
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor,
 		final JTable messages, final Vector<PhoneMessage> placeForData)
 	{
+		if ( tp == null )
+		{
+			return -7;
+		}
+
 		return performOperation (new TUOperation<Vector<PhoneMessage>>
 			("downloadMessageList", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Vector<PhoneMessage> perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					Vector<PhoneMessage> elems = dt.getMessages ();
 					dt.close ();
 					return elems;
@@ -1172,11 +1111,11 @@ public class TransferUtils
 						{
 							dtm.setColumnIdentifiers (new String[]
 							{
-								rb.getString("smsTable_ID"),
-								rb.getString("smsTable_Status"),
-								rb.getString("smsTable_PhoneNum"),
-								rb.getString("smsTable_DateTime"),
-								rb.getString("smsTable_message")
+								rb.getString("smsTable_ID"),		// NOI18N
+								rb.getString("smsTable_Status"),	// NOI18N
+								rb.getString("smsTable_PhoneNum"),	// NOI18N
+								rb.getString("smsTable_DateTime"),	// NOI18N
+								rb.getString("smsTable_message")	// NOI18N
 							});
 						}
 						dtm.setRowCount (0);
@@ -1228,43 +1167,37 @@ public class TransferUtils
 	/**
 	 * Delete the given message from the phone.
 	 * @param element The message to delete.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int deleteMessage (final PhoneMessage element, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int deleteMessage (final PhoneMessage element,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( element == null )
+		if ( element == null || tp == null )
 		{
 			return -7;
 		}
 
 		return performOperation (new TUOperation<Integer>
 			("deleteMessage", element.getID (),	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.deleteMessage (
 						Integer.parseInt (element.getID ()));
 					dt.close ();
@@ -1282,43 +1215,37 @@ public class TransferUtils
 	/**
 	 * Send the given message through the phone.
 	 * @param element The message to send.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int sendMessage (final PhoneMessage element, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int sendMessage (final PhoneMessage element,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( element == null )
+		if ( element == null || tp == null )
 		{
 			return -7;
 		}
 
 		return performOperation (new TUOperation<Integer>
 			("sendMessage", element.getRecipientNum (),	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.sendMessage (element);
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -1338,15 +1265,9 @@ public class TransferUtils
 	 * @param isVoice whether the connection is for voice or data. Voice connections
 	 *	will be initiated by adding a semicolon to the end of the number.
 	 * @param dialMode The dial mode (tone, pulse, auto). Defaults to "auto" if null.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -1354,28 +1275,28 @@ public class TransferUtils
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
 	public static int dialNumber (final String number, final boolean isVoice,
-		final DataTransporter.DIAL_MODE dialMode, final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+		final DataTransporter.DIAL_MODE dialMode,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
-		if ( number == null )
+		if ( number == null || tp == null )
 		{
 			return -7;
 		}
 
 		return performOperation (new TUOperation<Integer>
-			("dialNumber", number,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("dialNumber", number,		// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.dialNumber (number,
 						isVoice, dialMode);
 					dt.close ();
@@ -1392,38 +1313,36 @@ public class TransferUtils
 
 	/**
 	 * Hangs the phone up (stops the current call).
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int hangup (final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int hangup (final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
+		if ( tp == null )
+		{
+			return -7;
+		}
+
 		return performOperation (new TUOperation<Integer>
-			("hangup", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("hangup", emptyStr,		// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.hangup ();
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -1439,38 +1358,36 @@ public class TransferUtils
 
 	/**
 	 * Answers the phone (begins an incoming call).
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int answer (final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int answer (final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
+		if ( tp == null )
+		{
+			return -7;
+		}
+
 		return performOperation (new TUOperation<Integer>
-			("answer", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("answer", emptyStr,		// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int ret = dt.answer ();
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -1486,38 +1403,36 @@ public class TransferUtils
 
 	/**
 	 * Increases the volume level.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int volumeUp (final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int volumeUp (final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
+		if ( tp == null )
+		{
+			return -7;
+		}
+
 		return performOperation (new TUOperation<Integer>
-			("volumeUp", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			("volumeUp", emptyStr,		// NOI18N
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int volume = dt.getVolume ();
 					int ret = 0;
 					if ( volume >= 0 )
@@ -1542,38 +1457,36 @@ public class TransferUtils
 
 	/**
 	 * Decreases the volume level.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
 	 * @return the result of the task (if it has finished before the
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
-	public static int volumeDown (final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+	public static int volumeDown (final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
+		if ( tp == null )
+		{
+			return -7;
+		}
+
 		return performOperation (new TUOperation<Integer>
 			("volumeDown", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public Integer perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int volume = dt.getVolume ();
 					int ret = 0;
 					if ( volume > 0 )
@@ -1600,15 +1513,9 @@ public class TransferUtils
 	 * Sends the given file (which should contain raw commands, rather
 	 * then be a supported media file).
 	 * @param f The file to send.
-	 * @param id The port ID to use.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param onDone The code to run at transfer end.
 	 * @param parent The parent frame for displaying messages.
-	 * @param sync The synchronization object.
 	 * @param quiet If TRUE, no messages will be displayed.
 	 * @param quietGUI If TRUE, no messageboxes will be displayed.
 	 * @param waitFor If TRUE, the background thread will be waited for.
@@ -1616,12 +1523,14 @@ public class TransferUtils
 	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
 	 */
 	public static int sendFileAsCommands (final File f,
-		final CommPortIdentifier id,
-		final int speed, final int dataBits, final float stopBits,
-		final int parity, final int flow, final Runnable onDone,
-		final Component parent, final Object sync, final boolean quiet,
+		final TransferParameters tp, final Runnable onDone,
+		final Component parent, final boolean quiet,
 		final boolean quietGUI, final boolean waitFor)
 	{
+		if ( f == null || tp == null )
+		{
+			return -7;
+		}
 		if ( ! f.exists () || ! f.canRead () || ! f.isFile () )
 		{
 			return -10;
@@ -1629,21 +1538,22 @@ public class TransferUtils
 
 		return performOperation (new TUOperation<String>
 			("sendFileAsCommands", emptyStr,	// NOI18N
-			onDone, waitFor, sync, quiet, quietGUI, parent)
+			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
 				public String perform () throws Exception
 				{
 					final DataTransporter dt =
-						new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits,
-						parity, flow);
+						new DataTransporter (tp.getId ());
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int read = -1;
 					byte[] b = new byte[1024];
 					StringBuilder ret = new StringBuilder(1000);
 					FileInputStream fis =
 						new FileInputStream (f);
-					synchronized (sync)
+					synchronized (tp.getSync ())
 					{
 						do
 						{
@@ -1733,11 +1643,7 @@ public class TransferUtils
 	/**
 	 * Scans all the serial ports with "AT", looking for "OK" responses.
 	 * @param quiet If TRUE, no messages will be printed.
-	 * @param speed The port speed.
-	 * @param dataBits The number of data bits.
-	 * @param stopBits The number of stop bits.
-	 * @param parity The parity mode.
-	 * @param flow The flow control mode.
+	 * @param tp The port parameters to use.
 	 * @param firmwares If not null, will get the detected firmware versions for the scanned ports.
 	 * @param phoneTypes If not null, will get the detected phone types for the scanned ports.
 	 * @param phoneIMEIs If not null, will get the detected phone IMEI numbers for the scanned ports.
@@ -1747,13 +1653,11 @@ public class TransferUtils
 	 *	successful or not).
 	 * @return 0 if at least one port has responded.
 	 */
-	public static int scanPorts (boolean quiet, final int speed,
-		final int dataBits, final float stopBits,
-		final int parity, final int flow,
-		Hashtable<String, String> firmwares,
-		Hashtable<String, String> phoneTypes,
-		Hashtable<String, String> phoneIMEIs,
-		Hashtable<String, String> phoneSubsNums,
+	public static int scanPorts (boolean quiet, final TransferParameters tp,
+		Map<String, String> firmwares,
+		Map<String, String> phoneTypes,
+		Map<String, String> phoneIMEIs,
+		Map<String, String> phoneSubsNums,
 		Vector<String> replied,
 		Runnable afterPort)
 	{
@@ -1781,18 +1685,23 @@ public class TransferUtils
 				try
 				{
 					DataTransporter dt = new DataTransporter (id);
-					dt.open (speed, dataBits, stopBits, parity, flow);
+					dt.open (tp.getSpeed (), tp.getDataBits (),
+						tp.getStopBits (),
+						tp.getParity (), tp.getFlow ());
 					int scanRes = dt.test ();
 					if ( dt.test () != 0 )
 					{
+						dt.close ();
 						if ( ! quiet )
 						{
 							System.out.println ();
 						}
+						/* run in "finally"
 						if ( afterPort != null )
 						{
 							afterPort.run ();
 						}
+						*/
 						continue;
 					}
 					if ( ! quiet )

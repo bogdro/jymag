@@ -1,7 +1,7 @@
 /*
  * SMSPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ package BogDroSoft.jymag.gui.panels;
 import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.Utils;
 import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.MainWindow;
 import BogDroSoft.jymag.gui.SMSWindow;
@@ -215,13 +216,8 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 				currentMessageElements = new Vector<PhoneMessage> (10);
 			}
 
-			TransferUtils.downloadMessageList (TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.downloadMessageList (tp,
 				new Runnable ()
 			{
 				@Override
@@ -231,7 +227,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 					progressBar.setValue (0);
 					Utils.updateStatusLabel (status, Utils.STATUS.READY);
 				}
-			}, this, sync, false, false, false, smsTable, currentMessageElements);
+			}, this, false, false, false, smsTable, currentMessageElements);
 		}
 		catch (Exception ex)
 		{
@@ -327,19 +323,14 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
+				TransferParameters tp = getTransferParameters ();
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
 					threads.incrementAndGet ();
 					TransferUtils.deleteMessage (
 						currentMessageElements.get (toGet),
-						TransferUtils.getIdentifierForPort
-						(portCombo.getSelectedItem ().toString ()),
-						Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-						Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-						Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-						parityCombo.getSelectedIndex (),
-						((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+						tp,
 						new Runnable ()
 					{
 						@Override
@@ -353,7 +344,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 								progressBar.setValue (0);
 							}
 						}
-					}, this, sync, false, false, false);
+					}, this, false, false, false);
 				}
 			}
 			catch (Exception ex)
@@ -364,6 +355,12 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 		}
 	}//GEN-LAST:event_deleteSmsButdeleteButActionPerformed
 
+	private TransferParameters getTransferParameters ()
+	{
+		return new TransferParameters (
+			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
+			parityCombo, flowSoft, flowHard, sync);
+	}
 
 	@Override
 	@SuppressWarnings("rawtypes")

@@ -1,7 +1,7 @@
 /*
  * AlarmPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ package BogDroSoft.jymag.gui.panels;
 
 import BogDroSoft.jymag.PhoneAlarm;
 import BogDroSoft.jymag.Utils;
+import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.MainWindow;
 
@@ -222,13 +223,8 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 				currentAlarmElements = new Vector<PhoneAlarm> (10);
 			}
 
-			TransferUtils.downloadAlarmList (TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.downloadAlarmList (tp,
 				new Runnable ()
 			{
 				@Override
@@ -238,7 +234,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 					progressBar.setValue (0);
 					Utils.updateStatusLabel (status, Utils.STATUS.READY);
 				}
-			}, this, sync, false, false, false, alarmTable, currentAlarmElements);
+			}, this, false, false, false, alarmTable, currentAlarmElements);
 		}
 		catch (Exception ex)
 		{
@@ -285,16 +281,11 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 			progressBar.setValue (0);
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (toUpload.size ());
+			TransferParameters tp = getTransferParameters ();
 			for ( int i = 0; i < toUpload.size (); i++ )
 			{
 				TransferUtils.uploadAlarm (toUpload.get (i),
-					TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()),
-					Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-					Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-					Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-					parityCombo.getSelectedIndex (),
-					((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+					tp,
 					new Runnable ()
 				{
 					@Override
@@ -308,7 +299,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 								Utils.STATUS.READY);
 						}
 					}
-				}, this, sync, false, false, false);
+				}, this, false, false, false);
 			}
 		}
 		catch (Exception ex)
@@ -347,18 +338,13 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
-				for ( int i=0; i < selectedRows.length; i++ )
+				TransferParameters tp = getTransferParameters ();
+				for ( int i = 0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
 					threads.incrementAndGet ();
 					TransferUtils.deleteAlarm (toGet+1,
-						TransferUtils.getIdentifierForPort
-						(portCombo.getSelectedItem ().toString ()),
-						Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-						Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-						Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-						parityCombo.getSelectedIndex (),
-						((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+						tp,
 						new Runnable ()
 					{
 						@Override
@@ -372,7 +358,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 								progressBar.setValue (0);
 							}
 						}
-					}, this, sync, false, false, false);
+					}, this, false, false, false);
 				}
 			}
 			catch (Exception ex)
@@ -382,6 +368,13 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 			}
 		}
 	}//GEN-LAST:event_deleteAlarmButdeleteButActionPerformed
+
+	private TransferParameters getTransferParameters ()
+	{
+		return new TransferParameters (
+			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
+			parityCombo, flowSoft, flowHard, sync);
+	}
 
 	@Override
 	@SuppressWarnings("rawtypes")

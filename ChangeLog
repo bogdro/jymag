@@ -1,3 +1,70 @@
+2016-06-30	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.5:
+	  This is mostly a bugfix and maintenenace release. Updated unit tests
+	  (Mockito-1.10.x now required). Improvements to the build system.
+	  Fixes to capabilities' scan and port scan. Other minor improvements.
+	  Documentation updated.
+	* test/SerialPortStub.java: Improved functionality of the stub -
+	  should now return the saved data.
+	* test/DataTransporterTest.java: Using Mockito to instantiate the
+	  required classes, enabled some basic unit tests for transmission
+	  classes.
+	* TransferUtils.java (sendFileAsCommands): added null check for "f"
+	* TransferUtils.java (isAllowedType): simplified the method
+	* TransferUtils.java, Utils.java: added missing "NOI18N"s
+	* Makefile: added new Timestamping Authority URLs (commented-out).
+	  Removing generated files in the "setup" directory during
+	  "make clean". Making the "dist-bin" and "installer" targets depend
+	  on unit tests' results. Not signing an already-signed installer.
+	  Non-phony targets depend on the Makefile. Touching the JAR file
+	  after build (ant doesn't do this automatically). Digitally signing
+	  the PDF manuals. Deleting the temporary distribution directories
+	  in case they exist before the distribution is built. Touching the
+	  exclusion file before each TAR packaging. Deleting some of the old
+	  target distribution files before copying new ones.
+	* Utils.java: using unmodifiable maps for the file type maps.
+	* Utils.java, TransferUtils.java, MainWindow.java: using Maps
+	  instead of Hashtables.
+	* DataTransporter.java (open), PhoneAlarm.java (PhoneAlarm, setTime,
+	  setDays): throwing IllegalArgumentExceptions instead of
+	  NullPointerExceptions.
+	* Utils.java (convertCalendarMonthToReal, convertRealMonthToCalendar):
+	  new methods for converting Calendar month values to real month
+	  numbers and vice-versa.
+	* PhoneAlarm.java (PhoneAlarm, parseReponse): using
+	  Utils.convertRealMonthToCalendar()
+	* PhoneAlarm.java (getDateString): using convertCalendarMonthToReal()
+	* PhoneAlarm.java (PhoneAlarm, setDays, parseReponse): using
+	  Integer.valueOf().
+	* PhoneAlarm.java: added new methods for converting String and integer
+	  arrays to sets of Integers and using these methods in parsers.
+	* Utils.java (isAllowableSpeed, isAllowableDataBits): simplified code
+	* CommandLineParser.java (parse): fixed exception messages, updated
+	  web addresses of the program.
+	* TransferUtils.java (scanPorts): call "afterPort" only once, in the
+	  "finally" block. Fixed closing the port on error so that there are
+	  no lock files and subsequent errors.
+	* MainWindow.java (MainWindow), JYMAGTransferHandler (importData,
+	  importSingleFile): don't use the extended "for" loop syntax.
+	* DataTransporter.java (getCapabilities): add checking for String
+	  index bounds, in case no answer is received.
+	* ConfigFile.java (write): use a BufferedWriter to handle newlines.
+	* MainWindow.java (scanButtonActionPerformed): moved the constant
+	  Runnable to a class field.
+	* TransferParameters.java: a new class for serial port parameters,
+	  to be passed to TransferUtils.
+	* test: temporarily removed the test for the TransferUtils class
+	  (was never used anyway, will be rebuilt in the future).
+	* manual: updated the tabs' and windows' screenshots
+	* README, manual/*/readme.html: added default values of command-line
+	  options, where applicable.
+	* CommandLineParser.java: fixed indentation of the help message
+	* JYMAGTransferHandler.java (importData): returning "true" (import
+	  succeeded) also for Linux-flavoured drag&drops.
+	* TransferUtils.java (performOperation): improved checking if the work
+	  is done, because the UI could hang
+
 2014-08-15	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 1.4:
@@ -33,7 +100,7 @@
 	* PhoneElement.java: removed synchronisation from methods, because
 	  there are no setter methods.
 	* Utils.java (createOpenFileChooser): more checks for null.
-	* src/test: added tests and the required stub classes.
+	* test: added tests and the required stub classes.
 	* PhoneAlarm.java (getDays): checking for null.
 	* *Panel.java: makeing the buttons same height for better layout
 	* README, manuals: added alternative addresses of RxTx
@@ -43,7 +110,6 @@
 	* DialPanel.java: disabling connection type and number controls when
 	  manual command is selected
 	* PhoneMessage.java: corrected the response match patterns
-
 
 2013-02-17	Bogdan Drozdowski <bogdandr@op.pl>
 

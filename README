@@ -128,6 +128,7 @@ The following command-line (case-insensitive) options are supported:
 
 	    --conf <file>		- read configuration from <file>
 	    --databits <5,6,7,8>	- sets the number of data bits
+					  (default: 8)
 	    --delete-after-download     - delete the downloaded elements if
 					  downloaded successfully
 	    --delete-alarm <N>          - delete the alarm number N
@@ -154,6 +155,7 @@ The following command-line (case-insensitive) options are supported:
 					  and exits
 	    --download-dir <dir>	- sets the default download directory
 	    --flow <none,soft,hard,soft+hard>	- sets the flow control mode
+					  (default: none)
 	    --hangup			- stops the current call, if any
 	    --help			- display help
 	    --lang LL_CC_VV		- select the language to use by JYMAG:
@@ -166,6 +168,7 @@ The following command-line (case-insensitive) options are supported:
 	    --list-elements		- list phone elements (files)
 	    --list-sms			- display the SMS messages in the phone
 	    --parity <none, even, odd, space, mark>	- sets the parity mode
+					  (default: none)
 	    --port <filename>		- sets the default port
 	    --scan			- scans available ports for "OK"
 	    				  answers and exits the program
@@ -177,7 +180,9 @@ The following command-line (case-insensitive) options are supported:
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
 					- sets the port speed
+					  (default: 115200)
 	    --stopbits <1,1.5,2>	- sets the number of stop bits
+					  (default: 1)
 	    --update-alarm "DD/MM/YY,HH:MM:SS",N,"days"	- updates the given
 					  alarm in the phone. N is the alarm
 					  number. Days are comma-separated

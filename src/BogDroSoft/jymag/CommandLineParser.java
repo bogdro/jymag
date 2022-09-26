@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,8 +25,9 @@
 
 package BogDroSoft.jymag;
 
-import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.comm.TransferParameters;
+import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.MainWindow;
 import java.io.File;
 import java.util.Locale;
@@ -108,7 +109,7 @@ public class CommandLineParser
 		b.getString("display_license_information")+
 		"\n--list-alarms\t\t- "+	// NOI18N
 		b.getString("list_alarms")+
-		"\n--list-elements\t- "+	// NOI18N
+		"\n--list-elements\t\t- "+	// NOI18N
 		b.getString("list_elements")+
 		"\n--list-sms\t\t- "+	// NOI18N
 		b.getString("list_sms")+
@@ -288,6 +289,13 @@ public class CommandLineParser
 		}
 	}
 
+	private static TransferParameters getTransferParameters (Object sync)
+	{
+		return new TransferParameters (
+			portName, speed, dBits, sBits,
+			parity, flow, sync);
+	}
+
 	/**
 	 * Gets all the elements of the given type from the phone to the directory specified
 	 *	on the command line or to the current directory.
@@ -297,11 +305,9 @@ public class CommandLineParser
 	 */
 	private static int getElementsOfType (String type, Object sync)
 	{
+		TransferParameters tp = getTransferParameters (sync);
 		return TransferUtils.downloadFiles (
-			type,
-			TransferUtils.getIdentifierForPort
-			(portName), speed, dBits, sBits,
-			parity, flow, null, null, sync,
+			type, tp, null, null,
 			false, true, true, destDirName, deleteAfterDownload);
 	}
 
@@ -395,7 +401,7 @@ public class CommandLineParser
 					"\n\n*** " + rxtxReqStr + " ***\n\n" +	// NOI18N
 					"Author: Bogdan Drozdowski, bogdandr @ op . pl\n" +	// NOI18N
 					"License: GPLv3+\n" +	// NOI18N
-					"http://rudy.mif.pg.gda.pl/~bogdro/soft\n\n" +	// NOI18N
+					"http://jymag.sf.net\n\n" +	// NOI18N
 					cmdLineStr
 					);
 				Utils.closeProgram (logfile, 0);
@@ -404,7 +410,7 @@ public class CommandLineParser
 				|| args[i].toLowerCase (Locale.ENGLISH).equals ("--licence") )	// NOI18N
 			{
 				System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +	// NOI18N
-					"\nSee http://rudy.mif.pg.gda.pl/~bogdro/soft\n" +	// NOI18N
+					"\nSee http://jymag.sf.net\n" +	// NOI18N
 					"Author: Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl.\n\n" +	// NOI18N
 					"    This program is free software; you can redistribute it and/or\n" +	// NOI18N
 					"    modify it under the terms of the GNU General Public License\n" +	// NOI18N
@@ -556,9 +562,10 @@ public class CommandLineParser
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--scan") )	// NOI18N
 			{
+				TransferParameters tp = getTransferParameters (sync);
 				Utils.closeProgram (logfile,
-					TransferUtils.scanPorts (false, speed, dBits, sBits,
-					parity, flow, null, null, null, null, null, null));
+					TransferUtils.scanPorts (false, tp,
+						null, null, null, null, null, null));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--update-alarm") )	// NOI18N
 			{
@@ -566,11 +573,10 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.uploadAlarm (
 							PhoneAlarm.parseReponse (args[i+1]),
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -588,11 +594,10 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.deleteAlarm (
 							Integer.parseInt (args[i+1]),
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -608,11 +613,10 @@ public class CommandLineParser
 			{
 				try
 				{
+					TransferParameters tp = getTransferParameters (sync);
 					Vector<PhoneAlarm> vmsg = new Vector<PhoneAlarm> ();
 					int res = TransferUtils.downloadAlarmList (
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					for ( int j = 0; j < vmsg.size (); j++ )
 					{
@@ -627,49 +631,38 @@ public class CommandLineParser
 				catch ( Exception ex )
 				{
 					Utils.handleException (ex,
-						"cmdline.downloadMessageList()");	// NOI18N
+						"cmdline.downloadAlarmList()");	// NOI18N
 				}
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-elements") )	// NOI18N
 			{
 				try
 				{
+					TransferParameters tp = getTransferParameters (sync);
 					Vector<PhoneElement> total = new Vector<PhoneElement> ();
 					Vector<PhoneElement> vmsg = new Vector<PhoneElement> ();
 					int res = TransferUtils.downloadList ("PICTURES",	// NOI18N
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					total.addAll (vmsg);
 					res += TransferUtils.downloadList ("RINGTONES",		// NOI18N
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					total.addAll (vmsg);
 					res += TransferUtils.downloadList ("VTODO",		// NOI18N
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					total.addAll (vmsg);
 					res += TransferUtils.downloadList ("VEVENT",		// NOI18N
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					total.addAll (vmsg);
 					res += TransferUtils.downloadList ("VCARDS",		// NOI18N
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					total.addAll (vmsg);
 					res += TransferUtils.downloadList ("ANIMATIONS",	// NOI18N
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					total.addAll (vmsg);
 					for ( int j = 0; j < total.size (); j++ )
@@ -685,7 +678,7 @@ public class CommandLineParser
 				catch ( Exception ex )
 				{
 					Utils.handleException (ex,
-						"cmdline.downloadMessageList()");	// NOI18N
+						"cmdline.downloadList()");	// NOI18N
 				}
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-element") )	// NOI18N
@@ -696,10 +689,9 @@ public class CommandLineParser
 					{
 						// only the ID is important
 						PhoneElement pe = new PhoneElement(args[i+1], "", "");
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.deleteFile (pe,
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -715,11 +707,10 @@ public class CommandLineParser
 			{
 				try
 				{
+					TransferParameters tp = getTransferParameters (sync);
 					Vector<PhoneMessage> vmsg = new Vector<PhoneMessage> ();
 					int res = TransferUtils.downloadMessageList (
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true, null, vmsg);
 					for ( int j = 0; j < vmsg.size (); j++ )
 					{
@@ -744,13 +735,12 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						PhoneMessage pmsg = new PhoneMessage ();
 						pmsg.setRecipientNum (args[i+1]);
 						pmsg.setMessage (args[i+2]);
 						int res = TransferUtils.sendMessage (pmsg,
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -769,12 +759,11 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						PhoneMessage pmsg = new PhoneMessage ();
 						pmsg.setID (args[i+1]);
 						int res = TransferUtils.deleteMessage (pmsg,
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -792,11 +781,9 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.uploadFile (new File (args[i+1]),
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
-							false, true, true);
+							tp, null, null, false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
 					catch ( Exception ex )
@@ -905,11 +892,10 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.dialNumber (args[i+1],
 							true, DataTransporter.DIAL_MODE.AUTO,
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -927,11 +913,10 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.dialNumber (args[i+1],
 							false, DataTransporter.DIAL_MODE.AUTO,
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}
@@ -947,10 +932,9 @@ public class CommandLineParser
 			{
 				try
 				{
+					TransferParameters tp = getTransferParameters (sync);
 					int res = TransferUtils.hangup (
-						TransferUtils.getIdentifierForPort
-						(portName), speed, dBits, sBits,
-						parity, flow, null, null, sync,
+						tp, null, null,
 						false, true, true);
 					Utils.closeProgram (logfile, res);
 				}
@@ -966,11 +950,10 @@ public class CommandLineParser
 				{
 					try
 					{
+						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.sendFileAsCommands (
 							new File (args[i+1]),
-							TransferUtils.getIdentifierForPort
-							(portName), speed, dBits, sBits,
-							parity, flow, null, null, sync,
+							tp, null, null,
 							false, true, true);
 						Utils.closeProgram (logfile, res);
 					}

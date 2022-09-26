@@ -1,7 +1,7 @@
 /*
  * UtilsTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,8 @@ import BogDroSoft.jymag.Utils.STATUS;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.filechooser.FileFilter;
@@ -299,7 +300,7 @@ public class UtilsTest
 	{
 		System.out.println ("createOpenFileChooser");
 		String description = "";
-		Hashtable<String, Integer> filetype = new Hashtable<String, Integer> (1);
+		Map<String, Integer> filetype = new HashMap<String, Integer> (1);
 		filetype.put ("ext", Integer.valueOf (0));
 		JFileChooser result = Utils.createOpenFileChooser (description, filetype);
 		assertNotNull (result);
@@ -371,7 +372,7 @@ public class UtilsTest
 	public void testGetFiletypeIDs ()
 	{
 		System.out.println ("getFiletypeIDs");
-		Hashtable<String, Integer> result = Utils.getFiletypeIDs ();
+		Map<String, Integer> result = Utils.getFiletypeIDs ();
 		assertNotNull (result);
 		// check at least one extension of each type
 		assertTrue (result.containsKey ("wav"));
@@ -390,7 +391,7 @@ public class UtilsTest
 	public void testGetPhotofileIDs ()
 	{
 		System.out.println ("getPhotofileIDs");
-		Hashtable<String, Integer> result = Utils.getPhotofileIDs ();
+		Map<String, Integer> result = Utils.getPhotofileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("jpg"));
 		assertFalse (result.containsKey ("wav"));
@@ -403,7 +404,7 @@ public class UtilsTest
 	public void testGetRingfileIDs ()
 	{
 		System.out.println ("getRingfileIDs");
-		Hashtable<String, Integer> result = Utils.getRingfileIDs ();
+		Map<String, Integer> result = Utils.getRingfileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("mid"));
 		assertFalse (result.containsKey ("jpg"));
@@ -416,7 +417,7 @@ public class UtilsTest
 	public void testGetAddrfileIDs ()
 	{
 		System.out.println ("getAddrfileIDs");
-		Hashtable<String, Integer> result = Utils.getAddrfileIDs ();
+		Map<String, Integer> result = Utils.getAddrfileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("vcard"));
 		assertFalse (result.containsKey ("wav"));
@@ -429,7 +430,7 @@ public class UtilsTest
 	public void testGetTodofileIDs ()
 	{
 		System.out.println ("getTodofileIDs");
-		Hashtable<String, Integer> result = Utils.getTodofileIDs ();
+		Map<String, Integer> result = Utils.getTodofileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("ical"));
 		assertFalse (result.containsKey ("wav"));
@@ -442,7 +443,7 @@ public class UtilsTest
 	public void testGetEventfileIDs ()
 	{
 		System.out.println ("getEventfileIDs");
-		Hashtable<String, Integer> result = Utils.getEventfileIDs ();
+		Map<String, Integer> result = Utils.getEventfileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("vcs"));
 		assertFalse (result.containsKey ("wav"));
@@ -455,7 +456,7 @@ public class UtilsTest
 	public void testGetAnimfileIDs ()
 	{
 		System.out.println ("getAnimfileIDs");
-		Hashtable<String, Integer> result = Utils.getAnimfileIDs ();
+		Map<String, Integer> result = Utils.getAnimfileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("mp4"));
 		assertFalse (result.containsKey ("wav"));
@@ -468,7 +469,7 @@ public class UtilsTest
 	public void testGetJavafileIDs ()
 	{
 		System.out.println ("getJavafileIDs");
-		Hashtable<String, Integer> result = Utils.getJavafileIDs ();
+		Map<String, Integer> result = Utils.getJavafileIDs ();
 		assertNotNull (result);
 		assertTrue (result.containsKey ("jad"));
 		assertFalse (result.containsKey ("wav"));

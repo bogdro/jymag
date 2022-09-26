@@ -260,7 +260,8 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
 <p>Obs³ugiwane s± nastêpuj±ce opcje linii poleceñ (niewra¿liwe na wielko¶æ liter):</p>
 <ul>
  <li><code>--conf &lt;plik&gt;</code>		- odczytaj konfiguracjê z &lt;pliku&gt;</li>
- <li><code>--databits &lt;5,6,7,8&gt;</code>	- ustaw liczbê bitów danych</li>
+ <li><code>--databits &lt;5,6,7,8&gt;</code>	- ustaw liczbê bitów danych
+					  (domy¶lnie: 8)</li>
  <li><code>--delete-after-download</code>     - skasuj elementy pobrane pomy¶lnie</li>
  <li><code>--delete-alarm &lt;N&gt;</code>          - skasuj budzik o numerze N</li>
  <li><code>--delete-element &lt;ID&gt;</code>          - skasuj element (plik) o danym identyfikatorze ID</li>
@@ -275,7 +276,8 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
  <li><code>--download-all-vcards</code>	- pobierz wszystkie wpisy ksi±¿ki telefonicznej z telefonu i wyjd¼</li>
  <li><code>--download-all</code>		- ³±czy wszystkie opcje "download" i wychodzi z programu</li>
  <li><code>--download-dir &lt;dir&gt;</code>	- ustawia domy¶lny katalog pobierania</li>
- <li><code>--flow &lt;none,soft,hard,soft+hard&gt;</code>	- ustawia tryb kontroli przep³ywu</li>
+ <li><code>--flow &lt;none,soft,hard,soft+hard&gt;</code>	- ustawia tryb kontroli przep³ywu
+					  (domy¶lnie: none)</li>
  <li><code>--hangup</code>			- roz³±cza bie¿±ce po³±czenie, je¶li jakie¶ jest</li>
  <li><code>--help</code>			- wy¶wietla pomoc</li>
  <li><code>--lang LL_CC_VV</code>		- wybiera jêzyk dla JYMAG:
@@ -285,7 +287,8 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
  <li><code>--list-alarms</code>			- wy¶wietla budziki w telefonie</li>
  <li><code>--list-elements</code>			- wy¶wietla elementy (pliki) w telefonie</li>
  <li><code>--list-sms</code>			- wy¶wietla wiadomo¶ci SMS w telefonie</li>
- <li><code>--parity &lt;none, even, odd, space, mark&gt;</code>	- ustawia tryb kontroli parzysto¶ci</li>
+ <li><code>--parity &lt;none, even, odd, space, mark&gt;</code>	- ustawia tryb kontroli parzysto¶ci
+					  (domy¶lnie: none)</li>
  <li><code>--port &lt;nazwa&gt;</code>		- ustawia domy¶lny port</li>
  <li><code>--scan</code>			- skanuje dostêpne porty na odpowiedzi "OK"
 	    				  i wychodzi</li>
@@ -296,8 +299,10 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
  <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000&gt;</code>
-					- ustawia prêdko¶æ transmisji na porcie</li>
- <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- ustawia liczbê bitów stopu</li>
+					- ustawia prêdko¶æ transmisji na porcie
+					  (domy¶lnie: 115200)</li>
+ <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- ustawia liczbê bitów stopu
+					  (domy¶lnie: 1)</li>
  <li><code>--update-alarm "DD/MM/YY,HH:MM:SS",N,"dni"</code>	- aktualizuje dany budzik
 					  w telefonie. N to numer budzika. Dni s± numerami
 					  rozdzielonymi przecinkami (1-Poniedzia³ek) lub 0

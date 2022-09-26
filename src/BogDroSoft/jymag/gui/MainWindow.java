@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,11 +25,12 @@
 
 package BogDroSoft.jymag.gui;
 
+import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.comm.TransferParameters;
+import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.CommandLineParser;
 import BogDroSoft.jymag.ConfigFile;
-import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.PhoneElement;
-import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.Utils;
 import BogDroSoft.jymag.gui.panels.JYMAGTab;
 
@@ -42,7 +43,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.io.File;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.swing.JFileChooser;
@@ -64,19 +66,39 @@ public class MainWindow extends JFrame
 	private final MainWindow mw = this;
 
 	/** Current version number as a String. */
-	public static final String verString = "1.4";	// NOI18N
+	public static final String verString = "1.5";	// NOI18N
 
 	// synchronization variable:
 	private static final Object sync = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
-	private volatile Hashtable<String, String> firmwares;
-	private volatile Hashtable<String, String> phoneTypes;
-	private volatile Hashtable<String, String> phoneIMEIs;
-	private volatile Hashtable<String, String> phoneSubsNums;
+	private volatile Map<String, String> firmwares;
+	private volatile Map<String, String> phoneTypes;
+	private volatile Map<String, String> phoneIMEIs;
+	private volatile Map<String, String> phoneSubsNums;
 
 	private static String logFile = "jymag.log";	// NOI18N
 
 	private JFileChooser cfgFC;
+	private final transient Runnable progressBarUpdateRunnable =
+		new Runnable ()
+		{
+			@Override
+			public synchronized void run ()
+			{
+				Utils.changeGUI (new Runnable ()
+				{
+					@Override
+					public synchronized void run ()
+					{
+						progressBar.setValue (progressBar.getValue ()+1);
+						if ( progressBar.getValue () == progressBar.getMaximum () )
+						{
+							progressBar.setValue (0);
+						}
+					}
+				});
+			}
+		};
 
 	// ------------ i18n stuff
 	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
@@ -157,9 +179,10 @@ public class MainWindow extends JFrame
 		Vector<String> portList = TransferUtils.getSerialPortNames ();
 		if ( portList != null )
 		{
-			for ( String s : portList )
+			int listLen = portList.size ();
+			for ( int i = 0; i < listLen; i++ )
 			{
-				portCombo.addItem (s);
+				portCombo.addItem (portList.get (i));
 			}
 		}
 		updateControls ();
@@ -646,11 +669,9 @@ public class MainWindow extends JFrame
 	private void scanButtonActionPerformed (java.awt.event.ActionEvent evt)	{//GEN-FIRST:event_scanButtonActionPerformed
 
 		// these MUST be read here, on the EDT
-		final int cSpeed = Integer.parseInt (speedCombo.getSelectedItem ().toString ());
-		final int cDataBits = Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ());
-		final float cStopBits = Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ());
-		final int cParity = parityCombo.getSelectedIndex ();
-		final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
+		final TransferParameters tp = new TransferParameters (
+			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
+			parityCombo, flowSoft, flowHard, sync);
 
 		Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
 		progressBar.setValue (0);
@@ -663,10 +684,10 @@ public class MainWindow extends JFrame
 		}
 		progressBar.setMaximum (max);
 		// always create new:
-		firmwares = new Hashtable<String, String> (max);
-		phoneTypes = new Hashtable<String, String> (max);
-		phoneIMEIs = new Hashtable<String, String> (max);
-		phoneSubsNums = new Hashtable<String, String> (max);
+		firmwares = new HashMap<String, String> (max);
+		phoneTypes = new HashMap<String, String> (max);
+		phoneIMEIs = new HashMap<String, String> (max);
+		phoneSubsNums = new HashMap<String, String> (max);
 
 		SwingWorker<Vector<String>, Void> sw =
 			new SwingWorker<Vector<String>, Void> ()
@@ -675,28 +696,9 @@ public class MainWindow extends JFrame
 			protected Vector<String> doInBackground ()
 			{
 				Vector<String> active = new Vector<String> (10);
-				TransferUtils.scanPorts (true, cSpeed, cDataBits, cStopBits,
-					cParity, cFlow, firmwares, phoneTypes,
+				TransferUtils.scanPorts (true, tp, firmwares, phoneTypes,
 					phoneIMEIs, phoneSubsNums, active,
-					new Runnable ()
-					{
-						@Override
-						public synchronized void run ()
-						{
-							Utils.changeGUI (new Runnable ()
-							{
-								@Override
-								public synchronized void run ()
-								{
-									progressBar.setValue (progressBar.getValue ()+1);
-									if ( progressBar.getValue () == progressBar.getMaximum () )
-									{
-										progressBar.setValue (0);
-									}
-								}
-							});
-						}
-					});
+					progressBarUpdateRunnable);
 				return active;
 			}
 
@@ -716,7 +718,7 @@ public class MainWindow extends JFrame
 						firmware.setText (pressScanMsg);
 						phone.setText (pressScanMsg);
 					}
-					else if (active.size () == 0)
+					else if (active.isEmpty ())
 					{
 						JOptionPane.showMessageDialog (mw,
 							noAnsString, errString,
@@ -730,7 +732,6 @@ public class MainWindow extends JFrame
 						portCombo.setSelectedItem (null);
 						// NOT setSelectedIndex (0)!
 						portCombo.setSelectedItem (active.get (0));
-
 					}
 					else
 					{
@@ -813,13 +814,8 @@ public class MainWindow extends JFrame
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
 
-			TransferUtils.uploadFile (f, TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.uploadFile (f, tp,
 				new Runnable ()
 				{
 					@Override
@@ -828,7 +824,7 @@ public class MainWindow extends JFrame
 						Utils.updateStatusLabel (status, Utils.STATUS.READY);
 						progressBar.setValue (0);
 					}
-				}, this, sync, false, false, false);
+				}, this, false, false, false);
 		}
 		catch (Exception ex)
 		{
@@ -1185,14 +1181,8 @@ public class MainWindow extends JFrame
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
 
-			TransferUtils.downloadList (ofWhat,
-				TransferUtils.getIdentifierForPort
-					(portCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0),
+			TransferParameters tp = getTransferParameters ();
+			TransferUtils.downloadList (ofWhat, tp,
 				new Runnable ()
 				{
 					@Override
@@ -1202,7 +1192,7 @@ public class MainWindow extends JFrame
 						progressBar.setValue (0);
 						Utils.updateStatusLabel (status, Utils.STATUS.READY);
 					}
-				}, this, sync, false, false, false, dtm, placeForData);
+				}, this, false, false, false, dtm, placeForData);
 		}
 		catch (Exception ex)
 		{
@@ -1386,6 +1376,13 @@ public class MainWindow extends JFrame
 				}
 			}
 		}
+	}
+
+	private TransferParameters getTransferParameters ()
+	{
+		return new TransferParameters (
+			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
+			parityCombo, flowSoft, flowHard, sync);
 	}
 
 	// =============================== static methods
