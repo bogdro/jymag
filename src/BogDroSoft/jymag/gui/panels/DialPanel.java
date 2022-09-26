@@ -1,7 +1,7 @@
 /*
  * DialPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2012-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -333,7 +333,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                                                 .addComponent(volumeDownBut))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(numberField, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 341, Short.MAX_VALUE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 287, Short.MAX_VALUE)
                                                                 .addComponent(dialBut))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,7 +366,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                                                         .addComponent(pulseDialRadio)
                                                                         .addGroup(layout.createSequentialGroup()
                                                                                 .addComponent(toneDialRadio)
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 263, Short.MAX_VALUE)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 241, Short.MAX_VALUE)
                                                                                 .addComponent(hangUpBut))))))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(dialCmdRadio)
@@ -376,6 +376,8 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                 );
 
                 layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {volumeDownBut, volumeUpBut});
+
+                layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {answerBut, dialBut, hangUpBut});
 
                 layout.setVerticalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -547,8 +549,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_dialNumRadioItemStateChanged
 		if ( evt.getStateChange () == ItemEvent.SELECTED )
 		{
-			numberField.setEnabled (true);
-			dialCmdField.setEnabled (false);
+			switchToNumberEntry ();
 		}
 	}//GEN-LAST:event_dialNumRadioItemStateChanged
 
@@ -556,8 +557,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_dialNumRadioStateChanged
 		if ( dialNumRadio.isSelected () )
 		{
-			numberField.setEnabled (true);
-			dialCmdField.setEnabled (false);
+			switchToNumberEntry ();
 		}
 	}//GEN-LAST:event_dialNumRadioStateChanged
 
@@ -565,8 +565,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_dialCmdRadioItemStateChanged
 		if ( evt.getStateChange () == ItemEvent.SELECTED )
 		{
-			numberField.setEnabled (false);
-			dialCmdField.setEnabled (true);
+			switchToCommandEntry ();
 		}
 	}//GEN-LAST:event_dialCmdRadioItemStateChanged
 
@@ -574,8 +573,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_dialCmdRadioStateChanged
 		if ( dialCmdRadio.isSelected () )
 		{
-			numberField.setEnabled (false);
-			dialCmdField.setEnabled (true);
+			switchToCommandEntry ();
 		}
 	}//GEN-LAST:event_dialCmdRadioStateChanged
 
@@ -635,6 +633,56 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 			Utils.handleException (ex, "volumeDownButActionPerformed");	// NOI18N
 		}
 	}//GEN-LAST:event_volumeDownButActionPerformed
+
+	private void switchToNumberEntry ()
+	{
+		numberField.setEnabled (true);
+		but0.setEnabled (true);
+		but1.setEnabled (true);
+		but2.setEnabled (true);
+		but3.setEnabled (true);
+		but4.setEnabled (true);
+		but5.setEnabled (true);
+		but6.setEnabled (true);
+		but7.setEnabled (true);
+		but8.setEnabled (true);
+		but9.setEnabled (true);
+		butAst.setEnabled (true);
+		butHash.setEnabled (true);
+		butPlus.setEnabled (true);
+		dataRadio.setEnabled (true);
+		voiceRadio.setEnabled (true);
+		pulseDialRadio.setEnabled (true);
+		toneDialRadio.setEnabled (true);
+		autoDialRadio.setEnabled (true);
+
+		dialCmdField.setEnabled (false);
+	}
+
+	private void switchToCommandEntry ()
+	{
+		numberField.setEnabled (false);
+		but0.setEnabled (false);
+		but1.setEnabled (false);
+		but2.setEnabled (false);
+		but3.setEnabled (false);
+		but4.setEnabled (false);
+		but5.setEnabled (false);
+		but6.setEnabled (false);
+		but7.setEnabled (false);
+		but8.setEnabled (false);
+		but9.setEnabled (false);
+		butAst.setEnabled (false);
+		butHash.setEnabled (false);
+		butPlus.setEnabled (false);
+		dataRadio.setEnabled (false);
+		voiceRadio.setEnabled (false);
+		pulseDialRadio.setEnabled (false);
+		toneDialRadio.setEnabled (false);
+		autoDialRadio.setEnabled (false);
+
+		dialCmdField.setEnabled (true);
+	}
 
 	@Override
 	@SuppressWarnings("rawtypes")

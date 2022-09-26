@@ -50,10 +50,10 @@
                   <Component id="jScrollPane19" pref="205" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="getSmsListBut" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="downloadSmsBut" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="uploadSmsBut" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="deleteSmsBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="getSmsListBut" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="downloadSmsBut" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="uploadSmsBut" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="deleteSmsBut" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               </Group>

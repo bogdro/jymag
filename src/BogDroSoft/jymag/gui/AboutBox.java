@@ -1,7 +1,7 @@
 /*
  * AboutBox.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -313,8 +313,10 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.MAIL) )
+						{
 							d.mail (new URI ("mailto",	// NOI18N
 								emailAddr + "?subject=SOFT - JYMAG", null));	// NOI18N
+						}
 					}
 				}
 				catch (Exception ex)
@@ -337,8 +339,10 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI (httpProto, null,	// NOI18N
+						{
+							Desktop.getDesktop ().browse (new URI (httpProto, null,
 								host1, 80, path1, null, null));
+						}
 					}
 				}
 				catch (Exception ex)
@@ -361,11 +365,13 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI (httpProto, null,	// NOI18N
+						{
+							Desktop.getDesktop ().browse (new URI (httpProto, null,
 								host2, 80, path2, null, null));
 							//Desktop.getDesktop ().browse (new URI (www2Addr));
 							//Desktop.getDesktop ().browse (new URI ("http",	// NOI18N
 							//	host2, path2, null));
+						}
 					}
 				}
 				catch (Exception ex)
@@ -388,8 +394,10 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI (httpProto, null,	// NOI18N
+						{
+							Desktop.getDesktop ().browse (new URI (httpProto, null,
 								host3, 80, path3, null, null));
+						}
 					}
 				}
 				catch (Exception ex)
@@ -404,7 +412,9 @@ public class AboutBox extends javax.swing.JDialog
 
 		Object val = fontSizeSpin.getValue ();
 		if ( val != null && val instanceof Number )
+		{
 			Utils.setFontSize (this, ((Number)val).floatValue ());
+		}
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
 	/*

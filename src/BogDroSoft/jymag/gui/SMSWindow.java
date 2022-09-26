@@ -1,7 +1,7 @@
 /*
  * SMSWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -229,7 +229,10 @@ public class SMSWindow extends javax.swing.JDialog
 	private void sendButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_sendButActionPerformed
 	{//GEN-HEADEREND:event_sendButActionPerformed
 
-		if ( dtr == null || ! sendBut.isEnabled () ) return;
+		if ( dtr == null || ! sendBut.isEnabled () )
+		{
+			return;
+		}
 		final String phoneNumber = phoneNumField.getText ();
 		final String messageBody = msgArea.getText ();
 		if (phoneNumber == null || messageBody == null)
@@ -282,7 +285,11 @@ public class SMSWindow extends javax.swing.JDialog
 								{
 									JOptionPane.showMessageDialog (null, okString,
 										okString, JOptionPane.INFORMATION_MESSAGE);
-								} catch (Exception ex2) {}
+								}
+								catch (Exception ex2)
+								{
+									// Ignore. Everything went OK
+								}
 							}
 							else
 							{

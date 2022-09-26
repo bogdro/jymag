@@ -1,7 +1,7 @@
 /*
  * MoviePanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -215,6 +215,9 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
                                                 .addComponent(deleteAnimBut))
                                         .addGap(25, 25, 25)))
                 );
+
+                layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteAnimBut, downloadAnimBut, getAnimListBut, uploadAnimBut});
+
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getAnimListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getAnimListButActionPerformed

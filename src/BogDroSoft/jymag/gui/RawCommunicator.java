@@ -1,7 +1,7 @@
 /*
  * RawCommunicator.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -582,9 +582,14 @@ public class RawCommunicator extends javax.swing.JDialog
 			while ( updater.isAlive () )
 			{
 				updater.interrupt ();
-				try {
+				try
+				{
 					Thread.sleep (10);
-				} catch (Exception ex) {}
+				}
+				catch (Exception ex)
+				{
+					// ignore, just wait again
+				}
 			}
 		}
 		dispose ();
@@ -660,7 +665,6 @@ public class RawCommunicator extends javax.swing.JDialog
 			private boolean currDSR = false;
 
 			private int availBytes = 0;
-			private String rcvd;
 
 			@Override
 			public synchronized void run ()
@@ -711,11 +715,12 @@ public class RawCommunicator extends javax.swing.JDialog
 					if ( availBytes != 0 )
 					{
 						byte[] recvdB = dtr.recv (null);
-						// don't force any encodings, because the reply may
-						// be in another encoding
 						if ( recvdB != null )
 						{
-							rcvd = new String (recvdB);
+							// don't force any encodings,
+							// because the reply may
+							// be in another encoding
+							final String rcvd = new String (recvdB);
 							if ( ! rcvd.trim ().isEmpty () )
 							{
 								Utils.changeGUI (new Runnable ()

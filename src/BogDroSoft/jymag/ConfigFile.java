@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,8 +39,8 @@ import java.util.regex.Pattern;
 public class ConfigFile
 {
 	private File cfgFile;
-	private volatile static String newLine = null;
-	private static final String defaultNewLine = "\n";		// NOI18N
+	private static final String newLine;
+	private static final String defaultNewLine = "\n";	// NOI18N
 	private static final String emptyString = "";		// NOI18N
 
 	// communication parameters:
@@ -86,6 +86,8 @@ public class ConfigFile
 			("font_size\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern selectedTabPat = Pattern.compile
 			("tab\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
+	private static final Pattern commentPat = Pattern.compile
+			("^#.*");		// NOI18N
 
 	private Matcher portM;
 	private Matcher speedM;
@@ -100,6 +102,29 @@ public class ConfigFile
 	private Matcher isMaxM;
 	private Matcher fontSizeM;
 	private Matcher selectedTabM;
+	private Matcher commentM;
+
+	static
+	{
+		String tmpNewLine = null;
+		try
+		{
+			tmpNewLine = System.getProperty ("line.separator"); // NOI18N
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "ConfigFile:System.getProperty");	// NOI18N
+		}
+		if ( tmpNewLine == null )
+		{
+			tmpNewLine = defaultNewLine;
+		}
+		else if ( tmpNewLine.isEmpty () )
+		{
+			tmpNewLine = defaultNewLine;
+		}
+		newLine = tmpNewLine;
+	}
 
 	/**
 	 * Creates a new instance of ConfigFile.
@@ -112,25 +137,6 @@ public class ConfigFile
 			throw new IllegalArgumentException ("ConfigFile:f==null");	// NOI18N
 		}
 		cfgFile = f;
-		if ( newLine == null )
-		{
-			try
-			{
-				newLine = System.getProperty ("line.separator"); // NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "ConfigFile:System.getProperty");	// NOI18N
-			}
-			if ( newLine == null )
-			{
-				newLine = defaultNewLine;
-			}
-			else if ( newLine.isEmpty () )
-			{
-				newLine = defaultNewLine;
-			}
-		}
 	}
 
 	/**
@@ -190,8 +196,12 @@ public class ConfigFile
 			isMaxM = isMaxPat.matcher (line);
 			fontSizeM = fontSizePat.matcher (line);
 			selectedTabM = selectedTabPat.matcher (line);
+			commentM = commentPat.matcher (line);
 
-			if ( line.matches ("^#.*") ) continue;	// NOI18N
+			if ( commentM.matches () )
+			{
+				continue;
+			}
 			else if ( portM.matches () )
 			{
 				try
@@ -335,7 +345,7 @@ public class ConfigFile
 					Utils.handleException (ex, "ConfigFile.read.parseInt (tab)");	// NOI18N
 				}
 			}
-		} while (line != null);
+		} while (true);
 		br.close ();
 
 		// verify here

@@ -1,7 +1,7 @@
 /*
  * SignalDisplayer.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -291,7 +291,14 @@ public class SignalDisplayer extends javax.swing.JFrame
 			{
 				// only hurts: when the thread is interrupted, the window won't close
 				//updater.interrupt ();
-				try { Thread.sleep (10); } catch (Exception ex) {}
+				try
+				{
+					Thread.sleep (10);
+				}
+				catch (Exception ex)
+				{
+					// ignore
+				}
 			}
 		}
 		dt.close ();
@@ -346,13 +353,19 @@ public class SignalDisplayer extends javax.swing.JFrame
 					{
 						currLevel = dt.getSignalPower ();
 					}
-					if ( ! runUpdater ) break;
+					if ( ! runUpdater )
+					{
+						break;
+					}
 					if ( currLevel != prevLevel )
 					{
 						setLevel (currLevel);
 						prevLevel = currLevel;
 					}
-					if ( ! runUpdater ) break;
+					if ( ! runUpdater )
+					{
+						break;
+					}
 					try
 					{
 						Thread.sleep (refreshTime);

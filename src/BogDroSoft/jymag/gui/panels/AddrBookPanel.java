@@ -1,7 +1,7 @@
 /*
  * AddrBookPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -214,6 +214,9 @@ public class AddrBookPanel extends javax.swing.JPanel implements JYMAGTab
                                                 .addComponent(deleteAddrBut))
                                         .addGap(25, 25, 25)))
                 );
+
+                layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteAddrBut, downloadAddrBut, getAddrListBut, uploadAddrBut});
+
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getAddrListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getAddrListButActionPerformed

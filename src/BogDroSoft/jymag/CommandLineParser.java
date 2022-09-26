@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -145,8 +145,8 @@ public class CommandLineParser
 		"\n" +	// NOI18N
 		b.getString("exit_zero_code");
 	private static final String verWord = b.getString("Version");
-	private static final String getListStr = b.getString("Getting_list_of_");
-	private static final String getFileStr = b.getString("Getting_file");
+	//private static final String getListStr = b.getString("Getting_list_of_");
+	//private static final String getFileStr = b.getString("Getting_file");
 
 	// non-instantiable
 	private CommandLineParser () {}
@@ -247,8 +247,14 @@ public class CommandLineParser
 	 */
 	private static void readConfig (File f)
 	{
-		if ( f == null ) return;
-		if ( (! f.exists ()) || (! f.canRead ()) ) return;
+		if ( f == null )
+		{
+			return;
+		}
+		if ( (! f.exists ()) || (! f.canRead ()) )
+		{
+			return;
+		}
 
 		try
 		{
@@ -259,9 +265,18 @@ public class CommandLineParser
 			dBits = cfg.getDBits ();
 			parity = cfg.getParity ();
 			int l_sBits = cfg.getSBits ();
-			if ( l_sBits == 2 ) sBits = 2.0f;
-			else if ( l_sBits == 1 ) sBits = 1.5f;
-			else sBits = 1.0f;
+			if ( l_sBits == 2 )
+			{
+				sBits = 2.0f;
+			}
+			else if ( l_sBits == 1 )
+			{
+				sBits = 1.5f;
+			}
+			else
+			{
+				sBits = 1.0f;
+			}
 			flow = cfg.getFlowCtl ();
 			isMax = cfg.getIsMax ();
 			x = cfg.getX ();
@@ -364,7 +379,10 @@ public class CommandLineParser
 	 */
 	public static void parse (String[] args, Object sync, String logfile)
 	{
-		if ( args == null ) return;
+		if ( args == null )
+		{
+			return;
+		}
 
 		for ( int i = 0; i < args.length; i++ )
 		{
@@ -598,7 +616,10 @@ public class CommandLineParser
 						false, true, true, null, vmsg);
 					for ( int j = 0; j < vmsg.size (); j++ )
 					{
-						if ( vmsg.get (j) == null ) continue;
+						if ( vmsg.get (j) == null )
+						{
+							continue;
+						}
 						System.out.println (vmsg.get (j));
 					}
 					Utils.closeProgram (logfile, res);
@@ -653,7 +674,10 @@ public class CommandLineParser
 					total.addAll (vmsg);
 					for ( int j = 0; j < total.size (); j++ )
 					{
-						if ( total.get (j) == null ) continue;
+						if ( total.get (j) == null )
+						{
+							continue;
+						}
 						System.out.println (total.get (j));
 					}
 					Utils.closeProgram (logfile, res);
@@ -699,7 +723,10 @@ public class CommandLineParser
 						false, true, true, null, vmsg);
 					for ( int j = 0; j < vmsg.size (); j++ )
 					{
-						if ( vmsg.get (j) == null ) continue;
+						if ( vmsg.get (j) == null )
+						{
+							continue;
+						}
 						System.out.println (vmsg.get (j));
 					}
 					Utils.closeProgram (logfile, res);
@@ -838,15 +865,23 @@ public class CommandLineParser
 						{
 							Locale newLoc = null;
 							if (locale.length == 1)
+							{
 								newLoc = new Locale (locale[0]);
+							}
 							else if (locale.length == 2)
+							{
 								newLoc = new Locale (locale[0],
 									locale[1]);
+							}
 							else if (locale.length == 3)
+							{
 								newLoc = new Locale (locale[0],
 									locale[1], locale[2]);
+							}
 							if ( newLoc != null )
+							{
 								Locale.setDefault (newLoc);
+							}
 						}
 					}
 					catch ( Exception ex )

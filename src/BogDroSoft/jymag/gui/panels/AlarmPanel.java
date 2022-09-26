@@ -1,7 +1,7 @@
 /*
  * AlarmPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -203,6 +203,9 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
                                         .addComponent(getAlarmListBut))
                                 .addGap(25, 25, 25)))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteAlarmBut, downloadAlarmBut, getAlarmListBut, uploadAlarmBut});
+
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getAlarmListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getAlarmListButActionPerformed
@@ -266,10 +269,6 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 				return;
 			}
 			final Vector<PhoneAlarm> toUpload = new Vector<PhoneAlarm> (rows.length);
-			if ( toUpload == null )
-			{
-				return;
-			}
 			for ( int i = 0; i < rows.length; i++ )
 			{
 				Object date = model.getValueAt (rows[i], 1);

@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -153,43 +153,43 @@ public class DataTransporter
 
 	// file headers:
 	// JPG/EXIF/MJPG
-	private final byte[] JPG = new byte[] {
+	private static final byte[] JPG = new byte[] {
 		(byte) 0xff, (byte) 0xd8/*, (byte) 0xff*/
 		};
 	// MTh
-	private final byte[] MID = new byte[] {
+	private static final byte[] MID = new byte[] {
 		(byte) 0x4d, (byte) 0x54, (byte) 0x68
 		};
 	// AMR and AMR-WB (AWB) #!AMR = 23 21 41 4D  52
-	private final byte[] AMR = new byte[] {
+	private static final byte[] AMR = new byte[] {
 		(byte) 0x23, (byte) 0x21, (byte) 0x41, (byte) 0x4D,
 		(byte) 0x52
 		};
 	// BM  = 42 4D
-	private final byte[] BMP = new byte[] {
+	private static final byte[] BMP = new byte[] {
 		(byte) 0x42, (byte) 0x4D
 		};
 	// GIF = 47 49 46
-	private final byte[] GIF = new byte[] {
+	private static final byte[] GIF = new byte[] {
 		(byte) 0x47, (byte) 0x49, (byte) 0x46
 		};
 	// PNG
-	private final byte[] PNG = new byte[] {
+	private static final byte[] PNG = new byte[] {
 		(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47
 		};
 	// WAV = RIFF = 52 49 46 46
-	private final byte[] WAV = new byte[] {
+	private static final byte[] WAV = new byte[] {
 		(byte) 0x52, (byte) 0x49, (byte) 0x46, (byte) 0x46
 		};
 	//// "BEGIN:VCALENDAR"
-	private final byte[] VCAL = new byte[] {
+	private static final byte[] VCAL = new byte[] {
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
 		(byte) 0x4E, (byte) 0x3A, (byte) 0x56, (byte) 0x43,
 		(byte) 0x41, (byte) 0x4C, (byte) 0x45, (byte) 0x4E,
 		(byte) 0x44, (byte) 0x41, (byte) 0x52
 		};
 	//// "BEGIN:vCard"
-	private final byte[] VCRD = new byte[] {
+	private static final byte[] VCRD = new byte[] {
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
 		(byte) 0x4E, (byte) 0x3A, (byte) 0x76, (byte) 0x43,
 		(byte) 0x61, (byte) 0x72, (byte) 0x64
@@ -198,23 +198,23 @@ public class DataTransporter
 	//private final byte[] WBMP = new byte[] { (byte) 0x00, (byte) 0x00 };
 	// the 2-bytes-zero header dosen't work well. Instead, let's look for '$'
 	// and skip 3 bytes after it.
-	private final byte[] WBMP = new byte[] { (byte) 0x24 };
+	private static final byte[] WBMP = new byte[] { (byte) 0x24 };
 
 	// MNG: 8A 4D 4E 47
-	private final byte[] MNG = new byte[] {
+	private static final byte[] MNG = new byte[] {
 		(byte) 0x8A, (byte) 0x4D, (byte) 0x4E, (byte) 0x47
 		};
 
 	// AIFF: "FORM" or "AIFF"
-	private final byte[] AIFF1 = new byte[] {
+	private static final byte[] AIFF1 = new byte[] {
 		(byte) 0x46, (byte) 0x4F, (byte) 0x52, (byte) 0x4D
 		};
-	private final byte[] AIFF2 = new byte[] {
+	private static final byte[] AIFF2 = new byte[] {
 		(byte) 0x41, (byte) 0x49, (byte) 0x46, (byte) 0x46
 		};
 
 	// IMY (IMELODY): "BEGIN:IMELODY"
-	private final byte[] IMY = new byte[] {
+	private static final byte[] IMY = new byte[] {
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
 		(byte) 0x4E, (byte) 0x3A, (byte) 0x49, (byte) 0x4D,
 		(byte) 0x45, (byte) 0x4C, (byte) 0x4F, (byte) 0x44,
@@ -222,98 +222,98 @@ public class DataTransporter
 		};
 
 	// AAC: "\0 \0 \0 . ftyp"
-	private final byte[] MPEG = new byte[] {
+	private static final byte[] MPEG = new byte[] {
 		//(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x14,
 		(byte) 0x66, (byte) 0x74, (byte) 0x79, (byte) 0x70
 		};
 
 	// GZIP:
-	private final byte[] GZIP = new byte[] {
+	private static final byte[] GZIP = new byte[] {
 		(byte) 0x1f, (byte) 0x8b
 		};
 
 	// ZIP:
-	private final byte[] ZIP = new byte[] {
+	private static final byte[] ZIP = new byte[] {
 		(byte) 0x50, (byte) 0x4b
 		};
 
 	// MPEG-audio:
-	private final byte[] MPA1 = new byte[] {
+	private static final byte[] MPA1 = new byte[] {
 		(byte) 0xFF, (byte) 0xFA
 		};
-	private final byte[] MPA2 = new byte[] {
+	private static final byte[] MPA2 = new byte[] {
 		(byte) 0xFF, (byte) 0xFB
 		};
-	private final byte[] MPA3 = new byte[] {
+	private static final byte[] MPA3 = new byte[] {
 		(byte) 0xFF, (byte) 0xFC
 		};
 
 	// WMV1/2:
-	private final byte[] WMV = new byte[] {
+	private static final byte[] WMV = new byte[] {
 		(byte) 0x30, (byte) 0x26, (byte) 0xB2, (byte) 0x75
 		/* after these four, there are: 8E 66 CF 11  A6 D9 00 AA  00 62 CE 6C */
 		};
 
 	// XML: "<?xml"
-	private final byte[] XML = new byte[] {
+	private static final byte[] XML = new byte[] {
 		(byte) 0x3C, (byte) 0x3F, (byte) 0x78, (byte) 0x6D, (byte) 0x6C
 		};
 
 	// DOCTYPE:
-	private final byte[] DOCTYPE = new byte[] {
+	private static final byte[] DOCTYPE = new byte[] {
 		(byte) 0x3C, (byte) 0x21, (byte) 0x44, (byte) 0x4F,
 		(byte) 0x43, (byte) 0x54, (byte) 0x59, (byte) 0x50,
 		(byte) 0x45
 		};
 
 	// SVG:
-	private final byte[] SVG = new byte[] {
+	private static final byte[] SVG = new byte[] {
 		(byte) 0x3C, (byte) 0x73, (byte) 0x76, (byte) 0x67
 		};
 
 	// WMF
-	private final byte[] WMF = new byte[] {
+	private static final byte[] WMF = new byte[] {
 		(byte) 0xD7, (byte) 0xCD, (byte) 0xC6, (byte) 0x9A,
 		(byte) 0x00, (byte) 0x00
 		};
 
 	// PS/EPS: %!PS
-	private final byte[] PS = new byte[] {
+	private static final byte[] PS = new byte[] {
 		(byte) 0x25, (byte) 0x21, (byte) 0x50, (byte) 0x53
 		};
 
 	// TIFF: "II"
-	private final byte[] TIFF = new byte[] {
+	private static final byte[] TIFF = new byte[] {
 		(byte) 0x49, (byte) 0x49
 		};
 
 	// midlets: "MIDlet"
-	private final byte[] MIDLET = new byte[] {
+	private static final byte[] MIDLET = new byte[] {
 		(byte) 0x4D, (byte) 0x49, (byte) 0x44, (byte) 0x6C,
 		(byte) 0x65, (byte) 0x74
 		};
 
 	// text CGM: "BEGMF"
-	private final byte[] CGMtext = new byte[] {
+	private static final byte[] CGMtext = new byte[] {
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x4D, (byte) 0x46
 		};
 
 	// binary CGM: & 0xFFE0 = "0x0020" big-endian
-	private final byte[] CGMbin01 = new byte[] {
+	private static final byte[] CGMbin01 = new byte[] {
 		(byte) 0x00, (byte) 0x29
 		};
 
-	private final byte[] CGMbin02 = new byte[] {
+	private static final byte[] CGMbin02 = new byte[] {
 		(byte) 0x00, (byte) 0x28
 		};
 
 	// character CGM: =="0x3020" big-endian
-	private final byte[] CGMchar = new byte[] {
+	private static final byte[] CGMchar = new byte[] {
 		(byte) 0x30, (byte) 0x20
 		};
 
 	// PMB: "[BitmapInfo2]"
-	private final byte[] PMB = new byte[] {
+	private static final byte[] PMB = new byte[] {
 		(byte) 0x5B, (byte) 0x42, (byte) 0x69, (byte) 0x74,
 		(byte) 0x6D, (byte) 0x61, (byte) 0x70, (byte) 0x49,
 		(byte) 0x6E, (byte) 0x66, (byte) 0x6F, (byte) 0x32,
@@ -325,14 +325,14 @@ public class DataTransporter
 
 
 	// "CONNECT\r\n"
-	private final byte[] START = new byte[] {
+	private static final byte[] START = new byte[] {
 		(byte) 0x43, (byte) 0x4F, (byte) 0x4E, (byte) 0x4E,
 		(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x0D,
 		(byte) 0x0A
 		};
 
 	// "\r\nNO CARRIER"
-	private final byte[] FINISH = new byte[] {
+	private static final byte[] FINISH = new byte[] {
 		(byte) 0x0D, (byte) 0x0A,
 		(byte) 0x4E, (byte) 0x4F, (byte) 0x20, (byte) 0x43,
 		(byte) 0x41, (byte) 0x52, (byte) 0x52, (byte) 0x49,
@@ -368,12 +368,19 @@ public class DataTransporter
 	public void open (int speed, int dataBits, float stopBits, int parity,
 		int flowControl) throws Exception
 	{
-		if ( portID == null ) throw new NullPointerException ("DataTransporter.open: portID == null");	// NOI18N
-		if ( ! portID.getName ().startsWith ("COM") )	// NOI18N
+		if ( portID == null )
 		{
-			File portFile = new File (portID.getName ());
-			if ( ! portFile.exists () ) throw new IOException ("DataTransporter.open: ! portFile.exists: "	// NOI18N
-					+ portID.getName ());
+			throw new NullPointerException ("DataTransporter.open: portID == null");	// NOI18N
+		}
+		String portName = portID.getName ();
+		if ( ! portName.startsWith ("COM") )	// NOI18N
+		{
+			File portFile = new File (portName);
+			if ( ! portFile.exists () )
+			{
+				throw new IOException ("DataTransporter.open: ! portFile.exists: "	// NOI18N
+					+ portName);
+			}
 		}
 		s = (SerialPort) portID.open (portOpenProgName, 2000);
 		synchronized (inputStreamLock)
@@ -383,30 +390,67 @@ public class DataTransporter
 		outputStream = s.getOutputStream ();
 
 		int dBits = SerialPort.DATABITS_8;
-		if ( dataBits == 7 ) dBits = SerialPort.DATABITS_7;
-		else if ( dataBits == 6 ) dBits = SerialPort.DATABITS_6;
-		else if ( dataBits == 5 ) dBits = SerialPort.DATABITS_5;
+		if ( dataBits == 7 )
+		{
+			dBits = SerialPort.DATABITS_7;
+		}
+		else if ( dataBits == 6 )
+		{
+			dBits = SerialPort.DATABITS_6;
+		}
+		else if ( dataBits == 5 )
+		{
+			dBits = SerialPort.DATABITS_5;
+		}
 
 		int sBits = SerialPort.STOPBITS_1;
-		if ( Math.abs (stopBits - 1.5f) < 0.0001 ) sBits = SerialPort.STOPBITS_1_5;
-		else if ( Math.abs (stopBits - 2.0f) < 0.0001 ) sBits = SerialPort.STOPBITS_2;
+		if ( Math.abs (stopBits - 1.5f) < 0.0001 )
+		{
+			sBits = SerialPort.STOPBITS_1_5;
+		}
+		else if ( Math.abs (stopBits - 2.0f) < 0.0001 )
+		{
+			sBits = SerialPort.STOPBITS_2;
+		}
 
 		int par = SerialPort.PARITY_NONE;
 		// Combo: none, even, odd, space, mark
-		if ( parity == 1 ) par = SerialPort.PARITY_EVEN;
-		else if ( parity == 2 ) par = SerialPort.PARITY_ODD;
-		else if ( parity == 3 ) par = SerialPort.PARITY_SPACE;
-		else if ( parity == 4 ) par = SerialPort.PARITY_MARK;
+		if ( parity == 1 )
+		{
+			par = SerialPort.PARITY_EVEN;
+		}
+		else if ( parity == 2 )
+		{
+			par = SerialPort.PARITY_ODD;
+		}
+		else if ( parity == 3 )
+		{
+			par = SerialPort.PARITY_SPACE;
+		}
+		else if ( parity == 4 )
+		{
+			par = SerialPort.PARITY_MARK;
+		}
 
 		int flow = SerialPort.FLOWCONTROL_NONE;
 		// checkboxes: none, XONN/XOFF, RTS/CTS
-		if ( flowControl == 1 ) flow = SerialPort.FLOWCONTROL_XONXOFF_IN
-			+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
-		else if ( flowControl == 2 ) flow = SerialPort.FLOWCONTROL_RTSCTS_IN
-			+ SerialPort.FLOWCONTROL_RTSCTS_OUT;
-		else if ( flowControl == 3 ) flow = SerialPort.FLOWCONTROL_RTSCTS_IN
-			+ SerialPort.FLOWCONTROL_RTSCTS_OUT + SerialPort.FLOWCONTROL_XONXOFF_IN
-			+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
+		if ( flowControl == 1 )
+		{
+			flow = SerialPort.FLOWCONTROL_XONXOFF_IN
+				+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
+		}
+		else if ( flowControl == 2 )
+		{
+			flow = SerialPort.FLOWCONTROL_RTSCTS_IN
+				+ SerialPort.FLOWCONTROL_RTSCTS_OUT;
+		}
+		else if ( flowControl == 3 )
+		{
+			flow = SerialPort.FLOWCONTROL_RTSCTS_IN
+				+ SerialPort.FLOWCONTROL_RTSCTS_OUT
+				+ SerialPort.FLOWCONTROL_XONXOFF_IN
+				+ SerialPort.FLOWCONTROL_XONXOFF_OUT;
+		}
 
 		s.setSerialPortParams (speed, dBits, sBits, par);
 		s.setFlowControlMode (flow);
@@ -468,7 +512,10 @@ public class DataTransporter
 							}
 							wasRead = inputStream.read (readBuffer);
 						}
-						if ( wasRead < 0 ) break;
+						if ( wasRead < 0 )
+						{
+							break;
+						}
 						// don't force any encodings, because the file data may
 						// be invalid in any given encoding
 						String curr = new String (readBuffer, 0, wasRead);
@@ -478,7 +525,10 @@ public class DataTransporter
 							break;
 						}
 					}
-					else return res;
+					else
+					{
+						return res;
+					}
 				}
 				else if ( avail > 0 )
 				{
@@ -492,7 +542,10 @@ public class DataTransporter
 						}
 						wasRead = inputStream.read (readBuffer);
 					}
-					if ( wasRead < 0 ) break;
+					if ( wasRead < 0 )
+					{
+						break;
+					}
 					// don't force any encodings, because the file data may
 					// be invalid in any given encoding
 					String curr = new String (readBuffer, 0, wasRead);
@@ -528,7 +581,10 @@ public class DataTransporter
 							}
 							wasRead = inputStream.read (readBuffer);
 						}
-						if ( wasRead < 0 ) break;
+						if ( wasRead < 0 )
+						{
+							break;
+						}
 						// don't force any encodings, because the file data may
 						// be invalid in any given encoding
 						String curr = new String (readBuffer, 0, wasRead);
@@ -539,7 +595,10 @@ public class DataTransporter
 						}
 					}
 				}
-				catch (IOException ex) {}
+				catch (IOException ex)
+				{
+					// ignore
+				}
 			}
 			catch (Exception ex)
 			{
@@ -558,7 +617,10 @@ public class DataTransporter
 	 */
 	private boolean isTerminatorPresent (String haystack, Object[] needles)
 	{
-		if ( haystack == null ) return false;
+		if ( haystack == null )
+		{
+			return false;
+		}
 		if ( haystack.trim ().startsWith (OKStr)
 			|| haystack.trim ().endsWith (OKStr)
 			|| haystack.trim ().startsWith (ERRORStr)
@@ -571,7 +633,10 @@ public class DataTransporter
 		{
 			for ( int i=0; i < needles.length; i++ )
 			{
-				if ( haystack.contains (needles[i].toString ())) return true;
+				if ( haystack.contains (needles[i].toString ()))
+				{
+					return true;
+				}
 			}
 		}
 		return false;
@@ -645,17 +710,27 @@ public class DataTransporter
 	 */
 	public int putFile (File f, String newName)
 	{
-		if ( f == null ) return -11;
+		if ( f == null )
+		{
+			return -11;
+		}
+		String fName = f.getName ();
 		// check if type is supported.
-		if ( ! f.getName ().contains (dot)) return -8;
-		if ( ! Utils.getFiletypeIDs ().containsKey (f.getName ().substring
-			(f.getName ().lastIndexOf (dot)+1)
+		if ( ! fName.contains (dot))
+		{
+			return -8;
+		}
+		if ( ! Utils.getFiletypeIDs ().containsKey (fName.substring
+			(fName.lastIndexOf (dot)+1)
 			.toLowerCase (Locale.ENGLISH)))
 		{
 			return -9;
 		}
-		if ( newName == null ) newName = f.getName ().substring (0,
-			f.getName ().indexOf (dot));
+		if ( newName == null )
+		{
+			newName = fName.substring (0,
+				fName.indexOf (dot));
+		}
 
 		String rcvd;
 		byte[] recvdB;
@@ -698,7 +773,10 @@ public class DataTransporter
 					System.out.println (ansString + "1=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
-					if ( trials > MAX_TRIALS ) return -1;
+					if ( trials > MAX_TRIALS )
+					{
+						return -1;
+					}
 					continue MAIN;
 				}
 
@@ -712,7 +790,10 @@ public class DataTransporter
 					System.out.println (ansString + "2=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
-					if ( trials > MAX_TRIALS ) return -2;
+					if ( trials > MAX_TRIALS )
+					{
+						return -2;
+					}
 					continue MAIN;
 				}
 
@@ -725,7 +806,10 @@ public class DataTransporter
 					System.out.println (ansString + "3=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
-					if ( trials > MAX_TRIALS ) return -3;
+					if ( trials > MAX_TRIALS )
+					{
+						return -3;
+					}
 					continue MAIN;
 				}
 
@@ -744,14 +828,21 @@ public class DataTransporter
 					System.out.println (ansString + "4=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
-					if ( trials > MAX_TRIALS ) return -4;
+					if ( trials > MAX_TRIALS )
+					{
+						return -4;
+					}
 					continue MAIN;
 				}
 
 				try
 				{
 					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
+				}
+				catch (Exception ex)
+				{
+					// ignore
+				}
 				// send file data here:
 				FileInputStream fis = new FileInputStream (f);
 				byte[] contents = new byte[10240];
@@ -760,7 +851,10 @@ public class DataTransporter
 				do
 				{
 					read = fis.read (contents);
-					if ( read < 0 ) break;
+					if ( read < 0 )
+					{
+						break;
+					}
 					send (Arrays.copyOf (contents, read));
 
 				} while (read == contents.length);
@@ -774,17 +868,26 @@ public class DataTransporter
 					{
 						reopen ();
 						trials++;
-						if ( trials > MAX_TRIALS ) break;
+						if ( trials > MAX_TRIALS )
+						{
+							break;
+						}
 						continue MAIN;
 					}
 				} while (rcvd.trim ().isEmpty () && trials <= MAX_TRIALS);
-				if ( trials > MAX_TRIALS ) return -5;
+				if ( trials > MAX_TRIALS )
+				{
+					return -5;
+				}
 				if ( ! rcvd.contains (OKStr) )
 				{
 					System.out.println (ansString + "5=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
-					if ( trials > MAX_TRIALS ) return -5;
+					if ( trials > MAX_TRIALS )
+					{
+						return -5;
+					}
 					continue MAIN;
 				}
 
@@ -792,13 +895,19 @@ public class DataTransporter
 
 				// close file upload
 				rcvd = tryCommand (transferFileEndCmd, null);
-				if ( trials > MAX_TRIALS ) return -6;
+				if ( trials > MAX_TRIALS )
+				{
+					return -6;
+				}
 				if ( ! rcvd.contains (OKStr) )
 				{
 					System.out.println (ansString + "6=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
-					if ( trials > MAX_TRIALS ) return -6;
+					if ( trials > MAX_TRIALS )
+					{
+						return -6;
+					}
 					continue MAIN;
 				}
 				return 0;
@@ -820,7 +929,10 @@ public class DataTransporter
 					+ f.getName () + ", newName=" + newName);	// NOI18N
 				reopen ();
 				trials++;
-				if ( trials > MAX_TRIALS ) return -7;
+				if ( trials > MAX_TRIALS )
+				{
+					return -7;
+				}
 				continue MAIN;
 			}
 		} // MAIN while
@@ -837,13 +949,22 @@ public class DataTransporter
 	{
 		if ( haystack != null )
 		{
-			if ( needle == null ) return 0;
-			if ( needle.length > haystack.length ) return -1;
+			if ( needle == null )
+			{
+				return 0;
+			}
+			if ( needle.length > haystack.length )
+			{
+				return -1;
+			}
 			HAY: for ( int i=0; i < haystack.length - needle.length; i++ )
 			{
 				for ( int j=0; j < needle.length; j++ )
 				{
-					if ( haystack[i+j] != needle[j] ) continue HAY;
+					if ( haystack[i+j] != needle[j] )
+					{
+						continue HAY;
+					}
 				}
 				return i;
 			}
@@ -859,7 +980,10 @@ public class DataTransporter
 	 */
 	public int getFile (File f, PhoneElement el)
 	{
-		if ( f == null || el == null ) return -3;
+		if ( f == null || el == null )
+		{
+			return -3;
+		}
 		FileOutputStream fos = null;
 		try
 		{
@@ -871,7 +995,11 @@ public class DataTransporter
 				try
 				{
 					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
+				}
+				catch (Exception ex)
+				{
+					// ignore
+				}
 				// send file retrieve command
 				send ((fileRetrCmdStart + el.getID () + dquotCR).getBytes (defaultEncoding));
 				/*
@@ -896,7 +1024,10 @@ public class DataTransporter
 			} while ( (rcvd.trim ().isEmpty () || recvdB.length == 0)
 				&& trials < MAX_TRIALS);
 			if ( rcvd.trim ().isEmpty () || recvdB.length == 0
-				|| ! rcvd.contains (NOCARStr) ) return -2;
+				|| ! rcvd.contains (NOCARStr) )
+			{
+				return -2;
+			}
 
 			// check file type
 			fos = new FileOutputStream (f);
@@ -1096,7 +1227,10 @@ public class DataTransporter
 				+ el.getID ());
 			try
 			{
-				if ( fos != null ) fos.close ();
+				if ( fos != null )
+				{
+					fos.close ();
+				}
 			}
 			catch (Exception exc)
 			{
@@ -1115,17 +1249,27 @@ public class DataTransporter
 	 */
 	private String tryCommand (String cmd, Object[] extraTerminators)
 	{
-		if ( cmd == null ) return emptyStr;
+		if ( cmd == null )
+		{
+			return emptyStr;
+		}
 		StringBuilder rcvd = new StringBuilder (10000);
 		byte[] recvdB;
 		int trials = 0;
 		do
 		{
-			if ( trials >= MAX_TRIALS ) break;
+			if ( trials >= MAX_TRIALS )
+			{
+				break;
+			}
 			try
 			{
 				Thread.sleep (DT_TIMEOUT);
-			} catch (Exception ex) {}
+			}
+			catch (Exception ex)
+			{
+				// ignore
+			}
 			try
 			{
 				// send the command
@@ -1161,12 +1305,18 @@ public class DataTransporter
 	public Vector<PhoneElement> getList (String ofWhat)
 	{
 		Vector<PhoneElement> res = new Vector<PhoneElement> (1);
-		if ( ofWhat == null || res == null ) return res;
+		if ( ofWhat == null )
+		{
+			return res;
+		}
 		try
 		{
 			// removed: sending ATZ and AT115200
 			String rcvd = tryCommand (charsetCmd, null);
-			if ( ! rcvd.contains (OKStr) ) return res;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return res;
+			}
 
 			/*
 			 * Receiving format:
@@ -1188,9 +1338,11 @@ public class DataTransporter
 				m = Utils.listPattern.matcher (lines[i]);
 				if ( m.matches () )
 				{
-					if ( m.group (2).equals ("0"))			// NOI18N
+					if ( m.group (2).equals ("0") )			// NOI18N
+					{
 						res.add (new PhoneElement (m.group (1),
 							m.group (3), m.group (4) ));
+					}
 				}
 			}
 		}
@@ -1234,7 +1386,10 @@ public class DataTransporter
 	 */
 	public void reopen ()
 	{
-		if ( portID == null ) return;
+		if ( portID == null )
+		{
+			return;
+		}
 		int bps = 115200;
 		int dbits = SerialPort.DATABITS_8;
 		int parity = SerialPort.PARITY_NONE;
@@ -1323,7 +1478,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						Matcher m = verPattern.matcher (lines[i]);
 						if ( m.matches () )
 						{
@@ -1358,7 +1516,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						if ( (! lines[i].trim ().isEmpty ())
 							&& ! lines[i].contains (imeiReply) )
 						{
@@ -1393,7 +1554,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						lines[i] = lines[i].replaceAll (typeReplyRegex, emptyStr);
 						if ( ! lines[i].trim ().isEmpty () )
 						{
@@ -1430,7 +1594,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						if ( (! lines[i].trim ().isEmpty ())
 							&& ! lines[i].contains (serialNumReply) )
 						{
@@ -1466,7 +1633,10 @@ public class DataTransporter
 					String type = null;
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						lines[i] = lines[i].replaceAll (subsNumReplyRegex, emptyStr);
 						if ( ! lines[i].trim ().isEmpty () )
 						{
@@ -1482,8 +1652,14 @@ public class DataTransporter
 							}
 							if ( ! newElem.isEmpty () )
 							{
-								if ( type == null ) type = emptyStr;
-								if ( ! type.isEmpty () ) type += commaSpace;
+								if ( type == null )
+								{
+									type = emptyStr;
+								}
+								if ( ! type.isEmpty () )
+								{
+									type += commaSpace;
+								}
 								type += newElem;
 							}
 						}
@@ -1506,7 +1682,10 @@ public class DataTransporter
 	 */
 	public String getCapabilities (String type)
 	{
-		if ( type == null ) return null;
+		if ( type == null )
+		{
+			return null;
+		}
 		String rcvd = tryCommand (capabCmd + type + dquotCR, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
@@ -1556,7 +1735,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						Matcher m = verPattern.matcher (lines[i]);
 						if ( m.matches () )
 						{
@@ -1583,7 +1765,10 @@ public class DataTransporter
 	public int sendPIN (String PIN, String newPIN)
 	{
 		DataTransporter.PIN_STATUS status = getPINStatus ();
-		if ( status == null ) return -1;
+		if ( status == null )
+		{
+			return -1;
+		}
 		String cmd;
 		if ( status.equals (DataTransporter.PIN_STATUS.SIM_PUK)
 			|| status.equals (DataTransporter.PIN_STATUS.SIM_PUK2) )
@@ -1606,7 +1791,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						if ( lines[i].toUpperCase (Locale.ENGLISH)
 							.contains (OKStr) )
 						{
@@ -1655,7 +1843,10 @@ public class DataTransporter
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
-						if ( lines[i] == null ) continue;
+						if ( lines[i] == null )
+						{
+							continue;
+						}
 						Matcher m = alnumPattern.matcher (lines[i]);
 						if ( m.matches () )
 						{
@@ -1689,7 +1880,10 @@ public class DataTransporter
 			{
 				return -2;
 			}
-			if ( rcvd.contains (OKStr) ) return 0;
+			if ( rcvd.contains (OKStr) )
+			{
+				return 0;
+			}
 			return -3;
 		}
 		catch ( Exception ex )
@@ -1706,7 +1900,10 @@ public class DataTransporter
 	 */
 	public int addAlarm (PhoneAlarm al)
 	{
-		if ( al == null ) return -1;
+		if ( al == null )
+		{
+			return -1;
+		}
 		try
 		{
 			String alString = al.getAlarmString ();
@@ -1726,7 +1923,10 @@ public class DataTransporter
 			{
 				return -2;
 			}
-			if ( rcvd.contains (OKStr) ) return 0;
+			if ( rcvd.contains (OKStr) )
+			{
+				return 0;
+			}
 			return -3;
 		}
 		catch ( Exception ex )
@@ -1744,7 +1944,6 @@ public class DataTransporter
 	public Vector<PhoneAlarm> getAlarms ()
 	{
 		Vector<PhoneAlarm> res = new Vector<PhoneAlarm> (1);
-		if ( res == null ) return null;
 		try
 		{
 			String rcvd = tryCommand (alarmListCmd, null);
@@ -1764,7 +1963,10 @@ public class DataTransporter
 			for ( int i=0; i < lines.length; i++ )
 			{
 				PhoneAlarm pa = PhoneAlarm.parseReponse (lines[i]);
-				if ( pa != null ) res.add (pa);
+				if ( pa != null )
+				{
+					res.add (pa);
+				}
 			}
 		}
 		catch ( Exception ex )
@@ -1782,14 +1984,26 @@ public class DataTransporter
 	 */
 	public int deleteMessage (int number)
 	{
-		if ( number < 0 ) return -1;
+		if ( number < 0 )
+		{
+			return -1;
+		}
 		try
 		{
 			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) ) return -2;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return -2;
+			}
 			rcvd = tryCommand (msgDelCmd + String.valueOf (number) + CRStr, null);
-			if ( rcvd.trim ().isEmpty () ) return -3;
-			if ( rcvd.contains (OKStr) ) return 0;
+			if ( rcvd.trim ().isEmpty () )
+			{
+				return -3;
+			}
+			if ( rcvd.contains (OKStr) )
+			{
+				return 0;
+			}
 			return -4;
 		}
 		catch ( Exception ex )
@@ -1806,11 +2020,13 @@ public class DataTransporter
 	public Vector<PhoneMessage> getMessages ()
 	{
 		Vector<PhoneMessage> res = new Vector<PhoneMessage> (1);
-		if ( res == null ) return null;
 		try
 		{
 			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) ) return null;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return null;
+			}
 
 			rcvd = tryCommand (msgListCmd, null);
 			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OKStr) )
@@ -1825,7 +2041,10 @@ public class DataTransporter
 			for ( int i=0; i < lines.length; i++ )
 			{
 				PhoneMessage pm = PhoneMessage.parseReponse (lines[i]);
-				if ( pm != null ) res.add (pm);
+				if ( pm != null )
+				{
+					res.add (pm);
+				}
 			}
 		}
 		catch ( Exception ex )
@@ -1847,9 +2066,15 @@ public class DataTransporter
 		try
 		{
 			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) ) return null;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return null;
+			}
 			rcvd = tryCommand (msgGetCmd + String.valueOf (number) + CRStr, null);
-			if ( rcvd.trim ().isEmpty () ) return null;
+			if ( rcvd.trim ().isEmpty () )
+			{
+				return null;
+			}
 			// remove the final "OK"
 			rcvd = rcvd.replaceAll (lastOKRegex, emptyStr);
 			return PhoneMessage.parseReponse (rcvd);
@@ -1872,17 +2097,29 @@ public class DataTransporter
 		try
 		{
 			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) ) return -2;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return -2;
+			}
 
 			// first send the command and wait for the prompt:
 			rcvd = tryCommand (msgSendCmd + "\"" + msg.getRecipientNum ()
 				+ "\"" + CRStr, new String[] { msgPrompt });
-			if ( ! rcvd.contains (msgPrompt) ) return -3;
+			if ( ! rcvd.contains (msgPrompt) )
+			{
+				return -3;
+			}
 
 			// after getting the prompt send the message:
 			rcvd = tryCommand (msg.getMessageString () + CRStr, null);
-			if ( rcvd.trim ().isEmpty () ) return -4;
-			if ( rcvd.contains (OKStr) ) return 0;
+			if ( rcvd.trim ().isEmpty () )
+			{
+				return -4;
+			}
+			if ( rcvd.contains (OKStr) )
+			{
+				return 0;
+			}
 			return -5;
 		}
 		catch ( Exception ex )
@@ -1904,8 +2141,14 @@ public class DataTransporter
 		try
 		{
 			String rcvd = tryCommand (msgStorageCmd + stor.toString () + CRStr, null);
-			if ( rcvd.trim ().isEmpty () ) return -2;
-			if ( rcvd.contains (OKStr) ) return 0;
+			if ( rcvd.trim ().isEmpty () )
+			{
+				return -2;
+			}
+			if ( rcvd.contains (OKStr) )
+			{
+				return 0;
+			}
 			return -3;
 		}
 		catch ( Exception ex )
@@ -1922,7 +2165,10 @@ public class DataTransporter
 	 */
 	public void setDTR (boolean on)
 	{
-		if ( s != null ) s.setDTR (on);
+		if ( s != null )
+		{
+			s.setDTR (on);
+		}
 	}
 
 	/**
@@ -1931,7 +2177,10 @@ public class DataTransporter
 	 */
 	public void setRTS (boolean on)
 	{
-		if ( s != null ) s.setRTS (on);
+		if ( s != null )
+		{
+			s.setRTS (on);
+		}
 	}
 
 	/**
@@ -1940,7 +2189,10 @@ public class DataTransporter
 	 */
 	public boolean isCD ()
 	{
-		if ( s != null ) return s.isCD ();
+		if ( s != null )
+		{
+			return s.isCD ();
+		}
 		return false;
 	}
 
@@ -1950,7 +2202,10 @@ public class DataTransporter
 	 */
 	public boolean isCTS ()
 	{
-		if ( s != null ) return s.isCTS ();
+		if ( s != null )
+		{
+			return s.isCTS ();
+		}
 		return false;
 	}
 
@@ -1960,7 +2215,10 @@ public class DataTransporter
 	 */
 	public boolean isDSR ()
 	{
-		if ( s != null ) return s.isDSR ();
+		if ( s != null )
+		{
+			return s.isDSR ();
+		}
 		return false;
 	}
 
@@ -1970,7 +2228,10 @@ public class DataTransporter
 	 */
 	public boolean isDTR ()
 	{
-		if ( s != null ) return s.isDTR ();
+		if ( s != null )
+		{
+			return s.isDTR ();
+		}
 		return false;
 	}
 
@@ -1980,7 +2241,10 @@ public class DataTransporter
 	 */
 	public boolean isRI ()
 	{
-		if ( s != null ) return s.isRI ();
+		if ( s != null )
+		{
+			return s.isRI ();
+		}
 		return false;
 	}
 
@@ -1990,7 +2254,10 @@ public class DataTransporter
 	 */
 	public boolean isRTS ()
 	{
-		if ( s != null ) return s.isRTS ();
+		if ( s != null )
+		{
+			return s.isRTS ();
+		}
 		return false;
 	}
 
@@ -2042,7 +2309,10 @@ public class DataTransporter
 	 */
 	public int dialNumber (String number, boolean isVoice, DIAL_MODE dialMode)
 	{
-		if ( number == null ) return -1;
+		if ( number == null )
+		{
+			return -1;
+		}
 		String command = dialCommandAuto;
 		if ( dialMode != null && DIAL_MODE.TONE.equals (dialMode) )
 		{
@@ -2088,7 +2358,10 @@ public class DataTransporter
 		try
 		{
 			String rcvd = tryCommand (hangupCommand, null);
-			if ( ! rcvd.contains (OKStr) ) return -2;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return -2;
+			}
 			return 0;
 		}
 		catch ( Exception ex )
@@ -2107,7 +2380,10 @@ public class DataTransporter
 		try
 		{
 			String rcvd = tryCommand (answerCommand, null);
-			if ( ! rcvd.contains (OKStr) ) return -2;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return -2;
+			}
 			return 0;
 		}
 		catch ( Exception ex )
@@ -2168,7 +2444,10 @@ public class DataTransporter
 			}
 			String rcvd = tryCommand (setVolCommand
 				+ String.valueOf(vol) + CRStr, null);
-			if ( ! rcvd.contains (OKStr) ) return -2;
+			if ( ! rcvd.contains (OKStr) )
+			{
+				return -2;
+			}
 			return 0;
 		}
 		catch ( Exception ex )
@@ -2209,10 +2488,15 @@ public class DataTransporter
 	 */
 	private byte[] joinArrays (byte[] orig, byte[] toAdd)
 	{
-		if ( orig == null ) return toAdd;
-		if ( toAdd == null ) return orig;
+		if ( orig == null )
+		{
+			return toAdd;
+		}
+		if ( toAdd == null )
+		{
+			return orig;
+		}
 		byte[] ret = new byte[orig.length + toAdd.length];
-		if ( ret == null ) return null;
 		System.arraycopy (orig, 0, ret, 0, orig.length);
 		System.arraycopy (toAdd, 0, ret, orig.length, toAdd.length);
 		return ret;
@@ -2220,6 +2504,11 @@ public class DataTransporter
 
 	private class SPL implements SerialPortEventListener
 	{
+		public SPL ()
+		{
+			// empty constructor
+		}
+
 		/**
 		 * Used to receive events for the port.
 		 * @param event A received port event.
@@ -2227,16 +2516,17 @@ public class DataTransporter
 		@Override
 		public void serialEvent (SerialPortEvent event)
 		{
-			if ( event == null ) return;
+			if ( event == null )
+			{
+				return;
+			}
 			switch (event.getEventType ())
 			{
 				case SerialPortEvent.DATA_AVAILABLE:
+					//synchronized (inputStream)
 					synchronized (inputStreamLock)
 					{
-						//synchronized (inputStream)
-						{
-							inputStreamLock.notifyAll ();// inputStream.notifyAll ();
-						}
+						inputStreamLock.notifyAll ();// inputStream.notifyAll ();
 					}
 					break;
 			}
@@ -2263,7 +2553,10 @@ public class DataTransporter
 		 */
 		public static PIN_STATUS looseValueOf (String name)
 		{
-			if ( name == null ) return null;
+			if ( name == null )
+			{
+				return null;
+			}
 			PIN_STATUS[] values = values ();
 			if ( values != null )
 			{

@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Calendar;
@@ -225,8 +226,10 @@ public class Utils
 		filetypeIDs.putAll (javafileIDs);
 	}
 
-	// non-instantiable
-	private Utils () {}
+	private Utils ()
+	{
+		// non-instantiable
+	}
 
 	/**
 	 * Displays all the important information about exceptions.
@@ -235,7 +238,10 @@ public class Utils
 	 */
 	public synchronized static void handleException (Throwable ex, Object data)
 	{
-		if ( ex == null || (System.out == null && System.err == null) ) return;
+		if ( ex == null || (System.out == null && System.err == null) )
+		{
+			return;
+		}
 		try
 		{
 			Calendar c = Calendar.getInstance ();
@@ -245,18 +251,54 @@ public class Utils
 			int hour   = c.get (Calendar.HOUR_OF_DAY);
 			int minute = c.get (Calendar.MINUTE);
 			int second = c.get (Calendar.SECOND);
-			     if ( month == Calendar.JANUARY   ) month =  1;
-			else if ( month == Calendar.FEBRUARY  ) month =  2;
-			else if ( month == Calendar.MARCH     ) month =  3;
-			else if ( month == Calendar.APRIL     ) month =  4;
-			else if ( month == Calendar.MAY       ) month =  5;
-			else if ( month == Calendar.JUNE      ) month =  6;
-			else if ( month == Calendar.JULY      ) month =  7;
-			else if ( month == Calendar.AUGUST    ) month =  8;
-			else if ( month == Calendar.SEPTEMBER ) month =  9;
-			else if ( month == Calendar.OCTOBER   ) month = 10;
-			else if ( month == Calendar.NOVEMBER  ) month = 11;
-			else if ( month == Calendar.DECEMBER  ) month = 12;
+			if ( month == Calendar.JANUARY )
+			{
+				month =  1;
+			}
+			else if ( month == Calendar.FEBRUARY )
+			{
+				month =  2;
+			}
+			else if ( month == Calendar.MARCH )
+			{
+				month =  3;
+			}
+			else if ( month == Calendar.APRIL )
+			{
+				month =  4;
+			}
+			else if ( month == Calendar.MAY )
+			{
+				month =  5;
+			}
+			else if ( month == Calendar.JUNE )
+			{
+				month =  6;
+			}
+			else if ( month == Calendar.JULY )
+			{
+				month =  7;
+			}
+			else if ( month == Calendar.AUGUST )
+			{
+				month =  8;
+			}
+			else if ( month == Calendar.SEPTEMBER )
+			{
+				month =  9;
+			}
+			else if ( month == Calendar.OCTOBER )
+			{
+				month = 10;
+			}
+			else if ( month == Calendar.NOVEMBER )
+			{
+				month = 11;
+			}
+			else if ( month == Calendar.DECEMBER )
+			{
+				month = 12;
+			}
 
 			String time = c.get (Calendar.YEAR) + dash
 				+ ((month<10)?  zero : emptyStr ) + month  + dash
@@ -275,7 +317,11 @@ public class Utils
 				System.err.print (time + ex);
 				System.err.flush ();
 			}
-		} catch (Throwable e) {}
+		}
+		catch (Throwable e)
+		{
+			// ignore here to avoid recurrency
+		}
 
 		try
 		{
@@ -293,7 +339,11 @@ public class Utils
 					System.err.flush ();
 				}
 			}
-		} catch (Throwable e) {}
+		}
+		catch (Throwable e)
+		{
+			// ignore here to avoid recurrency
+		}
 
 		try
 		{
@@ -310,7 +360,11 @@ public class Utils
 					System.err.flush ();
 				}
 			}
-		} catch (Throwable e) {}
+		}
+		catch (Throwable e)
+		{
+			// ignore here to avoid recurrency
+		}
 
 		try
 		{
@@ -324,7 +378,11 @@ public class Utils
 				System.err.println ();
 				System.err.flush ();
 			}
-		} catch (Throwable e) {}
+		}
+		catch (Throwable e)
+		{
+			// ignore here to avoid recurrency
+		}
 
 		StackTraceElement[] ste = ex.getStackTrace ();
 		if ( ste != null )
@@ -382,7 +440,11 @@ public class Utils
 							System.err.println (toShow);
 							System.err.flush ();
 						}
-					} catch (Throwable e) {}
+					}
+					catch (Throwable e)
+					{
+						// ignore here to avoid recurrency
+					}
 				}
 			}
 		}
@@ -662,19 +724,22 @@ public class Utils
 				{
 					desc.append (description);
 				}
-				Enumeration<String> keys = filetype.keys ();
-				if ( keys != null )
+				if ( filetype != null )
 				{
-					desc.append (space + lParen);
-					while ( keys.hasMoreElements () )
+					Enumeration<String> keys = filetype.keys ();
+					if ( keys != null )
 					{
-						desc.append (allFileNames + keys.nextElement ());
-						if ( keys.hasMoreElements () )
+						desc.append (space + lParen);
+						while ( keys.hasMoreElements () )
 						{
-							desc.append (comma + space);
+							desc.append (allFileNames + keys.nextElement ());
+							if ( keys.hasMoreElements () )
+							{
+								desc.append (comma + space);
+							}
 						}
+						desc.append (rParen);
 					}
-					desc.append (rParen);
 				}
 				return desc.toString ();
 			}
@@ -694,13 +759,16 @@ public class Utils
 		{
 			System.err.close ();
 		}
-		// remove the log file if empty
-		File log = new File (filename);
-		if ( log.exists () && log.length() == 0 )
+		if ( filename != null )
 		{
-			if ( ! log.delete () && retval == 0 )
+			// remove the log file if empty
+			File log = new File (filename);
+			if ( log.exists () && log.length() == 0 )
 			{
-				retval = 1;
+				if ( (! log.delete ()) && retval == 0 )
+				{
+					retval = 1;
+				}
 			}
 		}
 		System.exit (retval);
@@ -898,6 +966,18 @@ public class Utils
 			}
 			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
 			{
+				WindowListener[] listeners = frame.getWindowListeners ();
+				if ( listeners != null )
+				{
+					for ( int i = 0; i < listeners.length; i++ )
+					{
+						if ( listeners[i] == null )
+						{
+							continue;
+						}
+						listeners[i].windowClosing (null);
+					}
+				}
 				frame.dispose ();
 			}
 		}

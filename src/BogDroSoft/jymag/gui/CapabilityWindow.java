@@ -1,7 +1,7 @@
 /*
  * CapabilityWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -269,13 +269,34 @@ public class CapabilityWindow extends javax.swing.JDialog
 		capabText.setText ("");					// NOI18N
 		String type = null;
 
-		if ( abookCapRB.isSelected () ) type = "VCARDS";	// NOI18N
-		else if ( animCapRB.isSelected () ) type = "ANIMATIONS";// NOI18N
-		else if ( eventCapRB.isSelected () ) type = "VEVENT";	// NOI18N
-		else if ( pictCapRB.isSelected () ) type = "PICTURES";	// NOI18N
-		else if ( ringCapRB.isSelected () ) type = "SOUNDS";	// NOI18N
-		else if ( todoCapRB.isSelected () ) type = "VTODO";	// NOI18N
-		else return;
+		if ( abookCapRB.isSelected () )
+		{
+			type = "VCARDS";	// NOI18N
+		}
+		else if ( animCapRB.isSelected () )
+		{
+			type = "ANIMATIONS";// NOI18N
+		}
+		else if ( eventCapRB.isSelected () )
+		{
+			type = "VEVENT";	// NOI18N
+		}
+		else if ( pictCapRB.isSelected () )
+		{
+			type = "PICTURES";	// NOI18N
+		}
+		else if ( ringCapRB.isSelected () )
+		{
+			type = "SOUNDS";	// NOI18N
+		}
+		else if ( todoCapRB.isSelected () )
+		{
+			type = "VTODO";	// NOI18N
+		}
+		else
+		{
+			return;
+		}
 
 		final String typeToGet = type;
 		getCapBut.setEnabled (false);
@@ -336,7 +357,9 @@ public class CapabilityWindow extends javax.swing.JDialog
 
 		Object val = fontSizeSpin.getValue ();
 		if ( val != null && val instanceof Number )
+		{
 			Utils.setFontSize (this, ((Number)val).floatValue ());
+		}
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
         // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -1,7 +1,7 @@
 /*
  * PhoneMessage.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -41,26 +41,40 @@ public class PhoneMessage
 	private String status = null;
 
 /*
-	+CMGL: <ID>,"<status>" ,"<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
+	+CMGL: <ID>,"<status>","<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
 	<body>
 	OK
 	+CMGL: <ID>,"<status>",
 	<body>
-	+CMGR: "<status>" ,"<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
+	+CMGR: "<status>","<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
 	<body>
 	OK
 	+CMGR: "<status>",
 	<body>
 */
-	private static final Pattern messagePattern
-		= Pattern.compile ("(\\+CMG[LR]:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"	// NOI18N
+	private static final Pattern messageListPattern
+		= Pattern.compile ("(\\+CMGL:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"		// NOI18N
 			+ "\\s*\"(\\+?\\d+)\"\\s*,"						// NOI18N
 			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
 			+ "\\s*,\\d+[\r\n]+([\\w\\s]+)[\r\n]",					// NOI18N
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-	private static final Pattern messagePatternNotFull
-		= Pattern.compile ("(\\+CMG[LR]:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"	// NOI18N
+	private static final Pattern messageListPatternNotFull
+		= Pattern.compile ("(\\+CMGL:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"		// NOI18N
+			+ "\\s*(\"(\\+?\\d+)\"\\s*,"						// NOI18N
+			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
+			+ "\\s*,\\d+)?[\r\n]+([\\w\\s]+)[\r\n]",				// NOI18N
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
+	private static final Pattern messagePatternCMGR
+		= Pattern.compile ("(\\+CMGR:)?\\s*\"([\\w\\s]*)\"\\s*,"			// NOI18N
+			+ "\\s*\"(\\+?\\d+)\"\\s*,"						// NOI18N
+			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
+			+ "\\s*,\\d+[\r\n]+([\\w\\s]+)[\r\n]",					// NOI18N
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
+	private static final Pattern messagePatternCMGRNotFull
+		= Pattern.compile ("(\\+CMGR:)?\\s*\"([\\w\\s]*)\"\\s*,"			// NOI18N
 			+ "\\s*(\"(\\+?\\d+)\"\\s*,"						// NOI18N
 			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
 			+ "\\s*,\\d+)?[\r\n]+([\\w\\s]+)[\r\n]",				// NOI18N
@@ -197,8 +211,12 @@ public class PhoneMessage
 	 */
 	public synchronized static PhoneMessage parseReponse (String response)
 	{
-		if ( response == null ) return null;
-		Matcher m = messagePattern.matcher (response);
+		if ( response == null )
+		{
+			return null;
+		}
+
+		Matcher m = messageListPattern.matcher (response);
 		if ( m.matches () )
 		{
 			PhoneMessage msg = new PhoneMessage();
@@ -209,7 +227,7 @@ public class PhoneMessage
 			msg.setMessage (m.group (6));
 			return msg;
 		}
-		m = messagePatternNotFull.matcher (response);
+		m = messageListPatternNotFull.matcher (response);
 		if ( m.matches () )
 		{
 			PhoneMessage msg = new PhoneMessage();
@@ -220,6 +238,27 @@ public class PhoneMessage
 			msg.setMessage (m.group (7));
 			return msg;
 		}
+		m = messagePatternCMGR.matcher (response);
+		if ( m.matches () )
+		{
+			PhoneMessage msg = new PhoneMessage();
+			msg.setStatus (m.group (2));
+			msg.setRecipientNum (m.group (3));
+			msg.setDateTime (m.group (4));
+			msg.setMessage (m.group (5));
+			return msg;
+		}
+		m = messagePatternCMGRNotFull.matcher (response);
+		if ( m.matches () )
+		{
+			PhoneMessage msg = new PhoneMessage();
+			msg.setStatus (m.group (2));
+			msg.setRecipientNum (m.group (4));
+			msg.setDateTime (m.group (5));
+			msg.setMessage (m.group (6));
+			return msg;
+		}
+
 		return null;
 	}
 

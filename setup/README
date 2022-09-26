@@ -12,7 +12,11 @@ License: GPLv3+
 ========================= Running
 
 Requirements:
-- RxTx Java Transmission package from http://rxtx.qbang.org
+- RxTx Java Transmission package from either:
+	* http://www.rxtx.org
+	* http://rxtx.qbang.org
+	* http://users.frii.com/jarvi/rxtx/download.html
+	* http://mfizz.com/oss/rxtx-for-java
 - JRE, the Java SE Runtime Environment >= (1.)6.0
 - permissions to use the serial ports
 - port locking permissions may be required by RxTx. Adding the user running
@@ -37,7 +41,11 @@ Read the "INSTALL" file.
 ========================= Running in the default language (no translations)
 
 Requirements:
-- RxTx Java Transmission package from www.rxtx.org
+- RxTx Java Transmission package from either:
+	* http://www.rxtx.org
+	* http://rxtx.qbang.org
+	* http://users.frii.com/jarvi/rxtx/download.html
+	* http://mfizz.com/oss/rxtx-for-java
 - JRE, the Java Runtime Environment >= (1.)6.0
 - permissions to use the serial ports
 - port locking permissions may be required by RxTx. Adding the user running
@@ -66,7 +74,11 @@ Read the "INSTALL" file.
 Requirements for compiling:
 
 - JDK, the Java Development Kit >= (1.)6.0
-- RxTx Java Transmission package from www.rxtx.org
+- RxTx Java Transmission package from either:
+	* http://www.rxtx.org
+	* http://rxtx.qbang.org
+	* http://users.frii.com/jarvi/rxtx/download.html
+	* http://mfizz.com/oss/rxtx-for-java
 
 Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
  and click "Build Main Project" (or press F11) if it is your main project

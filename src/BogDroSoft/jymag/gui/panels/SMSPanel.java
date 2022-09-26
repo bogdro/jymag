@@ -1,7 +1,7 @@
 /*
  * SMSPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -197,6 +197,9 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
                                                 .addComponent(deleteSmsBut))
                                         .addGap(25, 25, 25)))
                 );
+
+                layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteSmsBut, downloadSmsBut, getSmsListBut, uploadSmsBut});
+
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getSmsListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getSmsListButActionPerformed
@@ -289,7 +292,9 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
 			}
 			catch (Exception ex2)
-			{}
+			{
+				// don't display exceptions about displaying exceptions
+			}
 		}
 	}//GEN-LAST:event_uploadSmsButActionPerformed
 

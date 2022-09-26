@@ -53,8 +53,8 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="numberField" min="-2" pref="250" max="-2" attributes="0"/>
-                              <EmptySpace pref="341" max="32767" attributes="0"/>
-                              <Component id="dialBut" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="287" max="32767" attributes="0"/>
+                              <Component id="dialBut" linkSize="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -87,13 +87,13 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="autoDialRadio" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace pref="230" max="32767" attributes="0"/>
-                                      <Component id="answerBut" min="-2" max="-2" attributes="0"/>
+                                      <Component id="answerBut" linkSize="2" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="pulseDialRadio" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="toneDialRadio" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="263" max="32767" attributes="0"/>
-                                      <Component id="hangUpBut" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace pref="241" max="32767" attributes="0"/>
+                                      <Component id="hangUpBut" linkSize="2" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>

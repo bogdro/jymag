@@ -1,7 +1,7 @@
 /*
  * TransferUtils.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -243,6 +243,7 @@ public class TransferUtils
 		 */
 		public void processData (T t)
 		{
+			// empty by default
 		}
 	}
 
@@ -291,19 +292,22 @@ public class TransferUtils
 				{
 					int put = 0;
 					T res = get ();
-					if ( res != null && (res instanceof Number) )
+					if ( res != null )
 					{
-						put = ((Number)res).intValue ();
+						if ( res instanceof Number )
+						{
+							put = ((Number)res).intValue ();
+						}
+						else
+						{
+							// another data type - process it
+							op.processData (res);
+						}
 					}
-					else if ( res == null )
+					else
 					{
 						// another data type, but null means error
 						put = -1;
-					}
-					else if ( res != null && ! (res instanceof Number) )
-					{
-						// another data type - process it
-						op.processData (res);
 					}
 					result.set (put);
 					if ( put != 0 )
@@ -367,7 +371,11 @@ public class TransferUtils
 				try
 				{
 					Thread.sleep (10);
-				} catch (InterruptedException ex) {}
+				}
+				catch (InterruptedException ex)
+				{
+					// ignore - just wait again
+				}
 			}
 		}
 		return result.get ();
@@ -450,17 +458,50 @@ public class TransferUtils
 				public String msgForError (int errCode)
 				{
 					String msg = String.valueOf (errCode);
-					if ( errCode == -1 ) msg = uploadMsg1;
-					else if ( errCode == -2 ) msg = uploadMsg2;
-					else if ( errCode == -3 ) msg = uploadMsg3;
-					else if ( errCode == -4 ) msg = uploadMsg4;
-					else if ( errCode == -5 ) msg = uploadMsg5;
-					else if ( errCode == -6 ) msg = uploadMsg6;
-					else if ( errCode == -7 ) msg = uploadMsg7;
-					else if ( errCode == -8 ) msg = uploadMsg8;
-					else if ( errCode == -9 ) msg = uploadMsg9;
-					else if ( errCode == -10 ) msg = uploadMsg10;
-					else if ( errCode == -11 ) msg = uploadMsg11;
+					if ( errCode == -1 )
+					{
+						msg = uploadMsg1;
+					}
+					else if ( errCode == -2 )
+					{
+						msg = uploadMsg2;
+					}
+					else if ( errCode == -3 )
+					{
+						msg = uploadMsg3;
+					}
+					else if ( errCode == -4 )
+					{
+						msg = uploadMsg4;
+					}
+					else if ( errCode == -5 )
+					{
+						msg = uploadMsg5;
+					}
+					else if ( errCode == -6 )
+					{
+						msg = uploadMsg6;
+					}
+					else if ( errCode == -7 )
+					{
+						msg = uploadMsg7;
+					}
+					else if ( errCode == -8 )
+					{
+						msg = uploadMsg8;
+					}
+					else if ( errCode == -9 )
+					{
+						msg = uploadMsg9;
+					}
+					else if ( errCode == -10 )
+					{
+						msg = uploadMsg10;
+					}
+					else if ( errCode == -11 )
+					{
+						msg = uploadMsg11;
+					}
 					return msg;
 				}
 			});
@@ -526,9 +567,18 @@ public class TransferUtils
 				public String msgForError (int errCode)
 				{
 					String msg = String.valueOf (errCode);
-					if ( errCode == -1 ) msg = downloadMsg1;
-					else if ( errCode == -2 ) msg = downloadMsg2;
-					else if ( errCode == -3 ) msg = downloadMsg3;
+					if ( errCode == -1 )
+					{
+						msg = downloadMsg1;
+					}
+					else if ( errCode == -2 )
+					{
+						msg = downloadMsg2;
+					}
+					else if ( errCode == -3 )
+					{
+						msg = downloadMsg3;
+					}
 					return msg;
 				}
 			});
@@ -701,13 +751,34 @@ public class TransferUtils
 	 */
 	private static boolean isAllowedType (String type)
 	{
-		if ( type == null ) return false;
-		if ( type.equals ("PICTURES") ) return true;	// NOI18N
-		if ( type.equals ("RINGTONES") ) return true;	// NOI18N
-		if ( type.equals ("VTODO") ) return true;	// NOI18N
-		if ( type.equals ("VEVENT") ) return true;	// NOI18N
-		if ( type.equals ("VCARDS") ) return true;	// NOI18N
-		if ( type.equals ("ANIMATIONS") ) return true;	// NOI18N
+		if ( type == null )
+		{
+			return false;
+		}
+		if ( type.equals ("PICTURES") )		// NOI18N
+		{
+			return true;
+		}
+		if ( type.equals ("RINGTONES") )	// NOI18N
+		{
+			return true;
+		}
+		if ( type.equals ("VTODO") )		// NOI18N
+		{
+			return true;
+		}
+		if ( type.equals ("VEVENT") )		// NOI18N
+		{
+			return true;
+		}
+		if ( type.equals ("VCARDS") )		// NOI18N
+		{
+			return true;
+		}
+		if ( type.equals ("ANIMATIONS") )	// NOI18N
+		{
+			return true;
+		}
 		return false;
 	}
 
@@ -947,7 +1018,10 @@ public class TransferUtils
 							for ( int i = 0; i < cols; i++ )
 							{
 								String colName = model.getColumnName (i);
-								if ( colName == null ) colName = emptyStr;
+								if ( colName == null )
+								{
+									colName = emptyStr;
+								}
 								colNames.add (colName);
 							}
 							dtm.setColumnIdentifiers (colNames);
@@ -966,18 +1040,33 @@ public class TransferUtils
 						for ( int i=0; i < ret.size (); i++ )
 						{
 							PhoneAlarm al = ret.get (i);
-							if ( al == null ) continue;
+							if ( al == null )
+							{
+								continue;
+							}
 							String date = null;
 							if ( al.isOneTimeAlarm () )
 							{
 								date = al.getDateString ();
 							}
-							if ( date == null ) date = emptyStr;
+							if ( date == null )
+							{
+								date = emptyStr;
+							}
 							String time = al.getTimeString ();
-							if ( time == null ) time = qMark;
+							if ( time == null )
+							{
+								time = qMark;
+							}
 							String days = al.getDaysString ();
-							if ( days == null ) days = zero;
-							if ( days.isEmpty () ) days = zero;
+							if ( days == null )
+							{
+								days = zero;
+							}
+							if ( days.isEmpty () )
+							{
+								days = zero;
+							}
 							int num = al.getNumber ();
 							if ( num <= 0 ) num = 1;
 							dtm.insertRow (num-1, new Object[]
@@ -1071,7 +1160,10 @@ public class TransferUtils
 							for ( int i = 0; i < cols; i++ )
 							{
 								String colName = model.getColumnName (i);
-								if ( colName == null ) colName = emptyStr;
+								if ( colName == null )
+								{
+									colName = emptyStr;
+								}
 								colNames.add (colName);
 							}
 							dtm.setColumnIdentifiers (colNames);
@@ -1091,17 +1183,35 @@ public class TransferUtils
 						for ( int i=0; i < ret.size (); i++ )
 						{
 							PhoneMessage msg = ret.get (i);
-							if ( msg == null ) continue;
+							if ( msg == null )
+							{
+								continue;
+							}
 							String id = msg.getID ();
-							if ( id == null ) id = emptyStr;
+							if ( id == null )
+							{
+								id = emptyStr;
+							}
 							String status = msg.getStatus ();
-							if ( status == null ) status = emptyStr;
+							if ( status == null )
+							{
+								status = emptyStr;
+							}
 							String phoneNum = msg.getRecipientNum ();
-							if ( phoneNum == null ) phoneNum = emptyStr;
+							if ( phoneNum == null )
+							{
+								phoneNum = emptyStr;
+							}
 							String datetime = msg.getDateTime ();
-							if ( datetime == null ) datetime = emptyStr;
+							if ( datetime == null )
+							{
+								datetime = emptyStr;
+							}
 							String msgBody = msg.getMessage ();
-							if ( msgBody == null ) msgBody = emptyStr;
+							if ( msgBody == null )
+							{
+								msgBody = emptyStr;
+							}
 							dtm.addRow (new Object[]
 								{
 									Integer.valueOf (id),
@@ -1551,7 +1661,14 @@ public class TransferUtils
 								ret.append (new String (dt.recv (null)));
 							}
 						} while ( read > 0 );
-						Thread.sleep(1000);
+						try
+						{
+							Thread.sleep (1000);
+						}
+						catch (InterruptedException ex)
+						{
+							// ignore
+						}
 						if ( dt.getAvailableBytes () > 0 )
 						{
 							// don't force any encodings,
@@ -1657,7 +1774,10 @@ public class TransferUtils
 			{
 				String portName = id.getName ();
 				// scan ports for "AT"-"OK"
-				if ( ! quiet ) System.out.print (tryPortStr + portName + ellipsis);
+				if ( ! quiet )
+				{
+					System.out.print (tryPortStr + portName + ellipsis);
+				}
 				try
 				{
 					DataTransporter dt = new DataTransporter (id);
@@ -1675,7 +1795,10 @@ public class TransferUtils
 						}
 						continue;
 					}
-					if ( ! quiet ) System.out.println (gotAnsStr);
+					if ( ! quiet )
+					{
+						System.out.println (gotAnsStr);
+					}
 					active++;
 
 					if ( replied != null )
@@ -1700,7 +1823,11 @@ public class TransferUtils
 							try
 							{
 								type = phoneTypes.get (portName);
-							} catch (Exception ex) {}
+							}
+							catch (Exception ex)
+							{
+								// ignore, defaults provided
+							}
 							if ( type == null )
 							{
 								type = emptyStr;
@@ -1741,7 +1868,10 @@ public class TransferUtils
 		}
 		if (active == 0)
 		{
-			if ( ! quiet ) System.out.println (noAnsStr);
+			if ( ! quiet )
+			{
+				System.out.println (noAnsStr);
+			}
 			return -1;
 		}
 		return 0;

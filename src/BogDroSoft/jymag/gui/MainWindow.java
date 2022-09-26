@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -64,7 +64,7 @@ public class MainWindow extends JFrame
 	private final MainWindow mw = this;
 
 	/** Current version number as a String. */
-	public static final String verString = "1.3";	// NOI18N
+	public static final String verString = "1.4";	// NOI18N
 
 	// synchronization variable:
 	private static final Object sync = new Object ();
@@ -110,23 +110,27 @@ public class MainWindow extends JFrame
 		try
 		{
 			Thread[] ths = new Thread[Thread.activeCount () * 5];
-			if ( ths != null )
+			final int nThreads = Thread.enumerate (ths);
+			for ( int i=0; i < nThreads; i++ )
 			{
-				final int nThreads = Thread.enumerate (ths);
-				for ( int i=0; i < nThreads; i++ )
+				String name = ths[i].getName ();
+				if ( name == null )
 				{
-					String name = ths[i].getName ();
-					if ( name == null ) continue;
-					if ( name.contains ("AWT") // NOI18N
-						|| name.contains ("Swing") // NOI18N
-						|| name.contains ("Image") // NOI18N
-					   )
-					{
-						ths[i].setUncaughtExceptionHandler (Utils.handler);
-					}
+					continue;
+				}
+				if ( name.contains ("AWT") // NOI18N
+					|| name.contains ("Swing") // NOI18N
+					|| name.contains ("Image") // NOI18N
+					)
+				{
+					ths[i].setUncaughtExceptionHandler (Utils.handler);
 				}
 			}
-		} catch (Throwable th) {}
+		}
+		catch (Throwable th)
+		{
+			// don't care for exceptions, this is optional
+		}
 
 		destDirName = CommandLineParser.getDstDirName ();
 		dBits = CommandLineParser.getDBits ();
@@ -784,7 +788,11 @@ public class MainWindow extends JFrame
 			{
 				JOptionPane.showMessageDialog (null, ex.toString (),
 					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception ex2) {}
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
 		}
 	}//GEN-LAST:event_aboutButActionPerformed
 
@@ -857,7 +865,11 @@ public class MainWindow extends JFrame
 			{
 				JOptionPane.showMessageDialog (null, ex.toString (),
 					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception ex2) {}
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
 		}
 	}//GEN-LAST:event_rawButActionPerformed
 
@@ -889,7 +901,11 @@ public class MainWindow extends JFrame
 			{
 				JOptionPane.showMessageDialog (null, ex.toString (),
 					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception ex2) {}
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
 		}
 	}//GEN-LAST:event_getCapButActionPerformed
 
@@ -1144,7 +1160,11 @@ public class MainWindow extends JFrame
 			{
 				JOptionPane.showMessageDialog (null, ex.toString (),
 					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception ex2) {}
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
 		}
 	}//GEN-LAST:event_signalButtonActionPerformed
 
@@ -1374,7 +1394,7 @@ public class MainWindow extends JFrame
 	 * Real program starting point.
 	 * @param args the command line arguments.
 	 */
-	public static void start (String args[])
+	public static void start (String args[]) throws ClassNotFoundException
 	{
 		// redirect stderr (caught and uncaught exceptions) to a file
 		logFile = Utils.redirectStderrToFile (logFile);
@@ -1384,6 +1404,12 @@ public class MainWindow extends JFrame
 
 		// parse the command line:
 		CommandLineParser.parse (args, sync, logFile);
+
+		// If we get here, it means that the command line didn't
+		// cause the program to exit and the GUI should be displayed.
+		// So check if the needed classes are available, just in
+		// case. Simply try to get one of the classes.
+		Class.forName ("gnu.io.CommPortIdentifier");	// NOI18N
 
 		try
 		{
@@ -1405,7 +1431,7 @@ public class MainWindow extends JFrame
 				new MainWindow ().setVisible (true);
 			}
 		});
-	}	// main ()
+	}	// start ()
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel IMEI;

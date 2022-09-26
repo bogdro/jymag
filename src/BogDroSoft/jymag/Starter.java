@@ -1,7 +1,7 @@
 /*
  * Starter.java, part of the JYMAG package.
  *
- * Copyright (C) 2009-2013 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2009-2014 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -42,7 +42,10 @@ public class Starter
 		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow")
 		.getString("Error");
 
-	private Starter () {}
+	private Starter ()
+	{
+		// private constructor so the class can't be instantiated
+	}
 
 	/**
 	 * JYMAG program starting point.
@@ -61,7 +64,15 @@ public class Starter
 			{
 				JOptionPane.showMessageDialog (null, startError,
 					errString, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception ex2) {}
+			}
+			catch (Exception ex2)
+			{
+				// ignore exceptions thrown when displaying an exception
+			}
+			// close the log file:
+			Utils.redirectStderrToFile (null);
+			// exit the program:
+			System.exit (-1);
 		}
 	}
 }
