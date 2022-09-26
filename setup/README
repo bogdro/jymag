@@ -1,0 +1,304 @@
+This is the README file for JYMAG (Java Your Music and Graphics), a program
+ for retrieving and sending multimedia and other objects from and to a Sagem
+ mobile phone (tested on Linux with a "Sagem MY X5-2").
+JYMAG can also serve as a general-purpose serial port terminal or a Java
+ library for programmers.
+
+Author: Bogdan Drozdowski, bogdandr @ op . pl
+License: GPLv3+
+
+========================= Running
+
+Requirements:
+- RxTx Java Transmission package from http://rxtx.qbang.org
+- JRE, the Java SE Runtime Environment >= (1.)6.0
+- permissions to use the serial ports
+- port locking permissions may be required by RxTx. Adding the user running
+  JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
+
+Using NetBeans: open the JYMAG directory as a NetBeans Project
+ and click "Run" (or press F6).
+
+By hand (after unpacking):
+	double-click the JYMAG\dist\JYMAG.jar file (works on MS Windows)
+		or
+	run.bat	(on MS Windows)
+		or
+	run.sh	(on Un*x)
+		or
+	java -jar JYMAG/dist/JYMAG.jar	(on Un*x)
+		or
+	java -jar JYMAG\dist\JYMAG.jar	(on MS Windows)
+
+Read the "INSTALL" file.
+
+========================= Running in the default language (no translations)
+
+Requirements:
+- RxTx Java Transmission package from www.rxtx.org
+- JRE, the Java Runtime Environment >= (1.)6.0
+- permissions to use the serial ports
+- port locking permissions may be required by RxTx. Adding the user running
+  JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
+
+Using NetBeans: open the JYMAG folder as a NetBeans Project,
+ right-click the project's root element in the project's tree on the
+ left side of the window (the "Projects" sub-window), then click "Properties".
+ Click "Run" in the tree and put
+	-Duser.language=en -Duser.country=US
+ in the "VM Options" field. Click OK and click "Run" (or press F6).
+
+By hand (after unpacking):
+	run-en.bat	(on MS Windows)
+		or
+	run-en.sh	(on Un*x)
+		or	(on Un*x)
+	java -jar -Duser.language=en -Duser.country=US JYMAG/dist/JYMAG.jar
+		or	(on MS Windows)
+	java -jar -Duser.language=en -Duser.country=US JYMAG\dist\JYMAG.jar
+
+Read the "INSTALL" file.
+
+========================= Compiling (if necessary)
+
+Requirements for compiling:
+
+- JDK, the Java Development Kit >= (1.)6.0
+- RxTx Java Transmission package from www.rxtx.org
+- the org.jdesktop.beansbinding package (contained in NetBeans, but perhaps
+	can be downloaded separately)
+
+Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
+ and click "Build Main Project" (or press F11) if it is your main project
+ (bold font). If it's not your main project, right-click the JYMAG project
+ icon and click "Build".
+
+Compiling using "ant" from NetBeans (you may need to provide the full
+ path to "ant"):
+
+	cd JYMAG-X.Y
+	ant jar
+
+Compiling by hand (you may need to provide the full path to "javac"):
+
+	- on Un*x shells try:
+		cd JYMAG/src/BogDroSoft/jymag/
+		CLASSPATH="$CLASSPATH:<path to netbeans>/javaN/modules/ext/beansbinding-A.B.C.jar" javac *.java
+
+	- on MS Windows this could work:
+		cd JYMAG\src\BogDroSoft\jymag
+		set CLASSPATH=%CLASSPATH%;<path to netbeans>\javaN\modules\ext\beansbinding-A.B.C.jar
+		javac *.java
+
+Replace "<path to netbeans>" with the path to your NetBeans installation
+directory, "A.B.C" with your beansbinding file's version number, "N" with the
+correct number in your directory name. You can, of course, specify the direct
+path to the beansbinding JAR file, if you got it separately.
+
+========================= Usage (GUI)
+
+Phone setup: connect it to the computer using a cable or IrDA or
+ whatever works. Switch the transmission on in the phone, if necessary.
+ If using a cable, select "Automatic speed" in the configuration.
+
+No need to connect to the phone. Start by selecting the tab you're
+ interested in (photos, ringtones, ...). Click on "Get list" to connect
+ to the phone and get the list of elements. Select the elements you wish
+ to download and click "Download selected". Choose the destination directory.
+ The downloaded files will show up in selected location.
+To upload an element, simply click the "Upload" button. Getting the
+ list isn't necessary. You can also drag&drop the files you want to upload
+ on any of the tables (except the alarms and SMS messages).
+To edit an alarm, double click the cell in the table. Keep the format
+ unchanged.
+To read an SMS message, select it in the table and choose "Download selected".
+ A new window will appear allowing you to read the message.
+To send an SMS message, click the "Upload" button. A new window will appear allowing
+ you to type the phone number and the message body.
+
+========================= Usage (command line)
+
+The following command-line (case-insensitive) options are supported:
+
+	    --conf <file>		- read configuration from <file>
+	    --databits <5,6,7,8>	- sets the number of data bits
+	    --delete-after-download     - delete the downloaded elements if
+					  downloaded succesfully
+	    --delete-alarm <N>          - delete the alarm number N
+	    --delete-element <ID>	- delete the element (file) with the
+					  given ID
+	    --delete-sms <N>		- delete the SMS message with ID=N
+	    --download-all-animations	- downloads all animations/videos
+					  from the phone and exits
+	    --download-all-events	- downloads all events from the phone
+					  and exits
+	    --download-all-photos	- downloads all photos from the phone
+					  and exits
+	    --download-all-ringtones	- downloads all ringtones from the
+	    				  phone and exits
+	    --download-all-todo		- downloads all to-do tasks from the
+					  phone and exits
+	    --download-all-vcards	- downloads all addressbook entries
+					  from the phone and exits
+	    --download-all		- combines all "download" options
+					  and exits
+	    --download-dir <dir>	- sets the default download directory
+	    --flow <none,soft,hard,soft+hard>	- sets the flow control mode
+	    --help			- display help
+	    --lang LL_CC_VV		- select the language to use by JYMAG:
+	    				  "LL" is the language, "CC" is the
+	    				  country code, "VV" is the variant.
+	    				  Separate them using underscores.
+					  Only LL is required.
+	    --license, --licence	- display license information
+	    --list-alarms		- list the alarms set in the phone
+	    --list-elements		- list phone elements (files)
+	    --list-sms			- display the SMS messages in the phone
+	    --parity <none, even, odd, space, mark>	- sets the parity mode
+	    --port <filename>		- sets the default port
+	    --scan			- scans available ports for "OK"
+	    				  answers and exits the program
+	    --send-sms <number> <msg>	- send the given <msg> message as an
+					  SMS to the given recipient <number>
+	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
+		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
+		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
+					- sets the port speed
+	    --stopbits <1,1.5,2>	- sets the number of stop bits
+	    --update-alarm "DD/MM/YY,HH:MM:SS",N,"days"	- updates the given
+					  alarm in the phone. N is the alarm
+					  number. Days are comma-separated
+					  numbers (1-Monday) or 0 for all days
+	    --upload <filename>		- uploads the given file to the phone
+					  and exits
+	    --version, -v		- display program version
+
+========================= Currently supported operations:
+
+1) Getting lists of: pictures, ringtones, addressbook entries,
+   to-do tasks, events, animations/videos, alarms and SMS messages
+2) Downloading:
+   a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG, WBMP,
+      unverified: TIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP, WMF, CGM, PMB
+   b) ringtones: MIDI, AMR, WAV, unverified: AIFF, IMY, AAC, MP3
+   c) addressbook entries (vCards)
+   d) to-do tasks
+   e) events (reminders, ...)
+   f) animation/videos: MNG, GIF, unverified: WMV, MP4, MPEG
+3) Uploading/updating/sending:
+   a) pictures: JPG, GIF, BMP, PNG, WBMP, unverified: EMS_GR, TIFF, PICT, AI,
+      EPS, PS
+   b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?), AMR,
+      unverified: IMY, ASG1, ASG2, MP3, MFI, AAC, AWB
+   c) addressbook entries (vCards)
+   d) to-do tasks
+   e) events (reminders, ...)
+   f) animation/videos: MNG, GIF, unverified: EMS_AN, MJPG, AVI, MP4, MPEG,
+      3GP, 3GP2, SG1, SG2, SSA
+   g) Java files: unverified: JAR, JAD, JAM
+   h) alarms
+   i) SMS messages
+4) Deleting pictures, ringtones, addressbook entries,
+   to-do tasks, events, animations/videos, alarms and SMS messages
+
+========================= Converting ringtones
+
+Some ringtones received from the phone may be in AMR format. You can
+ convert those to other formats using other software, like the free
+ "Mobile Media Converter". If it doesn't work, use the FFMPEG program
+ attached to the "Mobile Media Converter" like this:
+
+ ffmpeg -i Ring.amr -ar 44100 Ring.wav
+
+To convert a ringtone to a WAV format accepted by the phone, use the
+ following command:
+
+ ffmpeg -i <ringtone file> -ar 8000 -t 10 -ac 1
+	-acodec adpcm_ima_wav <output file>.wav
+
+(the number after "-t" is the ringtone duration in seconds). I've only been
+able to upload ringtones created with the above command. It may be possible
+to upload longer ringtones, in greater sampling rates, stereo, ..., but
+I haven't tried all that (my 30-second ringtones are rejected).
+
+========================= Translating
+
+To translate the program to your language, make a copy of each *.properties
+ file. Rename these files so they end with your language and country code,
+ for example:
+	AboutBox_en_GB.properties
+	MainWindow_de_DE.properties
+	RawCommunicator_pt_BR.properties
+ Then open each file in UTF-8 mode and translate the words AFTER the "=" in
+ each line. When you've finished all the files, send them to me. Remember,
+ UTF-8, not ISO-8859-*, not windows-*, not cp*.
+NOTE: If you change the words before the "=", your translations won't
+ be seen by the program.
+
+NOTE: Alternatively, use can use the NetBeans IDE to translate. Just open
+ the JYMAG project, right-click any of the main properties' file, choose
+ "Add" and "Locale". Choose your language and select OK. Now right-click
+ the chosen file and select "Open". Edit the strings in your language.
+
+========================= If not working
+
+1. The phone's port doesn't show up on the list.
+   Not JYMAG's fault. Make sure:
+   - the phone connects with a serial link (not as a USB mass storage device,
+     for example)
+   - you have installed a correct driver for the cable/IrDA/other devices
+   - the phone's port is not already in use
+   - you have the newest RxTx
+
+2. Getting the list(s) fails.
+   Click "Scan ports". If an answer is received, the correct port should be
+   selected in the combo box. If not, an error will show up. Try closing
+   the program and starting it at least 3 more times. If no success, check
+   your drivers and connection.
+
+3. The program doesn't start and gives
+   "class not found/java.lang.NoClassDefFoundError" messages.
+   Run java with its full path, like "/usr/bin/java -jar JYMAG.jar".
+   You can also try adding the path to RxTx to your CLASSPATH environment
+   variable (create one if it doesn't exist). Try adding both the directory
+   containing the RXTXcomm.jar file and the path to the file to CLASSPATH.
+
+4. Downloaded elements are corrupted.
+   Mine sometimes are corrupted too. I can't help it. Some elements get
+   downloaded correctly at the first attempt, some require a few attempts, and
+   some require a lot of attempts. Since it works one time and doesn't work
+   the other time, it's not JYMAG's fault. Since it works, the program is
+   written correctly. It's the connection that is unreliable. The original
+   program was even worse - the connection broke in the middle of transmission
+   and you had to click "Connect" over and over again and some pictures were
+   corrupted too. Have patience. If you know how to make this better, contact
+   me (e-mail at the top of this file).
+
+5. JYMAG sends a file, but the phone rejects it.
+   Check if your phone accepts the given file format, either by using the
+   capabilities' button in the main window, or by sending
+   	AT+KPSCAP="X"
+   (with the double quotes) in the "Manual commands" window. The X can be:
+   PICTURES, SOUNDS, VTODO, VEVENT, VCARDS, ANIMATIONS.
+
+========================= Reporting problems
+
+1. Check if you have the newest versions of JYMAG.
+2. Include your Java and RxTx version numbers. See if the program works with a
+   newer/older version of Java/RxTx. If it works with an older version, but
+   not with a new one, your problem is solved, but still tell me the
+   problematic version numbers.
+3. Include precise steps for reproducing the error, if possible. This will
+   make finding the problem easier.
+4. If the program crashed, include "jymag.log" in your report. It should be
+   in the current JYMAG working directory.
+5. If the program exited normally, but the "jymag.log" still exists after
+   closing the program and is not empty, include it in your report.
+6. Take all the information from the above steps and any additional
+   information you can give and send it to my e-mail address (you can find it
+   at the top of this file).
+
+========================= Legal info
+
+All trademarks, logos and names in this program are properties
+ of their respective owners and are given here only as an example.

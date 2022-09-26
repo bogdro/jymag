@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<META HTTP-EQUIV="Content-Type"       CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Language"   CONTENT="en">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META HTTP-EQUIV="X-Frame-Options"    CONTENT="DENY">
+<LINK rel="stylesheet" href="../rsrc/css/jymag.css" type="text/css">
+
+<TITLE> Tables with phone's files - JYMAG </TITLE>
+
+<link rel="alternate" type="text/html" href="../pl/tables.html" hreflang="pl" lang="pl" title="Wersja polska">
+
+<META NAME="Author" CONTENT="Bogdan D.">
+<META NAME="Description" CONTENT="JYMAG - Java Your Music And Graphics">
+<META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
+<META NAME="Language" CONTENT="en">
+<META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
+</HEAD><BODY>
+
+<h1 class="nag">JYMAG - Tables with phone's files</h1>
+<BR><BR>
+<hr>
+
+<div style="text-align: center;">
+<a href="../rsrc/img/main_window.png"><img src="../rsrc/img/main_window.png"
+alt="[Screenshot of the Main window with the pictures tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_ring.png"><img src="../rsrc/img/tab_ring.png"
+alt="[Screenshot of the Main window with the ringtones' tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_abook.png"><img src="../rsrc/img/tab_abook.png"
+alt="[Screenshot of the Main window with the phonebook tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_todo.png"><img src="../rsrc/img/tab_todo.png"
+alt="[Screenshot of the Main window with the TO-DO tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_events.png"><img src="../rsrc/img/tab_events.png"
+alt="[Screenshot of the Main window with the events' tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_videos.png"><img src="../rsrc/img/tab_videos.png"
+alt="[Screenshot of the Main window with the videos' tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_java.png"><img src="../rsrc/img/tab_java.png"
+alt="[Screenshot of the Main window with the Java tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_alarms.png"><img src="../rsrc/img/tab_alarms.png"
+alt="[Screenshot of the Main window with the alarms' tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+
+<a href="../rsrc/img/tab_sms.png"><img src="../rsrc/img/tab_sms.png"
+alt="[Screenshot of the Main window with the SMS tab]" style="margin: 20px 20px 20px 20px;" width="320" height="243"></a>
+</div>
+
+<p>
+These tabs display the files in the phone and allow downloading, uploading and deleting the elements.
+</p>
+
+In each tab there are four buttons:
+<ol>
+ <li>"Get list" - use this to get the list from the phone. The elements listed are the ones
+	applicable for the current tab. You can get all the lists, they don't overwrite
+	each other.
+	<br><br></li>
+ <li>"Download selected" (if available) - this button will present you with a window for you to select
+	a directory where the elements selected in the table should be downloaded to.<br>
+	The only exception is the SMS tab, where this button opens new windows with the
+	messages that you have selected to view.
+	<br><br></li>
+ <li>"Upload" (if available) - this button will present you with a window for you to select
+	a file to upload to the phone (the alarms' and SMS messages' tabs are exceptions).
+	The type of the files shown on the list is
+	determined by the current tab. Alternatively, you can drag&amp;drop files on the
+	table (except the alarms and SMS messages).
+	<br><br></li>
+ <li>"Delete selected" (if available) - use this to delete the elements selected in the table
+	from the phone.
+	<br><br></li>
+</ol>
+
+The tabs with alarms and SMS messages are exceptional. On the alarms' tab the buttons have
+ the following functionality:
+<ol>
+ <li>"Get list" - use this to get the list of the alarms from the phone. The list has four columns:
+	<ul>
+	 <li>"Alarm number" - the alarm's identification in the phone</li>
+	 <li>"Alarm date" - the date on which the alarm will work (DD/MM/YY format)</li>
+	 <li>"Alarm time" - the time of day at which the alarm will work (HH:MM:SS format)</li>
+	 <li>"Alarm days" - the days of the week on which the alarm will work
+		(any number of digits 1 to 7, separated by commas,
+		1 is Monday, 0 means all days)</li>
+	</ul>
+	You can edit the elements in the table (by double-clicking), but keep the format,
+	otherwise something may break.
+	<br><br></li>
+ <li>"Download selected" is disabled, because you can't download an alarm from the phone.
+	<br><br></li>
+ <li>"Update selected" - this button will cause the selected alarms to be updated in the phone
+	(usually after updating them in the table).
+	<br><br></li>
+ <li>"Delete selected" will cause the information about the selected alarms to be removed
+	from the phone. This will not cause the number of rows to change, because the number
+	of alarms is constant (even if they're not used).
+	<br><br></li>
+</ol>
+
+On the SMS tab the buttons have the following functionality:
+<ol>
+ <li>"Get list" - use this to get the list of the SMS messages from the phone. The list has five columns:
+	<ul>
+	 <li>"ID" - the phone identification number of the given message</li>
+	 <li>"Status" - the status of the message. <code>REC</code> means received,
+		<code>STO</code> means stored, <code>UNSENT</code> means not sent</li>
+	 <li>"Phone number" - the phone number of the sender of the given received message</li>
+	 <li>"Date/time" - the date and time the message was received</li>
+	 <li>"Message" - the body of the message</li>
+	</ul>
+	<br></li>
+ <li>"Download selected" will cause new windows to show up. These windows will allow you to read
+	the whole message easily.
+	<br><br></li>
+ <li>"Upload" - this button will cause a new window to show up where you can enter the recipient's
+	number and the message body and send the message (see below).
+	<br><br></li>
+ <li>"Delete selected" will cause the messages currently selected in the table to be deleted
+	from the phone.
+	<br><br></li>
+</ol>
+
+The window for sending SMS messages looks like this:
+<div class="c">
+<img src="../rsrc/img/sms_msg.png" alt="[Screenshot of the SMS sending window]">
+</div>
+
+<ol>
+ <li>Enter the recipient's phone number</li>
+ <li>Enter the body of the message</li>
+ <li>Press "Send" to send the message</li>
+ <li>Press "Exit" to close the window</li>
+ <li>Use the font size spinner to adjust the font size of this window</li>
+</ol>
+
+</body></html>
+

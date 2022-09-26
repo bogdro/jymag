@@ -1,3 +1,42 @@
+2011-11-06	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.1:
+	  Listing, reading, sending and deleting SMS messages. Improved
+	  accessibility. GUI improvements. A short manual added.
+	* DataTransporter.java, JYMAGTransferHandler.java, ConfigFile.java,
+	  PhoneAlarm.java, PhoneMessage.java, RawCommunicator.java,
+	  SignalDisplayer.java, TransferUtils.java, Utils.java,
+	  MainWindow.java, CommandLineParser.java, PhoneElement.java:
+	  minor memory usage & performance improvements.
+	* DataTransporter.java: added a method to set the message storage,
+	  a new version of the sendMessage() method.
+	* MainWindow.java: a new tab for SMS messages. The tab panel now
+	  correctly resizes vertically.
+	* SMSWindow.java: a new window for reading and sending SMS messages.
+	* SignalDisplayer.java: added the window icon. Now the window can be
+	  closed when the phone is not connected to the given port.
+	* RawCommunicator.java: allow sending whitespace alone by itself. The
+	  send button is now disabled while waiting for the reply. The sent
+	  commands and replies' panel now resizes also horizontally.
+	* README: added instructions for translating JYMAG in NetBeans, typos
+	  fixed. Added new options: --delete-element, --list-alarms,
+	  --list-elements, --list-sms, --delete-sms.
+	* CommandLineParser.java: fixed the --download-all-animations option.
+	  Added options for listing, sending and deleting SMS messages. Added
+	  options for listing and deleting phone elements (files). Added an
+	  optin to list the alarms.
+	* TransferUtils.java: better error code returning. Using separate
+	  variables to wait for the threads. Added methods for listing,
+	  sending and deleting SMS messages.
+	* manual: added a short manual for the program.
+	* Makefile: added creating the PDF version of the manual and added the
+	  manual to the binary distribution. Added javadoc distribution.
+	* PhoneAlarm.java, PhoneMessage.java, PhoneElement.java: added
+	  toString() methods for command line operation.
+	* setup: a directory with files for the Windows installer
+	* setup/launch4j-jymag.xml: the launch4j configuration file.
+	* setup/jymag.nsi: the NSIS installer for JYMAG.
+
 2011-04-26	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 1.0:

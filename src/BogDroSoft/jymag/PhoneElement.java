@@ -37,6 +37,16 @@ public class PhoneElement
 	private String type;
 	private String filename;
 
+	private static final byte[] quot = new byte[] { '"' };					// NOI18N
+
+	private static final String comma = ",";						// NOI18N
+	private static final String dot = ".";							// NOI18N
+	private static final String toStringStart = "PhoneElement[";				// NOI18N
+	private static final String toStringEnd = "]";						// NOI18N
+	private static final String toStringID = "ID=";						// NOI18N
+	// the rest can be empty. The user needs to know only where the ID is
+	private static final String toStringName = "";						// NOI18N
+
 	/**
 	 * Creates a new instance of PhoneElement.
 	 * @param ID ID number of the element in the phone.
@@ -93,7 +103,6 @@ public class PhoneElement
 	 */
 	public synchronized String getFilename ()
 	{
-		byte[] quot = new byte[] { '"' };	// NOI18N
 		return filename
 			.replaceAll ("\\s", "_")		// NOI18N
 			.replaceAll ("\\.", "_")		// NOI18N
@@ -123,5 +132,17 @@ public class PhoneElement
 			.replaceAll ("\\?", "_")		// NOI18N
 			.replaceAll ("/", "_")			// NOI18N
 			;
+	}
+
+	/**
+	 * Returns a String representation of this PhoneElement.
+	 * @return a String representation of this PhoneElement. The syntax is
+	 *	PhoneMessage[ID=xxx,name].
+	 */
+	@Override
+	public synchronized String toString ()
+	{
+		return toStringStart + toStringID + id + comma + toStringName
+			+ filename + dot + getExt () + toStringEnd;
 	}
 }

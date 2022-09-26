@@ -48,8 +48,6 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * A utility class, containing some useful methods and fields.
- * This is certainly NOT the place for keyListeners, because they
- * wouldn't know which window to close.
  * @author Bogdan Drozdowski
  */
 public class Utils
@@ -107,6 +105,24 @@ public class Utils
 	 * extensions, used for file uploading.
 	 */
 	public final static Hashtable<String, Integer> javafileIDs;
+
+	private static final String emptyStr = "";				// NOI18N
+	private static final String dash = "-";					// NOI18N
+	private static final String colon = ":";				// NOI18N
+	private static final String comma = ",";				// NOI18N
+	private static final String zero = "0";					// NOI18N
+	private static final String space = " ";				// NOI18N
+	private static final String apos = "'";					// NOI18N
+	private static final String msgStart = ", Message='";			// NOI18N
+	private static final String dataStart = ", Data='";			// NOI18N
+	private static final String atStr = "\tat\t";				// NOI18N
+	private static final String unknClass = "<Unknown class>";		// NOI18N
+	private static final String dot = ".";					// NOI18N
+	private static final String unknMethod = "<Unknown method>";		// NOI18N
+	private static final String lParen = "(";				// NOI18N
+	private static final String rParen = ")";				// NOI18N
+	private static final String unknFile = "<Unknown file>";		// NOI18N
+	private static final String allFileNames = "*.";			// NOI18N
 
 	static
 	{
@@ -241,12 +257,12 @@ public class Utils
 			else if ( month == Calendar.NOVEMBER  ) month = 11;
 			else if ( month == Calendar.DECEMBER  ) month = 12;
 
-			String time = c.get (Calendar.YEAR) + "-"		// NOI18N
-				+ ((month<10)?  "0" : "" ) + month  + "-"	// NOI18N
-				+ ((day<10)?    "0" : "" ) + day    + " "	// NOI18N
-				+ ((hour<10)?   "0" : "" ) + hour   + ":"	// NOI18N
-				+ ((minute<10)? "0" : "" ) + minute + ":"	// NOI18N
-				+ ((second<10)? "0" : "" ) + second + ": ";	// NOI18N
+			String time = c.get (Calendar.YEAR) + dash
+				+ ((month<10)?  zero : emptyStr ) + month  + dash
+				+ ((day<10)?    zero : emptyStr ) + day    + space
+				+ ((hour<10)?   zero : emptyStr ) + hour   + colon
+				+ ((minute<10)? zero : emptyStr ) + minute + colon
+				+ ((second<10)? zero : emptyStr ) + second + colon + space;
 
 			if ( System.out != null )
 			{
@@ -267,12 +283,12 @@ public class Utils
 			{
 				if ( System.out != null )
 				{
-					System.out.print (", Message='" + msg + "'");	// NOI18N
+					System.out.print (msgStart + msg + apos);
 					System.out.flush ();
 				}
 				if ( System.err != null )
 				{
-					System.err.print (", Message='" + msg + "'");	// NOI18N
+					System.err.print (msgStart + msg + apos);
 					System.err.flush ();
 				}
 			}
@@ -284,12 +300,12 @@ public class Utils
 			{
 				if ( System.out != null )
 				{
-					System.out.print (", Data='" + data.toString () + "'");	// NOI18N
+					System.out.print (dataStart + data.toString () + apos);
 					System.out.flush ();
 				}
 				if ( System.err != null )
 				{
-					System.err.print (", Data='" + data.toString () + "'");	// NOI18N
+					System.err.print (dataStart + data.toString () + apos);
 					System.err.flush ();
 				}
 			}
@@ -299,12 +315,12 @@ public class Utils
 		{
 			if ( System.out != null )
 			{
-				System.out.println ();	// NOI18N
+				System.out.println ();
 				System.out.flush ();
 			}
 			if ( System.err != null )
 			{
-				System.err.println ();	// NOI18N
+				System.err.println ();
 				System.err.flush ();
 			}
 		} catch (Throwable e) {}
@@ -322,7 +338,7 @@ public class Utils
 						String file = ste[i].getFileName ();
 						String function = ste[i].getMethodName ();
 						int line = ste[i].getLineNumber ();
-						String toShow = "\tat\t";	// NOI18N
+						String toShow = atStr;
 						if ( clazz != null )
 						{
 							// let's display only our files
@@ -335,25 +351,25 @@ public class Utils
 						}
 						else
 						{
-							toShow += "<Unknown class>";	// NOI18N
+							toShow += unknClass;
 						}
 						if ( function != null )
 						{
-							toShow += "." + function;	// NOI18N
+							toShow += dot + function;
 						}
 						else
 						{
-							toShow += ".<Unknown method>";	// NOI18N
+							toShow += dot + unknMethod;
 						}
 						if ( file != null )
 						{
-							toShow += " (" + file;	// NOI18N
+							toShow += space + lParen + file;
 						}
 						else
 						{
-							toShow += " (<Unknown file>";	// NOI18N
+							toShow += space + lParen + unknFile;
 						}
-						toShow += ":" + String.valueOf (line) + ")";	// NOI18N
+						toShow += colon + String.valueOf (line) + rParen;
 
 						if ( System.out != null )
 						{
@@ -515,6 +531,7 @@ public class Utils
 			{
 				dirSep = System.getProperty ("file.separator", "/");	// NOI18N
 			} catch (Exception e) {}
+			if ( dirSep == null ) dirSep = File.separator;
 			if ( dirSep == null ) dirSep = "/";	// NOI18N
 			String[] dirs = new String[7];
 			try
@@ -549,7 +566,7 @@ public class Utils
 			for ( i = 0; i < dirs.length; i++ )
 			{
 				if ( dirs[i] == null ) continue;
-				if ( dirs[i].length () == 0 ) continue;
+				if ( dirs[i].isEmpty () ) continue;
 				try
 				{
 					System.setErr (new PrintStream (new File (
@@ -585,10 +602,10 @@ public class Utils
 				if ( f.isDirectory () ) return true;
 				String name = f.getName ();
 				if ( name == null ) return false;
-				if ( name.contains (".") && filetype != null )	// NOI18N
+				if ( name.contains (dot) && filetype != null )
 				{
 					if ( filetype.containsKey (name.substring
-						(name.lastIndexOf (".")+1)	// NOI18N
+						(name.lastIndexOf (dot)+1)
 						.toLowerCase (Locale.ENGLISH)))
 
 						return true;
@@ -599,18 +616,18 @@ public class Utils
 			@Override
 			public String getDescription ()
 			{
-				String desc = (description != null)? description : "";	// NOI18N
+				String desc = (description != null)? description : emptyStr;
 				Enumeration<String> keys = filetype.keys ();
 				if ( keys != null )
 				{
-					desc += " (";	// NOI18N
+					desc += space + lParen;
 					while ( keys.hasMoreElements () )
 					{
-						desc += "*." + keys.nextElement () + ", ";	// NOI18N
+						desc += allFileNames + keys.nextElement () + comma + space;
 					}
 					// remove the last comma and space
 					desc = desc.substring (0, desc.length () - 2);
-					desc += ")";	// NOI18N
+					desc += rParen;
 				}
 				return desc;
 			}
@@ -629,7 +646,7 @@ public class Utils
 		if ( System.err != null ) System.err.close ();
 		// remove the log file if empty
 		File log = new File (filename);
-		if ( log.exists () && log.length () == 0 ) log.delete ();
+		if ( log.exists () && log.length() == 0 ) log.delete ();
 		System.exit (retval);
 	}
 
@@ -735,7 +752,7 @@ public class Utils
 				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("SENDING");
 			else if ( this.equals (STATUS.RECEIVING) )
 				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("RECEIVING");
-			return "";	// NOI18N
+			return emptyStr;
 		}
 	}
 

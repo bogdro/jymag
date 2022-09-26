@@ -58,7 +58,10 @@ public class JYMAGTransferHandler extends TransferHandler
 	private final JFrame parent;
 
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
-	private static DataFlavor uriFileListFlavor = null;
+	private static volatile DataFlavor uriFileListFlavor = null;
+	private static final String uriFileListFlavorType = "text/uri-list;class=java.lang.String";	// NOI18N
+
+	private static final String newLines = "\r\n";	// NOI18N
 
 	/**
 	 * Creates a new TransferHandler that takes its transfer
@@ -100,7 +103,7 @@ public class JYMAGTransferHandler extends TransferHandler
 		{
 			try
 			{
-				uriFileListFlavor = new DataFlavor ("text/uri-list;class=java.lang.String");	// NOI18N
+				uriFileListFlavor = new DataFlavor (uriFileListFlavorType);
 			}
 			catch (ClassNotFoundException ex)
 			{
@@ -171,7 +174,7 @@ public class JYMAGTransferHandler extends TransferHandler
 					Object data = t.getTransferData (uriFileListFlavor);
 					if ( data != null )
 					{
-						String[] fileURIs = data.toString ().split ("\r\n");	// NOI18N
+						String[] fileURIs = data.toString ().split (newLines);
 						if ( fileURIs != null )
 						{
 							for ( String s : fileURIs )

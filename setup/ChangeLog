@@ -1,0 +1,326 @@
+2011-11-06	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.1:
+	  Listing, reading, sending and deleting SMS messages. Improved
+	  accessibility. GUI improvements. A short manual added.
+	* DataTransporter.java, JYMAGTransferHandler.java, ConfigFile.java,
+	  PhoneAlarm.java, PhoneMessage.java, RawCommunicator.java,
+	  SignalDisplayer.java, TransferUtils.java, Utils.java,
+	  MainWindow.java, CommandLineParser.java, PhoneElement.java:
+	  minor memory usage & performance improvements.
+	* DataTransporter.java: added a method to set the message storage,
+	  a new version of the sendMessage() method.
+	* MainWindow.java: a new tab for SMS messages. The tab panel now
+	  correctly resizes vertically.
+	* SMSWindow.java: a new window for reading and sending SMS messages.
+	* SignalDisplayer.java: added the window icon. Now the window can be
+	  closed when the phone is not connected to the given port.
+	* RawCommunicator.java: allow sending whitespace alone by itself. The
+	  send button is now disabled while waiting for the reply. The sent
+	  commands and replies' panel now resizes also horizontally.
+	* README: added instructions for translating JYMAG in NetBeans, typos
+	  fixed. Added new options: --delete-element, --list-alarms,
+	  --list-elements, --list-sms, --delete-sms.
+	* CommandLineParser.java: fixed the --download-all-animations option.
+	  Added options for listing, sending and deleting SMS messages. Added
+	  options for listing and deleting phone elements (files). Added an
+	  optin to list the alarms.
+	* TransferUtils.java: better error code returning. Using separate
+	  variables to wait for the threads. Added methods for listing,
+	  sending and deleting SMS messages.
+	* manual: added a short manual for the program.
+	* Makefile: added creating the PDF version of the manual and added the
+	  manual to the binary distribution. Added javadoc distribution.
+	* PhoneAlarm.java, PhoneMessage.java, PhoneElement.java: added
+	  toString() methods for command line operation.
+	* setup: a directory with files for the Windows installer
+	* setup/launch4j-jymag.xml: the launch4j configuration file.
+	* setup/jymag.nsi: the NSIS installer for JYMAG.
+
+2011-04-26	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.0:
+	  Code changes and simplification. Drag&drop support. More terminal
+	  operations in RawCommunicator. Improved accessibility. Added signal
+	  power display.
+	* PhoneAlarm.java (PhoneAlarm, setDays): added a check if the set
+	  of days contains 0, which means that all days should be enabled.
+	* RawCommunicator.java (sendButActionPerformed): using a SwingWorker
+	  to perform phone operations. Command area disabled during processing.
+	* CapabilityWindow.java (getCapButActionPerformed): using a
+	  SwingWorker to perform phone operations.
+	* DataTransporter.java: added untested methods for sending, receiving,
+	  deleting and getting the list of SMS messges (nothing more possible
+	  because of the unknown format). Added methods for clearing and
+	  setting the RTS and DTR signals. Added method for reading the signal
+	  power. Added methods that check the state of the signals.
+	* PhoneMessage.java: a class for phone message manipulation.
+	* MainWindow.java (MainWindow): the videos', java's and alarms' tables
+	  now also have mouse listeners that select all the rows when the user
+	  clicks on the table header. Moved all transport-related code to
+	  TransferUtils.java, removing the dependency on rxtx from this class.
+	* TransferUtils.java: a new class with utility methods connected to
+	  ports and transfering data.
+	* Utils.java (createOpenFileChooser): a method for creating
+	  JFileChoosers, moved from MainWindow.java.
+	* Utils.java (redirectStderrToFile): a method to redirect the
+	  standard error output to a log file, moved from MainWindow.java.
+	* Utils.java (closeProgram): a method that closes the whole program,
+	  moved from MainWindow.java.
+	* Utils.java (TableMouseListener): added a listener class for table
+	  header clicks.
+	* Utils.java (updateStatusLabel, STATUS): a method for seeing the
+	  status label and enumeration of program states, moved from
+	  MainWindow.java.
+	* README: added a method for building JYMAG with ant. Updated with
+	  drag&drop. Updated with information about alarm clocks.
+	* Utils.java (EscKeyListener): added a listener class for the Esc key.
+	  Removed all the KL inner classes from the GUI windows.
+	* DataTransporter.java (findBytes): fixed an ArrayIndexOutOfBounds
+	  exception.
+	* JYMAGTransferHandler.java: drag&drop support.
+	* RawCommunicator.java: pushbutton for the RTS and DTR signal, labels
+	  for the RI, CTS, DSR and DCD signals. Added the ability to send a
+	  file to the phone.
+	* SignalDisplayer.java: a window which displays the signal power
+	  detected by the phone.
+
+2010-08-01	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.9:
+	  Each window is now in a ScrollPane, so if the contents is too big
+	  to fit, scroll bars are shown. Each window now has a font size
+	  spinner to allow easy changing the font size for the user. Run
+	  jlint on the code and fixed some problems.
+	* MainWindow.java (MainWindow, loadConfButActionPerformed): verifying
+	  window size and position for the window to be visible.
+	* MainWindow.java (downloadButActionPerformed): Better exception
+	  messages on failed transfers.
+	* ConfigFile.java: reading and saving the font size.
+	* DataTransporter.java: added methods for powering off the phone,
+	  telling which PIN number is the phone waiting for (if any) and for
+	  sending that PIN number. These methods are unverified. Moved
+	  transport-realted code from MainWindow and CapabilityWindow to this
+	  class. Added methods for getting the number of supported alarms,
+	  getting the list of currently-enabled alarms, adding new alarms and
+	  deleting alarms.
+	* PhoneAlarm.java: a new class represning alarm clocks/times.
+	* MainWindow.java: support for getting list of, updating and deleting
+	  phone alarms.
+	* Starter.java: fixed the startup error message displaying.
+
+2009-11-08	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.8:
+	  Fix for downloading non-Sagem JPG files. Unchecked downloading of CGM
+	  (the most common CGM types, at least), WMF and PMB files. Displaying
+	  the IMEI and subscriber phone numbers and additional phone type.
+	* DataTransporter.java (getFile): the second match in a double match
+	  in JPG files' downloading now has to end with 0xFF, this fixes some
+	  problems with non-Sagem photos. Unchecked downloading of CGM, WMF
+	  and PMB files.
+	* ConfigFile.java (read): more friendly error messages in exceptions.
+	* ConfigFile.java: Patterns are now case-insensitive. Other minor
+	  fixes and enhancements.
+	* MainWindow.java (downloadButActionPerformed): separate the filename
+	  from the "exists" message with a space.
+	* README: updates in build instructions, other small fixes.
+	* MainWindow, CapabilityWindow, DataTransporter, RawCommunicator:
+	  synchronizing only on final fields.
+	* AboutBox.java: change e-mail subject
+	* MainWindow.java: perform prepare operations on the file choosers just
+	  once. If configuration file says the window wasn't maximized,
+	  unmaximize it, to allow position and size changes. Use Locale.ENGLISH
+	  in String.toLowerCase(). Displaying the IMEI and subscriber phone
+	  numbers and additional phone type. Catching Throwables when trying
+	  to launch new windows.
+	* PhoneElement (getExt): use Locale.ENGLISH in String.toLowerCase().
+	* DataTransporter.java (putFile): use Locale.ENGLISH in
+	  String.toLowerCase().
+	* Utils.java: updated initial size of ringfileIDs.
+	* Starter.java: a new main class that tries to launch the program or
+	  displays an error to the user.
+
+2008-11-15	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.7:
+	  Verified uploading of AMR ringtones.
+	  Unchecked uploading of: IMY, ASG1, ASG2, EMS_GR, EMS_AN, SSA,
+	  MJPG, MP3, MFI, AAC, AWB, TIFF, PICT, AI, EPS, PS, SG1, SG2, AVI,
+	  MP4, MPEG, MPG, 3GP, 3GPP, 3G2, JAR, JAD, JAM. Added JIF as an alias
+	  for JPEG, VCS as an alias for ICS, M4A as an alias for AAC.
+	  Added internationalization (i18n) support and Polish localization. Moved
+	  the resources to a package BogDroSoft.jymag.rsrc, under BogDroSoft.jymag.
+	* Utils.java (handleException): allow Throwables, not only Exceptions.
+	  Catching Throwables in the method.
+	* Utils.java: Added a Hashtable for Java files.
+	* DataTransporter.java: better JPG downloading (relying only on two
+	  header bytes; this should allow downloading Exif and MJPEG files),
+	  added unchecked downloading of: AIFF, IMY, AAC (MPEG4-AAC), MPEG4,
+	  GZIP, ZIP/JAR, some MPEG audio including MP3s, WMV, XML/SVG/anything
+	  that starts with "<!DOCTYPE", midlets' JAD files.
+	* MainWindow.java: added key listeners to Animation/Video tab, so that
+	  the Esc key works. Changed JPanels to JScrollPanes, so the users can
+	  scroll them if not all GUI elements are visible. Fixed a bug when
+	  "ATIMEI" was displayed instead of the phone type. Added a button
+	  which opens a window where you can check the phone's capabilities.
+	  Added a possibility to load and save the current configuration
+	  (port and main window settings). Fixed refreshing the phone type
+	  and firmware labels after next scans. Added a default exception
+	  handler for threads, so hopefully every important exception will get
+	  logged into the log file. Added a '--lang' command-line option which
+	  allows to set the language used by JYMAG. Changed the flow control combo
+	  to two checkboxes, to allow both software and hardware flow control. The
+	  '--help' option now displays the command-line options in alphabetical
+	  order. Added a '--conf' option to read configuration from a file at
+	  startup. New upload and download icons. New program icon.
+	* ConfigFile.java: a new class for dealing with configuration file
+	  loading and saving.
+	* README: upgrade and fixes
+	* PhoneElement.java (getExt): added more extensions.
+	* run.sh, run.bat: path corrections and upgrade.
+	* run-en.sh, run-en.bat: these files allow running the program in
+	  English, no matter what the system language is.
+
+2008-08-13	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.6:
+	  Moving listeners to private inner classes and minimizing the number
+	  of publicly-available methods. Allowing uploading of addressbook
+	  entries, to-do entries, events/tasks, WBMP images, MNG animations. New
+	  icons for download and upload. Downloading the list of animations/videos.
+	  Allowing downloading of WBMP images and MNG animations. Allowing deleting
+	  animations.
+	* AboutBox: a new class displaying the "About..." window with author,
+	  www, license and thanks info. The links are clickable and do the
+	  expected things (almost).
+	* MainWindow.java: The download button now displays a "Save" dialog
+	  instead of "Open". Clicking on any table header selects all rows.
+	  Deleting: setting the status to "sending" just once. Renamed
+	  "Events" to "Events/Tasks". Added supported file extensions to
+	  upload-mode file choosers. Added different background colours for
+	  different tabs. The current elements are now local to prevent data
+	  inconsistency. Added a progress bar. Making all available port
+	  speeds visible at the same time. Added a phone-type label and receiving
+	  phone type when "Scan" is pressed. Added the program version to the
+	  title bar. A new tab for animations/videos. Added an "Exit" button.
+	* package "gfx" renamed to "rsrc" (because the license file was added,
+	  the package is not only-graphics anymore).
+	* Utils.java: added the magic numbers for TO-DOs (thus also for the
+	  events as they are the same), addressbook files, WBMP images, MNG
+	  animations/videos. Corrected exception displaying. Added a new file
+	  extension (*.vcrd) for vCards.
+	* RawCommunicator.java: The command field now expands along with the
+	  window. Empty response won't add an empty new line in the response
+	  area. After sending the command, the focus returns to the
+	  command-typing area.
+	* DataTransporter.java: Fixed saving unknown files (too many bytes were
+	  written). Added the WBMP header and the MNG header. Added a check if the
+	  port still exists when trying to open (this doesn't check "COM*" ports,
+	  because I don't know if it would work). Had to do it, because when a
+	  port disappears (unplugged etc.), RxTx crashes the program.
+
+2008-07-12	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.5:
+	* DataTransporter.java: Better contents matching using byte arrays
+	  instead of Strings. Now downloading also non-Sagem photos. Better
+	  checking for transmission end. Better waiting for data.
+	* DataTransporter.java (putFile): better transmission restarting.
+	* PhoneElement.java (getFilename): removing more unwanted characters
+	  from the file name: dots, commas, parenthesis, braces, brackets,
+	  colons and many more.
+	* README: added a note in case the program doesn't start, a note
+	  about downloaded elements being sometimes corrupted and a note about
+	  how to report errors.
+	* MainWindow.java: added icons for the tabs. Redirect standard error
+	  stream to a file to save exceptions for easier bug reporting. Using
+	  SwingWorker threads to do long-lasting background jobs, so that the
+	  GUI remains respondive. Central exception handling. A new label with
+	  the current program state. A new label with the currently selected
+	  phone's firmware version. File choosing windows now all remember the
+	  last used directory. More upload error messgaes, reflecting the changes
+	  in file upload. Changed download dialog box to "save" type.
+	* Utils.java: a new utility class containig some useful methods and
+	  fields.
+
+2008-04-08	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.4:
+	  - icons moved to a separate directory/package
+	  - a new window, for manual command sending. Pressing Esc anywhere
+	    exits this window
+	  - added the possibility to remove elements from the phone
+	  - added a command-line option to delete the downloaded elements
+	    after successful downloading
+	  - pressing Esc anywhere in the main window closes the program
+	  - marked non-translatable strings
+	* DataTransporter.java: added a maximum number of command sending/
+	  data receiving attempts. This fixes the hanging. Fixed bug with
+	  unrecognised file type - the contents was written twice.
+
+2008-03-30	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.3:
+	  - downloading addressbook entries (vCards)
+	  - downloading "to do" tasks
+	  - downloading events (like reminders)
+	  - fixed bug with the "current" elements
+	  - added Web address of JYMAG in the "About" box
+	  - added icons to buttons
+	* Datatransporter.java (open): fixed a serious bug in port parameter
+	  setting, better checking for float equality in stop bits setting.
+	* PhoneElement.java (getExt): added preferred file extensions for
+	  vCards and vCalendars/iCalendars.
+	* MainWindow.java (getElementsOfType): fixed bug with too early port
+	  closing
+	* MainWindow.java: fixed bug with file choosers. Better layout in
+	  maximized window.
+
+2008-03-26	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.2:
+	  - uploading and downloading WAV ringtones
+	* README: add a command to convert ringtones to accepted WAV format,
+	  new command-line options included
+	* MainWindow.java:
+	  - fixed bug with multiple "Get list" clicking.
+	  - fixed bug with multiple port selection
+	  - allowing file saving into another directory
+	  - new command-line options:
+	    --download-dir <dir>	- sets the default directory
+	    --flow <none,soft,hard>	- sets the flow control mode
+	    --port <filename>		- sets the default port
+	    --parity <none, even, odd, space, mark>	- sets the parity mode
+	    --databits <5,6,7,8>	- sets the number of data bits
+	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
+		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
+		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
+					- sets the port speed
+	    --stopbits <1,1.5,2>	- sets the number of stop bits
+	    --upload <filename>		- uploads the given file to the phone
+	    --scan			- scans available ports for answers
+	    --download-all-photos	- downloads all photos from the phone
+	    --download-all-ringtones	- downloads all ringtones from the phone
+	    --download-all		- always combines all "download" options
+	  - messages displayed in more than 1 place moved to dedicated variables
+	  - most Strings for translations moved to dedicated variables
+	  - remember last used directory (during the current session)
+	  - pattern creation moved to main().
+	* DataTransporter.java (test): now sending "AT" three times
+	* DataTransporter.java (putFile): double check if the file has a
+	  supported extension
+
+2008-03-22	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.1 features:
+	  - port scanning
+	  - setting port parameters
+	  - retrieving the list of photos
+	  - retrieving the list of ringtones
+	  - retrieveing JPG, GIF, BMP and PNG pictures
+	  - retrieveing MIDI and AMR ringtones
+	  - uploading JPG, GIF, BMP and PNG pictures
+	  - uploading MIDI ringtones
+	  - command-line options: --help, -h, -?, /?, --version, -v,
+	    --license, --licence

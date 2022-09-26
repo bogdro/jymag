@@ -31,7 +31,9 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -47,28 +49,42 @@ import javax.swing.SwingWorker;
 public class TransferUtils
 {
 	// ------------ i18n stuff
-	private static final String tryPortStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Trying_port_");
-	private static final String gotAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Got_answer!");
-	private static final String noAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
-	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
-	private static final String unsuppType = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Unsupported_file_type:");
-	private static final String getFileStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_file");
+	private static final ResourceBundle rb = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String tryPortStr = rb.getString("Trying_port_");
+	private static final String gotAnsStr = rb.getString("Got_answer!");
+	private static final String noAnsStr = rb.getString("No_answers_received");
+	private static final String errString = rb.getString("Error");
+	private static final String unsuppType = rb.getString("Unsupported_file_type:");
+	private static final String getFileStr = rb.getString("Getting_file");
 	// error messages for file upload:
-	private static final String uploadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_upload_init_failed");
-	private static final String uploadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_names_length_failed");
-	private static final String uploadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_name_failed");
-	private static final String uploadMsg4  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_phone");
-	private static final String uploadMsg5  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_not_accepted");
-	private static final String uploadMsg6  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Closing_transmission_failed");
-	private static final String uploadMsg7  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
-	private static final String uploadMsg8  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
-	private static final String uploadMsg9  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_JYMAG");
-	private static final String uploadMsg10 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Number_of_attempts_exceeded");
-	private static final String uploadMsg11 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
+	private static final String uploadMsg1  = rb.getString("File_upload_init_failed");
+	private static final String uploadMsg2  = rb.getString("Sending_file_names_length_failed");
+	private static final String uploadMsg3  = rb.getString("Sending_file_name_failed");
+	private static final String uploadMsg4  = rb.getString("Format_not_suported_by_phone");
+	private static final String uploadMsg5  = rb.getString("File_not_accepted");
+	private static final String uploadMsg6  = rb.getString("Closing_transmission_failed");
+	private static final String uploadMsg7  = rb.getString("Exception_occurred");
+	private static final String uploadMsg8  = rb.getString("Incorrect_parameter");
+	private static final String uploadMsg9  = rb.getString("Format_not_suported_by_JYMAG");
+	private static final String uploadMsg10 = rb.getString("Number_of_attempts_exceeded");
+	private static final String uploadMsg11 = rb.getString("Incorrect_parameter");
 	// error messages for file download:
-	private static final String downloadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
-	private static final String downloadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_data");
-	private static final String downloadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
+	private static final String downloadMsg1  = rb.getString("Exception_occurred");
+	private static final String downloadMsg2  = rb.getString("No_data");
+	private static final String downloadMsg3  = rb.getString("Incorrect_parameter");
+
+
+	private static final String emptyStr = "";				// NOI18N
+	private static final String comma = ",";				// NOI18N
+	private static final String dot = ".";					// NOI18N
+	private static final String colon = ":";				// NOI18N
+	private static final String space = " ";				// NOI18N
+	private static final String apos = "'";					// NOI18N
+	private static final String filenameForbiddenCharsRegex = "\\s";	// NOI18N
+	private static final String filenameForbiddenCharsReplace = "_";	// NOI18N
+	private static final String zero = "0";					// NOI18N
+	private static final String qMark = "?";				// NOI18N
+	private static final String ellipsis = "...";				// NOI18N
 
 	// non-instantiable
 	private TransferUtils () {}
@@ -100,7 +116,6 @@ public class TransferUtils
 		if ( f == null ) return -7;
 		if ( ! f.exists () || ! f.canRead () || ! f.isFile () ) return -8;
 
-		final String dot = ".";		// NOI18N
 
 		final String fname = f.getName ();
 		if ( ! fname.contains (dot) ) return -9;
@@ -113,13 +128,14 @@ public class TransferUtils
 		{
 			if ( ! quiet )
 			{
-				System.out.println (unsuppType + ": '"	// NOI18N
-					+ fext + "'");			// NOI18N
+				System.out.println (unsuppType + colon + space + apos
+					+ fext + apos);
 			}
 			return -10;
 		}
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -136,7 +152,8 @@ public class TransferUtils
 							parity, flow);
 						int ret = dt.putFile (f, fname.substring
 							(0, fname.indexOf (dot))	// NOI18N
-							.replaceAll ("\\s", "_")	// NOI18N
+							.replaceAll (filenameForbiddenCharsRegex,
+								filenameForbiddenCharsReplace)
 							);
 						dt.close ();
 						return ret;
@@ -176,14 +193,14 @@ public class TransferUtils
 
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + msg);	// NOI18N
+							System.out.println (errString + colon + space + msg);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + msg,	// NOI18N
+									errString + colon + space + msg,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
@@ -194,14 +211,27 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU.uploadFile.SW.done:" + fname);	// NOI18N
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.uploadFile.SW.done:" + fname);	// NOI18N
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -243,6 +273,7 @@ public class TransferUtils
 		if ( f.exists () && ((! f.canWrite ()) || ! f.isFile ()) ) return -9;
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -289,15 +320,15 @@ public class TransferUtils
 						else if ( put == -3 ) msg = downloadMsg3;
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + msg);	// NOI18N
+							System.out.println (errString + colon + space + msg);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + msg		// NOI18N
-									+ element.getFilename () + ", "	// NOI18N
+									errString + colon + space + msg
+									+ element.getFilename () + comma + space
 									+ f.getName (),
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
@@ -309,16 +340,31 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU.downloadFile.SW.done: "	// NOI18N
-						+ element.getFilename () + ", "	// NOI18N
+						+ element.getFilename () + comma + space
 						+ f.getName ());
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.downloadFile.SW.done: "	// NOI18N
+							+ element.getFilename () + comma + space
+							+ f.getName ());
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -328,6 +374,7 @@ public class TransferUtils
 		}
 		return result.get ();
 	}
+
 	/**
 	 * Delete the given element from the phone.
 	 * @param element The element to delete.
@@ -355,6 +402,7 @@ public class TransferUtils
 		if ( element == null ) return -7;
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -396,14 +444,14 @@ public class TransferUtils
 					{
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + uploadMsg11);	// NOI18N
+							System.out.println (errString + colon + space + uploadMsg11);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + uploadMsg11,	// NOI18N
+									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
@@ -415,14 +463,28 @@ public class TransferUtils
 					Utils.handleException (ex,
 						"TU.deleteFile.SW.done: "	// NOI18N
 						+ element.getFilename ());
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.deleteFile.SW.done: "	// NOI18N
+							+ element.getFilename ());
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -460,6 +522,7 @@ public class TransferUtils
 		if ( alarm == null ) return -7;
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -501,14 +564,14 @@ public class TransferUtils
 					{
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + uploadMsg11);	// NOI18N
+							System.out.println (errString + colon + space + uploadMsg11);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + uploadMsg11,	// NOI18N
+									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
@@ -520,14 +583,28 @@ public class TransferUtils
 					Utils.handleException (ex,
 						"TU.uploadAlarm.SW.done:"	// NOI18N
 						+ alarm.getAlarmString ());
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.uploadAlarm.SW.done:"	// NOI18N
+							+ alarm.getAlarmString ());
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -565,6 +642,7 @@ public class TransferUtils
 		if ( alarmNo <= 0 ) return -7;
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -605,14 +683,14 @@ public class TransferUtils
 					{
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + uploadMsg11);	// NOI18N
+							System.out.println (errString + colon + space + uploadMsg11);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + uploadMsg11,	// NOI18N
+									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
@@ -623,14 +701,27 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU.deleteAlarm.SW.done: " + alarmNo);	// NOI18N
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.deleteAlarm.SW.done: " + alarmNo);	// NOI18N
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -694,6 +785,7 @@ public class TransferUtils
 		}
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -717,13 +809,13 @@ public class TransferUtils
 								File received = new File (
 									destDir + File.separator
 									+ elems.get (i).getFilename ()
-									+ "." + elems.get (i).getExt ());	// NOI18N
+									+ dot + elems.get (i).getExt ());
 								if ( ! quiet )
 								{
-									System.out.println (getFileStr + " '"		// NOI18N
+									System.out.println (getFileStr + space + apos
 										+ elems.get (i).getFilename ()
-										+ "." + elems.get (i).getExt ()		// NOI18N
-										+ "'");					// NOI18N
+										+ dot + elems.get (i).getExt ()
+										+apos);
 								}
 								int res = dt.getFile (received, elems.get (i));
 								if ( res != 0 )
@@ -761,14 +853,14 @@ public class TransferUtils
 					{
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + uploadMsg11);	// NOI18N
+							System.out.println (errString + colon + space + uploadMsg11);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + uploadMsg11,	// NOI18N
+									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
@@ -779,14 +871,27 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU.downloadFiles.SW.done: " + type);	// NOI18N
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.downloadFiles.SW.done: " + type);	// NOI18N
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -831,6 +936,7 @@ public class TransferUtils
 		}
 
 		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Vector<PhoneElement>, Void> sw =
 			new SwingWorker<Vector<PhoneElement>, Void> ()
@@ -879,7 +985,7 @@ public class TransferUtils
 							{
 								dtm.addRow (new String[]
 									{ret.get (i).getFilename ()
-									+ "." + ret.get (i).getExt () }	// NOI18N
+										+ dot + ret.get (i).getExt () }
 									);
 							}
 						}
@@ -888,32 +994,46 @@ public class TransferUtils
 					{
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + downloadMsg2);	// NOI18N
+							System.out.println (errString + colon + space + downloadMsg2);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + downloadMsg2,	// NOI18N
+									errString + colon + space + downloadMsg2,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
 						}
+						result.set (-2);
 					}
 				}
 				catch (Exception ex)
 				{
 					Utils.handleException (ex,
 						"TU.downloadList.SW.done: " + ofWhat);	// NOI18N
+					result.set (-1);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.downloadList.SW.done: " + ofWhat);	// NOI18N
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -952,6 +1072,7 @@ public class TransferUtils
 	{
 		final AtomicInteger result = new AtomicInteger (0);
 		final AtomicInteger alarmNumber = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
 
 		SwingWorker<Vector<PhoneAlarm>, Void> sw =
 			new SwingWorker<Vector<PhoneAlarm>, Void> ()
@@ -1008,7 +1129,7 @@ public class TransferUtils
 								for ( int i = 0; i < cols; i++ )
 								{
 									String colName = model.getColumnName (i);
-									if ( colName == null ) colName = "";	// NOI18N
+									if ( colName == null ) colName = emptyStr;
 									colNames.add (colName);
 								}
 								dtm.setColumnIdentifiers (colNames);
@@ -1017,10 +1138,10 @@ public class TransferUtils
 							{
 								dtm.setColumnIdentifiers (new String[]
 								{
-									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_number"),
-									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_date"),
-									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_time"),
-									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_days")
+									rb.getString("Alarm_number"),
+									rb.getString("Alarm_date"),
+									rb.getString("Alarm_time"),
+									rb.getString("Alarm_days")
 								});
 							}
 							dtm.setRowCount (0);
@@ -1033,12 +1154,12 @@ public class TransferUtils
 								{
 									date = al.getDateString ();
 								}
-								if ( date == null ) date = "";	// NOI18N
+								if ( date == null ) date = emptyStr;
 								String time = al.getTimeString ();
-								if ( time == null ) time = "?";	// NOI18N
+								if ( time == null ) time = qMark;
 								String days = al.getDaysString ();
-								if ( days == null ) days = "0";	// NOI18N
-								if ( days.length () == 0 ) days = "0";	// NOI18N
+								if ( days == null ) days = zero;
+								if ( days.isEmpty () ) days = zero;
 								int num = al.getNumber ();
 								if ( num <= 0 ) num = 1;
 								dtm.insertRow (num-1, new Object[]
@@ -1053,7 +1174,7 @@ public class TransferUtils
 								dtm.addRow (new String[]
 									{
 										String.valueOf (i),
-										"", "", ""	// NOI18N
+										emptyStr, emptyStr, emptyStr
 									}
 								);
 							}
@@ -1064,14 +1185,310 @@ public class TransferUtils
 					{
 						if ( ! quiet )
 						{
-							System.out.println (errString + ": " + downloadMsg2);	// NOI18N
+							System.out.println (errString + colon + space + downloadMsg2);
 						}
 						if ( ! quietGUI )
 						{
 							try
 							{
 								JOptionPane.showMessageDialog (parent,
-									errString + ": " + downloadMsg2,	// NOI18N
+									errString + colon + space + downloadMsg2,
+									errString, JOptionPane.ERROR_MESSAGE );
+							}
+							catch (Exception ex) {}
+						}
+						result.set (-2);
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex,
+						"TU.downloadAlarmList.SW.done");	// NOI18N
+					result.set (-1);
+				}
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.downloadAlarmList.SW.done");	// NOI18N
+					}
+				}
+				isDone.set (true);
+			}
+		};
+		sw.execute ();
+		if ( waitFor )
+		{
+			while ( ! isDone.get () )
+			{
+				try
+				{
+					Thread.sleep (10);
+				} catch (InterruptedException ex) {}
+			}
+		}
+		return result.get ();
+	}
+
+	/**
+	 * Downloads the list of messages from the phone.
+	 * @param id The port ID to use.
+	 * @param speed The port speed.
+	 * @param dataBits The number of data bits.
+	 * @param stopBits The number of stop bits.
+	 * @param parity The parity mode.
+	 * @param flow The flow control mode.
+	 * @param onDone The code to run at transfer end.
+	 * @param parent The parent frame for displaying messages.
+	 * @param sync The synchronization object.
+	 * @param quiet If TRUE, no messages will be displayed.
+	 * @param quietGUI If TRUE, no messageboxes will be displayed.
+	 * @param waitFor If TRUE, the background thread will be waited for.
+	 * @param messages The table to put the data in or null.
+	 * @param placeForData The place for the found elements or null.
+	 * @return the result of the task (if it has finished before the
+	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
+	 */
+	public static int downloadMessageList (final CommPortIdentifier id,
+		final int speed, final int dataBits, final float stopBits,
+		final int parity, final int flow, final Runnable onDone,
+		final JFrame parent, final Object sync, final boolean quiet,
+		final boolean quietGUI, final boolean waitFor,
+		final JTable messages, final Vector<PhoneMessage> placeForData)
+	{
+		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
+
+		SwingWorker<Vector<PhoneMessage>, Void> sw =
+			new SwingWorker<Vector<PhoneMessage>, Void> ()
+		{
+			@Override
+			protected Vector<PhoneMessage> doInBackground ()
+			{
+				synchronized (sync)
+				{
+					try
+					{
+						int ret = 0;
+						final DataTransporter dt = new DataTransporter (id);
+						dt.open (speed, dataBits, stopBits,
+							parity, flow);
+						Vector<PhoneMessage> elems = dt.getMessages ();
+						dt.close ();
+						return elems;
+					}
+					catch (Exception e)
+					{
+						Utils.handleException (e,
+							"TU.downloadMessageList.SW.doInBackground");	// NOI18N
+					}
+					return null;
+				}
+			}
+
+			@Override
+			protected void done ()
+			{
+				try
+				{
+					Vector<PhoneMessage> ret = get ();
+					if ( ret != null )
+					{
+						if ( placeForData != null )
+						{
+							placeForData.removeAllElements ();
+							placeForData.addAll (ret);
+						}
+						if ( messages != null )
+						{
+							DefaultTableModel dtm = new DefaultTableModel
+								(ret.size (), 4);
+							TableModel model = messages.getModel ();
+							if ( model != null )
+							{
+								int cols = model.getColumnCount ();
+								Vector<String> colNames =
+									new Vector<String> (cols);
+								for ( int i = 0; i < cols; i++ )
+								{
+									String colName = model.getColumnName (i);
+									if ( colName == null ) colName = emptyStr;
+									colNames.add (colName);
+								}
+								dtm.setColumnIdentifiers (colNames);
+							}
+							else
+							{
+								dtm.setColumnIdentifiers (new String[]
+								{
+									rb.getString("smsTable_ID"),
+									rb.getString("smsTable_Status"),
+									rb.getString("smsTable_PhoneNum"),
+									rb.getString("smsTable_DateTime"),
+									rb.getString("smsTable_message")
+								});
+							}
+							dtm.setRowCount (0);
+							for ( int i=0; i < ret.size (); i++ )
+							{
+								PhoneMessage msg = ret.get (i);
+								if ( msg == null ) continue;
+								String id = msg.getID ();
+								if ( id == null ) id = emptyStr;
+								String status = msg.getStatus ();
+								if ( status == null ) status = emptyStr;
+								String phoneNum = msg.getRecipientNum ();
+								if ( phoneNum == null ) phoneNum = emptyStr;
+								String datetime = msg.getDateTime ();
+								if ( datetime == null ) datetime = emptyStr;
+								String msgBody = msg.getMessage ();
+								if ( msgBody == null ) msgBody = emptyStr;
+								dtm.addRow (new Object[]
+									{
+										Integer.valueOf (id),
+										status, phoneNum, datetime, msgBody
+									}
+								);
+							}
+							messages.setModel (dtm);
+						}
+					}
+					else
+					{
+						if ( ! quiet )
+						{
+							System.out.println (errString + colon + space + downloadMsg2);
+						}
+						if ( ! quietGUI )
+						{
+							try
+							{
+								JOptionPane.showMessageDialog (parent,
+									errString + colon + space + downloadMsg2,
+									errString, JOptionPane.ERROR_MESSAGE );
+							}
+							catch (Exception ex) {}
+						}
+						result.set (-2);
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex,
+						"TU.downloadMessageList.SW.done");	// NOI18N
+					result.set (-1);
+				}
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.downloadMessageList.SW.done");	// NOI18N
+					}
+				}
+				isDone.set (true);
+			}
+		};
+		sw.execute ();
+		if ( waitFor )
+		{
+			while ( ! isDone.get () )
+			{
+				try
+				{
+					Thread.sleep (10);
+				} catch (InterruptedException ex) {}
+			}
+		}
+		return result.get ();
+	}
+
+	/**
+	 * Delete the given message from the phone.
+	 * @param element The message to delete.
+	 * @param id The port ID to use.
+	 * @param speed The port speed.
+	 * @param dataBits The number of data bits.
+	 * @param stopBits The number of stop bits.
+	 * @param parity The parity mode.
+	 * @param flow The flow control mode.
+	 * @param onDone The code to run at transfer end.
+	 * @param parent The parent frame for displaying messages.
+	 * @param sync The synchronization object.
+	 * @param quiet If TRUE, no messages will be displayed.
+	 * @param quietGUI If TRUE, no messageboxes will be displayed.
+	 * @param waitFor If TRUE, the background thread will be waited for.
+	 * @return the result of the task (if it has finished before the
+	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
+	 */
+	public static int deleteMessage (final PhoneMessage element, final CommPortIdentifier id,
+		final int speed, final int dataBits, final float stopBits,
+		final int parity, final int flow, final Runnable onDone,
+		final JFrame parent, final Object sync, final boolean quiet,
+		final boolean quietGUI, final boolean waitFor)
+	{
+		if ( element == null ) return -7;
+
+		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
+
+		SwingWorker<Integer, Void> sw =
+			new SwingWorker<Integer, Void> ()
+		{
+			@Override
+			protected Integer doInBackground ()
+			{
+				synchronized (sync)
+				{
+					try
+					{
+						final DataTransporter dt = new DataTransporter (id);
+						dt.open (speed, dataBits, stopBits,
+							parity, flow);
+						int ret = dt.deleteMessage (Integer.parseInt(element.getID ()));
+						dt.close ();
+						return ret;
+					}
+					catch (Exception e)
+					{
+						Utils.handleException (e,
+							"TU.deleteMessage.SW.doInBackground: "	// NOI18N
+							+ element.getID ());
+					}
+					return -1;
+				}
+			}
+
+			@Override
+			protected void done ()
+			{
+				try
+				{
+					int put = 0;
+					Integer res = get ();
+					if ( res != null ) put = res.intValue ();
+					result.set (put);
+					if ( put != 0 )
+					{
+						if ( ! quiet )
+						{
+							System.out.println (errString + colon + space + uploadMsg11);
+						}
+						if ( ! quietGUI )
+						{
+							try
+							{
+								JOptionPane.showMessageDialog (parent,
+									errString + colon + space + uploadMsg11,
 									errString, JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex) {}
@@ -1081,15 +1498,150 @@ public class TransferUtils
 				catch (Exception ex)
 				{
 					Utils.handleException (ex,
-						"TU.downloadAlarmList.SW.done");	// NOI18N
+						"TU.deleteMessage.SW.done: "	// NOI18N
+						+ element.getID ());
+					result.set (-10);
 				}
-				if ( onDone != null ) onDone.run ();
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.deleteMessage.SW.done: "	// NOI18N
+							+ element.getID ());
+					}
+				}
+				isDone.set (true);
 			}
 		};
 		sw.execute ();
 		if ( waitFor )
 		{
-			while ( ! sw.isDone () )
+			while ( ! isDone.get () )
+			{
+				try
+				{
+					Thread.sleep (10);
+				} catch (InterruptedException ex) {}
+			}
+		}
+		return result.get ();
+	}
+
+	/**
+	 * Send the given message through the phone.
+	 * @param element The message to send.
+	 * @param id The port ID to use.
+	 * @param speed The port speed.
+	 * @param dataBits The number of data bits.
+	 * @param stopBits The number of stop bits.
+	 * @param parity The parity mode.
+	 * @param flow The flow control mode.
+	 * @param onDone The code to run at transfer end.
+	 * @param parent The parent frame for displaying messages.
+	 * @param sync The synchronization object.
+	 * @param quiet If TRUE, no messages will be displayed.
+	 * @param quietGUI If TRUE, no messageboxes will be displayed.
+	 * @param waitFor If TRUE, the background thread will be waited for.
+	 * @return the result of the task (if it has finished before the
+	 *	function has returned or if waitFor is TRUE) and 0 otherwise.
+	 */
+	public static int sendMessage (final PhoneMessage element, final CommPortIdentifier id,
+		final int speed, final int dataBits, final float stopBits,
+		final int parity, final int flow, final Runnable onDone,
+		final JFrame parent, final Object sync, final boolean quiet,
+		final boolean quietGUI, final boolean waitFor)
+	{
+		if ( element == null ) return -7;
+
+		final AtomicInteger result = new AtomicInteger (0);
+		final AtomicBoolean isDone = new AtomicBoolean (false);
+
+		SwingWorker<Integer, Void> sw =
+			new SwingWorker<Integer, Void> ()
+		{
+			@Override
+			protected Integer doInBackground ()
+			{
+				synchronized (sync)
+				{
+					try
+					{
+						final DataTransporter dt = new DataTransporter (id);
+						dt.open (speed, dataBits, stopBits,
+							parity, flow);
+						int ret = dt.sendMessage (element);
+						dt.close ();
+						return ret;
+					}
+					catch (Exception e)
+					{
+						Utils.handleException (e,
+							"TU.sendMessage.SW.doInBackground: "	// NOI18N
+							+ element.getRecipientNum ());
+					}
+					return -1;
+				}
+			}
+
+			@Override
+			protected void done ()
+			{
+				try
+				{
+					int put = 0;
+					Integer res = get ();
+					if ( res != null ) put = res.intValue ();
+					result.set (put);
+					if ( put != 0 )
+					{
+						if ( ! quiet )
+						{
+							System.out.println (errString + colon + space + uploadMsg11);
+						}
+						if ( ! quietGUI )
+						{
+							try
+							{
+								JOptionPane.showMessageDialog (parent,
+									errString + colon + space + uploadMsg11,
+									errString, JOptionPane.ERROR_MESSAGE );
+							}
+							catch (Exception ex) {}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex,
+						"TU.sendMessage.SW.done: "	// NOI18N
+						+ element.getRecipientNum ());
+					result.set (-10);
+				}
+				if ( onDone != null )
+				{
+					try
+					{
+						onDone.run ();
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex,
+							"TU.sendMessage.SW.done: "	// NOI18N
+							+ element.getRecipientNum ());
+					}
+				}
+				isDone.set (true);
+			}
+		};
+		sw.execute ();
+		if ( waitFor )
+		{
+			while ( ! isDone.get () )
 			{
 				try
 				{
@@ -1115,7 +1667,7 @@ public class TransferUtils
 			if ( port == null )
 			{
 				// get the first serial port's identifier.
-				Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+				Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers ();
 
 				while (portList.hasMoreElements ())
 				{
@@ -1166,7 +1718,7 @@ public class TransferUtils
 	{
 		int active = 0;
 
-		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+		Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers ();
 		while (portList.hasMoreElements ())
 		{
 			Object portID = portList.nextElement ();
@@ -1178,7 +1730,7 @@ public class TransferUtils
 			{
 				String portName = id.getName ();
 				// scan ports for "AT"-"OK"
-				if ( ! quiet ) System.out.print (tryPortStr + portName + "...");	// NOI18N
+				if ( ! quiet ) System.out.print (tryPortStr + portName + ellipsis);
 				try
 				{
 					DataTransporter dt = new DataTransporter (id);
@@ -1217,9 +1769,9 @@ public class TransferUtils
 								type = phoneTypes.get (portName);
 							} catch (Exception ex) {}
 							if ( type == null )
-								type = "";	// NOI18N
-							if ( type.length () != 0 )
-								type += ", ";	// NOI18N
+								type = emptyStr;
+							if ( ! type.isEmpty () )
+								type += comma + space;
 							type += addType;
 							phoneTypes.put (portName, type);
 						}
@@ -1262,7 +1814,7 @@ public class TransferUtils
 	public synchronized static Vector<String> getSerialPortNames ()
 	{
 		Vector<String> ret = new Vector<String> (32);
-		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+		Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers ();
 		if ( portList != null )
 		{
 			while ( portList.hasMoreElements () )

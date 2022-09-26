@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<META HTTP-EQUIV="Content-Type"       CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Language"   CONTENT="en">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META HTTP-EQUIV="X-Frame-Options"    CONTENT="DENY">
+<LINK rel="stylesheet" href="../rsrc/css/jymag.css" type="text/css">
+
+<TITLE> Read Me - JYMAG </TITLE>
+
+<link rel="alternate" type="text/html" href="../pl/readme.html" hreflang="pl" lang="pl" title="Wersja polska">
+
+<META NAME="Author" CONTENT="Bogdan D.">
+<META NAME="Description" CONTENT="JYMAG - Java Your Music And Graphics">
+<META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
+<META NAME="Language" CONTENT="en">
+<META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
+</HEAD><BODY>
+
+<h1 class="nag">JYMAG - Read Me</h1>
+<BR><BR>
+
+<p>
+This is the README file for JYMAG (Java Your Music and Graphics), a program
+ for retrieving and sending multimedia and other objects from and to a Sagem
+ mobile phone (tested on Linux with a "Sagem MY X5-2").
+</p>
+<p>
+JYMAG can also serve as a general-purpose serial port terminal or a Java
+ library for programmers.
+</p>
+<br>
+
+<p>Author: Bogdan Drozdowski, bogdro AT users . sourceforge . net or bogdandr AT op . pl
+ (English accepted, just say '[SOFT]' in the title).</p>
+<p>License: <a href="license.html" hreflang="en">GPLv3+</a></p>
+
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Running</h2>
+
+
+<p>Requirements:</p>
+<ul>
+ <li>RxTx Java Transmission package from <a href="http://rxtx.qbang.org/" hreflang="en">rxtx.qbang.org</a></li>
+ <li>JRE, the <a href="http://java.sun.com" hreflang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
+ <li>permissions to use the serial ports</li>
+ <li>port locking permissions may be required by RxTx. Adding the user running
+  JYMAG to the <code>uucp</code> and <code>lock</code> user groups should be enough (on Un*x)</li>
+</ul>
+<p>
+Using NetBeans: open the JYMAG directory as a NetBeans Project
+ and click "Run" (or press F6).
+</p><p>
+By hand (after unpacking):</p>
+<ul>
+ <li>double-click the JYMAG\dist\JYMAG.jar file (works on MS Windows) or</li>
+ <li><code>run.bat</code> (on MS Windows) or</li>
+ <li><code>run.sh</code> (on Un*x) or</li>
+ <li><code>java -jar JYMAG/dist/JYMAG.jar</code> (on Un*x) or</li>
+ <li><code>java -jar JYMAG\dist\JYMAG.jar</code> (on MS Windows)</li>
+</ul>
+You can also do one of the following:
+<ul>
+ <li>Under Un*x: copy JYMAG/dist/JYMAG.jar and run.sh to one directory in  a suitable location
+ (like in your PATH). Running <code>run.sh</code> will be enough. The <code>java</code> binary
+ must be in your PATH environment variable.<br><br></li>
+
+ <li>Under Windows: a double click on the JAR file should be enough. If not, copy
+ JYMAG/dist/JYMAG.jar and run.bat to one directory in a suitable location
+ (like in your PATH). Running <code>run.bat</code> will be enough.
+ When using the second approach, the <code>java.exe</code> binary must be
+ in your PATH environment variable too.</li>
+</ul>
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Running in the default language (no translations)</h2>
+
+
+
+<p>Requirements:</p>
+<ul>
+ <li>RxTx Java Transmission package from <a href="http://rxtx.qbang.org/" hreflang="en">rxtx.qbang.org</a></li>
+ <li>JRE, the <a href="http://java.sun.com" hreflang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
+ <li>permissions to use the serial ports</li>
+ <li>port locking permissions may be required by RxTx. Adding the user running
+  JYMAG to the <code>uucp</code> and <code>lock</code> user groups should be enough (on Un*x)</li>
+</ul>
+<p>
+Using NetBeans: open the JYMAG folder as a NetBeans Project,
+ right-click the project's root element in the project's tree on the
+ left side of the window (the "Projects" sub-window), then click "Properties".
+ Click "Run" in the tree and put</p>
+<pre>	-Duser.language=en -Duser.country=US</pre>
+<p>
+in the "VM Options" field. Click OK and click "Run" (or press F6).
+</p>
+<p>
+By hand (after unpacking):</p>
+<ul>
+ <li><code>run-en.bat</code> (on MS Windows) or</li>
+ <li><code>run-en.sh</code> (on Un*x) or</li>
+ <li><code>java -jar -Duser.language=en -Duser.country=US JYMAG/dist/JYMAG.jar</code> (on Un*x) or</li>
+ <li><code>java -jar -Duser.language=en -Duser.country=US JYMAG\dist\JYMAG.jar</code> (on MS Windows)</li>
+</ul>
+
+You can also do one of the following:
+<ul>
+ <li>Under Un*x: copy JYMAG/dist/JYMAG.jar and run-en.sh to one directory in  a suitable location
+ (like in your PATH). Running <code>run-en.sh</code> will be enough. The <code>java</code> binary
+ must be in your PATH environment variable.<br><br></li>
+
+ <li>Under Windows: copy
+ JYMAG/dist/JYMAG.jar and run-en.bat to one directory in a suitable location
+ (like in your PATH). Running <code>run-en.bat</code> will be enough.
+ When using the second approach, the <code>java.exe</code> binary must be
+ in your PATH environment variable too.</li>
+</ul>
+
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Compiling (if necessary)</h2>
+
+
+
+<p>Requirements for compiling:</p>
+<ul>
+ <li>RxTx Java Transmission package from <a href="http://rxtx.qbang.org/" hreflang="en">rxtx.qbang.org</a></li>
+ <li>JDK, the <a href="http://java.sun.com" hreflang="en">Java SE Development Kit</a> &gt;= (1.)6.0</li>
+ <li>the org.jdesktop.beansbinding package (contained in NetBeans, but perhaps
+	can be downloaded separately)</li>
+</ul>
+
+<p>
+Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
+ and click "Build Main Project" (or press F11) if it is your main project
+ (bold font). If it's not your main project, right-click the JYMAG project
+ icon and click "Build".
+</p>
+<p>
+Compiling using "ant" from NetBeans (you may need to provide the full
+ path to "ant"):
+</p>
+<pre>
+	cd JYMAG-X.Y
+	ant jar
+</pre>
+<p>
+Compiling by hand (you may need to provide the full path to "javac"):
+</p>
+<ul>
+ <li>on Un*x shells try
+  <pre>
+		cd JYMAG/src/BogDroSoft/jymag/
+		CLASSPATH="$CLASSPATH:&lt;path to netbeans&gt;/javaN/modules/ext/beansbinding-A.B.C.jar" javac *.java</pre>
+  </li>
+
+ <li>on MS Windows this could work:
+  <pre>
+		cd JYMAG\src\BogDroSoft\jymag
+		set CLASSPATH=%CLASSPATH%;&lt;path to netbeans&gt;\javaN\modules\ext\beansbinding-A.B.C.jar
+		javac *.java</pre>
+  </li>
+</ul>
+<p>
+Replace "&lt;path to netbeans&gt;" with the path to your NetBeans installation
+directory, "A.B.C" with your beansbinding file's version number, "N" with the
+correct number in your directory name. You can, of course, specify the direct
+path to the beansbinding JAR file, if you got it separately.
+</p>
+
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Usage (GUI)</h2>
+
+<p>
+Phone setup: connect it to the computer using a cable or IrDA or
+ whatever works. Switch the transmission on in the phone, if necessary.
+ If using a cable, select "Automatic speed" in the configuration.
+</p>
+<p>
+No need to connect to the phone. Start by selecting the tab you're
+ interested in (photos, ringtones, ...). Click on "Get list" to connect
+ to the phone and get the list of elements. Select the elements you wish
+ to download and click "Download selected". Choose the destination directory.
+ The downloaded files will show up in selected location.
+</p>
+<p>
+To upload an element, simply click the "Upload" button. Getting the
+ list isn't necessary. You can also drag&amp;drop the files you want to upload
+ on any of the tables (except the alarms and SMS messages).
+</p>
+<p>
+To edit an alarm, double click the cell in the table. Keep the format
+ unchanged.
+</p>
+<p>
+To read an SMS message, select it in the table and choose "Download selected".
+ A new window will appear allowing you to read the message.
+</p>
+<p>
+To send an SMS message, click the "Upload" button. A new window will appear allowing
+ you to type the phone number and the message body.
+</p>
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Usage (command line)</h2>
+
+
+
+<p>The following command-line (case-insensitive) options are supported:</p>
+<ul>
+ <li><code>--conf &lt;file&gt;</code>		- read configuration from &lt;file&gt;</li>
+ <li><code>--databits &lt;5,6,7,8&gt;</code>	- sets the number of data bits</li>
+ <li><code>--delete-after-download</code>     - delete the downloaded elements if
+					  downloaded succesfully</li>
+ <li><code>--delete-alarm &lt;N&gt;</code>          - delete the alarm number N</li>
+ <li><code>--delete-element &lt;ID&gt;</code>          - delete the element (file) with the given ID</li>
+ <li><code>--delete-sms &lt;N&gt;</code>		- delete the SMS message with ID=N</li>
+ <li><code>--download-all-animations</code>	- downloads all animations/videos
+					  from the phone and exits</li>
+ <li><code>--download-all-events</code>	- downloads all events from the phone
+					  and exits</li>
+ <li><code>--download-all-photos</code>	- downloads all photos from the phone
+					  and exits</li>
+ <li><code>--download-all-ringtones</code>	- downloads all ringtones from the
+	    				  phone and exits</li>
+ <li><code>--download-all-todo</code>		- downloads all to-do tasks from the
+					  phone and exits</li>
+ <li><code>--download-all-vcards</code>	- downloads all addressbook entries
+					  from the phone and exits</li>
+ <li><code>--download-all</code>		- combines all "download" options
+					  and exits</li>
+ <li><code>--download-dir &lt;dir&gt;</code>	- sets the default download directory</li>
+ <li><code>--flow &lt;none,soft,hard,soft+hard&gt;</code>	- sets the flow control mode</li>
+ <li><code>--help</code>			- display help</li>
+ <li><code>--lang LL_CC_VV</code>		- select the language to use by JYMAG:
+	    				  "LL" is the language, "CC" is the
+	    				  country code, "VV" is the variant.
+	    				  Separate them using underscores.
+					  Only LL is required.</li>
+ <li><code>--license</code>, <code>--licence</code>	- display license information</li>
+ <li><code>--list-alarms</code>			- display the alarms in the phone</li>
+ <li><code>--list-elements</code>			- display the elements (files) in the phone</li>
+ <li><code>--list-sms</code>			- display the SMS messages in the phone</li>
+ <li><code>--parity &lt;none, even, odd, space, mark&gt;</code>	- sets the parity mode</li>
+ <li><code>--port &lt;filename&gt;</code>		- sets the default port</li>
+ <li><code>--scan</code>			- scans available ports for "OK"
+	    				  answers and exits the program</li>
+ <li><code>--send-sms &lt;number&gt; &lt;msg&gt;</code>	- send the given &lt;msg&gt; message as an
+					  SMS to the given recipient &lt;number&gt;</li>
+ <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
+		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
+		1500000, 2000000, 2500000, 3000000, 3500000, 4000000&gt;</code>
+					- sets the port speed</li>
+ <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- sets the number of stop bits</li>
+ <li><code>--update-alarm "DD/MM/YY,HH:MM:SS",N,"days"</code>	- updates the given
+					  alarm in the phone. N is the alarm
+					  number. Days are comma-separated
+					  numbers (1-Monday) or 0 for all days</li>
+ <li><code>--upload &lt;filename&gt;</code>		- uploads the given file to the phone
+					  and exits</li>
+ <li><code>--version</code>, <code>-v</code>		- display program version</li>
+</ul>
+
+
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Converting ringtones</h2>
+
+
+<p>
+Some ringtones received from the phone may be in AMR format. You can
+ convert those to other formats using other software, like the free
+ "Mobile Media Converter". If it doesn't work, use the FFMPEG program
+ attached to the "Mobile Media Converter" like this:
+</p>
+<pre>
+	ffmpeg -i Ring.amr -ar 44100 Ring.wav</pre>
+<p>
+To convert a ringtone to a WAV format accepted by the phone, use the
+ following command:
+</p>
+<pre>
+	ffmpeg -i &lt;ringtone file&gt; -ar 8000 -t 10 -ac 1 -acodec adpcm_ima_wav &lt;output file&gt;.wav</pre>
+<p>
+(the number after "-t" is the ringtone duration in seconds). I've only been
+able to upload ringtones created with the above command. It may be possible
+to upload longer ringtones, in greater sampling rates, stereo, ..., but
+I haven't tried all that (my 30-second ringtones are rejected).
+</p>
+
+
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">Translating</h2>
+
+
+<p>
+To translate the program to your language, make a copy of each *.properties
+ file. Rename these files so they end with your language and country code,
+ for example:
+
+	<code>AboutBox_en_GB.properties</code>,
+	<code>MainWindow_de_DE.properties</code>,
+	<code>RawCommunicator_pt_BR.properties</code>
+</p>
+<p>
+ Then open each file in UTF-8 mode and translate the words AFTER the "=" in
+ each line. When you've finished all the files, send them to me. Remember,
+ UTF-8, not ISO-8859-*, not windows-*, not cp*.
+</p>
+<p>
+<em class="wazne">NOTE:</em> If you change the words before the "=", your translations won't
+ be seen by the program.
+</p>
+<p>
+<em class="wazne">NOTE:</em> Alternatively, use can use the NetBeans IDE to translate. Just open
+ the JYMAG project, right-click any of the main properties' file, choose
+ "Add" and "Locale". Choose your language and select OK. Now right-click
+ the chosen file and select "Open". Edit the strings in your language.
+</p>
+
+
+
+
+
+
+
+
+<br><br>
+<hr>
+<h2 class="nag">If not working</h2>
+
+
+<ol>
+ <li> The phone's port doesn't show up on the list.
+   <p>Not JYMAG's fault. Make sure:</p>
+   <ul>
+    <li>the phone connects with a serial link (not as a USB mass storage device,
+     for example)</li>
+    <li>you have installed a correct driver for the cable/IrDA/other devices</li>
+    <li>the phone's port is not already in use</li>
+    <li>you have the newest RxTx</li>
+   </ul>
+  <br></li>
+
+ <li> Getting the list(s) fails.
+   <p>
+   Click "Scan ports". If an answer is received, the correct port should be
+   selected in the combo box. If not, an error will show up. Try closing
+   the program and starting it at least 3 more times. If no success, check
+   your drivers and connection.
+   </p></li>
+
+ <li>The program doesn't start and gives
+   "class not found/java.lang.NoClassDefFoundError" messages.
+   <p>
+   Run <code>java</code> with its full path, like <code>/usr/bin/java -jar JYMAG.jar</code>.
+   You can also try adding the path to RxTx to your CLASSPATH environment
+   variable (create one if it doesn't exist). Try adding both the directory
+   containing the RXTXcomm.jar file and the path to the file to CLASSPATH.
+   </p></li>
+
+ <li> Downloaded elements are corrupted.
+   <p>
+   Mine sometimes are corrupted too. I can't help it. Some elements get
+   downloaded correctly at the first attempt, some require a few attempts, and
+   some require a lot of attempts. Since it works one time and doesn't work
+   the other time, it's not JYMAG's fault. Since it works, the program is
+   written correctly. It's the connection that is unreliable. The original
+   program was even worse - the connection broke in the middle of transmission
+   and you had to click "Connect" over and over again and some pictures were
+   corrupted too. Have patience. If you know how to make this better, contact
+   me (e-mail at the top of this file).
+   </p></li>
+
+ <li> JYMAG sends a file, but the phone rejects it.
+   <p>
+   Check if your phone accepts the given file format, either by using the
+   capabilities' button in the main window, or by sending</p>
+<pre>   	AT+KPSCAP="X"</pre>
+   <p>(with the double quotes) in the "Manual commands" window. The X can be:
+   <code>PICTURES</code>, <code>SOUNDS</code>, <code>VTODO</code>,
+   <code>VEVENT</code>, <code>VCARDS</code>, <code>ANIMATIONS</code>.
+   </p></li>
+</ol>
+
+
+<br><br>
+<hr>
+<h2 class="nag">Reporting problems</h2>
+
+
+<ol>
+ <li> Check if you have the newest versions of JYMAG.<br><br></li>
+ <li> Include your Java and RxTx version numbers. See if the program works with a
+   newer/older version of Java/RxTx. If it works with an older version, but
+   not with a new one, your problem is solved, but still tell me the
+   problematic version numbers.<br><br></li>
+ <li> Include precise steps for reproducing the error, if possible. This will
+   make finding the problem easier.<br><br></li>
+ <li> If the program crashed, include "jymag.log" in your report. It should be
+   in the current JYMAG working directory.<br><br></li>
+ <li> If the program exited normally, but the "jymag.log" still exists after
+   closing the program and is not empty, include it in your report.<br><br></li>
+ <li> Take all the information from the above steps and any additional
+   information you can give and send it to my e-mail address (you can find it
+   at the top of this file).<br><br></li>
+</ol>
+
+</body></html>
+

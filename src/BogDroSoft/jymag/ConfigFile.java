@@ -40,6 +40,7 @@ public class ConfigFile
 {
 	private File cfgFile;
 	private static String newLine = null;
+	private static final String defaultNewLine = "\n";		// NOI18N
 
 	// communication parameters:
 	private String port;
@@ -58,29 +59,29 @@ public class ConfigFile
 
 	// patterns for matching:
 	private static final Pattern portPat = Pattern.compile
-			("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+			("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern speedPat = Pattern.compile
-			("speed\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+			("speed\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern dBitsPat = Pattern.compile
 			("databits\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern parityPat = Pattern.compile
-			("parity\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+			("parity\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern sBitsPat = Pattern.compile
 			("stopbits\\s*=\\s*([\\d\\.]+)", Pattern.CASE_INSENSITIVE);	// NOI18N
 	private static final Pattern flowCtlPat = Pattern.compile
 			("flowcontrol\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);	// NOI18N
 	private static final Pattern xPat = Pattern.compile
-			("x\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
+			("x\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
 	private static final Pattern yPat = Pattern.compile
-			("y\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
+			("y\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
 	private static final Pattern widthPat = Pattern.compile
-			("width\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+			("width\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern heightPat = Pattern.compile
-			("height\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+			("height\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern isMaxPat = Pattern.compile
-			("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+			("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern fontSizePat = Pattern.compile
-			("font_size\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);				// NOI18N
+			("font_size\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 
 	private Matcher portM;
 	private Matcher speedM;
@@ -112,11 +113,11 @@ public class ConfigFile
 			catch (Exception ex) {}
 			if ( newLine == null )
 			{
-				newLine = "\n";	// NOI18N
+				newLine = defaultNewLine;
 			}
-			else if ( newLine.length () == 0 )
+			else if ( newLine.isEmpty () )
 			{
-				newLine = "\n";	// NOI18N
+				newLine = defaultNewLine;
 			}
 		}
 	}
@@ -156,7 +157,7 @@ public class ConfigFile
 				break;
 			}
 			if ( line == null ) break;
-			if ( line.length () == 0 ) continue;
+			if ( line.isEmpty () ) continue;
 			portM = portPat.matcher (line);
 			speedM = speedPat.matcher (line);
 			dBitsM = dBitsPat.matcher (line);

@@ -55,6 +55,21 @@ public class PhoneAlarm
 			+ "(\\s*,(\\d+))?(\\s*,\"(\\d)((,\\d)+)\")?\\s*.*",			// NOI18N
 			Pattern.CASE_INSENSITIVE);
 
+	private static final String dQuote = "\"";		// NOI18N
+	private static final String comma = ",";		// NOI18N
+	private static final String slash = "/";		// NOI18N
+	private static final String colon = ":";		// NOI18N
+	private static final String zero = "0";			// NOI18N
+	private static final String empty = "";			// NOI18N
+
+	private static final String toStringStart = "PhoneAlarm[";				// NOI18N
+	private static final String toStringEnd = "]";						// NOI18N
+	private static final String toStringID = "ID=";						// NOI18N
+	// the rest can be empty. The user needs to know only where the ID is
+	private static final String toStringDateTime = "";					// NOI18N
+	private static final String toStringDays = "";						// NOI18N
+
+	private static final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
 	/**
 	 * Creates a new instance of PhoneAlarm.
@@ -146,10 +161,10 @@ public class PhoneAlarm
 		number = alarmNumber;
 		time = Calendar.getInstance ();
 		if ( dateString == null ) oneTime = true;
-		else if ( dateString.length() == 0 ) oneTime = true;
+		else if ( dateString.isEmpty () ) oneTime = true;
 		else
 		{
-			String[] parts = dateString.split ("/");	// NOI18N
+			String[] parts = dateString.split (slash);
 			if ( parts == null )
 				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:dateString: " + dateString);	// NOI18N
 			if ( parts.length != 3 )
@@ -175,13 +190,13 @@ public class PhoneAlarm
 			if ( year < 80 ) time.set (Calendar.YEAR, 2000+year);
 			else time.set (Calendar.YEAR, 1900+year);
 		}
-		if ( timeString.length () == 0 )
+		if ( timeString.isEmpty () )
 		{
 			throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:timeString:length=0");	// NOI18N
 		}
 		else
 		{
-			String[] parts = timeString.split (":");	// NOI18N
+			String[] parts = timeString.split (colon);
 			if ( parts == null )
 				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:timeString: " + timeString);	// NOI18N
 			if ( parts.length != 3 )
@@ -192,11 +207,11 @@ public class PhoneAlarm
 		}
 		days = null;
 		if ( daysString == null ) forAllDays = true;
-		else if ( daysString.length() == 0 ) forAllDays = true;
+		else if ( daysString.isEmpty () ) forAllDays = true;
 		else
 		{
 			forAllDays = false;
-			String[] recurrs = daysString.split (",");	// NOI18N
+			String[] recurrs = daysString.split (comma);
 			if ( recurrs != null )
 			{
 				HashSet<Integer> tmpDays = new HashSet<Integer> (8);
@@ -205,7 +220,7 @@ public class PhoneAlarm
 					for ( int i = 0; i < recurrs.length; i++ )
 					{
 						if ( recurrs[i] == null ) continue;
-						if ( recurrs[i].length () == 0 ) continue;
+						if ( recurrs[i].isEmpty () ) continue;
 						tmpDays.add (Integer.valueOf (recurrs[i]));
 					}
 				}
@@ -360,8 +375,6 @@ public class PhoneAlarm
 	 */
 	public synchronized String getAlarmString ()
 	{
-		String dQuote = "\"";		// NOI18N
-		String comma = ",";		// NOI18N
 		String result = dQuote;
 		if ( oneTime )
 		{
@@ -373,7 +386,7 @@ public class PhoneAlarm
 			result += comma + number + comma;
 			if ( forAllDays || days == null )
 			{
-				result += "0";	// NOI18N
+				result += zero;
 			}
 			else
 			{
@@ -407,9 +420,9 @@ public class PhoneAlarm
 			else if ( month == Calendar.OCTOBER   ) month = 10;
 			else if ( month == Calendar.NOVEMBER  ) month = 11;
 			else if ( month == Calendar.DECEMBER  ) month = 12;
-			return ((day<10)? "0" : "" ) + day + "/"	// NOI18N
-				+ ((month<10)? "0" : "" ) + month + "/"	// NOI18N
-				+ ((year<10)? "0" : "" ) + year;	// NOI18N
+			return ((day<10)? zero : empty ) + day + slash
+				+ ((month<10)? zero : empty ) + month + slash
+				+ ((year<10)? zero : empty ) + year;
 		}
 		return null;
 	}
@@ -424,9 +437,9 @@ public class PhoneAlarm
 		int minute = time.get (Calendar.MINUTE);
 		int second = time.get (Calendar.SECOND);
 
-		return ((hour<10)? "0" : "" ) + hour + ":"		// NOI18N
-			+ ((minute<10)? "0" : "" ) + minute + ":"	// NOI18N
-			+ ((second<10)? "0" : "" ) + second;	// NOI18N
+		return ((hour<10)? zero : empty ) + hour + colon
+			+ ((minute<10)? zero : empty ) + minute + colon
+			+ ((second<10)? zero : empty ) + second;
 	}
 
 	/**
@@ -435,23 +448,24 @@ public class PhoneAlarm
 	 */
 	public synchronized String getDaysString ()
 	{
-		if ( days == null ) return "";	// NOI18N
+		if ( days == null ) return empty;
 		if ( days.contains (new Integer (0)) )
 		{
-			return "0";	// NOI18N
+			return zero;
 		}
 		else
 		{
-			String result = "";	// NOI18N
+			String result = empty;
 			Iterator<Integer> it = days.iterator ();
 			if ( it != null )
 			{
 				while ( it.hasNext () )
 				{
 					result += it.next ().toString ();
-					if ( it.hasNext () ) result += ",";	// NOI18N
+					if ( it.hasNext () ) result += comma;
 				}
 			}
+			if ( result.isEmpty () ) result = zero;
 			return result;
 		}
 	}
@@ -474,7 +488,7 @@ public class PhoneAlarm
 			int hour;
 			int minute;
 			int second;
-			int alNumber = -1;
+			int alNumber = 0;
 			try
 			{
 				day = Integer.parseInt (m.group (3));
@@ -568,7 +582,7 @@ public class PhoneAlarm
 			int hour;
 			int minute;
 			int second;
-			int alNumber = -1;
+			int alNumber = 0;
 			int firstrec = -1;
 			HashSet<Integer> tmpDays = null;
 
@@ -622,7 +636,7 @@ public class PhoneAlarm
 			{
 				if ( m.group (10) != null )
 				{
-					String[] recurrs = m.group (10).split (",");	// NOI18N
+					String[] recurrs = m.group (10).split (comma);
 					if ( recurrs != null )
 					{
 						tmpDays = new HashSet<Integer> (8);
@@ -632,7 +646,7 @@ public class PhoneAlarm
 							for ( int i = 0; i < recurrs.length; i++ )
 							{
 								if ( recurrs[i] == null ) continue;
-								if ( recurrs[i].length () == 0 ) continue;
+								if ( recurrs[i].isEmpty () ) continue;
 								tmpDays.add (Integer.valueOf (recurrs[i]));
 							}
 						}
@@ -666,5 +680,18 @@ public class PhoneAlarm
 			return new PhoneAlarm (c, false, isForAllDays, tmpDays, alNumber);
 		}
 		return null;
+	}
+
+	/**
+	 * Returns a String representation of this PhoneAlarm.
+	 * @return a String representation of this PhoneAlarm. The syntax is
+	 *	PhoneAlarm[ID=xxx,date/time,days].
+	 */
+	@Override
+	public synchronized String toString ()
+	{
+		return toStringStart + toStringID + number + comma + toStringDateTime
+			+ sdf.format (time.getTime ()) + comma
+			+ toStringDays + getDaysString () + toStringEnd;
 	}
 }

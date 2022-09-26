@@ -34,96 +34,148 @@ import java.util.regex.Pattern;
  */
 public class PhoneMessage
 {
+	private String message = null;
+	private String recipientNum = null;
+	private String datetime = null;
+	private String id = null;
 	private String status = null;
-	private String alpha = null;
-	private byte[] message = null;
 
+/*
+	+CMGL: <ID>,"<status>" ,"<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
+	<body>
+	OK
+	+CMGL: <ID>,"<status>",
+	<body>
+	+CMGR: "<status>" ,"<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
+	<body>
+	OK
+	+CMGR: "<status>",
+	<body>
+*/
 	private static final Pattern messagePattern
-						// index,    stat
-		= Pattern.compile ("(\\+CMGL:)?\\s*\\d+\\s*,\\s*(\\w+)\\s*,\\s*"	// NOI18N
-			// [alpha]    length      body
-			+ "(\\w+)?\\s*,\\s*\\d+\\s*\r\n(.*)",   			// NOI18N
-			Pattern.CASE_INSENSITIVE);
+		= Pattern.compile ("(\\+CMG[LR]:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"	// NOI18N
+			+ "\\s*\"(\\+?\\d+)\"\\s*,"						// NOI18N
+			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
+			+ "\\s*,\\d+[\r\n]+([\\w\\s]+)[\r\n]",					// NOI18N
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
+	private static final Pattern messagePatternNotFull
+		= Pattern.compile ("(\\+CMG[LR]:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"	// NOI18N
+			+ "\\s*(\"(\\+?\\d+)\"\\s*,"						// NOI18N
+			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
+			+ "\\s*,\\d+)?[\r\n]+([\\w\\s]+)[\r\n]",				// NOI18N
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
+	private static final String esc = "\033" /* ESC */;					// NOI18N
+	private static final String comma = ",";						// NOI18N
+	private static final String toStringStart = "PhoneMessage[";				// NOI18N
+	private static final String toStringEnd = "]";						// NOI18N
+	private static final String toStringID = "ID=";						// NOI18N
+	// the rest can be empty. The user needs to know only where the ID is
+	private static final String toStringStatus = "";					// NOI18N
+	private static final String toStringNumber = "";					// NOI18N
+	private static final String toStringDateTime = "";					// NOI18N
+	private static final String toStringBody = "";						// NOI18N
 
 	/**
-	 * Creates a new PhoneMessage with the givenstatus, alpha string and body.
-	 * @param stat The status of the message.
-	 * @param al The alpha string for the message.
-	 * @param msg The body of the message.
+	 * Creates a new PhoneMessage.
 	 */
-	public PhoneMessage (String stat, String al, byte[] msg)
+	public PhoneMessage ()
 	{
-		status = stat;
-		alpha = al;
-		message = msg;
 	}
 
 	/* ==================================================== */
 
 	/**
-	 * Returns the status of this message.
-	 * @return the status of this message.
+	 * Returns the body of the message.
+	 * @return the body of the message.
+	 */
+	public synchronized String getMessage ()
+	{
+		return message;
+	}
+
+	/**
+	 * Returns the phone number of the recipient of the message.
+	 * @return the recipient's phone number.
+	 */
+	public synchronized String getRecipientNum ()
+	{
+		return recipientNum;
+	}
+
+	/**
+	 * Returns the ID of the message.
+	 * @return the ID of the message.
+	 */
+	public synchronized String getID ()
+	{
+		return id;
+	}
+
+	/**
+	 * Returns the date/time of the message.
+	 * @return the date/time of the message.
+	 */
+	public synchronized String getDateTime ()
+	{
+		return datetime;
+	}
+
+	/**
+	 * Returns the status of the message.
+	 * @return the status of the message.
 	 */
 	public synchronized String getStatus ()
 	{
 		return status;
 	}
 
-	/**
-	 * Returns the alpha string for the message.
-	 * @return the alpha string for the message.
-	 */
-	public synchronized String getAlpha ()
-	{
-		return alpha;
-	}
-
-	/**
-	 * Returns the body of the message.
-	 * @return the body of the message.
-	 */
-	public synchronized byte[] getMessage ()
-	{
-		return message;
-	}
-
-	/**
-	 * Returns the length of the message.
-	 * @return the length of the message.
-	 */
-	public synchronized int getLength ()
-	{
-		return message.length;
-	}
-
 	/* ==================================================== */
-
-	/**
-	 * Sets the status of this message.
-	 * @param newStat the new status of this message.
-	 */
-	public synchronized void setStatus (String newStat)
-	{
-		status = newStat;
-	}
-
-	/**
-	 * Sets the alpha string for the message.
-	 * @param newAlpha the new alpha string for the message.
-	 */
-	public synchronized void setAlpha (String newAlpha)
-	{
-		alpha = newAlpha;
-	}
 
 	/**
 	 * Sets the body of the message.
 	 * @param newMsg the new body of the message.
 	 */
-	public synchronized void setMessage (byte[] newMsg)
+	public synchronized void setMessage (String newMsg)
 	{
 		message = newMsg;
+	}
+
+	/**
+	 * Sets the phone number of the recipient of the message.
+	 * @param newRecip the new recipient's phone number.
+	 */
+	public synchronized void setRecipientNum (String newRecip)
+	{
+		recipientNum = newRecip;
+	}
+
+	/**
+	 * Sets the ID of the message.
+	 * @param newID the new ID of the message.
+	 */
+	public synchronized void setID (String newID)
+	{
+		id = newID;
+	}
+
+	/**
+	 * Sets the date/time of the message.
+	 * @param newDateTime the new date/time of the message.
+	 */
+	public synchronized void setDateTime (String newDateTime)
+	{
+		datetime = newDateTime;
+	}
+
+	/**
+	 * Sets the status of the message.
+	 * @param newStatus the new status of the message.
+	 */
+	public synchronized void setStatus (String newStatus)
+	{
+		status = newStatus;
 	}
 
 	/* ==================================================== */
@@ -135,8 +187,7 @@ public class PhoneMessage
 	 */
 	public synchronized String getMessageString ()
 	{
-		return String.valueOf (message.length) + "\r"			// NOI18N
-			+ new String (message) + "\033" /* ESC */;		// NOI18N
+		return new String (message) + esc;
 	}
 
 	/**
@@ -150,11 +201,38 @@ public class PhoneMessage
 		Matcher m = messagePattern.matcher (response);
 		if ( m.matches () )
 		{
-			String stat = m.group (2);
-			String al = m.group (3);
-			byte[] msg = m.group (4).getBytes ();
-			return new PhoneMessage (stat, al, msg);
+			PhoneMessage msg = new PhoneMessage();
+			msg.setID (m.group (2));
+			msg.setStatus (m.group (3));
+			msg.setRecipientNum (m.group (4));
+			msg.setDateTime (m.group (5));
+			msg.setMessage (m.group (6));
+			return msg;
+		}
+		m = messagePatternNotFull.matcher (response);
+		if ( m.matches () )
+		{
+			PhoneMessage msg = new PhoneMessage();
+			msg.setID (m.group (2));
+			msg.setStatus (m.group (3));
+			msg.setRecipientNum (m.group (5));
+			msg.setDateTime (m.group (6));
+			msg.setMessage (m.group (7));
+			return msg;
 		}
 		return null;
+	}
+
+	/**
+	 * Returns a String representation of this PhoneMessage.
+	 * @return a String representation of this PhoneMessage. The syntax is
+	 *	PhoneMessage[ID=xxx,status,number,datetime,body].
+	 */
+	@Override
+	public synchronized String toString ()
+	{
+		return toStringStart + toStringID + id + comma + toStringStatus + status + comma
+			+ toStringNumber + recipientNum + comma + toStringDateTime + datetime + comma
+			+ toStringBody + message + toStringEnd;
 	}
 }

@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<META HTTP-EQUIV="Content-Type"       CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Language"   CONTENT="en">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META HTTP-EQUIV="X-Frame-Options"    CONTENT="DENY">
+<LINK rel="stylesheet" href="../rsrc/css/jymag.css" type="text/css">
+
+<TITLE> Main window - JYMAG </TITLE>
+
+<link rel="alternate" type="text/html" href="../pl/main_window.html" hreflang="pl" lang="pl" title="Wersja polska">
+
+<META NAME="Author" CONTENT="Bogdan D.">
+<META NAME="Description" CONTENT="JYMAG - Java Your Music And Graphics">
+<META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
+<META NAME="Language" CONTENT="en">
+<META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
+</HEAD><BODY>
+
+<h1 class="nag">JYMAG - Main window</h1>
+<BR><BR>
+<hr>
+
+<div class="c">
+<a href="../rsrc/img/main_window.png"><img src="../rsrc/img/main_window.png"
+alt="[Screenshot of the Main window]" width="640" height="486"></a>
+</div>
+
+<p>
+This is the main window of the JYMAG program. It allows you to perform many different operations.
+Use the font size spinner at the top of the window to adjust the font size of this window
+and all windows opened from this window.
+</p>
+<p>
+On the top left side of the window you can set the communication port's parameters:
+</p>
+<ol>
+ <li>The Port list allows you to select which communication port to use.
+	If you don't know which port to use, press the "Scan ports" button.
+	When scanning is finished, the port that replied is automatically selected
+	or you're presented with a list to choose from. In any case, you can always select
+	another port. Choosing different ports allows you to see which port have replied
+	with what information - this information is shown using the four labels in the
+	middle section of the window.<br><br>
+	If your port is not on the list, check if:<br><br>
+   <ul>
+    <li>the phone connects with a serial link (not as a USB mass storage device,
+     for example)</li>
+    <li>you have installed a correct driver for the cable/IrDA/other devices</li>
+    <li>the phone's port is not already in use</li>
+    <li>you have the newest RxTx</li>
+   </ul><br></li>
+ <li>The Speed list allows you to choose the transmission speed. Set this to the value set
+	in the phone (or other device you're connecting to) or leave the default 115200.
+	<br><br></li>
+ <li>Choose the number of data bits to use: 8 (the recommended default), 7, 6 or 5.
+	<br><br></li>
+ <li>Choose the parity checking: None (the recommended default), Even, Odd, Space, Mark.
+	<br><br></li>
+ <li>Choose the number of stop bits: 1 (the recommended default), 1.5 or 2.
+	<br><br></li>
+ <li>Choose the flow control mode: None (both checkboxes deselected - the recommended default),
+	Software or Hardware.
+	<br><br></li>
+</ol>
+Below the port's settings there are two buttons:
+<ol>
+ <li>"Load configuration" allows you to load your settings from a previously-saved
+	JYMAG configuration file.<br><br></li>
+ <li>"Save configuration" allows you to save your settings to a file. The following settings
+	are saved:<br><br>
+	<ul>
+	 <li>port name</li>
+	 <li>port speed setting</li>
+	 <li>port data bits setting</li>
+	 <li>port parity setting</li>
+	 <li>port stop bits setting</li>
+	 <li>port flow control setting</li>
+	 <li>main window position</li>
+	 <li>main window size and whether is was maximized or not</li>
+	 <li>main window font size</li>
+	</ul><br></li>
+</ol>
+
+Below, in the middle section of the window are the following elements:
+<ol>
+ <li>The phone type label - contains the phone type returned by the phone (if any) after
+	you have pressed "Scan ports".
+	<br><br></li>
+ <li>The phone's firmware version returned by the phone (if any) after
+	you have pressed "Scan ports".
+	<br><br></li>
+ <li>The phone's IMEI number returned by the phone (if any) after
+	you have pressed "Scan ports".
+	<br><br></li>
+ <li>The subscriber number of the currently-inserted SIM card returned by the phone (if any) after
+	you have pressed "Scan ports". This is simply your phone number.
+	<br><br></li>
+ <li>The program status label tells if the program is ready for your command, receiving or
+	sending data.
+	<br><br></li>
+ <li>The progress bar shows the progress of the current operation.
+	<br><br></li>
+</ol>
+
+At the bottom of the main window there is a panel with tabs. These tabs contain tables with
+ the files or other elements found in the phone:
+<ul>
+ <li>pictures/photographs</li>
+ <li>ringtones/melodies/music files</li>
+ <li>addressbook (phonebook) entries</li>
+ <li>to-do tasks</li>
+ <li>events/tasks</li>
+ <li>animation/videos/movies</li>
+ <li>Java elements</li>
+ <li>alarm clock entries</li>
+ <li>SMS messages</li>
+</ul>
+
+More information can be found on the <a href="tables.html" hreflang="en">tabs' page</a>.
+
+<br><br>
+
+Finally, on the right side of the window you can find the following buttons:
+<ol>
+ <li>"Scan ports" - press this to scan the found serial ports for replies.
+	When scanning is finished, the port that replied is automatically selected
+	or you're presented with a list to choose from. In any case, you can always select
+	another port. Choosing different ports allows you to see which port have replied
+	with what information - this information is shown using the four labels in the
+	middle section of the window.
+	<br><br></li>
+ <li>"About JYMAG" - opens the <a href="about_window.html" hreflang="en">about window</a>.
+	<br><br></li>
+ <li>"Manual commands" - opens the <a href="manual_cmd.html" hreflang="en">manual commands' window</a>.
+	<br><br></li>
+ <li>"Get capabilities" - opens the <a href="capability.html" hreflang="en">capabilities' window</a>.
+	<br><br></li>
+ <li>"Signal power" - opens the <a href="signal_power.html" hreflang="en">signal power display window</a>.
+	<br><br></li>
+ <li>"Exit" - closes JYMAG.
+	<br><br></li>
+</ol>
+
+
+
+</body></html>
+

@@ -27,6 +27,8 @@ package BogDroSoft.jymag;
 
 import java.io.File;
 import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Vector;
 
 /**
  * CommandLineParser - utility methods connected to parsing the command line.
@@ -47,80 +49,93 @@ public class CommandLineParser
 	private static boolean deleteAfterDownload = false;
 
 	// ----------- i18n stuff
-	private static final String progIntroStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("is_a_program_") +
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("rxtx_multimedia_Sagem");
-	private static final String rxtxReqStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("need_rxtx");
-	private static final String cmdLineStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Command-line_options:")+
+	private static final ResourceBundle b = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String progIntroStr = b.getString("is_a_program_") +
+		b.getString("rxtx_multimedia_Sagem");
+	private static final String rxtxReqStr = b.getString("need_rxtx");
+	private static final String cmdLineStr = b.getString("Command-line_options:")+
 		":" +	// NOI18N
 		"\n--conf <file>\t\t- " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("read_configuration_from_<file>") +
+		b.getString("read_configuration_from_<file>") +
 		"\n--databits <5,6,7,8>\t- " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_number_of_data_bits")+
+		b.getString("set_the_number_of_data_bits")+
 		"\n--delete-after-download\t- " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("delete_downloaded")+
+		b.getString("delete_downloaded")+
 		"\n--delete-alarm <N>\t- " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("delete_alarm") +
+		b.getString("delete_alarm") +
+		"\n--delete-element <ID>\t- " +	// NOI18N
+		b.getString("delete_element") +
+		"\n--delete-sms <N>\t- "+	// NOI18N
+		b.getString("delete_sms")+
 		"\n--download-dir <dir>\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_default_download_dir")+
+		b.getString("set_default_download_dir")+
 		"\n--download-all-animations\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_videos")+
+		b.getString("download_all_videos")+
 		"\n--download-all-events\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_events")+
+		b.getString("download_all_events")+
 		"\n--download-all-photos\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_photos")+
+		b.getString("download_all_photos")+
 		"\n--download-all-ringtones - "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_ringtones")+
+		b.getString("download_all_ringtones")+
 		"\n--download-all-todo\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_to-do_tasks")+
+		b.getString("download_all_to-do_tasks")+
 		"\n--download-all-vcards\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("download_all_addressbook")+
+		b.getString("download_all_addressbook")+
 		"\n--download-all\t\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("combine_all_download")+
+		b.getString("combine_all_download")+
 		"\n--flow <none,soft,hard,soft+hard>\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_flow_control_mode")+
+		b.getString("set_the_flow_control_mode")+
 		"\n--help, -h, -?, /?\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_help")+
+		b.getString("display_help")+
 		"\n--lang LL_CC_VV\t\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("select_the_language")+
+		b.getString("select_the_language")+
 		"\n\t\t\t  " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("LL_is_the_language_CC")+
+		b.getString("LL_is_the_language_CC")+
 		"\n\t\t\t  " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("__country_code,_VV")+
+		b.getString("__country_code,_VV")+
 		"\n\t\t\t  " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("__Separate_them_using_underscores._Only_LL_is_required.")+
+		b.getString("__Separate_them_using_underscores._Only_LL_is_required.")+
 		"\n--licence, --license\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_license_information")+
+		b.getString("display_license_information")+
+		"\n--list-alarms\t\t- "+	// NOI18N
+		b.getString("list_alarms")+
+		"\n--list-elements\t- "+	// NOI18N
+		b.getString("list_elements")+
+		"\n--list-sms\t\t- "+	// NOI18N
+		b.getString("list_sms")+
 		"\n--parity <none,even,odd,space,mark>\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_parity_mode")+
+		b.getString("set_the_parity_mode")+
 		"\n--port <filename>\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_default_port")+
+		b.getString("set_the_default_port")+
 		"\n--scan\t\t\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("scan_available_ports")+
+		b.getString("scan_available_ports")+
+		"\n--send-sms <number> <msg>\t- "+	// NOI18N
+		b.getString("send_sms")+
 		"\n--speed"+	// NOI18N
 		" <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200," +	// NOI18N
 		"\n\t230400, 460800, 500000, 576000, 921600, 1000000, 1152000,\n" +	// NOI18N
 		"\t1500000, 2000000, 2500000, 3000000, 3500000, 4000000>\n\t\t\t- " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_port_speed")+
+		b.getString("set_the_port_speed")+
 		"\n--stopbits <1,1.5,2>\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_stop_bits")+
+		b.getString("set_stop_bits")+
 		"\n--upload <filename>\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("upload_file")+
+		b.getString("upload_file")+
 		"\n--update-alarm \"DD/MM/YY,HH:MM:SS\",N,\"days\"\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("update_alarm")+
+		b.getString("update_alarm")+
 		"\n\t\t\t  " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("N_IS_THE_NUMBER")+
+		b.getString("N_IS_THE_NUMBER")+
 		"\n\t\t\t  " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("COMMA_SEPARATED_DAYS")+
+		b.getString("COMMA_SEPARATED_DAYS")+
 		"\n\t\t\t  " +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("ZERO_MEANS_ALL")+
+		b.getString("ZERO_MEANS_ALL")+
 		"\n--version, -v\t\t- "+	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_version")+
+		b.getString("display_version")+
 		"\n" +	// NOI18N
 		"\n" +	// NOI18N
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("exit_zero_code");
-	private static final String verWord = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Version");
-	private static final String getListStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_list_of_");
-	private static final String getFileStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_file");
+		b.getString("exit_zero_code");
+	private static final String verWord = b.getString("Version");
+	private static final String getListStr = b.getString("Getting_list_of_");
+	private static final String getFileStr = b.getString("Getting_file");
 
 	// non-instantiable
 	private CommandLineParser () {}
@@ -503,7 +518,7 @@ public class CommandLineParser
 						flow = 2;
 					}
 					else if ( args[i+1].toLowerCase (Locale.ENGLISH).equals ("soft+hard")	// NOI18N
-								|| args[i+1].toLowerCase (Locale.ENGLISH).equals ("hard+soft") )	// NOI18N
+						|| args[i+1].toLowerCase (Locale.ENGLISH).equals ("hard+soft") )	// NOI18N
 					{
 						flow = 3;
 					}
@@ -560,6 +575,179 @@ public class CommandLineParser
 					i++;
 				}
 			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-alarms") )	// NOI18N
+			{
+				try
+				{
+					Vector<PhoneAlarm> vmsg = new Vector<PhoneAlarm> ();
+					int res = TransferUtils.downloadAlarmList (
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					for ( int j = 0; j < vmsg.size (); j++ )
+					{
+						if ( vmsg.get (j) == null ) continue;
+						System.out.println (vmsg.get (j));
+					}
+					Utils.closeProgram (logfile, res);
+				}
+				catch ( Exception ex )
+				{
+					Utils.handleException (ex,
+						"cmdline.downloadMessageList()");	// NOI18N
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-elements") )	// NOI18N
+			{
+				try
+				{
+					Vector<PhoneElement> total = new Vector<PhoneElement> ();
+					Vector<PhoneElement> vmsg = new Vector<PhoneElement> ();
+					int res = TransferUtils.downloadList ("PICTURES",	// NOI18N
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					total.addAll (vmsg);
+					res += TransferUtils.downloadList ("RINGTONES",		// NOI18N
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					total.addAll (vmsg);
+					res += TransferUtils.downloadList ("VTODO",		// NOI18N
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					total.addAll (vmsg);
+					res += TransferUtils.downloadList ("VEVENT",		// NOI18N
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					total.addAll (vmsg);
+					res += TransferUtils.downloadList ("VCARDS",		// NOI18N
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					total.addAll (vmsg);
+					res += TransferUtils.downloadList ("ANIMATIONS",	// NOI18N
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					total.addAll (vmsg);
+					for ( int j = 0; j < total.size (); j++ )
+					{
+						if ( total.get (j) == null ) continue;
+						System.out.println (total.get (j));
+					}
+					Utils.closeProgram (logfile, res);
+				}
+				catch ( Exception ex )
+				{
+					Utils.handleException (ex,
+						"cmdline.downloadMessageList()");	// NOI18N
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-element") )	// NOI18N
+			{
+				if ( i < args.length-1 )
+				{
+					try
+					{
+						// only the ID is important
+						PhoneElement pe = new PhoneElement(args[i+1], "", "");
+						int res = TransferUtils.deleteFile (pe,
+							TransferUtils.getIdentifierForPort
+							(portName), speed, dBits, sBits,
+							parity, flow, null, null, sync,
+							false, true, true);
+						Utils.closeProgram (logfile, res);
+					}
+					catch ( Exception ex )
+					{
+						Utils.handleException (ex,
+							"cmdline.staticDelete(" + args[i+1] + ")");	// NOI18N
+					}
+					i++;
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--list-sms") )	// NOI18N
+			{
+				try
+				{
+					Vector<PhoneMessage> vmsg = new Vector<PhoneMessage> ();
+					int res = TransferUtils.downloadMessageList (
+						TransferUtils.getIdentifierForPort
+						(portName), speed, dBits, sBits,
+						parity, flow, null, null, sync,
+						false, true, true, null, vmsg);
+					for ( int j = 0; j < vmsg.size (); j++ )
+					{
+						if ( vmsg.get (j) == null ) continue;
+						System.out.println (vmsg.get (j));
+					}
+					Utils.closeProgram (logfile, res);
+				}
+				catch ( Exception ex )
+				{
+					Utils.handleException (ex,
+						"cmdline.downloadMessageList()");	// NOI18N
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--send-sms") )	// NOI18N
+			{
+				// we need 2 more elements: the recipient's number and the message body
+				if ( i < args.length-2 )
+				{
+					try
+					{
+						PhoneMessage pmsg = new PhoneMessage ();
+						pmsg.setRecipientNum (args[i+1]);
+						pmsg.setMessage (args[i+2]);
+						int res = TransferUtils.sendMessage (pmsg,
+							TransferUtils.getIdentifierForPort
+							(portName), speed, dBits, sBits,
+							parity, flow, null, null, sync,
+							false, true, true);
+						Utils.closeProgram (logfile, res);
+					}
+					catch ( Exception ex )
+					{
+						Utils.handleException (ex,
+							"cmdline.sendMessage(" + args[i+1] + ","	// NOI18N
+							+ args[i+2] + ")");				// NOI18N
+					}
+					i+=2;
+				}
+			}
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-sms") )	// NOI18N
+			{
+				if ( i < args.length-1 )
+				{
+					try
+					{
+						PhoneMessage pmsg = new PhoneMessage ();
+						pmsg.setID (args[i+1]);
+						int res = TransferUtils.deleteMessage (pmsg,
+							TransferUtils.getIdentifierForPort
+							(portName), speed, dBits, sBits,
+							parity, flow, null, null, sync,
+							false, true, true);
+						Utils.closeProgram (logfile, res);
+					}
+					catch ( Exception ex )
+					{
+						Utils.handleException (ex,
+							"cmdline.deleteMessage(" + args[i+1] + ")");	// NOI18N
+					}
+					i++;
+				}
+			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--upload") )	// NOI18N
 			{
 				if ( i < args.length-1 )
@@ -601,7 +789,7 @@ public class CommandLineParser
 			{
 				Utils.closeProgram (logfile, getAllVcards (sync));
 			}
-			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-vcards") )	// NOI18N
+			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-animations") )	// NOI18N
 			{
 				Utils.closeProgram (logfile, getAllAnimations (sync));
 			}

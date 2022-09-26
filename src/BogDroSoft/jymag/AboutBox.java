@@ -27,8 +27,7 @@ package BogDroSoft.jymag;
 
 import java.awt.Cursor;
 import java.awt.Desktop;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.io.InputStream;
 import java.net.URI;
@@ -70,7 +69,15 @@ public class AboutBox extends javax.swing.JDialog
 		www1Label .setCursor (Cursor.getPredefinedCursor (Cursor.HAND_CURSOR));
 		www2Label .setCursor (Cursor.getPredefinedCursor (Cursor.HAND_CURSOR));
 		www3Label .setCursor (Cursor.getPredefinedCursor (Cursor.HAND_CURSOR));
-		setSize (700, 765);
+		//setSize (700, 850);
+		// change the size so that the scrollbars fit:
+		Dimension size = getSize ();
+		if ( size != null )
+		{
+			size.height += 50;
+			size.width += 50;
+			setSize (size);
+		}
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
@@ -113,7 +120,7 @@ public class AboutBox extends javax.swing.JDialog
                 setModal(true);
 
                 jymagLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
-                jymagLabel.setText("JYMAG - Java Your Music And Graphics " + MainWindow.verString);
+                jymagLabel.setText("JYMAG - Java Your Music And Graphics " /* NOI18N */ + MainWindow.verString);
                 jymagLabel.setIconTextGap(40);
 
                 authorLabel.setText(bundle.getString("author")); // NOI18N
@@ -159,7 +166,7 @@ public class AboutBox extends javax.swing.JDialog
                 licenseArea.setColumns(20);
                 licenseArea.setEditable(false);
                 licenseArea.setRows(3);
-                licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("BogDroSoft/jymag/rsrc/GNU-GPLv3.txt")));
+                licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("BogDroSoft/jymag/rsrc/GNU-GPLv3.txt" /* NOI18N */)));
                 jScrollPane1.setViewportView(licenseArea);
                 licenseArea.getAccessibleContext().setAccessibleName("license text"); // NOI18N
 
@@ -216,7 +223,7 @@ public class AboutBox extends javax.swing.JDialog
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addContainerGap()
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
                                         .addContainerGap()))
                 );
                 jPanel1Layout.setVerticalGroup(
@@ -252,11 +259,11 @@ public class AboutBox extends javax.swing.JDialog
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(thanksLabel)
                                         .addComponent(thanksTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(92, Short.MAX_VALUE))
+                                .addContainerGap(169, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                        .addGap(643, 643, 643)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+                                        .addContainerGap(696, Short.MAX_VALUE)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addContainerGap()))
                 );
 
@@ -281,11 +288,11 @@ public class AboutBox extends javax.swing.JDialog
                 getContentPane().setLayout(layout);
                 layout.setHorizontalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 684, Short.MAX_VALUE)
                 );
                 layout.setVerticalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 831, Short.MAX_VALUE)
                 );
 
                 getAccessibleContext().setAccessibleName(bundle.getString("access_title_about")); // NOI18N

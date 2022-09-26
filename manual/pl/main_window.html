@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<HTML lang="pl">
+<HEAD>
+<META HTTP-EQUIV="Content-Type"       CONTENT="text/html; charset=ISO-8859-2">
+<META HTTP-EQUIV="Content-Language"   CONTENT="pl">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META HTTP-EQUIV="X-Frame-Options"    CONTENT="DENY">
+<LINK rel="stylesheet" href="../rsrc/css/jymag.css" type="text/css">
+
+<TITLE> Okno główne - JYMAG </TITLE>
+
+<link rel="alternate" type="text/html" href="../en/main_window.html" hreflang="en" lang="en" title="English version">
+
+<META NAME="Author" CONTENT="Bogdan D.">
+<META NAME="Description" CONTENT="JYMAG - Java Your Music And Graphics">
+<META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
+<META NAME="Language" CONTENT="en">
+<META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
+</HEAD><BODY>
+
+<h1 class="nag">JYMAG - Okno główne</h1>
+<BR><BR>
+<hr>
+
+<div class="c">
+<a href="../rsrc/img/main_window.png"><img src="../rsrc/img/main_window.png"
+alt="[Wygląd głównego okna programu]" width="640" height="486"></a>
+</div>
+
+<p>
+To jest okno główne programu JYMAG. Pozwala ono na przeprowadzenie wielu różnych działań.
+Skorzystaj z pola rozmiaru czcionki, aby zmienić rozmiar czcionki w tym oknie i wszystkich
+oknach otwartych z tego okna.
+</p>
+<p>
+W lewej górnej części okna można ustawić parametry portu komunikacyjnego:
+</p>
+<ol>
+ <li>Lista Port pozwala na wybranie portu do komunikacji.
+	Jeśli nie wiesz, którego portu użyć, wciśnij przycisk "Skanuj porty"
+	(<span lang="en">"Scan ports"</span>). Gdy skanowanie się zakończy,
+	port, który odpowiedział, zostaje automatycznie wybrany albo dostajesz listę,
+	z której możesz wybrać port. Zawsze możesz wybrać też inny port. Wybieranie
+	innych portów pozwala zobaczyć, które porty odpowiedziały jakimi informacjami -
+	te informacje są pokazywane przy czterech etykietach w środkowej części okna.<br><br>
+	Jeśli Twojego portu nie ma na liście, to sprawdź, czy:<br><br>
+   <ul>
+    <li>telefon łączy się połączeniem szeregowym (nie jako pamięć na USB, na przykład)</li>
+    <li>zainstalowano prawidłowy sterownik do kabla/IrDA/innych urządzeń</li>
+    <li>port telefonu nie jest już używany</li>
+    <li>masz najnowsze RxTx</li>
+   </ul><br></li>
+ <li>Lista Prędkość (<span lang="en">"Speed"</span>) pozwala na wybranie prędkości transmisji.
+	Ustaw ją na wartość ustawioną w telefonie (lub innym urządzeniu, do którego się łączysz)
+	lub zostaw domyślne 115200.
+	<br><br></li>
+ <li>Wybierz liczbę bitów danych: 8 (zalecana wartość domyślna), 7, 6 lub 5.
+	<br><br></li>
+ <li>Wybierz tryb sprawdzania parzystości: None (zalecana wartość domyślna), Even, Odd, Space, Mark.
+	<br><br></li>
+ <li>Wybierz liczbę bitów stopu: 1 (zalecana wartość domyślna), 1.5 or 2.
+	<br><br></li>
+ <li>Wybierz tryb kontroli przepływu: Brak (oba pola wyczyszczone - zalecana wartość domyślna),
+	Programowa lub Sprzętowa.
+	<br><br></li>
+</ol>
+Pod ustawieniami portu są dwa przyciski:
+<ol>
+ <li>"Załaduj konfigurację" (<span lang="en">"Load configuration"</span>) pozwala na załadowanie
+	ustawień z uprzednio zapisanego pliku konfiguracji programu JYMAG.<br><br></li>
+ <li>"Zapisz konfigurację" (<span lang="en">"Save configuration"</span>) pozwala na zapisanie
+	ustawień do pliku. Następujące ustawienia są zapisywane:<br><br>
+	<ul>
+	 <li>nazwa portu</li>
+	 <li>prędkość</li>
+	 <li>liczba bitów danych</li>
+	 <li>ustawienie parzystości</li>
+	 <li>liczba bitów stopu</li>
+	 <li>ustawienie kontroli przepływu</li>
+	 <li>pozycja głównego okna</li>
+	 <li>rozmiar głównego okna wraz z informacją, czy jest zmaksymalizowane</li>
+	 <li>rozmiar czcionki głównego okna</li>
+	</ul><br></li>
+</ol>
+
+Poniżej, w środkowej sekcji okna znajdują się następujące elementy:
+<ol>
+ <li>Typ telefonu (<span lang="en">"Phone type"</span>) - zawiera typ telefonu podany przez telefon
+	(jeśli jakiś był) po wciśnięciu "Skanuj porty" (<span lang="en">"Scan ports"</span>).
+	<br><br></li>
+ <li>Wersję oprogramowania telefonu podaną przez telefon
+	(jeśli jakiś był) po wciśnięciu "Skanuj porty" (<span lang="en">"Scan ports"</span>).
+	<br><br></li>
+ <li>Numer IMEI podany przez telefon
+	(jeśli jakiś był) po wciśnięciu "Skanuj porty" (<span lang="en">"Scan ports"</span>).
+	<br><br></li>
+ <li>Numer abonenta (<span lang="en">"Subscriber number"</span>) aktualnie włożonej karty SIM
+	podany przez telefon
+	(jeśli jakiś był) po wciśnięciu "Skanuj porty" (<span lang="en">"Scan ports"</span>).
+	To po prostu jest Twój numer telefonu.
+	<br><br></li>
+ <li>Etykieta ze stanem programu mówi, czy program jest gotowy na komendy, czy odbiera lub
+	wysyła dane.
+	<br><br></li>
+ <li>Pasek postępu pokazuje postęp bieżącej operacji.
+	<br><br></li>
+</ol>
+
+Na dole okna jest panel z kartami. Te karty zawierają tabele z plikami lub innymi elementami
+ w telefonie:
+<ul>
+ <li>obrazki/zdjęcia</li>
+ <li>dzwonki/melodie/pliki z muzyką</li>
+ <li>wpisy książki adresowej (telefonicznej)</li>
+ <li>rzeczy do zrobienia</li>
+ <li>zdarzenia/zadania</li>
+ <li>animacje/wideo/filmy</li>
+ <li>elementy Java</li>
+ <li>wpisy budzików</li>
+ <li>wiadomości SMS</li>
+</ul>
+
+Więcej informacji można znaleźć na <a href="tables.html" hreflang="en">stronie kart</a>.
+
+<br><br>
+
+W końcu, po prawej stronie okna można znaleźć następujące przyciski:
+<ol>
+ <li>"Skanuj porty" (<span lang="en">"Scan ports"</span>) - wciśnij, aby przeskanować znalezione
+	porty szeregowe. Gdy skanowanie się zakończy,
+	port, który odpowiedział, zostaje automatycznie wybrany albo dostajesz listę,
+	z której możesz wybrać port. Zawsze możesz wybrać też inny port. Wybieranie
+	innych portów pozwala zobaczyć, które porty odpowiedziały jakimi informacjami -
+	te informacje są pokazywane przy czterech etykietach w środkowej części okna.
+	<br><br></li>
+ <li>"O JYMAG" (<span lang="en">"About JYMAG"</span>) - otwiera
+	<a href="about_window.html" hreflang="en">okno z informacjami o programie</a>.
+	<br><br></li>
+ <li>"Ręczne komendy" (<span lang="en">"Manual commands"</span>) - otwiera
+	<a href="manual_cmd.html" hreflang="en">okno komunikacji ręcznej</a>.
+	<br><br></li>
+ <li>"Pobierz możliwości" (<span lang="en">"Get capabilities"</span>) - otwiera
+	<a href="capability.html" hreflang="en">okno pobierania możliwości</a>.
+	<br><br></li>
+ <li>"Moc sygnału" (<span lang="en">"Signal power"</span>) - otwiera
+	<a href="signal_power.html" hreflang="en">okno wyświetlające moc sygnału</a>.
+	<br><br></li>
+ <li>"Wyjście" (<span lang="en">"Exit"</span>) - zamyka JYMAG.
+	<br><br></li>
+</ol>
+
+
+
+</body></html>
+

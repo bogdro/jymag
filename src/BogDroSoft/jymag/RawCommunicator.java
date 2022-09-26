@@ -44,7 +44,7 @@ import javax.swing.SwingWorker;
 public class RawCommunicator extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 71L;
-	private DataTransporter dtr;
+	private final DataTransporter dtr;
 	private final Object sync;
 	/** The Thread that updates the control line signal display. */
 	private Thread updater = null;
@@ -64,6 +64,10 @@ public class RawCommunicator extends javax.swing.JDialog
 	private static final String fileNotReadMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator").getString("file_not_readable");
 	private static final String noFileMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator").getString("no_file_sel");
 	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+
+	private static final String emptyStr = "";					// NOI18N
+	private static final String CRStr = "\r";					// NOI18N
+	private static final String LFStr = "\n";					// NOI18N
 
 	/**
 	 * Creates new form RawCommunicator.
@@ -127,12 +131,6 @@ public class RawCommunicator extends javax.swing.JDialog
                 closeBut = new javax.swing.JButton();
                 fontSizeSpin = new javax.swing.JSpinner();
                 fontSizeLab = new javax.swing.JLabel();
-                rtsBut = new javax.swing.JToggleButton();
-                dtrBut = new javax.swing.JToggleButton();
-                dcdLabel = new javax.swing.JLabel();
-                ctsLabel = new javax.swing.JLabel();
-                dsrLabel = new javax.swing.JLabel();
-                riLabel = new javax.swing.JLabel();
                 sendFileBut = new javax.swing.JButton();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -252,9 +250,11 @@ public class RawCommunicator extends javax.swing.JDialog
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addContainerGap()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGroup(jPanel1Layout.createSequentialGroup()
-                                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                                                        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE)
+                                                        .addGap(229, 229, 229))
+                                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                                                         .addGap(18, 18, 18)
                                                         .addComponent(sendBut)
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -299,9 +299,12 @@ public class RawCommunicator extends javax.swing.JDialog
                                         .addContainerGap()))
                 );
 
+                sendBut.getAccessibleContext().setAccessibleName(bundle.getString("access_send")); // NOI18N
+                closeBut.getAccessibleContext().setAccessibleName(bundle.getString("access_exit")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spinner")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
                 fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("font_label")); // NOI18N
+                sendFileBut.getAccessibleContext().setAccessibleName(bundle.getString("access_send_file")); // NOI18N
 
                 jScrollPane4.setViewportView(jPanel1);
 
@@ -330,11 +333,12 @@ public class RawCommunicator extends javax.swing.JDialog
 
 		final String cmd = currCommArea.getText ();
 		if ( cmd == null ) return;
-		if ( cmd.trim ().length () == 0 ) return;
-		cmdArea.setText (cmdArea.getText ()  + cmd + "\n");	// NOI18N
+		if ( cmd.isEmpty () ) return;
+		cmdArea.setText (cmdArea.getText ()  + cmd + LFStr);
 		currCommArea.setEditable (false);
 		currCommArea.setEnabled (false);
-		currCommArea.setText ("");				// NOI18N
+		sendBut.setEnabled (false);
+		currCommArea.setText (emptyStr);
 
 		SwingWorker<String, Void> sw =
 			new SwingWorker<String, Void> ()
@@ -344,17 +348,17 @@ public class RawCommunicator extends javax.swing.JDialog
 			{
 				try
 				{
-					String rcvd = "";				// NOI18N
+					String rcvd = emptyStr;
 					synchronized (sync)
 					{
-						dtr.send ((cmd+"\r").getBytes ());	// NOI18N
+						dtr.send ((cmd+CRStr).getBytes ());
 						int trial = 0;
 						do
 						{
 							byte[] recvdB = dtr.recv (null);
 							if ( recvdB != null ) rcvd = new String (recvdB);
 							trial++;
-						} while (rcvd.trim ().equals ("")	// NOI18N
+						} while (rcvd.trim ().equals (emptyStr)
 							&& trial < DataTransporter.MAX_TRIALS);
 					}
 					return rcvd;
@@ -376,9 +380,10 @@ public class RawCommunicator extends javax.swing.JDialog
 					String rcvd = get ();
 					if ( rcvd != null )
 					{
-						if ( rcvd.trim ().length () > 0 )
+						if ( ! rcvd.trim ().isEmpty () )
 						{
-							answerArea.setText (answerArea.getText () + rcvd + "\n");	// NOI18N
+							answerArea.setText (answerArea.getText ()
+								+ rcvd + LFStr);
 						}
 					}
 				}
@@ -388,6 +393,7 @@ public class RawCommunicator extends javax.swing.JDialog
 				}
 				currCommArea.setEditable (true);
 				currCommArea.setEnabled (true);
+				sendBut.setEnabled (true);
 				currCommArea.requestFocusInWindow ();
 			}
 		};
@@ -669,11 +675,11 @@ public class RawCommunicator extends javax.swing.JDialog
         private javax.swing.JTextArea answerArea;
         private javax.swing.JButton closeBut;
         private javax.swing.JTextArea cmdArea;
-        private javax.swing.JLabel ctsLabel;
+        private final javax.swing.JLabel ctsLabel = new javax.swing.JLabel();
         private javax.swing.JTextArea currCommArea;
-        private javax.swing.JLabel dcdLabel;
-        private javax.swing.JLabel dsrLabel;
-        private javax.swing.JToggleButton dtrBut;
+        private final javax.swing.JLabel dcdLabel = new javax.swing.JLabel();
+        private final javax.swing.JLabel dsrLabel = new javax.swing.JLabel();
+        private final javax.swing.JToggleButton dtrBut = new javax.swing.JToggleButton();
         private javax.swing.JLabel fontSizeLab;
         private javax.swing.JSpinner fontSizeSpin;
         private javax.swing.JPanel jPanel1;
@@ -682,8 +688,8 @@ public class RawCommunicator extends javax.swing.JDialog
         private javax.swing.JScrollPane jScrollPane3;
         private javax.swing.JScrollPane jScrollPane4;
         private javax.swing.JSplitPane jSplitPane1;
-        private javax.swing.JLabel riLabel;
-        private javax.swing.JToggleButton rtsBut;
+        private final javax.swing.JLabel riLabel = new javax.swing.JLabel();
+        private final javax.swing.JToggleButton rtsBut = new javax.swing.JToggleButton();
         private javax.swing.JButton sendBut;
         private javax.swing.JButton sendFileBut;
         // End of variables declaration//GEN-END:variables

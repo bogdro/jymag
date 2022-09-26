@@ -1,5 +1,5 @@
 This is the README file for JYMAG (Java Your Music and Graphics), a program
- for retrieving and sending multimedia ad other objects from and to a Sagem
+ for retrieving and sending multimedia and other objects from and to a Sagem
  mobile phone (tested on Linux with a "Sagem MY X5-2").
 JYMAG can also serve as a general-purpose serial port terminal or a Java
  library for programmers.
@@ -10,13 +10,13 @@ License: GPLv3+
 ========================= Running
 
 Requirements:
-- RxTx Java Transmission package from www.rxtx.org
-- JRE, the Java Runtime Environment >= (1.)6.0
+- RxTx Java Transmission package from http://rxtx.qbang.org
+- JRE, the Java SE Runtime Environment >= (1.)6.0
 - permissions to use the serial ports
 - port locking permissions may be required by RxTx. Adding the user running
   JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
 
-Using NetBeans: open the JYMAG folder as a NetBeans Project
+Using NetBeans: open the JYMAG directory as a NetBeans Project
  and click "Run" (or press F6).
 
 By hand (after unpacking):
@@ -108,9 +108,13 @@ No need to connect to the phone. Start by selecting the tab you're
  The downloaded files will show up in selected location.
 To upload an element, simply click the "Upload" button. Getting the
  list isn't necessary. You can also drag&drop the files you want to upload
- on any of the tables (except the alarms).
+ on any of the tables (except the alarms and SMS messages).
 To edit an alarm, double click the cell in the table. Keep the format
  unchanged.
+To read an SMS message, select it in the table and choose "Download selected".
+ A new window will appear allowing you to read the message.
+To send an SMS message, click the "Upload" button. A new window will appear allowing
+ you to type the phone number and the message body.
 
 ========================= Usage (command line)
 
@@ -121,6 +125,9 @@ The following command-line (case-insensitive) options are supported:
 	    --delete-after-download     - delete the downloaded elements if
 					  downloaded succesfully
 	    --delete-alarm <N>          - delete the alarm number N
+	    --delete-element <ID>	- delete the element (file) with the
+					  given ID
+	    --delete-sms <N>		- delete the SMS message with ID=N
 	    --download-all-animations	- downloads all animations/videos
 					  from the phone and exits
 	    --download-all-events	- downloads all events from the phone
@@ -144,10 +151,15 @@ The following command-line (case-insensitive) options are supported:
 	    				  Separate them using underscores.
 					  Only LL is required.
 	    --license, --licence	- display license information
-	    --port <filename>		- sets the default port
+	    --list-alarms		- list the alarms set in the phone
+	    --list-elements		- list phone elements (files)
+	    --list-sms			- display the SMS messages in the phone
 	    --parity <none, even, odd, space, mark>	- sets the parity mode
+	    --port <filename>		- sets the default port
 	    --scan			- scans available ports for "OK"
 	    				  answers and exits the program
+	    --send-sms <number> <msg>	- send the given <msg> message as an
+					  SMS to the given recipient <number>
 	    --speed <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
@@ -164,7 +176,7 @@ The following command-line (case-insensitive) options are supported:
 ========================= Currently supported operations:
 
 1) Getting lists of: pictures, ringtones, addressbook entries,
-   to-do tasks, events, animations/videos and alarms
+   to-do tasks, events, animations/videos, alarms and SMS messages
 2) Downloading:
    a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG, WBMP,
       unverified: TIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP, WMF, CGM, PMB
@@ -173,7 +185,7 @@ The following command-line (case-insensitive) options are supported:
    d) to-do tasks
    e) events (reminders, ...)
    f) animation/videos: MNG, GIF, unverified: WMV, MP4, MPEG
-3) Uploading/updating:
+3) Uploading/updating/sending:
    a) pictures: JPG, GIF, BMP, PNG, WBMP, unverified: EMS_GR, TIFF, PICT, AI,
       EPS, PS
    b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?), AMR,
@@ -185,8 +197,9 @@ The following command-line (case-insensitive) options are supported:
       3GP, 3GP2, SG1, SG2, SSA
    g) Java files: unverified: JAR, JAD, JAM
    h) alarms
+   i) SMS messages
 4) Deleting pictures, ringtones, addressbook entries,
-   to-do tasks, events, animations/videos and alarms
+   to-do tasks, events, animations/videos, alarms and SMS messages
 
 ========================= Converting ringtones
 
@@ -210,7 +223,7 @@ I haven't tried all that (my 30-second ringtones are rejected).
 
 ========================= Translating
 
-To translate the progrm to your language, make a copy of each *.properties
+To translate the program to your language, make a copy of each *.properties
  file. Rename these files so they end with your language and country code,
  for example:
 	AboutBox_en_GB.properties
@@ -221,6 +234,11 @@ To translate the progrm to your language, make a copy of each *.properties
  UTF-8, not ISO-8859-*, not windows-*, not cp*.
 NOTE: If you change the words before the "=", your translations won't
  be seen by the program.
+
+NOTE: Alternatively, use can use the NetBeans IDE to translate. Just open
+ the JYMAG project, right-click any of the main properties' file, choose
+ "Add" and "Locale". Choose your language and select OK. Now right-click
+ the chosen file and select "Open". Edit the strings in your language.
 
 ========================= If not working
 
@@ -252,13 +270,13 @@ NOTE: If you change the words before the "=", your translations won't
    the other time, it's not JYMAG's fault. Since it works, the program is
    written correctly. It's the connection that is unreliable. The original
    program was even worse - the connection broke in the middle of transmission
-   and you had to click "Connect" over and over again and some pictues were
+   and you had to click "Connect" over and over again and some pictures were
    corrupted too. Have patience. If you know how to make this better, contact
    me (e-mail at the top of this file).
 
 5. JYMAG sends a file, but the phone rejects it.
    Check if your phone accepts the given file format, either by using the
-   capabilites' button in the main window, or by sending
+   capabilities' button in the main window, or by sending
    	AT+KPSCAP="X"
    (with the double quotes) in the "Manual commands" window. The X can be:
    PICTURES, SOUNDS, VTODO, VEVENT, VCARDS, ANIMATIONS.
@@ -268,7 +286,7 @@ NOTE: If you change the words before the "=", your translations won't
 1. Check if you have the newest versions of JYMAG.
 2. Include your Java and RxTx version numbers. See if the program works with a
    newer/older version of Java/RxTx. If it works with an older version, but
-   not with a new one, you problem is solved, but still tell me the
+   not with a new one, your problem is solved, but still tell me the
    problematic version numbers.
 3. Include precise steps for reproducing the error, if possible. This will
    make finding the problem easier.
@@ -280,3 +298,7 @@ NOTE: If you change the words before the "=", your translations won't
    information you can give and send it to my e-mail address (you can find it
    at the top of this file).
 
+========================= Legal info
+
+All trademarks, logos and names in this program are properties
+ of their respective owners and are given here only as an example.

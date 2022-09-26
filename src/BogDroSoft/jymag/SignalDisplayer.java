@@ -39,14 +39,18 @@ public class SignalDisplayer extends javax.swing.JFrame
 
 	/** The Thread that updates the power level display. */
 	private Thread updater = null;
+	/** The thread control field. */
+	private volatile boolean runUpdater = true;
+
 	/** The DataTransporter used for retrieveing the signal power level. */
-	private DataTransporter dt;
+	private final DataTransporter dt;
 	/** The synchronization field. */
 	private final Object sync;
 	/** The refresh interval, in milliseconds. */
 	private static final int refreshTime = 1000;
 
 	private static final String dBm = "dBm";	// NOI18N
+	private static final String qMark = "?";	// NOI18N
 
 	/**
 	 * Creates new form SignalDisplayer.
@@ -78,6 +82,8 @@ public class SignalDisplayer extends javax.swing.JFrame
 		fontSpin.setValue (fontSize);	// refresh the font in the window
 		/* add the Esc key listener to the frame and all components. */
 		new Utils.EscKeyListener (this);
+		// start the Thread:
+		runUpdater = true;
 		start ();
 	}
 
@@ -95,10 +101,8 @@ public class SignalDisplayer extends javax.swing.JFrame
                 jPanel1 = new javax.swing.JPanel();
                 jLabel1 = new javax.swing.JLabel();
                 jLabel2 = new javax.swing.JLabel();
-                powerLevel = new javax.swing.JProgressBar();
                 exitBut = new javax.swing.JButton();
                 jLabel3 = new javax.swing.JLabel();
-                powerLabel = new javax.swing.JLabel();
                 jLabel4 = new javax.swing.JLabel();
                 fontSpin = new javax.swing.JSpinner();
                 onTopCB = new javax.swing.JCheckBox();
@@ -106,6 +110,7 @@ public class SignalDisplayer extends javax.swing.JFrame
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SignalDisplayer"); // NOI18N
                 setTitle(bundle.getString("title_signal")); // NOI18N
+                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag.png"))).getImage ());
                 addWindowListener(new java.awt.event.WindowAdapter() {
                         public void windowClosing(java.awt.event.WindowEvent evt) {
                                 formWindowClosing(evt);
@@ -272,11 +277,13 @@ public class SignalDisplayer extends javax.swing.JFrame
 
 	private void exit ()
 	{
+		runUpdater = false;
 		if ( updater != null )
 		{
 			while ( updater.isAlive () )
 			{
-				updater.interrupt ();
+				// only hurts: when the thread is interrupted, the window won't close
+				//updater.interrupt ();
 				try { Thread.sleep (10); } catch (Exception ex) {}
 			}
 		}
@@ -310,7 +317,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 				else
 				{
 					powerLevel.setValue (0);
-					powerLabel.setText ("?");	// NOI18N
+					powerLabel.setText (qMark);
 				}
 			}
 		});
@@ -326,7 +333,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 			@Override
 			public synchronized void run ()
 			{
-				while (! Thread.interrupted ())
+				while (runUpdater && ! Thread.interrupted ())
 				{
 					synchronized (sync)
 					{
@@ -337,6 +344,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 						setLevel (currLevel);
 						prevLevel = currLevel;
 					}
+					if ( ! runUpdater ) break;
 					try
 					{
 						Thread.sleep (refreshTime);
@@ -361,7 +369,7 @@ public class SignalDisplayer extends javax.swing.JFrame
         private javax.swing.JPanel jPanel1;
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JCheckBox onTopCB;
-        private javax.swing.JLabel powerLabel;
-        private javax.swing.JProgressBar powerLevel;
+        private final javax.swing.JLabel powerLabel = new javax.swing.JLabel();
+        private final javax.swing.JProgressBar powerLevel = new javax.swing.JProgressBar();
         // End of variables declaration//GEN-END:variables
 }

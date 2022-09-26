@@ -1,0 +1,34 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>JYMAG.jar</jar>
+  <outfile>/home/bogdan/Infa/NetBeansProjects/JYMAG/install/jymag.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://jymag.sf.net</supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>/home/bogdan/Infa/NetBeansProjects/JYMAG/install/jymag.ico</icon>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.1.0.0</fileVersion>
+    <txtFileVersion>1.1</txtFileVersion>
+    <fileDescription>JYMAG launcher</fileDescription>
+    <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2011</copyright>
+    <productVersion>1.1.0.0</productVersion>
+    <txtProductVersion>1.1</txtProductVersion>
+    <productName>JYMAG</productName>
+    <companyName></companyName>
+    <internalName>JYMAG</internalName>
+    <originalFilename>JYMAG.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>
