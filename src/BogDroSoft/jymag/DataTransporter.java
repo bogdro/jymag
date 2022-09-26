@@ -49,13 +49,65 @@ public class DataTransporter implements SerialPortEventListener
 	private SerialPort s;
 	private InputStream inputStream;
 	private OutputStream outputStream;
-	private final int MAX_TRIALS = 3;
+	/** Maximum number of attempts to establish communication. */
+	public static final int MAX_TRIALS = 3;
+	/** Timeout betwenn up/download stages, in milliseconds. */
+	private static final int TIMEOUT = 250;
+
+	/*
+	 * Element receiving format:
+	 * AT+KPSR="<ID repeated>"
+	 * +KPSR: 49203
+	 * CONNECT\r\n
+	 * <binary data>
+	 * \r\nNO CARRIER
+	 */
+
+	// file headers:
+	private final byte[] JPG = new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff };
+	// MTh
+	private final byte[] MID = new byte[] { (byte) 0x4d, (byte) 0x54, (byte) 0x68 };
+	// #!AMR = 23 21 41 4D  52
+	private final byte[] AMR = new byte[] { (byte) 0x23, (byte) 0x21, (byte) 0x41,
+		(byte) 0x4D, (byte) 0x52 };
+	// BM  = 42 4D
+	private final byte[] BMP = new byte[] { (byte) 0x42, (byte) 0x4D };
+	// GIF = 47 49 46
+	private final byte[] GIF = new byte[] { (byte) 0x47, (byte) 0x49, (byte) 0x46 };
+	// PNG
+	private final byte[] PNG = new byte[] { (byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47 };
+	// WAV = RIFF = 52 49 46 46
+	private final byte[] WAV = new byte[] { (byte) 0x52, (byte) 0x49, (byte) 0x46, (byte) 0x46 };
+	//// "BEGIN:VCALENDAR"
+	private final byte[] VCAL = new byte[] {
+		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
+		(byte) 0x4E, (byte) 0x3A, (byte) 0x56, (byte) 0x43,
+		(byte) 0x41, (byte) 0x4C, (byte) 0x45, (byte) 0x4E,
+		(byte) 0x44, (byte) 0x41, (byte) 0x52 };
+	//// "BEGIN:vCard"
+	private final byte[] VCRD = new byte[] {
+		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
+		(byte) 0x4E, (byte) 0x3A, (byte) 0x76, (byte) 0x43,
+		(byte) 0x61, (byte) 0x72, (byte) 0x64 };
+
+	// "CONNECT\r\n"
+	private final byte[] START = new byte[] {
+		(byte) 0x43, (byte) 0x4F, (byte) 0x4E, (byte) 0x4E,
+		(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x0D,
+		(byte) 0x0A };
+
+	// "\r\nNO CARRIER"
+	private final byte[] FINISH = new byte[] {
+		(byte) 0x0D, (byte) 0x0A,
+		(byte) 0x4E, (byte) 0x4F, (byte) 0x20, (byte) 0x43,
+		(byte) 0x41, (byte) 0x52, (byte) 0x52, (byte) 0x49,
+		(byte) 0x45, (byte) 0x52 };
 
 	// i18n stuff:
 	private final String ansString = "answer";
 
 	/**
-	 * Creates a new instance of DataTransporter, using defaults.
+	 * Creates a new instance of DataTransporter.
 	 * @param id Port identifier for the port which will be used to
 	 * transfer data.
 	 */
@@ -121,32 +173,68 @@ public class DataTransporter implements SerialPortEventListener
 	public byte[] recv (Object[] extraTerminators)
 	{
 		byte[] res = new byte[0];
-		try
+		while (true)
 		{
-			if ( inputStream.available () == 0 )
+			try
 			{
-				synchronized (inputStream)
+				if ( inputStream.available () == 0 )
 				{
-					inputStream.wait (5*1000);
+					synchronized (inputStream)
+					{
+						inputStream.wait (5*1000);
+					}
+					if ( inputStream.available () > 0 )
+					{
+						byte[] readBuffer = new byte[inputStream.available ()];
+						int wasRead = inputStream.read (readBuffer);
+						if ( wasRead < 0 ) break;
+						String curr = new String (readBuffer, 0, wasRead);
+						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
+						if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
+						{
+							break;
+						}
+					}
+					else return res;
 				}
-				if ( inputStream.available () != 0 )
+				else if ( inputStream.available () > 0 )
 				{
-					res = this.joinArrays (res, recvData (extraTerminators));
+					byte[] readBuffer = new byte[inputStream.available ()];
+					int wasRead = inputStream.read (readBuffer);
+					if ( wasRead < 0 ) break;
+					String curr = new String (readBuffer, 0, wasRead);
+					res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
+					if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
+					{
+						break;
+					}
 				}
 			}
-			else
+			catch (InterruptedException intex)
 			{
-				res = this.joinArrays (res, recvData (extraTerminators));
+				try
+				{
+					// being interrupted not necessarily means that data is available, so check
+					if ( inputStream.available () > 0 )
+					{
+						byte[] readBuffer = new byte[inputStream.available ()];
+						int wasRead = inputStream.read (readBuffer);
+						if ( wasRead < 0 ) break;
+						String curr = new String (readBuffer, 0, wasRead);
+						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
+						if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
+						{
+							break;
+						}
+					}
+				}
+				catch (Exception ex) {}
 			}
-		}
-		catch (InterruptedException intex)
-		{
-			res = this.joinArrays (res, recvData (extraTerminators));
-		}
-		catch ( Exception ex )
-		{
-			System.out.println (ex);
-			ex.printStackTrace ();
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "DataTransporter.recv");	// NOI18N
+				break;
+			}
 		}
 		return res;
 	}
@@ -159,7 +247,13 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	private boolean isTerminatorPresent (String haystack, Object[] needles)
 	{
-		if ( needles != null && haystack != null )
+		if ( haystack == null ) return false;
+		if ( haystack.trim ().startsWith ("OK")				// NOI18N
+				|| haystack.trim ().endsWith ("OK")			// NOI18N
+				|| haystack.trim ().startsWith ("ERROR")	// NOI18N
+				|| haystack.trim ().endsWith ("ERROR")		// NOI18N
+				|| haystack.contains ("NO CARRIER") ) return true;		// NOI18N
+		if ( needles != null )
 		{
 			for ( int i=0; i < needles.length; i++ )
 			{
@@ -170,60 +264,13 @@ public class DataTransporter implements SerialPortEventListener
 	}
 
 	/**
-	 * Receives data from the port with checking for terminators, but with no
-	 *	waiting (the data is assumed being ready). This is the worker function
-	 *	that actually does the reading.
-	 * @param extraTerminators Any extra elements that are a mark of transmission end.
-	 * @return The received bytes.
-	 */
-	private byte[] recvData (Object[] extraTerminators)
-	{
-		byte[] res = new byte[0];
-		while (true)
-		{
-			try
-			{
-				int wasRead;
-				byte[] readBuffer;
-				// wait for synchro and read
-				synchronized (inputStream)
-				{
-					readBuffer = new byte[inputStream.available ()];
-					wasRead = inputStream.read (readBuffer);
-				}
-
-				if ( wasRead < 0 ) break;
-				String curr = new String (readBuffer, 0, wasRead);
-				res = this.joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
-				if (
-					   curr.trim ().startsWith ("OK")	// NOI18N
-					|| curr.trim ().startsWith ("ERROR")	// NOI18N
-					|| curr.trim ().endsWith ("OK")		// NOI18N
-					|| curr.trim ().endsWith ("ERROR")	// NOI18N
-					|| curr.trim ().endsWith ("NO CARRIER")	// NOI18N
-					|| isTerminatorPresent ( curr.trim (), extraTerminators )
-					)
-				{
-					break;
-				}
-			}
-			catch ( Exception ex )
-			{
-				System.out.println (ex);
-				ex.printStackTrace ();
-				break;
-			}
-		}
-		return res;
-	}
-
-	/**
 	 * Sends data to the port.
 	 * @param b The bytes to send.
 	 * @throws java.io.IOException in case of an I/O problem with the port.
 	 */
 	public void send (byte[] b) throws IOException
 	{
+		if ( b == null ) return;
 		outputStream.write (b);
 		outputStream.flush ();
 	}
@@ -244,222 +291,294 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public int putFile (File f, String newName)
 	{
+		if ( f == null ) return -11;
 		// check if type is supported.
 		if ( ! f.getName ().contains (".")) return -8;	// NOI18N
-		if ( ! MainWindow.filetypeIDs.containsKey (f.getName ().substring
+		if ( ! Utils.filetypeIDs.containsKey (f.getName ().substring
 			(f.getName ().lastIndexOf (".")+1)	// NOI18N
 			.toLowerCase ()))
 		{
 			return -9;
 		}
+		if ( newName == null ) newName = f.getName ().substring (0,
+			f.getName ().indexOf ("."));
 
-		// stage variable, useful when an exception is caught.
-		int stage = 0;
+		String rcvd;
+		byte[] recvdB;
 		// number of attempts.
 		int trials = 0;
-		try
+		MAIN: while (trials <= MAX_TRIALS)
 		{
-			String rcvd;
-			byte[] recvdB;
-
-			// init file upload
-			do
+			// stage variable, useful when an exception is caught.
+			int stage = 0;
+			try
 			{
-				send ("AT+KDOBJ=1,1\r".getBytes ());	// NOI18N
-				recvdB = recv (null);
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( ! rcvd.contains ("OK") )	// NOI18N
-			{
-				System.out.println (ansString + "1=" + rcvd);	// NOI18N
-				try
-				{
-					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-				}
-				catch ( Exception e ) {}
-				return -1;
-			}
-
-			stage++;
-			trials = 0;
-			// send filename length (the last parameter)
-			do
-			{
-				send ( ("AT+KDOBJ=2,1,3,0," + newName.length () + "\r").getBytes ());	// NOI18N
-				recvdB = recv (new String[] { "CONNECT" });	// NOI18N
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
-			{
-				System.out.println (ansString + "2=" + rcvd);	// NOI18N
-				try
-				{
-					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-				}
-				catch ( Exception e ) {}
-				return -2;
-			}
-
-			stage++;
-			trials = 0;
-			// send filename
-			do
-			{
-				send ( (newName+"\r").getBytes ());	// NOI18N
-				recvdB = recv (null);
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( ! rcvd.contains ("OK") )	// NOI18N
-			{
-				System.out.println (ansString + "3=" + rcvd);	// NOI18N
-				try
-				{
-					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-				}
-				catch ( Exception e ) {}
-				return -3;
-			}
-
-			stage++;
-			trials = 0;
-			// send file type (4th param) and length (5th parameter)
-			do
-			{
-				send ( ("AT+KDOBJ=2,1,0,"	// NOI18N
-					+ MainWindow.filetypeIDs.get
-						(f.getName ().substring
-							(f.getName ().lastIndexOf (".")+1)	// NOI18N
-						.toLowerCase ()).intValue ()
-					+ "," + f.length () + "\r").getBytes ());	// NOI18N
-				recvdB = recv (new String[] { "CONNECT" });	// NOI18N
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
-			{
-				System.out.println (ansString + "4=" + rcvd);	// NOI18N
-				try
-				{
-					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-				}
-				catch ( Exception e ) {}
-				return -4;
-			}
-
-			// send file data here:
-			FileInputStream fis = new FileInputStream (f);
-			byte[] contents = new byte[10240];
-			int read = -1;
-			stage++;
-			trials = 0;
-			do
-			{
-				read = fis.read (contents);
-				if ( read < 0 ) break;
-				send (Arrays.copyOf (contents, read));
-
-			} while (read == contents.length);
-			fis.close ();
-			do
-			{
-				recvdB = recv (null);
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( ! rcvd.contains ("OK") )	// NOI18N
-			{
-				System.out.println (ansString + "5=" + rcvd);	// NOI18N
-				try
-				{
-					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-				}
-				catch ( Exception e ) {}
-				return -5;
-			}
-
-			stage++;
-			trials = 0;
-			// close file upload
-			do
-			{
+				// reset file upload
 				send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )	// NOI18N
+				if ( rcvd.trim ().equals ("")		// NOI18N
+					|| (! rcvd.contains ("OK")	// NOI18N
+					&& ! rcvd.contains ("ERROR")) )	// NOI18N
 				{
 					reopen ();
 					trials++;
+					continue MAIN;
 				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( ! rcvd.contains ("OK") )	// NOI18N
+			}
+			catch ( Exception e )
 			{
-				System.out.println (ansString + "6=" + rcvd);	// NOI18N
+				Utils.handleException (e, "DataTransporter.putFile: init:"	// NOI18N
+					+ f.getName () + ", newName=" + newName);	// NOI18N
+				reopen ();
+				trials++;
+				continue MAIN;
+			}
+			try
+			{
 				try
 				{
-					// close file upload
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
+				// init file upload
+				do
+				{
+					send ("AT+KDOBJ=1,1\r".getBytes ());	// NOI18N
+					recvdB = recv (null);
+					rcvd = new String (recvdB);
+
+					if ( rcvd.trim ().equals ("") )	// NOI18N
+					{
+						reopen ();
+						trials++;
+						if ( trials > MAX_TRIALS ) break;
+						continue MAIN;
+					}
+				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				if ( trials > MAX_TRIALS ) return -1;
+				if ( ! rcvd.contains ("OK") )	// NOI18N
+				{
+					System.out.println (ansString + "1=" + rcvd);	// NOI18N
+					reopen ();
+					trials++;
+					continue MAIN;
+					//return -1;
+				}
+
+				stage++;
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
+				// send filename length (the last parameter)
+				do
+				{
+					send ( ("AT+KDOBJ=2,1,3,0," + newName.length () + "\r")	// NOI18N
+						.getBytes ());
+					recvdB = recv (new String[] { "CONNECT" });	// NOI18N
+					rcvd = new String (recvdB);
+
+					if ( rcvd.trim ().equals ("") )	// NOI18N
+					{
+						reopen ();
+						trials++;
+						if ( trials > MAX_TRIALS ) break;
+						continue MAIN;
+					}
+				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				if ( trials > MAX_TRIALS ) return -2;
+				if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
+				{
+					System.out.println (ansString + "2=" + rcvd);	// NOI18N
+					reopen ();
+					trials++;
+					continue MAIN;
+					//return -2;
+				}
+
+				stage++;
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
+				// send filename
+				do
+				{
+					send ( (newName+"\r").getBytes ());	// NOI18N
+					recvdB = recv (null);
+					rcvd = new String (recvdB);
+
+					if ( rcvd.trim ().equals ("") )	// NOI18N
+					{
+						reopen ();
+						trials++;
+						if ( trials > MAX_TRIALS ) break;
+						continue MAIN;
+					}
+				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				if ( trials > MAX_TRIALS ) return -3;
+				if ( ! rcvd.contains ("OK") )	// NOI18N
+				{
+					System.out.println (ansString + "3=" + rcvd);	// NOI18N
+					reopen ();
+					trials++;
+					continue MAIN;
+					//return -3;
+				}
+
+				stage++;
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
+				// send file type (4th param) and length (5th parameter)
+				do
+				{
+					send ( ("AT+KDOBJ=2,1,0,"	// NOI18N
+						+ Utils.filetypeIDs.get
+							(f.getName ().substring
+								(f.getName ().lastIndexOf (".")+1) // NOI18N
+							.toLowerCase ()).intValue ()
+						+ "," + f.length () + "\r").getBytes ());	// NOI18N
+					recvdB = recv (new String[] { "CONNECT" });	// NOI18N
+					rcvd = new String (recvdB);
+
+					if ( rcvd.trim ().equals ("") )	// NOI18N
+					{
+						reopen ();
+						trials++;
+						if ( trials > MAX_TRIALS ) break;
+						continue MAIN;
+					}
+				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				if ( trials > MAX_TRIALS ) return -4;
+				if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
+				{
+					System.out.println (ansString + "4=" + rcvd);	// NOI18N
+					reopen ();
+					trials++;
+					continue MAIN;
+					//return -4;
+				}
+
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
+				// send file data here:
+				FileInputStream fis = new FileInputStream (f);
+				byte[] contents = new byte[10240];
+				int read = -1;
+				stage++;
+				do
+				{
+					read = fis.read (contents);
+					if ( read < 0 ) break;
+					send (Arrays.copyOf (contents, read));
+
+				} while (read == contents.length);
+				fis.close ();
+				do
+				{
+					recvdB = recv (null);
+					rcvd = new String (recvdB);
+
+					if ( rcvd.trim ().equals ("") )	// NOI18N
+					{
+						reopen ();
+						trials++;
+						if ( trials > MAX_TRIALS ) break;
+						continue MAIN;
+					}
+				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				if ( trials > MAX_TRIALS ) return -5;
+				if ( ! rcvd.contains ("OK") )	// NOI18N
+				{
+					System.out.println (ansString + "5=" + rcvd);	// NOI18N
+					reopen ();
+					trials++;
+					continue MAIN;
+					//return -5;
+				}
+
+				stage++;
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
+				// close file upload
+				do
+				{
 					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
 					recvdB = recv (null);
-				}
-				catch ( Exception e ) {}
-				return -6;
-			}
-		}
-		catch ( Exception ex )
-		{
-			if ( stage > 0 )
-			{
-				try
+					rcvd = new String (recvdB);
+
+					if ( rcvd.trim ().equals ("") )	// NOI18N
+					{
+						reopen ();
+						trials++;
+						if ( trials > MAX_TRIALS ) break;
+						continue MAIN;
+					}
+				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				if ( trials > MAX_TRIALS ) return -6;
+				if ( ! rcvd.contains ("OK") )	// NOI18N
 				{
-					// close file upload
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recv (null);
+					System.out.println (ansString + "6=" + rcvd);	// NOI18N
+					reopen ();
+					trials++;
+					continue MAIN;
+					//return -6;
 				}
-				catch ( Exception e ) {}
+				return 0;
 			}
-			System.out.println (ex);
-			ex.printStackTrace ();
-			return -7;
+			catch ( Exception ex )
+			{
+				/*
+				if ( stage > 0 )
+				{
+					try
+					{
+						// close file upload
+						send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
+						recv (null);
+					}
+					catch ( Exception e ) {}
+				}*/
+				Utils.handleException (ex, "DataTransporter.putFile:end"	// NOI18N
+					+ f.getName () + ", newName=" + newName);	// NOI18N
+				//return -7;
+				reopen ();
+				trials++;
+				continue MAIN;
+			}
+		} // MAIN while
+		return -10;	// number of trials exceeded
+	}
+
+	/**
+	 * Finds needle in haystack.
+	 * @param haystack The array to search through.
+	 * @param needle The array to search for.
+	 * @return The position from which needle starts in haystack or -1 if not found.
+	 */
+	private int findBytes (byte[] haystack, byte[] needle)
+	{
+		if ( haystack != null )
+		{
+			if ( needle == null ) return 0;
+			if ( needle.length > haystack.length ) return -1;
+			HAY: for ( int i=0; i < haystack.length; i++ )
+			{
+				for ( int j=0; j < needle.length; j++ )
+				{
+					if ( haystack[i+j] != needle[j] ) continue HAY;
+				}
+				return i;
+			}
 		}
-		return 0;
+		return -1;
 	}
 
 	/**
@@ -470,6 +589,7 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public int getFile (File f, PhoneElement el)
 	{
+		if ( f == null || el == null ) return -3;
 		try
 		{
 			String rcvd;
@@ -477,126 +597,107 @@ public class DataTransporter implements SerialPortEventListener
 			int trials = 0;
 			do
 			{
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
 				// send file retrieve command
 				send (("AT+KPSR=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
 				/*
 				 * Receiving format:
 				 * AT+KPSR="<ID repeated>"
 				 * +KPSR: 49203
-				 * CONNECT
+				 * CONNECT\r\n
 				 * <binary data>
-				 * NO CARRIER
+				 * \r\nNO CARRIER
 				 */
 				// receive file data
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") )	// NOI18N
+				if ( rcvd.trim ().equals ("") || recvdB.length == 0 )	// NOI18N
 				{
 					reopen ();
 					trials++;
 				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("NO CARRIER") ) return -2;	// NOI18N
+			} while ( (rcvd.trim ().equals ("") || recvdB.length == 0)	// NOI18N
+				&& trials < MAX_TRIALS);
+			if ( rcvd.trim ().equals ("") || recvdB.length == 0	// NOI18N
+				|| ! rcvd.contains ("NO CARRIER") ) return -2;	// NOI18N
 
 			// check file type
-			Matcher photoMatcher = MainWindow.photoContentsPattern.matcher (rcvd);
-			Matcher midiMatcher  = MainWindow.midiContentsPattern.matcher  (rcvd);
-			Matcher amrMatcher   = MainWindow.amrContentsPattern.matcher   (rcvd);
-			Matcher bmpMatcher   = MainWindow.bmpContentsPattern.matcher   (rcvd);
-			Matcher gifMatcher   = MainWindow.gifContentsPattern.matcher   (rcvd);
-			Matcher pngMatcher   = MainWindow.pngContentsPattern.matcher   (rcvd);
-			Matcher wavMatcher   = MainWindow.wavContentsPattern.matcher   (rcvd);
-			Matcher vCalMatcher  = MainWindow.vCalContentsPattern.matcher  (rcvd);
-			Matcher vCardMatcher = MainWindow.vCardContentsPattern.matcher (rcvd);
-
-			Matcher genMatcher = MainWindow.generalContentsPattern.matcher (rcvd);
-			if ( photoMatcher.matches () )
+			FileOutputStream fos = new FileOutputStream (f);
+			if ( findBytes (recvdB, JPG) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				fos.write (recvdB, photoMatcher.start (1),
-					photoMatcher.end (1) - photoMatcher.start (1));
-				fos.close ();
+				// check if single or double match
+				int pos = findBytes (recvdB, JPG);
+				int pos2 = findBytes (Arrays.copyOfRange (recvdB, pos+1, recvdB.length),
+					JPG);
+				if ( pos2 >= 0 )
+				{
+					fos.write (recvdB, pos+1+pos2,
+						findBytes (recvdB, FINISH) - pos2-pos-1 );
+				}
+				else
+				{
+					fos.write (recvdB, pos, findBytes (recvdB, FINISH) - pos );
+				}
 			}
-			else if ( midiMatcher.matches () )
+			else if ( findBytes (recvdB, MID) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, midiMatcher.start (1),
-					midiMatcher.end (1) - midiMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, MID),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, MID) );
 			}
-			else if ( amrMatcher.matches () )
+			else if ( findBytes (recvdB, AMR) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, amrMatcher.start (1),
-					amrMatcher.end (1) - amrMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, AMR),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, AMR) );
 			}
-			else if ( wavMatcher.matches () )
+			else if ( findBytes (recvdB, WAV) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, wavMatcher.start (1),
-					wavMatcher.end (1) - wavMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, WAV),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, WAV) );
 			}
-			else if ( bmpMatcher.matches () )
+			else if ( findBytes (recvdB, BMP) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, bmpMatcher.start (1),
-					bmpMatcher.end (1) - bmpMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, BMP),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, BMP) );
 			}
-			else if ( gifMatcher.matches () )
+			else if ( findBytes (recvdB, GIF) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, gifMatcher.start (1),
-					gifMatcher.end (1) - gifMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, GIF),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, GIF) );
 			}
-			else if ( pngMatcher.matches () )
+			else if ( findBytes (recvdB, PNG) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, pngMatcher.start (1),
-					pngMatcher.end (1) - pngMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, PNG),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, PNG) );
 			}
-			else if ( vCalMatcher.matches () )
+			else if ( findBytes (recvdB, VCAL) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, vCalMatcher.start (1),
-					vCalMatcher.end (1) - vCalMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, VCAL),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, VCAL) );
 			}
-			else if ( vCardMatcher.matches () )
+			else if ( findBytes (recvdB, VCRD) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				//fos.write (midiMatcher.group (1).getBytes ());
-				fos.write (recvdB, vCardMatcher.start (1),
-					vCardMatcher.end (1) - vCardMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, VCRD),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, VCRD) );
 			}
-			else if ( genMatcher.matches () )
+			else if ( findBytes (recvdB, START) >= 0 )
 			{
-				FileOutputStream fos = new FileOutputStream (f);
-				fos.write (recvdB, genMatcher.start (1),
-					genMatcher.end (1) - genMatcher.start (1));
-				fos.close ();
+				fos.write (recvdB, findBytes (recvdB, START) + START.length,
+					findBytes (recvdB, FINISH) - findBytes (recvdB, START) );
 			}
+			fos.close ();
+			return 0;
 		}
 		catch ( Exception ex )
 		{
-			System.out.println (ex);
-			ex.printStackTrace ();
+			Utils.handleException (ex, "DataTransporter.getFile:"	// NOI18N
+				+ f.getName () + ", id="	// NOI18N
+				+ el.getID ());
 			return -1;
 		}
-		return 0;
 	}
 
 	/**
@@ -607,38 +708,13 @@ public class DataTransporter implements SerialPortEventListener
 	public Vector<PhoneElement> getList (String ofWhat)
 	{
 		Vector<PhoneElement> res = new Vector<PhoneElement> (1);
+		if ( ofWhat == null || res == null ) return res;
 		try
 		{
 			byte[] rcvdB;
 			String rcvd = "";	// NOI18N
 			int trials = 0;
-			/*
-			do
-			{
-				send ("ATZ\r".getBytes ());	// NOI18N
-				rcvd = recv ();
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
-			trials = 0;
-			do
-			{
-				send ("AT115200\r".getBytes ());	// NOI18N
-				rcvd = recv ();
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
-			 */
+			// removed: sending ATZ and AT115200
 			trials = 0;
 			do
 			{
@@ -658,12 +734,16 @@ public class DataTransporter implements SerialPortEventListener
 			trials = 0;
 			do
 			{
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
 				// send "get list" command
 				send (("AT+KPSL=\"" + ofWhat + "\",1\r").getBytes ());	// NOI18N
 			/*
 			 * Receiving format:
 			 * +KPSL: "5303650005022001FFFF",1,2016,"PICTURES","FGIF","0000065535","","Zzz"
-			 * +KPSL: "53036500050220030045",0,48006,"RINGTONES","AMR","0000000069","","ASTEROID"
+			 * +KPSL: "53036500050220030045",0,48006,"RINGTONES","AMR","0000000069","","aaa"
 					Id	    HIDDEN,LENG, CATEGORY, CONTENT, LOCATION  FLAG, NAME
 			 */
 				rcvdB = recv (null);
@@ -682,7 +762,7 @@ public class DataTransporter implements SerialPortEventListener
 			String[] lines = rcvd.split ("[\\r\\n]{1,2}");	// NOI18N
 			for ( int i=0; i < lines.length; i++ )
 			{
-				m = MainWindow.listPattern.matcher (lines[i]);
+				m = Utils.listPattern.matcher (lines[i]);
 				if ( m.matches () )
 				{
 					if ( m.group (2).equals ("0"))	// NOI18N
@@ -693,8 +773,8 @@ public class DataTransporter implements SerialPortEventListener
 		}
 		catch ( Exception ex )
 		{
-			System.out.println (ex);
-			ex.printStackTrace ();
+			Utils.handleException (ex, "DataTransporter.getList:"	// NOI18N
+				+ ofWhat);
 		}
 		return res;
 	}
@@ -706,6 +786,7 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public int deleteFile (PhoneElement el)
 	{
+		if ( el == null ) return -3;
 		try
 		{
 			String rcvd;
@@ -713,6 +794,10 @@ public class DataTransporter implements SerialPortEventListener
 			int trials = 0;
 			do
 			{
+				try
+				{
+					Thread.sleep (TIMEOUT);
+				} catch (Exception ex) {}
 				// send file retrieve command
 				send (("AT+KPSD=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
 
@@ -725,20 +810,23 @@ public class DataTransporter implements SerialPortEventListener
 					trials++;
 				}
 			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || trials >= MAX_TRIALS )		// NOI18N
+				return -2;
+			return 0;
 		}
 		catch ( Exception ex )
 		{
-			System.out.println (ex);
-			ex.printStackTrace ();
+			Utils.handleException (ex, "DataTransporter.deleteFile:"	// NOI18N
+				+ el.getFilename () + "." + el.getExt () + ", id=" + el.getID ());	// NOI18N
 			return -1;
 		}
-		return 0;
 	}
 
 	/**
-	 * Reopens the transmission port, saving its parameters.
+	 * Reopens the transmission port used by thie DataTransporter,
+	 * saving its parameters.
 	 */
-	private void reopen ()
+	public void reopen ()
 	{
 		int bps = s.getBaudRate ();
 		int dbits = s.getDataBits ();
@@ -757,7 +845,11 @@ public class DataTransporter implements SerialPortEventListener
 			s.addEventListener (this);
 			s.notifyOnDataAvailable (true);
 		}
-		catch (Exception ex) {}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "DataTransporter.reopen:"	// NOI18N
+				+ portID.getName ());
+		}
 	}
 
 	/**
@@ -781,8 +873,8 @@ public class DataTransporter implements SerialPortEventListener
 		}
 		catch ( Exception ex )
 		{
-			System.out.println (ex);
-			ex.printStackTrace ();
+			Utils.handleException (ex, "DataTransporter.test:"	// NOI18N
+				+ portID.getName ());
 		}
 		return -1;
 	}
@@ -798,6 +890,7 @@ public class DataTransporter implements SerialPortEventListener
 		if ( orig == null ) return toAdd;
 		if ( toAdd == null ) return orig;
 		byte[] ret = new byte[orig.length + toAdd.length];
+		if ( ret == null ) return null;
 		System.arraycopy (orig, 0, ret, 0, orig.length);
 		System.arraycopy (toAdd, 0, ret, orig.length, toAdd.length);
 		return ret;
@@ -809,6 +902,7 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public void serialEvent (SerialPortEvent event)
 	{
+		if ( event == null ) return;
 		switch (event.getEventType ())
 		{
 			case SerialPortEvent.DATA_AVAILABLE:
@@ -816,7 +910,7 @@ public class DataTransporter implements SerialPortEventListener
 				{
 					inputStream.notifyAll ();
 				}
-			break;
+				break;
 		}
 	}
 }

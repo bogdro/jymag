@@ -77,6 +77,35 @@ public class PhoneElement
 	 */
 	public String getFilename ()
 	{
-		return filename.replaceAll ("\\s", "_");	// NOI18N
+		byte[] quot = new byte[] { '"' };		// NOI18N
+		return filename
+			.replaceAll ("\\s", "_")		// NOI18N
+			.replaceAll ("\\.", "_")		// NOI18N
+			.replaceAll (",", "_")			// NOI18N
+			.replaceAll ("\\(", "_")		// NOI18N
+			.replaceAll ("\\)", "_")		// NOI18N
+			.replaceAll ("\\[", "_")		// NOI18N
+			.replaceAll ("\\]", "_")		// NOI18N
+			.replaceAll ("\\{", "_")		// NOI18N
+			.replaceAll ("\\}", "_")		// NOI18N
+			.replaceAll ("~", "_")			// NOI18N
+			.replaceAll ("!", "_")			// NOI18N
+			.replaceAll ("%", "_")			// NOI18N
+			.replaceAll ("\\^", "_")		// NOI18N
+			.replaceAll ("&", "_")			// NOI18N
+			.replaceAll ("\\*", "_")		// NOI18N
+			.replaceAll ("\\+", "_")		// NOI18N
+			.replaceAll ("=", "_")			// NOI18N
+			.replaceAll ("\\|", "_")		// NOI18N
+			.replaceAll ("\\\\", "_")		// NOI18N
+			.replaceAll (":", "_")			// NOI18N
+			.replaceAll (";", "_")			// NOI18N
+			.replaceAll (new String (quot), "_")	// NOI18N
+			.replaceAll ("'", "_")			// NOI18N
+			.replaceAll ("<", "_")			// NOI18N
+			.replaceAll (">", "_")			// NOI18N
+			.replaceAll ("\\?", "_")		// NOI18N
+			.replaceAll ("/", "_")			// NOI18N
+			;
 	}
 }

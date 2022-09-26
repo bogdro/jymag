@@ -30,23 +30,24 @@ Compiling by hand: try
 	cd JYMAG/src/BogDroSoft/jymag/
 	java *.java
 
-========================= Using (GUI)
+========================= Usage (GUI)
 
 Phone setup: conecct it to the computer using a cable or IrDA or
- whatever works. Switch the transmission on. If using a cable, select
- "Automatic speed" in the configuration.
+ whatever works. Switch the transmission on in the phone, if necessary.
+ If using a cable, select "Automatic speed" in the configuration.
 
 No need to connect to the phone. Start by selecting the tab you're
  interested in (photos, ringtones, ...). Click on "Get list" to connect
  to the phone and get the list of elements. Select the elements you wish
- to download and click "Download selected". The downloaded files will
- show up in selected folder.
+ to download and click "Download selected". choose the destination directory.
+ The downloaded files will show up in selected location.
 To upload an element, simply click the "Upload" button. Getting the
  list isn't necessary.
 
 ========================= Using (command line)
 
 The following command-line (case-insensitive) options are supported:
+
 	    --download-dir <dir>	- sets the default directory
 	    --flow <none,soft,hard>	- sets the flow control mode
 	    --port <filename>		- sets the default port
@@ -73,7 +74,7 @@ The following command-line (case-insensitive) options are supported:
 					  from the phone and exits the program
 	    --download-all		- combines all "download" options
 					  and exits the program
-	    --delete-after-download     - delete the downloaded elements if 
+	    --delete-after-download     - delete the downloaded elements if
 					  downloaded succesfully
 
 
@@ -82,7 +83,7 @@ The following command-line (case-insensitive) options are supported:
 1) Getting lists of: pictures, ringtones, addressbook entries,
    to-do tasks and events
 2) Downloading:
-   a) pictures: JPG
+   a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG
    b) ringtones: MIDI, AMR, WAV
    c) addressbook entries (vCards)
    d) to-do tasks
@@ -115,7 +116,7 @@ I haven't tried all that (my 30-second ringtones are rejected).
 
 ========================= If not working
 
-1. If the phone's port doesn't show up on the list.
+1. The phone's port doesn't show up on the list.
    Not JYMAG's fault. Make sure:
    - you have installed a correct driver for the cable/IrDA/other devices
    - the phone's port is not already in use
@@ -126,4 +127,39 @@ I haven't tried all that (my 30-second ringtones are rejected).
    selected in the combo box. If not, an error will show up. Try closing
    the program and starting it at least 3 more times. If no success, check
    your drivers and connection.
+
+3. The program doesn't start and gives
+ "class not found/java.lang.NoClassDefFoundError" messages.
+   Run java with its full path, like "/usr/bin/java -jar JYMAG.jar".
+   You can also try adding the path to RxTx to your CLASSPATH environment
+   variable (create one if it doesn't exist). Try adding both the directory
+   containing the RXTXcomm.jar file and the path to the file itself.
+
+4. Downloaded elements are corrupted.
+   Mine sometimes are corrupted too. I can't help it. Some elements get
+   downloaded correctly at the first attempt, some require a few attempts, and
+   some require a lot of attempts. Since it works one time and doesn't work
+   the other time, it's not JYMAG's fault. Since it works, the program is
+   written correctly. It's the connection that is unreliable. The original
+   program was even worse - the connection broke in the middle of transmission
+   and you had to click "Connect" over and over again and some pictues were
+   corrupted too. Have patience. If you know how to make this better, contact
+   me (e-mail at the top of this file).
+
+========================= Reporting bugs
+
+1. Check if you have the newest versions of JYMAG.
+2. Include your Java and RxTx version numbers. See if the program works with a
+   newer/older version of Java/RxTx. If it works with an older version, but
+   not with a new one, you problem is solved, but still tell me the
+   problematic version numbers.
+3. Include precise steps for reproducing the error, if possible. This will
+   make finding the problem easier.
+4. If the program crashed, include "jymag.log" in your report. It should be
+   in the current JYMAG working directory.
+5. If the program exited normally, but the "jymag.log" still exists after
+   closing the program and is not empty, include it in your report.
+6. Take all the information from the above steps any and additional
+   information you can give and send to my e-mail address (you can find it
+   at the top of this file).
 

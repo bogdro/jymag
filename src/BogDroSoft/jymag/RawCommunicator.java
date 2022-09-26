@@ -38,6 +38,7 @@ public class RawCommunicator extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 71L;
 	private DataTransporter dtr;
+	private Object sync;
 
 	// ------------ i18n stuff
 	private static String exString = "Exception";
@@ -47,22 +48,32 @@ public class RawCommunicator extends javax.swing.JDialog
 	 * @param dt The DataTransporter instance to use for communications.
 	 * Must already be open.
 	 * @param parent The parent frame for this window.
+	 * @param synchro A synchronization variable.
 	 */
-	public RawCommunicator (DataTransporter dt, java.awt.Frame parent)
+	public RawCommunicator (DataTransporter dt, java.awt.Frame parent,
+		Object synchro)
 	{
+		// make modal
 		super (parent, true);
-		if ( dt == null ) dispose ();
+		if ( dt == null || synchro == null )
+		{
+			dispose ();
+			return;
+		}
 		dtr = dt;
+		sync = synchro;
+
 		initComponents ();
-		this.answerArea.addKeyListener (this);
-		this.closeBut.addKeyListener (this);
-		this.cmdArea.addKeyListener (this);
-		this.currCommArea.addKeyListener (this);
-		this.jScrollPane1.addKeyListener (this);
-		this.jScrollPane2.addKeyListener (this);
-		this.jScrollPane3.addKeyListener (this);
-		this.jSplitPane1.addKeyListener (this);
-		this.sendBut.addKeyListener (this);
+
+		answerArea.addKeyListener (this);
+		closeBut.addKeyListener (this);
+		cmdArea.addKeyListener (this);
+		currCommArea.addKeyListener (this);
+		jScrollPane1.addKeyListener (this);
+		jScrollPane2.addKeyListener (this);
+		jScrollPane3.addKeyListener (this);
+		jSplitPane1.addKeyListener (this);
+		sendBut.addKeyListener (this);
 	}
 
 	/** This method is called from within the constructor to
@@ -162,28 +173,33 @@ public class RawCommunicator extends javax.swing.JDialog
 
 	private void sendButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButActionPerformed
 
-		String cmd = this.currCommArea.getText ();
-		this.cmdArea.setText (this.cmdArea.getText ()  + cmd + "\n");	// NOI18N
+		String cmd = currCommArea.getText ();
+		if ( cmd == null ) return;
+		if ( cmd.trim ().length () == 0 ) return;
+		cmdArea.setText (cmdArea.getText ()  + cmd + "\n");	// NOI18N
 		try
 		{
-			dtr.send ((cmd+"\r").getBytes ());	// NOI18N
 			String rcvd = "";	// NOI18N
-			int trial = 0;
-			do
+			synchronized (sync)
 			{
-				byte[] recvdB = dtr.recv (null);
-				if ( recvdB != null ) rcvd = new String (recvdB);
-				trial++;
-			} while (rcvd.trim ().equals ("") && trial < 3);	// NOI18N
-			this.answerArea.setText (this.answerArea.getText ()
+				dtr.send ((cmd+"\r").getBytes ());	// NOI18N
+				rcvd = "";	// NOI18N
+				int trial = 0;
+				do
+				{
+					byte[] recvdB = dtr.recv (null);
+					if ( recvdB != null ) rcvd = new String (recvdB);
+					trial++;
+				} while (rcvd.trim ().equals ("") && trial < 3);	// NOI18N
+			}
+			answerArea.setText (answerArea.getText ()
 				+ rcvd + "\n");	// NOI18N
-			this.currCommArea.setText ("");	// NOI18N
+			currCommArea.setText ("");	// NOI18N
 		}
 		catch (Exception ex)
 		{
-			System.out.println (ex);
-			ex.printStackTrace ();
-			this.answerArea.setText (this.answerArea.getText ()
+			Utils.handleException (ex, "RawCommunicator: send/recv");	// NOI18N
+			answerArea.setText (answerArea.getText ()
 				+ "<" // NOI18N
 				+ exString
 				+ ": " + ex + ">\n");	// NOI18N

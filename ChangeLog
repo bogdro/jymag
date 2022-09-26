@@ -1,12 +1,36 @@
+2008-07-12	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.5:
+	* DataTransporter.java: Better contents matching using byte arrays
+	  instead of Strings. Now downloading also non-Sagem photos. Better
+	  checking for transmission end. Better waiting for data.
+	* DataTransporter.java (putFile): better transmission restarting.
+	* PhoneElement.java (getFilename): removing more unwanted characters
+	  from the file name: dots, commas, parenthesis, braces, brackets,
+	  colons and many more.
+	* README: added a note in case the program doesn't start, a note
+	  about downloaded elements being sometimes corrupted and a note about
+	  how to report errors.
+	* MainWindow.java: added icons for the tabs. Redirect standard error
+	  stream to a file to save exceptions for easier bug reporting. Using
+	  SwingWorker threads to do long-lasting background jobs, so that the
+	  GUI remains respondive. Central exception handling. A new label with
+	  the current program state. A new label with the currently selected
+	  phone's firmware version. File choosing windows now all remember the
+	  last used directory. More upload error messgaes, reflecting the changes
+	  in file upload. Changed download dialog box to "save" type.
+	* Utils.java: a new utility class containig some useful methods and
+	  fields.
+
 2008-04-08	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.4:
 	  - icons moved to a separate directory/package
-	  - a new window, for manual command sending. Pressing Esc anywhere 
+	  - a new window, for manual command sending. Pressing Esc anywhere
 	    exits this window
 	  - added the possibility to remove elements from the phone
-	  - added a command-line option to delete the downloaded elements after
-	    successful downloading
+	  - added a command-line option to delete the downloaded elements
+	    after successful downloading
 	  - pressing Esc anywhere in the main window closes the program
 	  - marked non-translatable strings
 	* DataTransporter.java: added a maximum number of command sending/
