@@ -1,7 +1,7 @@
 /*
  * CapabilityWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -26,9 +26,8 @@
 package BogDroSoft.jymag;
 
 import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 import javax.swing.JLabel;
+import javax.swing.SwingWorker;
 
 /**
  * Capabilitywindow - a window that allows the user to see the phone's
@@ -38,12 +37,11 @@ import javax.swing.JLabel;
 public class CapabilityWindow extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 75L;
-	private DataTransporter dtr;
+	private final DataTransporter dtr;
 	private final Object sync;
-	private final KL kl = new KL ();
 
 	// ------------ i18n stuff
-	private static String exString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow").getString("Exception");
+	private static final String exString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow").getString("Exception");
 
 	/**
 	 * Creates new form CapabilityWindow.
@@ -68,19 +66,8 @@ public class CapabilityWindow extends javax.swing.JDialog
 
 		initComponents ();
 
-		abookCapRB.addKeyListener (kl);
-		animCapRB.addKeyListener (kl);
-		eventCapRB.addKeyListener (kl);
-		pictCapRB.addKeyListener (kl);
-		ringCapRB.addKeyListener (kl);
-		todoCapRB.addKeyListener (kl);
-		capabText.addKeyListener (kl);
-		exitBut.addKeyListener (kl);
-		getCapBut.addKeyListener (kl);
-		jScrollPane1.addKeyListener (kl);
-		jScrollPane2.addKeyListener (kl);
-		jPanel1.addKeyListener (kl);
-		fontSizeSpin.addKeyListener (kl);
+		/* add the Esc key listener to the frame and all components. */
+		new Utils.EscKeyListener (this);
 
 		Dimension size = getSize ();
 		if ( size != null )
@@ -164,7 +151,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                 capabText.setEditable(false);
                 capabText.setRows(5);
                 jScrollPane1.setViewportView(capabText);
-                capabText.getAccessibleContext().setAccessibleName("null");
+                capabText.getAccessibleContext().setAccessibleName(bundle.getString("Received_capabilities")); // NOI18N
 
                 fontSizeSpin.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(12), Integer.valueOf(1), null, Integer.valueOf(1)));
                 fontSizeSpin.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -239,8 +226,18 @@ public class CapabilityWindow extends javax.swing.JDialog
                                         .addContainerGap()))
                 );
 
+                getCapBut.getAccessibleContext().setAccessibleName(bundle.getString("cap_button")); // NOI18N
+                exitBut.getAccessibleContext().setAccessibleName(bundle.getString("cap_exit")); // NOI18N
+                jLabel1.getAccessibleContext().setAccessibleName(bundle.getString("cap_label")); // NOI18N
+                pictCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_pict")); // NOI18N
+                ringCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_ring")); // NOI18N
+                abookCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_addrs")); // NOI18N
+                todoCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_todo")); // NOI18N
+                eventCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_event")); // NOI18N
+                animCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_vid")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spinner")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
+                fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("cap_fontlabel")); // NOI18N
 
                 jScrollPane2.setViewportView(jPanel1);
 
@@ -255,6 +252,8 @@ public class CapabilityWindow extends javax.swing.JDialog
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
                 );
 
+                getAccessibleContext().setAccessibleName(bundle.getString("access_title_capab")); // NOI18N
+
                 pack();
         }// </editor-fold>//GEN-END:initComponents
 
@@ -266,8 +265,8 @@ public class CapabilityWindow extends javax.swing.JDialog
 	private void getCapButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getCapButActionPerformed
 
 		capabText.setText ("");					// NOI18N
-		String rcvd = null;
 		String type = null;
+
 		if ( abookCapRB.isSelected () ) type = "VCARDS";	// NOI18N
 		else if ( animCapRB.isSelected () ) type = "ANIMATIONS";// NOI18N
 		else if ( eventCapRB.isSelected () ) type = "VEVENT";	// NOI18N
@@ -275,61 +274,58 @@ public class CapabilityWindow extends javax.swing.JDialog
 		else if ( ringCapRB.isSelected () ) type = "SOUNDS";	// NOI18N
 		else if ( todoCapRB.isSelected () ) type = "VTODO";	// NOI18N
 		else return;
-		synchronized (sync)
-		{
-			rcvd = dtr.getCapabilities (type);
-		}
-		if ( rcvd != null )
-		{
-			capabText.setText (rcvd);
-		}
-		else
-		{
-			capabText.setText ("<"				// NOI18N
-				+ exString
-				+ ">\n");				// NOI18N
-		}
 
-		/*
-		String cmd = "AT+KPSCAP=\"";				// NOI18N
-		if ( abookCapRB.isSelected () ) cmd += "VCARDS";	// NOI18N
-		else if ( animCapRB.isSelected () ) cmd += "ANIMATIONS";// NOI18N
-		else if ( eventCapRB.isSelected () ) cmd += "VEVENT";	// NOI18N
-		else if ( pictCapRB.isSelected () ) cmd += "PICTURES";	// NOI18N
-		else if ( ringCapRB.isSelected () ) cmd += "SOUNDS";	// NOI18N
-		else if ( todoCapRB.isSelected () ) cmd += "VTODO";	// NOI18N
-		cmd += "\"";	// NOI18N
-		try
+		final String typeToGet = type;
+
+		SwingWorker<String, Void> sw =
+			new SwingWorker<String, Void> ()
 		{
-			String rcvd;
-			synchronized (sync)
+			@Override
+			protected String doInBackground ()
 			{
-				dtr.send ((cmd+"\r").getBytes ());	// NOI18N
-				rcvd = "";				// NOI18N
-				int trial = 0;
-				do
+				try
 				{
-					byte[] recvdB = dtr.recv (null);
-					if ( recvdB != null ) rcvd = new String (recvdB);
-					trial++;
-				} while (rcvd.trim ().equals ("")	// NOI18N
-					&& trial < DataTransporter.MAX_TRIALS);
+					String rcvd = null;
+					synchronized (sync)
+					{
+						rcvd = dtr.getCapabilities (typeToGet);
+					}
+					return rcvd;
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "CapabilityWindow: send/recv");	// NOI18N
+					return "<" 					// NOI18N
+						+ exString
+						+ ": " + ex + ">"; 			// NOI18N
+				}
 			}
-			if ( rcvd.trim ().length () > 0 )
+
+			@Override
+			protected void done ()
 			{
-				capabText.setText (rcvd.substring (
-					rcvd.indexOf ("CONNECT")+7,	// NOI18N
-					rcvd.indexOf ("NO CARRIER")	// NOI18N
-					));
+				try
+				{
+					String rcvd = get ();
+					if ( rcvd != null )
+					{
+						capabText.setText (rcvd);
+					}
+					else
+					{
+						capabText.setText ("<"				// NOI18N
+							+ exString
+							+ ">\n");				// NOI18N
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "CapabilityWindow.getCapabilities.SW.done");	// NOI18N
+				}
 			}
-		}
-		catch (Exception ex)
-		{
-			Utils.handleException (ex, "CapabilityWindow: send/recv");	// NOI18N
-			capabText.setText ("<"				// NOI18N
-				+ exString
-				+ ": " + ex + ">\n");			// NOI18N
-		}*/
+		};
+		sw.execute ();
+
 	}//GEN-LAST:event_getCapButActionPerformed
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
@@ -338,23 +334,6 @@ public class CapabilityWindow extends javax.swing.JDialog
 		if ( val != null && val instanceof Number )
 			Utils.setFontSize (this, ((Number)val).floatValue ());
 	}//GEN-LAST:event_fontSizeSpinStateChanged
-
-	private class KL extends KeyAdapter
-	{
-		/**
-		 * Receives key-typed events (called when the user types a key).
-		 * @param ke The key-typed event.
-		 */
-		@Override
-		public void keyTyped (KeyEvent ke)
-		{
-			if ( ke == null ) return;
-			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
-			{
-				dispose ();
-			}
-		}
-	}
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JRadioButton abookCapRB;

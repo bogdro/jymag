@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 public class ConfigFile
 {
 	private File cfgFile;
-	private String newLine;
+	private static String newLine = null;
 
 	// communication parameters:
 	private String port;
@@ -103,19 +103,21 @@ public class ConfigFile
 	{
 		if ( f == null ) throw new NullPointerException ("ConfigFile:f==null");	// NOI18N
 		cfgFile = f;
-		newLine = null;
-		try
-		{
-			newLine = System.getProperty ("line.separator"); // NOI18N
-		}
-		catch (Exception ex) {}
 		if ( newLine == null )
 		{
-			newLine = "\n";	// NOI18N
-		}
-		else if ( newLine.length () == 0 )
-		{
-			newLine = "\n";	// NOI18N
+			try
+			{
+				newLine = System.getProperty ("line.separator"); // NOI18N
+			}
+			catch (Exception ex) {}
+			if ( newLine == null )
+			{
+				newLine = "\n";	// NOI18N
+			}
+			else if ( newLine.length () == 0 )
+			{
+				newLine = "\n";	// NOI18N
+			}
 		}
 	}
 
@@ -332,7 +334,7 @@ public class ConfigFile
 			+ "parity = " + parity + newLine	// NOI18N
 			+ "# Stop bits: 0=1 bit, 1=1.5 bits, 2=2 bits." + newLine	// NOI18N
 			+ "stopbits = " + sBits + newLine	// NOI18N
-			+ "# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware."
+			+ "# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware."	// NOI18N
 			+ newLine	// NOI18N
 			+ "flowcontrol = " + flowCtl + newLine	// NOI18N
 			+ "x = " + x + newLine	// NOI18N

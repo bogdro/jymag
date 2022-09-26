@@ -1,7 +1,7 @@
 /*
  * AboutBox.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -42,18 +42,17 @@ import javax.swing.JLabel;
 public class AboutBox extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 72L;
-	private final String emailAddr = "bogdandr@op.pl";		// NOI18N
-	private final String host1 = "jymag.sf.net";			// NOI18N
-	private final String path1 = "/";				// NOI18N
-	private final String www1Addr = "http://" + host1 + path1;	// NOI18N
-	private final String host2 = "rudy.mif.pg.gda.pl";		// NOI18N
-	private final String path2 = "/~bogdro/soft";			// NOI18N
-	private final String www2Addr = "http://" + host2 + path2;	// NOI18N
-	private final String host3 = "rudy.mif.pg.gda.pl";		// NOI18N
-	private final String path3 = "/~bogdro/inne";			// NOI18N
-	private final String www3Addr = "http://" + host3 + path3;	// NOI18N
-
-	private final KL kl = new KL ();
+	private static final String emailAddr = "bogdandr@op.pl";		// NOI18N
+	private static final String host1 = "jymag.sf.net";			// NOI18N
+	private static final String path1 = "/";				// NOI18N
+	private static final String www1Addr = "http://" + host1 + path1;	// NOI18N
+	private static final String host2 = "rudy.mif.pg.gda.pl";		// NOI18N
+	private static final String path2 = "/~bogdro/soft";			// NOI18N
+	private static final String www2Addr = "http://" + host2 + path2;	// NOI18N
+	private static final String host3 = "rudy.mif.pg.gda.pl";		// NOI18N
+	private static final String path3 = "/~bogdro/inne";			// NOI18N
+	private static final String www3Addr = "http://" + host3 + path3;	// NOI18N
+	private static final String httpProto = "http";				// NOI18N
 
 	/**
 	 * Creates new form AboutBox.
@@ -75,8 +74,8 @@ public class AboutBox extends javax.swing.JDialog
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
-		fontSizeSpin.addKeyListener (kl);
-		licenseArea.addKeyListener (kl);
+		/* add the Esc key listener to the frame and all components. */
+		new Utils.EscKeyListener (this);
 	}
 
 	/**
@@ -162,7 +161,7 @@ public class AboutBox extends javax.swing.JDialog
                 licenseArea.setRows(3);
                 licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("BogDroSoft/jymag/rsrc/GNU-GPLv3.txt")));
                 jScrollPane1.setViewportView(licenseArea);
-                licenseArea.getAccessibleContext().setAccessibleName(bundle.getString("license_text")); // NOI18N
+                licenseArea.getAccessibleContext().setAccessibleName("license text"); // NOI18N
 
                 licValue.setText("GPLv3+"); // NOI18N
 
@@ -262,14 +261,19 @@ public class AboutBox extends javax.swing.JDialog
                 );
 
                 jymagLabel.getAccessibleContext().setAccessibleName(bundle.getString("prog_name")); // NOI18N
+                authorLabel.getAccessibleContext().setAccessibleName(bundle.getString("author_label")); // NOI18N
                 emailLabel.getAccessibleContext().setAccessibleName(bundle.getString("e-mail_addr")); // NOI18N
+                wwwLabel.getAccessibleContext().setAccessibleName(bundle.getString("web_label")); // NOI18N
                 www1Label.getAccessibleContext().setAccessibleName(bundle.getString("1stWWW")); // NOI18N
                 www2Label.getAccessibleContext().setAccessibleName(bundle.getString("2ndWWW")); // NOI18N
                 www3Label.getAccessibleContext().setAccessibleName(bundle.getString("3rdWWW")); // NOI18N
+                licLabel.getAccessibleContext().setAccessibleName(bundle.getString("lic_label")); // NOI18N
                 suppOperLabel.getAccessibleContext().setAccessibleName(bundle.getString("acc_supp_oper")); // NOI18N
-                thanksTo.getAccessibleContext().setAccessibleName(bundle.getString("thanks")); // NOI18N
+                thanksLabel.getAccessibleContext().setAccessibleName(bundle.getString("thank_label")); // NOI18N
+                thanksTo.getAccessibleContext().setAccessibleName("thanks"); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spinner")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
+                fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("font_label")); // NOI18N
 
                 jScrollPane2.setViewportView(jPanel1);
 
@@ -283,6 +287,8 @@ public class AboutBox extends javax.swing.JDialog
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
                 );
+
+                getAccessibleContext().setAccessibleName(bundle.getString("access_title_about")); // NOI18N
 
                 pack();
         }// </editor-fold>//GEN-END:initComponents
@@ -323,7 +329,7 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI ("http", null,	// NOI18N
+							Desktop.getDesktop ().browse (new URI (httpProto, null,	// NOI18N
 								host1, 80, path1, null, null));
 					}
 				}
@@ -347,7 +353,7 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI ("http", null,	// NOI18N
+							Desktop.getDesktop ().browse (new URI (httpProto, null,	// NOI18N
 								host2, 80, path2, null, null));
 							//Desktop.getDesktop ().browse (new URI (www2Addr));
 							//Desktop.getDesktop ().browse (new URI ("http",	// NOI18N
@@ -374,7 +380,7 @@ public class AboutBox extends javax.swing.JDialog
 					if ( d != null )
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
-							Desktop.getDesktop ().browse (new URI ("http", null,	// NOI18N
+							Desktop.getDesktop ().browse (new URI (httpProto, null,	// NOI18N
 								host3, 80, path3, null, null));
 					}
 				}
@@ -458,23 +464,6 @@ public class AboutBox extends javax.swing.JDialog
 			Utils.handleException (ex, "InputStream.close");	// NOI18N
 		}
 		return ret;
-	}
-
-	private class KL extends KeyAdapter
-	{
-		/**
-		 * Receives key-typed events (called when the user types a key).
-		 * @param ke The key-typed event.
-		 */
-		@Override
-		public void keyTyped (KeyEvent ke)
-		{
-			if ( ke == null ) return;
-			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
-			{
-				dispose ();
-			}
-		}
 	}
 
         // Variables declaration - do not modify//GEN-BEGIN:variables

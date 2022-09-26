@@ -1,7 +1,7 @@
 /*
  * PhoneAlarm.java, part of the JYMAG package.
  *
- * Copyright (C) 2010 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2010-2011 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -123,6 +123,7 @@ public class PhoneAlarm
 			if ( alarmDays != null )
 			{
 				days = new HashSet<Integer> (alarmDays);
+				if ( alarmDays.contains (new Integer (0)) ) forAllDays = true;
 			}
 		}
 		number = alarmNumber;
@@ -195,7 +196,7 @@ public class PhoneAlarm
 		else
 		{
 			forAllDays = false;
-			String[] recurrs = daysString.split (",");
+			String[] recurrs = daysString.split (",");	// NOI18N
 			if ( recurrs != null )
 			{
 				HashSet<Integer> tmpDays = new HashSet<Integer> (8);
@@ -336,6 +337,7 @@ public class PhoneAlarm
 		if ( alarmDays != null )
 		{
 			days = new HashSet<Integer> (alarmDays);
+			if ( alarmDays.contains (new Integer (0)) ) forAllDays = true;
 		}
 		else days = null;
 	}
@@ -358,22 +360,24 @@ public class PhoneAlarm
 	 */
 	public synchronized String getAlarmString ()
 	{
-		String result = "\"";						// NOI18N
+		String dQuote = "\"";		// NOI18N
+		String comma = ",";		// NOI18N
+		String result = dQuote;
 		if ( oneTime )
 		{
-			result += getDateString () + ",";			// NOI18N
+			result += getDateString () + comma;
 		}
-		result += getTimeString () + "\"";				// NOI18N
+		result += getTimeString () + dQuote;
 		if ( number != -1 )
 		{
-			result += "," + number + ",";				// NOI18N
+			result += comma + number + comma;
 			if ( forAllDays || days == null )
 			{
 				result += "0";	// NOI18N
 			}
 			else
 			{
-				result += "\"" + getDaysString () + "\"";	// NOI18N
+				result += dQuote + getDaysString () + dQuote;
 			}
 		}
 		return result;

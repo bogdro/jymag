@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,13 +25,26 @@
 
 package BogDroSoft.jymag;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.regex.Pattern;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-
+import javax.swing.filechooser.FileFilter;
 
 /**
  * A utility class, containing some useful methods and fields.
@@ -480,6 +493,176 @@ public class Utils
 	}
 
 	/**
+	 * Redirects the standard error output to a log file.
+	 * @param filename The name of the file to redirect the output to.
+	 * @return The filename the output was actually redirected to.
+	 */
+	public static String redirectStderrToFile (String filename)
+	{
+		if ( filename == null )
+		{
+			System.err.close ();
+			return null;
+		}
+		try
+		{
+			System.setErr (new PrintStream (new File (filename)));
+		}
+		catch (Exception ex)
+		{
+			String dirSep = null;
+			try
+			{
+				dirSep = System.getProperty ("file.separator", "/");	// NOI18N
+			} catch (Exception e) {}
+			if ( dirSep == null ) dirSep = "/";	// NOI18N
+			String[] dirs = new String[7];
+			try
+			{
+				dirs[0] = System.getProperty ("user.dir");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[1] = System.getProperty ("user.home");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[2] = System.getenv ("HOME");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[3] = System.getenv ("TMP");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[4] = System.getenv ("TEMP");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[5] = System.getenv ("TMPDIR");	// NOI18N
+			} catch (Exception e) {}
+			try
+			{
+				dirs[6] = System.getenv ("TEMPDIR");	// NOI18N
+			} catch (Exception e) {}
+			int i;
+			for ( i = 0; i < dirs.length; i++ )
+			{
+				if ( dirs[i] == null ) continue;
+				if ( dirs[i].length () == 0 ) continue;
+				try
+				{
+					System.setErr (new PrintStream (new File (
+						dirs[i] + dirSep + filename)));
+					filename = dirs[i] + dirSep + filename;
+					break;
+				}
+				catch (Exception e) {}
+			}
+			if ( i == dirs.length ) Utils.handleException (ex, "stderr");	// NOI18N
+		}
+		return filename;
+	}
+
+	/**
+	 * Crates a file chooser for opening single files of the given type.
+	 * @param description The description to display in the filters list.
+	 * @param filetype The Hashtable with file extensiotns as keys.
+	 * @return The file chooser for opening of selected file types.
+	 */
+	public static JFileChooser createOpenFileChooser (
+		final String description, final Hashtable<String, Integer> filetype)
+	{
+		JFileChooser fc = new JFileChooser ();
+		fc.setAcceptAllFileFilterUsed (false);
+		fc.setMultiSelectionEnabled (false);
+		fc.setDialogType (JFileChooser.OPEN_DIALOG);
+		fc.setFileFilter (new FileFilter ()
+		{
+			@Override
+			public boolean accept ( File f )
+			{
+				if ( f.isDirectory () ) return true;
+				String name = f.getName ();
+				if ( name == null ) return false;
+				if ( name.contains (".") && filetype != null )	// NOI18N
+				{
+					if ( filetype.containsKey (name.substring
+						(name.lastIndexOf (".")+1)	// NOI18N
+						.toLowerCase (Locale.ENGLISH)))
+
+						return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription ()
+			{
+				String desc = (description != null)? description : "";	// NOI18N
+				Enumeration<String> keys = filetype.keys ();
+				if ( keys != null )
+				{
+					desc += " (";	// NOI18N
+					while ( keys.hasMoreElements () )
+					{
+						desc += "*." + keys.nextElement () + ", ";	// NOI18N
+					}
+					// remove the last comma and space
+					desc = desc.substring (0, desc.length () - 2);
+					desc += ")";	// NOI18N
+				}
+				return desc;
+			}
+		});
+		return fc;
+	}
+
+	/**
+	 * Called when the programs needs to close.
+	 * @param filename The name of the log file.
+	 * @param retval Return value passed to System.exit ().
+	 */
+	public static void closeProgram (String filename, int retval)
+	{
+		// close logging
+		if ( System.err != null ) System.err.close ();
+		// remove the log file if empty
+		File log = new File (filename);
+		if ( log.exists () && log.length () == 0 ) log.delete ();
+		System.exit (retval);
+	}
+
+	private static final Color greenStatusColour = new Color (0, 204, 0)/*Color.GREEN*/;
+
+	/**
+	 * Sets the given status label.
+	 * @param status The label to set.
+	 * @param s The status to set on the label.
+	 */
+	public static void updateStatusLabel (final JLabel status, final STATUS s)
+	{
+		Utils.changeGUI (new Runnable ()
+		{
+			@Override
+			public synchronized void run ()
+			{
+				if ( status == null || s == null ) return;
+				status.setText (s.toString ());
+				if ( s.equals (STATUS.READY) )
+				{
+					status.setForeground (greenStatusColour);
+				}
+				else
+				{
+					status.setForeground (Color.BLUE);
+				}
+				status.validate ();
+			}
+		});
+	}
+
+	/**
 	 * A sample uncaught-exception handler instance for threads.
 	 */
 	public static final UncExHndlr handler = new UncExHndlr ();
@@ -502,6 +685,116 @@ public class Utils
 				handleException (ex, "Utils.UncaughtExceptionHandler: Thread="	// NOI18N
 					+ ((t != null)? t.getName() : "?"));	// NOI18N
 			} catch (Throwable th) {}
+		}
+	}
+
+	/**
+	 * A class that selects all rows of a JTable when its header is clicked.
+	 */
+	public static class TableMouseListener extends MouseAdapter
+	{
+		private JTable table;
+
+		/**
+		 * Creates a new TableMouseListener for the given JTable.
+		 * @param datatable The JTable to select on mouse click.
+		 */
+		public TableMouseListener (JTable datatable)
+		{
+			table = datatable;
+		}
+
+		@Override
+		public void mouseClicked (MouseEvent me)
+		{
+			if ( me.getButton () == MouseEvent.BUTTON1 )
+			{
+				if ( table != null ) table.selectAll ();
+			}
+		}
+	}
+
+	/**
+	 * The enumeration of possible program states.
+	 */
+	public static enum STATUS
+	{
+		/** The READY state. */
+		READY,
+		/** The SENDING state. */
+		SENDING,
+		/** The RECEIVING state. */
+		RECEIVING;
+
+		@Override
+		public String toString ()
+		{
+			if ( this.equals (STATUS.READY) )
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("READY");
+			else if ( this.equals (STATUS.SENDING) )
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("SENDING");
+			else if ( this.equals (STATUS.RECEIVING) )
+				return java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("RECEIVING");
+			return "";	// NOI18N
+		}
+	}
+
+	/**
+	 * A class that closes the window when the Esc key is pressed. Must
+	 * be registered on all elements of the window that are desired to
+	 * catch this key.
+	 */
+	public static class EscKeyListener extends KeyAdapter
+	{
+		private Window frame; // need Window for dispose().
+
+		/**
+		 * Creates an EscKeyListener for the given Window.
+		 * @param wFrame The frame to connect this listener to. All
+		 *	of the frame's Components will have this listener
+		 *	installed, too.
+		 */
+		public EscKeyListener (Window wFrame)
+		{
+			frame = wFrame;
+			addKeyListeners (frame);
+		}
+
+		/**
+		 * Recursively adds this keylistener to the given Component
+		 *	and all its subcomponents.
+		 * @param c The Component with Components that will have this keylistener.
+		 */
+		private void addKeyListeners (Component c)
+		{
+			if ( c == null ) return;
+			c.addKeyListener (this);
+			if ( c instanceof Container )
+			{
+				Component[] subComps = ((Container)c).getComponents ();
+				if ( subComps != null )
+				{
+					for ( int i = 0; i < subComps.length; i++ )
+					{
+						if ( subComps[i] != null )
+							addKeyListeners (subComps[i]);
+					}
+				}
+			}
+		}
+
+		/**
+		 * Receives key-typed events (called when the user types a key).
+		 * @param ke The key-typed event.
+		 */
+		@Override
+		public void keyTyped (KeyEvent ke)
+		{
+			if ( ke == null || frame == null ) return;
+			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
+			{
+				frame.dispose ();
+			}
 		}
 	}
 }

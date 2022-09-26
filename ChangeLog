@@ -1,3 +1,51 @@
+2011-04-26	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.0:
+	  Code changes and simplification. Drag&drop support. More terminal
+	  operations in RawCommunicator. Improved accessibility. Added signal
+	  power display.
+	* PhoneAlarm.java (PhoneAlarm, setDays): added a check if the set
+	  of days contains 0, which means that all days should be enabled.
+	* RawCommunicator.java (sendButActionPerformed): using a SwingWorker
+	  to perform phone operations. Command area disabled during processing.
+	* CapabilityWindow.java (getCapButActionPerformed): using a
+	  SwingWorker to perform phone operations.
+	* DataTransporter.java: added untested methods for sending, receiving,
+	  deleting and getting the list of SMS messges (nothing more possible
+	  because of the unknown format). Added methods for clearing and
+	  setting the RTS and DTR signals. Added method for reading the signal
+	  power. Added methods that check the state of the signals.
+	* PhoneMessage.java: a class for phone message manipulation.
+	* MainWindow.java (MainWindow): the videos', java's and alarms' tables
+	  now also have mouse listeners that select all the rows when the user
+	  clicks on the table header. Moved all transport-related code to
+	  TransferUtils.java, removing the dependency on rxtx from this class.
+	* TransferUtils.java: a new class with utility methods connected to
+	  ports and transfering data.
+	* Utils.java (createOpenFileChooser): a method for creating
+	  JFileChoosers, moved from MainWindow.java.
+	* Utils.java (redirectStderrToFile): a method to redirect the
+	  standard error output to a log file, moved from MainWindow.java.
+	* Utils.java (closeProgram): a method that closes the whole program,
+	  moved from MainWindow.java.
+	* Utils.java (TableMouseListener): added a listener class for table
+	  header clicks.
+	* Utils.java (updateStatusLabel, STATUS): a method for seeing the
+	  status label and enumeration of program states, moved from
+	  MainWindow.java.
+	* README: added a method for building JYMAG with ant. Updated with
+	  drag&drop. Updated with information about alarm clocks.
+	* Utils.java (EscKeyListener): added a listener class for the Esc key.
+	  Removed all the KL inner classes from the GUI windows.
+	* DataTransporter.java (findBytes): fixed an ArrayIndexOutOfBounds
+	  exception.
+	* JYMAGTransferHandler.java: drag&drop support.
+	* RawCommunicator.java: pushbutton for the RTS and DTR signal, labels
+	  for the RI, CTS, DSR and DCD signals. Added the ability to send a
+	  file to the phone.
+	* SignalDisplayer.java: a window which displays the signal power
+	  detected by the phone.
+
 2010-08-01	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.9:

@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2011 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -63,6 +63,14 @@ public class DataTransporter
 		= Pattern.compile ("\\s*\\+CPIN:\\s*(.+)");	// NOI18N
 	private static final Pattern alnumPattern
 		= Pattern.compile ("\\s*\\+CALA:\\s*\\((.+)\\),\\((.+)\\)");	// NOI18N
+	private static final Pattern sigPowerPattern
+		= Pattern.compile ("\\s*\\+CSQ:\\s*(\\d+),(\\d+).*");	// NOI18N
+
+	private static final String OKStr = "OK";		// NOI18N
+	private static final String ERRORStr = "ERROR";		// NOI18N
+	private static final String NOCARStr = "NO CARRIER";	// NOI18N
+	private static final String CONNStr = "CONNECT";	// NOI18N
+	private static final String CRStr = "\r";		// NOI18N
 
 	private final SPL spl = new SPL ();
 
@@ -255,7 +263,7 @@ public class DataTransporter
 		};
 
 	// i18n stuff:
-	private final String ansString =
+	private static final String ansString =
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DataTransporter").getString("answer");
 
 	/**
@@ -445,11 +453,14 @@ public class DataTransporter
 	private boolean isTerminatorPresent (String haystack, Object[] needles)
 	{
 		if ( haystack == null ) return false;
-		if ( haystack.trim ().startsWith ("OK")				// NOI18N
-				|| haystack.trim ().endsWith ("OK")			// NOI18N
-				|| haystack.trim ().startsWith ("ERROR")	// NOI18N
-				|| haystack.trim ().endsWith ("ERROR")		// NOI18N
-				|| haystack.contains ("NO CARRIER") ) return true;		// NOI18N
+		if ( haystack.trim ().startsWith (OKStr)				// NOI18N
+			|| haystack.trim ().endsWith (OKStr)			// NOI18N
+			|| haystack.trim ().startsWith (ERRORStr)		// NOI18N
+			|| haystack.trim ().endsWith (ERRORStr)			// NOI18N
+			|| haystack.contains (NOCARStr) )			// NOI18N
+		{
+			return true;
+		}
 		if ( needles != null )
 		{
 			for ( int i=0; i < needles.length; i++ )
@@ -489,16 +500,17 @@ public class DataTransporter
 	public int putFile (File f, String newName)
 	{
 		if ( f == null ) return -11;
+		String dot = ".";		// NOI18N
 		// check if type is supported.
-		if ( ! f.getName ().contains (".")) return -8;	// NOI18N
+		if ( ! f.getName ().contains (dot)) return -8;
 		if ( ! Utils.filetypeIDs.containsKey (f.getName ().substring
-			(f.getName ().lastIndexOf (".")+1)	// NOI18N
+			(f.getName ().lastIndexOf (dot)+1)
 			.toLowerCase (Locale.ENGLISH)))
 		{
 			return -9;
 		}
 		if ( newName == null ) newName = f.getName ().substring (0,
-			f.getName ().indexOf ("."));	// NOI18N
+			f.getName ().indexOf (dot));
 
 		String rcvd;
 		byte[] recvdB;
@@ -515,9 +527,9 @@ public class DataTransporter
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("")		// NOI18N
-					|| (! rcvd.contains ("OK")	// NOI18N
-					&& ! rcvd.contains ("ERROR")) )	// NOI18N
+				if ( rcvd.trim ().length() == 0		// NOI18N
+					|| (! rcvd.contains (OKStr)	// NOI18N
+					&& ! rcvd.contains (ERRORStr)) )	// NOI18N
 				{
 					reopen ();
 					trials++;
@@ -534,129 +546,61 @@ public class DataTransporter
 			}
 			try
 			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// init file upload
-				do
-				{
-					send ("AT+KDOBJ=1,1\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-					rcvd = new String (recvdB);
-
-					if ( rcvd.trim ().equals ("") )	// NOI18N
-					{
-						reopen ();
-						trials++;
-						if ( trials > MAX_TRIALS ) break;
-						continue MAIN;
-					}
-				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
-				if ( trials > MAX_TRIALS ) return -1;
-				if ( ! rcvd.contains ("OK") )	// NOI18N
+				//initiate transfer
+				rcvd = tryCommand ("AT+KDOBJ=1,1\r", null);		// NOI18N
+				if ( ! rcvd.contains (OKStr) )	// NOI18N
 				{
 					System.out.println (ansString + "1=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
+					if ( trials > MAX_TRIALS ) return -1;
 					continue MAIN;
-					//return -1;
 				}
 
 				stage++;
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send filename length (the last parameter)
-				do
-				{
-					send ( ("AT+KDOBJ=2,1,3,0," + newName.length () + "\r")	// NOI18N
-						.getBytes ());
-					recvdB = recv (new String[] { "CONNECT" });	// NOI18N
-					rcvd = new String (recvdB);
 
-					if ( rcvd.trim ().equals ("") )	// NOI18N
-					{
-						reopen ();
-						trials++;
-						if ( trials > MAX_TRIALS ) break;
-						continue MAIN;
-					}
-				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
-				if ( trials > MAX_TRIALS ) return -2;
-				if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
+				// send filename length (the last parameter)
+				rcvd = tryCommand ("AT+KDOBJ=2,1,3,0," + newName.length () + CRStr,	// NOI18N
+					new String[] { CONNStr });	// NOI18N
+				if ( rcvd.contains (ERRORStr) || ! rcvd.contains (CONNStr) )	// NOI18N
 				{
 					System.out.println (ansString + "2=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
+					if ( trials > MAX_TRIALS ) return -2;
 					continue MAIN;
-					//return -2;
 				}
 
 				stage++;
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send filename
-				do
-				{
-					send ( (newName+"\r").getBytes ());	// NOI18N
-					recvdB = recv (null);
-					rcvd = new String (recvdB);
 
-					if ( rcvd.trim ().equals ("") )	// NOI18N
-					{
-						reopen ();
-						trials++;
-						if ( trials > MAX_TRIALS ) break;
-						continue MAIN;
-					}
-				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
-				if ( trials > MAX_TRIALS ) return -3;
-				if ( ! rcvd.contains ("OK") )	// NOI18N
+				// send the filename
+				rcvd = tryCommand (newName + CRStr, null);		// NOI18N
+				if ( ! rcvd.contains (OKStr) )	// NOI18N
 				{
 					System.out.println (ansString + "3=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
+					if ( trials > MAX_TRIALS ) return -3;
 					continue MAIN;
-					//return -3;
 				}
 
 				stage++;
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
+
 				// send file type (4th param) and length (5th parameter)
-				do
-				{
-					send ( ("AT+KDOBJ=2,1,0,"	// NOI18N
+				rcvd = tryCommand ("AT+KDOBJ=2,1,0,"			// NOI18N
 						+ Utils.filetypeIDs.get
 							(f.getName ().substring
-								(f.getName ().lastIndexOf (".")+1) // NOI18N
+								(f.getName ().lastIndexOf (dot)+1) // NOI18N
 							.toLowerCase (Locale.ENGLISH)).intValue ()
-						+ "," + f.length () + "\r").getBytes ());	// NOI18N
-					recvdB = recv (new String[] { "CONNECT" });	// NOI18N
-					rcvd = new String (recvdB);
-
-					if ( rcvd.trim ().equals ("") )	// NOI18N
-					{
-						reopen ();
-						trials++;
-						if ( trials > MAX_TRIALS ) break;
-						continue MAIN;
-					}
-				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
-				if ( trials > MAX_TRIALS ) return -4;
-				if ( rcvd.contains ("ERROR") || ! rcvd.contains ("CONNECT") )	// NOI18N
+						+ "," + f.length () + CRStr,		// NOI18N
+						new String[] { CONNStr });
+				if ( rcvd.contains (ERRORStr) || ! rcvd.contains (CONNStr) )	// NOI18N
 				{
 					System.out.println (ansString + "4=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
+					if ( trials > MAX_TRIALS ) return -4;
 					continue MAIN;
-					//return -4;
 				}
 
 				try
@@ -681,52 +625,36 @@ public class DataTransporter
 					recvdB = recv (null);
 					rcvd = new String (recvdB);
 
-					if ( rcvd.trim ().equals ("") )	// NOI18N
+					if ( rcvd.trim ().length() == 0 )			// NOI18N
 					{
 						reopen ();
 						trials++;
 						if ( trials > MAX_TRIALS ) break;
 						continue MAIN;
 					}
-				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				} while (rcvd.trim ().length() == 0 && trials <= MAX_TRIALS);	// NOI18N
 				if ( trials > MAX_TRIALS ) return -5;
-				if ( ! rcvd.contains ("OK") )	// NOI18N
+				if ( ! rcvd.contains (OKStr) )				// NOI18N
 				{
 					System.out.println (ansString + "5=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
+					if ( trials > MAX_TRIALS ) return -5;
 					continue MAIN;
-					//return -5;
 				}
 
 				stage++;
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// close file upload
-				do
-				{
-					send ("AT+KDOBJ=1,0\r".getBytes ());	// NOI18N
-					recvdB = recv (null);
-					rcvd = new String (recvdB);
 
-					if ( rcvd.trim ().equals ("") )	// NOI18N
-					{
-						reopen ();
-						trials++;
-						if ( trials > MAX_TRIALS ) break;
-						continue MAIN;
-					}
-				} while (rcvd.trim ().equals ("") && trials <= MAX_TRIALS);	// NOI18N
+				// close file upload
+				rcvd = tryCommand ("AT+KDOBJ=1,0\r", null);		// NOI18N
 				if ( trials > MAX_TRIALS ) return -6;
-				if ( ! rcvd.contains ("OK") )	// NOI18N
+				if ( ! rcvd.contains (OKStr) )				// NOI18N
 				{
 					System.out.println (ansString + "6=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
+					if ( trials > MAX_TRIALS ) return -6;
 					continue MAIN;
-					//return -6;
 				}
 				return 0;
 			}
@@ -745,9 +673,9 @@ public class DataTransporter
 				}*/
 				Utils.handleException (ex, "DataTransporter.putFile:end"	// NOI18N
 					+ f.getName () + ", newName=" + newName);	// NOI18N
-				//return -7;
 				reopen ();
 				trials++;
+				if ( trials > MAX_TRIALS ) return -7;
 				continue MAIN;
 			}
 		} // MAIN while
@@ -766,7 +694,7 @@ public class DataTransporter
 		{
 			if ( needle == null ) return 0;
 			if ( needle.length > haystack.length ) return -1;
-			HAY: for ( int i=0; i < haystack.length; i++ )
+			HAY: for ( int i=0; i < haystack.length - needle.length; i++ )
 			{
 				for ( int j=0; j < needle.length; j++ )
 				{
@@ -812,15 +740,15 @@ public class DataTransporter
 				recvdB = recv (null);
 				rcvd = new String (recvdB);
 
-				if ( rcvd.trim ().equals ("") || recvdB.length == 0 )	// NOI18N
+				if ( rcvd.trim ().length() == 0 || recvdB.length == 0 )	// NOI18N
 				{
 					reopen ();
 					trials++;
 				}
-			} while ( (rcvd.trim ().equals ("") || recvdB.length == 0)	// NOI18N
+			} while ( (rcvd.trim ().length() == 0 || recvdB.length == 0)	// NOI18N
 				&& trials < MAX_TRIALS);
-			if ( rcvd.trim ().equals ("") || recvdB.length == 0	// NOI18N
-				|| ! rcvd.contains ("NO CARRIER") ) return -2;	// NOI18N
+			if ( rcvd.trim ().length() == 0 || recvdB.length == 0	// NOI18N
+				|| ! rcvd.contains (NOCARStr) ) return -2;	// NOI18N
 
 			// check file type
 			FileOutputStream fos = new FileOutputStream (f);
@@ -1023,6 +951,53 @@ public class DataTransporter
 	}
 
 	/**
+	 * Tries to send the given command at most MAX_TRIALS times
+	 *	and returns the response. The sending stops also when
+	 *	the reply is not empty.
+	 * @param cmd The command to send.
+	 * @return The received reply.
+	 */
+	private String tryCommand (String cmd, Object[] extraTerminators)
+	{
+		String rcvd = "";						// NOI18N
+
+		if ( cmd == null ) return rcvd;
+
+		byte[] recvdB;
+		int trials = 0;
+		do
+		{
+			if ( trials >= MAX_TRIALS ) break;
+			try
+			{
+				Thread.sleep (DT_TIMEOUT);
+			} catch (Exception ex) {}
+			try
+			{
+				// send the command
+				send (cmd.getBytes ());
+
+				recvdB = recv (extraTerminators);
+			}
+			catch (IOException ioex)
+			{
+				Utils.handleException (ioex, "DataTransporter.tryCommand:"	// NOI18N
+					+ cmd);
+				trials++;
+				continue;
+			}
+			rcvd += new String (recvdB);
+
+			if ( rcvd.trim ().length() == 0 )				// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while (rcvd.trim ().length() == 0 && trials < MAX_TRIALS);	// NOI18N
+		return rcvd;
+	}
+
+	/**
 	 * Gets the list of objects from the phone.
 	 * @param ofWhat The type of the object, e.g. "PICTURES".
 	 * @return A Vector containing information about the elements.
@@ -1033,61 +1008,31 @@ public class DataTransporter
 		if ( ofWhat == null || res == null ) return res;
 		try
 		{
-			byte[] rcvdB;
-			String rcvd = "";	// NOI18N
-			int trials = 0;
 			// removed: sending ATZ and AT115200
-			trials = 0;
-			do
-			{
-				// set charset information
-				send ("AT+CSCS=\"8859-1\"\r".getBytes ());	// NOI18N
-				rcvdB = recv (null);
-				rcvd += new String(rcvdB);
+			String rcvd = tryCommand ("AT+CSCS=\"8859-1\"\r", null);	// NOI18N
+			if ( ! rcvd.contains (OKStr) ) return res;			// NOI18N
 
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-
-			if ( ! rcvd.contains ("OK") ) return res;	// NOI18N
-			trials = 0;
-			do
-			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send "get list" command
-				send (("AT+KPSL=\"" + ofWhat + "\",1\r").getBytes ());	// NOI18N
 			/*
 			 * Receiving format:
 			 * +KPSL: "5303650005022001FFFF",1,2016,"PICTURES","FGIF","0000065535","","Zzz"
 			 * +KPSL: "53036500050220030045",0,48006,"RINGTONES","AMR","0000000069","","aaa"
 					Id	    HIDDEN,LENG, CATEGORY, CONTENT, LOCATION  FLAG, NAME
 			 */
-				rcvdB = recv (null);
-				rcvd += new String(rcvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
+			rcvd = tryCommand ("AT+KPSL=\"" + ofWhat + "\",1\r", null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 || ! rcvd.contains (OKStr) )	// NOI18N
+			{
+				return null;
+			}
 
 			Matcher m;
 			// split into lines
-			String[] lines = rcvd.split ("[\\r\\n]{1,2}");	// NOI18N
+			String[] lines = rcvd.split ("[\\r\\n]{1,2}");			// NOI18N
 			for ( int i=0; i < lines.length; i++ )
 			{
 				m = Utils.listPattern.matcher (lines[i]);
 				if ( m.matches () )
 				{
-					if ( m.group (2).equals ("0"))	// NOI18N
+					if ( m.group (2).equals ("0"))			// NOI18N
 						res.add (new PhoneElement (m.group (1),
 							m.group (3), m.group (4) ));
 				}
@@ -1111,34 +1056,14 @@ public class DataTransporter
 		if ( el == null ) return -3;
 		try
 		{
-			String rcvd;
-			byte[] recvdB;
-			int trials = 0;
-			do
-			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send file delete command
-				send (("AT+KPSD=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
-
-				recvdB = recv (null);
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || trials >= MAX_TRIALS )		// NOI18N
+			String rcvd = tryCommand ("AT+KPSD=\"" + el.getID () + "\"\r", null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 )						// NOI18N
 				return -2;
 			return 0;
 		}
 		catch ( Exception ex )
 		{
-			Utils.handleException (ex, "DataTransporter.deleteFile:"	// NOI18N
+			Utils.handleException (ex, "DataTransporter.deleteFile:"		// NOI18N
 				+ el.getFilename () + "." + el.getExt () + ", id=" + el.getID ());	// NOI18N
 			return -1;
 		}
@@ -1200,12 +1125,13 @@ public class DataTransporter
 	{
 		try
 		{
+			byte[] cmd = "AT\r".getBytes ();	// NOI18N
 			// 3 times gets bigger probability for an answer
-			send ("AT\r".getBytes ());	// NOI18N
-			send ("AT\r".getBytes ());	// NOI18N
-			send ("AT\r".getBytes ());	// NOI18N
+			send (cmd);
+			send (cmd);
+			send (cmd);
 			String res = new String (recv (null));
-			if ( res.contains ("OK") )	// NOI18N
+			if ( res.contains (OKStr) )	// NOI18N
 			{
 				return 0;
 			}
@@ -1224,38 +1150,14 @@ public class DataTransporter
 	 */
 	public String getFirmwareVersion ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("AT+KPSV\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "phone firmware");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while (rcvd.trim ().equals ("")	// NOI18N
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+KPSV\r", null);			// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "+KPSV: 2.04"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);		// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1283,40 +1185,14 @@ public class DataTransporter
 	 */
 	public String getDeviceType ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("ATIMEI\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "phone type");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("ATIMEI"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("ATIMEI\r", null);			// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "myX5-2 GPRS"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);		// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1344,40 +1220,14 @@ public class DataTransporter
 	 */
 	public String getExtraDeviceType ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("AT+CGMR\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "extra phone type");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CGMR"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+CGMR\r", null);			// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "+CGMR: SAGEM KB3,ME"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);		// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1405,34 +1255,8 @@ public class DataTransporter
 	 */
 	public String getIMEI ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("AT+CGSN\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "phone IMEI");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CGSN"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+CGSN\r", null);					// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "AT+CGSN
 			// 353056005020024
@@ -1440,7 +1264,7 @@ public class DataTransporter
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);				// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1456,7 +1280,7 @@ public class DataTransporter
 			}
 			catch (Exception ex)
 			{
-				Utils.handleException (ex, "phone IMEI");	// NOI18N
+				Utils.handleException (ex, "phone IMEI");			// NOI18N
 			}
 		}
 		// get subscriber phone numbers:
@@ -1469,40 +1293,14 @@ public class DataTransporter
 	 */
 	public String getSubscriberNumbers ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("AT+CNUM\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "phone subscriber numbers");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CNUM"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+CNUM\r", null);		// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "+CNUM: "","+48788118746",145"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);	// NOI18N
 				if ( lines != null )
 				{
 					String type = null;
@@ -1512,18 +1310,19 @@ public class DataTransporter
 						lines[i] = lines[i].replaceAll ("\\+CNUM: ", "");	// NOI18N
 						if ( lines[i].trim ().length () > 0 )
 						{
-							String[] elems = lines[i].trim ().split (",");
-							String newElem = "";
+							String[] elems = lines[i].trim ().split (",");	// NOI18N
+							String newElem = "";				// NOI18N
 							if ( elems != null )
 							{
 								if ( elems.length > 1 )
 								{
-									newElem = elems[1].trim().replaceAll ("\"", "");
+									newElem = elems[1].trim()
+										.replaceAll ("\"", "");	// NOI18N
 								}
 							}
 							if ( newElem.length () > 0 )
 							{
-								if ( type == null ) type = "";	// NOI18N
+								if ( type == null ) type = "";		// NOI18N
 								if ( type.length () != 0 ) type += ", ";	// NOI18N
 								type += newElem;
 							}
@@ -1548,49 +1347,22 @@ public class DataTransporter
 	public String getCapabilities (String type)
 	{
 		if ( type == null ) return null;
-		String rcvd = "";	// NOI18N
-		String cmd = "AT+KPSCAP=\"" + type + "\"";		// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( (cmd+"\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "Capability: send");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CNUM"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+KPSCAP=\"" + type + "\"\r", null);	// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			try
 			{
 				if ( rcvd.trim ().length () > 0 )
 				{
 					return rcvd.substring (
-						rcvd.indexOf ("CONNECT")+7,	// NOI18N
-						rcvd.indexOf ("NO CARRIER")	// NOI18N
+						rcvd.indexOf (CONNStr)+7,		// NOI18N
+						rcvd.indexOf (NOCARStr)		// NOI18N
 						);
 				}
 			}
 			catch (Exception ex)
 			{
-				Utils.handleException (ex, "Capability: recv");	// NOI18N
+				Utils.handleException (ex, "Capability: recv");		// NOI18N
 			}
 		}
 		return null;
@@ -1603,11 +1375,11 @@ public class DataTransporter
 	{
 		try
 		{
-			send ( ("AT*PSCPOF\r").getBytes ());	// NOI18N
+			send ( ("AT*PSCPOF\r").getBytes ());			// NOI18N
 		}
 		catch (Exception ex)
 		{
-			Utils.handleException (ex, "power off");	// NOI18N
+			Utils.handleException (ex, "power off");		// NOI18N
 		}
 	}
 
@@ -1617,40 +1389,14 @@ public class DataTransporter
 	 */
 	public DataTransporter.PIN_STATUS getPINStatus ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("AT+CPIN?\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "PIN status");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CNUM"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+CPIN?\r", null);			// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "+CNUM: "","+48788118746",145"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);		// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1683,62 +1429,37 @@ public class DataTransporter
 	{
 		DataTransporter.PIN_STATUS status = getPINStatus ();
 		if ( status == null ) return -1;
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
+		String cmd;
+		if ( status.equals (DataTransporter.PIN_STATUS.SIM_PUK)
+			|| status.equals (DataTransporter.PIN_STATUS.SIM_PUK2) )
 		{
-			try
-			{
-				if ( status.equals (DataTransporter.PIN_STATUS.SIM_PUK)
-					|| status.equals (DataTransporter.PIN_STATUS.SIM_PUK2) )
-				{
-					send ( ("AT+CPIN=" + PIN + "," + newPIN + "\r")
-						.getBytes ());	// NOI18N
-				}
-				else
-				{
-					send ( ("AT+CPIN=" + PIN + "\r").getBytes ());	// NOI18N
-				}
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "PIN send");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return -2;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CNUM"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+			cmd = "AT+CPIN=" + PIN + "," + newPIN + CRStr;			// NOI18N
+		}
+		else
+		{
+			cmd = "AT+CPIN=" + PIN + CRStr;					// NOI18N
+		}
+		String rcvd = tryCommand (cmd + CRStr, null);				// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// expecting: "OK"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);			// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
 					{
 						if ( lines[i] == null ) continue;
 						if ( lines[i].toUpperCase (Locale.ENGLISH)
-							.contains ("OK") ) return 0;
+							.contains (OKStr) ) return 0;	// NOI18N
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Utils.handleException (ex, "PIN ack recv");	// NOI18N
+				Utils.handleException (ex, "PIN ack recv");		// NOI18N
 			}
 		}
 		return -3;
@@ -1761,41 +1482,15 @@ public class DataTransporter
 	 */
 	public int getNumberOfAlarms ()
 	{
-		String rcvd = "";	// NOI18N
-		int trials = 0;
-		do
-		{
-			try
-			{
-				send ( ("AT+CALA=?\r").getBytes ());	// NOI18N
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex, "alarm number - send");	// NOI18N
-				trials++;
-				if ( trials >= DataTransporter.MAX_TRIALS ) return -1;
-				continue;
-			}
-			byte[] recvdB = recv (null);	// NOI18N
-			rcvd = new String (recvdB);
-
-			if ( rcvd.trim ().equals ("") )	// NOI18N
-			{
-				reopen ();
-				trials++;
-			}
-		} while ( //(
-				rcvd.trim ().equals ("")	// NOI18N
-				//|| rcvd.contains ("CNUM"))
-			&& trials <= DataTransporter.MAX_TRIALS);
-		if ( trials <= DataTransporter.MAX_TRIALS )
+		String rcvd = tryCommand ("AT+CALA=?\r", null);				// NOI18N
+		if ( rcvd.trim ().length () > 0 )
 		{
 			// sample: "+CALA: (1),(sound)
 			//	OK"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split ("\r");	// NOI18N
+				String[] lines = rcvd.split (CRStr);			// NOI18N
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1824,38 +1519,19 @@ public class DataTransporter
 	 */
 	public int deleteAlarm (int number)
 	{
+		if ( number < 0 ) return -1;
 		try
 		{
-			String rcvd;
-			byte[] recvdB;
-			int trials = 0;
-			do
-			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send alarm delete command
-				send (("AT+CALD=" + String.valueOf (number) + "\r").getBytes ());	// NOI18N
-
-				recvdB = recv (null);
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || trials >= MAX_TRIALS )		// NOI18N
+			String rcvd = tryCommand ("AT+CALD=" + String.valueOf (number) + CRStr, null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 )						// NOI18N
 				return -2;
-			if ( rcvd.contains ("OK") ) return 0;		// NOI18N
+			if ( rcvd.contains (OKStr) ) return 0;					// NOI18N
 			return -3;
 		}
 		catch ( Exception ex )
 		{
 			Utils.handleException (ex, "DataTransporter.deleteAlarm:" + number );	// NOI18N
-			return -1;
+			return -4;
 		}
 	}
 
@@ -1869,48 +1545,29 @@ public class DataTransporter
 		if ( al == null ) return -1;
 		try
 		{
-			String rcvd;
-			byte[] recvdB;
-			int trials = 0;
-			do
+			String alString = al.getAlarmString ();
+			if ( getNumberOfAlarms () == 1 )
 			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send alarm delete command
-				String alString = al.getAlarmString ();
-				if ( getNumberOfAlarms () == 1 )
-				{
-					// when the supported number of alarms, don't send the days
-					int num = al.getNumber ();
-					boolean oneTime = al.isOneTimeAlarm ();
-					al.setNumber (-1);
-					al.setOneTimeAlarm (true);
-					alString = al.getAlarmString ();
-					al.setNumber (num);
-					al.setOneTimeAlarm (oneTime);
-				}
-				send (("AT+CALA=" + alString + "\r").getBytes ());	// NOI18N
-
-				recvdB = recv (null);
-				rcvd = new String (recvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || trials >= MAX_TRIALS )		// NOI18N
+				// when the supported number of alarms is 1, don't send the days
+				int num = al.getNumber ();
+				boolean oneTime = al.isOneTimeAlarm ();
+				al.setNumber (-1);
+				al.setOneTimeAlarm (true);
+				alString = al.getAlarmString ();
+				al.setNumber (num);
+				al.setOneTimeAlarm (oneTime);
+			}
+			String rcvd = tryCommand ("AT+CALA=" + alString + CRStr, null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 )					// NOI18N
 				return -2;
-			if ( rcvd.contains ("OK") ) return 0;		// NOI18N
+			if ( rcvd.contains (OKStr) ) return 0;				// NOI18N
 			return -3;
 		}
 		catch ( Exception ex )
 		{
-			Utils.handleException (ex, "DataTransporter.addAlarm:" + al.getAlarmString () );	// NOI18N
-			return -1;
+			Utils.handleException (ex, "DataTransporter.addAlarm:"		// NOI18N
+				+ al.getAlarmString () );
+			return -4;
 		}
 	}
 
@@ -1924,36 +1581,20 @@ public class DataTransporter
 		if ( res == null ) return null;
 		try
 		{
-			byte[] rcvdB;
-			String rcvd = "";	// NOI18N
-			int trials = 0;
-			do
+			String rcvd = tryCommand ("AT+CALA?\r", null);			// NOI18N
+			/*
+			 * Receiving format:
+			 * +CALA: "08/08/02,06:30:00"
+			 * +CALA: "08/08/02,06:30:00"
+			 * OK
+			 */
+			if ( rcvd.trim ().length() == 0 || ! rcvd.contains (OKStr) )	// NOI18N
 			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				} catch (Exception ex) {}
-				// send "get alarms" command
-				send (("AT+CALA?\r").getBytes ());	// NOI18N
-				/*
-				* Receiving format:
-				* +CALA: "08/08/02,06:30:00"
-				* +CALA: "08/08/02,06:30:00"
-				* OK
-				*/
-				rcvdB = recv (null);
-				rcvd += new String(rcvdB);
-
-				if ( rcvd.trim ().equals ("") )	// NOI18N
-				{
-					reopen ();
-					trials++;
-				}
-			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
-			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
+				return null;
+			}
 
 			// split into lines
-			String[] lines = rcvd.split ("[\\r\\n]{1,2}");	// NOI18N
+			String[] lines = rcvd.split ("[\\r\\n]{1,2}");			// NOI18N
 			for ( int i=0; i < lines.length; i++ )
 			{
 				PhoneAlarm pa = PhoneAlarm.parseReponse (lines[i]);
@@ -1966,6 +1607,223 @@ public class DataTransporter
 			return null;
 		}
 		return res;
+	}
+
+	/**
+	 * Deletes the specified message from the phone.
+	 * @param number The number of the message to delete.
+	 * @return 0 in case of success.
+	 */
+	public int deleteMessage (int number)
+	{
+		if ( number < 0 ) return -1;
+		try
+		{
+			String rcvd = tryCommand ("AT+CMGD=" + String.valueOf (number) + CRStr, null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 )						// NOI18N
+				return -2;
+			if ( rcvd.contains (OKStr) ) return 0;					// NOI18N
+			return -3;
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.deleteMessage:" + number );	// NOI18N
+			return -4;
+		}
+	}
+
+	/**
+	 * Gets the list of current messages from the phone.
+	 * @return the list of current messages from the phone or null in case of error.
+	 */
+	public Vector<PhoneMessage> getMessagess ()
+	{
+		Vector<PhoneMessage> res = new Vector<PhoneMessage> (1);
+		if ( res == null ) return null;
+		try
+		{
+			String rcvd = tryCommand ("AT+CMGL\r", null);			// NOI18N
+			if ( rcvd.trim ().length() == 0 || ! rcvd.contains (OKStr) )	// NOI18N
+			{
+				return null;
+			}
+
+			// remove the final "OK"
+			rcvd.replaceAll ("OK$", "");					// NOI18N
+			// split into lines
+			String[] lines = rcvd.split ("\\+CMGL\\s*:\\s*");		// NOI18N
+			for ( int i=0; i < lines.length; i++ )
+			{
+				PhoneMessage pa = PhoneMessage.parseReponse (lines[i]);
+				if ( pa != null ) res.add (pa);
+			}
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.getMessagess");	// NOI18N
+			return null;
+		}
+		return res;
+	}
+
+	/**
+	 * Retrieves the specified message from the phone.
+	 * @param number The number of the message to retrieve.
+	 * @return 0 in case of success.
+	 */
+	public PhoneMessage getMessage (int number)
+	{
+		if ( number < 0 ) return null;
+		try
+		{
+			String rcvd = tryCommand ("AT+CMGR=" + String.valueOf (number) + CRStr, null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 )						// NOI18N
+				return null;
+			return PhoneMessage.parseReponse (rcvd);
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.getMessage:" + number );	// NOI18N
+			return null;
+		}
+	}
+
+	/**
+	 * Sends the specified message with the phone.
+	 * @param msg The message to send.
+	 * @return 0 in case of success.
+	 */
+	public int sendMessage (PhoneMessage msg)
+	{
+		if ( msg == null ) return -1;
+		try
+		{
+			String rcvd = tryCommand ("AT+CMGS=" + msg.getMessageString () + CRStr, null);	// NOI18N
+			if ( rcvd.trim ().length() == 0 )						// NOI18N
+				return -2;
+			if ( rcvd.contains (OKStr) ) return 0;					// NOI18N
+			return -3;
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.sendMessage: '"		// NOI18N
+				+ new String (msg.getMessage ()) + "'" );			// NOI18N
+			return -4;
+		}
+	}
+
+	/**
+	 * Sets or clears the DTR line in the port. The port must already be open.
+	 * @param on If TRUE, the DTR signal will be set, otherwise it will be cleared.
+	 */
+	public void setDTR (boolean on)
+	{
+		if ( s != null ) s.setDTR (on);
+	}
+
+	/**
+	 * Sets or clears the RTS line in the port. The port must already be open.
+	 * @param on If TRUE, the RTS signal will be set, otherwise it will be cleared.
+	 */
+	public void setRTS (boolean on)
+	{
+		if ( s != null ) s.setRTS (on);
+	}
+
+	/**
+	 * Gets the state of the Carrier Detect signal.
+	 * @return TRUE if the signal is on, FALSE otherwise.
+	 */
+	public boolean isCD ()
+	{
+		if ( s != null ) return s.isCD ();
+		return false;
+	}
+
+	/**
+	 * Gets the state of the Clear To Send signal.
+	 * @return TRUE if the signal is on, FALSE otherwise.
+	 */
+	public boolean isCTS ()
+	{
+		if ( s != null ) return s.isCTS ();
+		return false;
+	}
+
+	/**
+	 * Gets the state of the Data Set Ready signal.
+	 * @return TRUE if the signal is on, FALSE otherwise.
+	 */
+	public boolean isDSR ()
+	{
+		if ( s != null ) return s.isDSR ();
+		return false;
+	}
+
+	/**
+	 * Gets the state of the Data Terminal Ready signal.
+	 * @return TRUE if the signal is on, FALSE otherwise.
+	 */
+	public boolean isDTR ()
+	{
+		if ( s != null ) return s.isDTR ();
+		return false;
+	}
+
+	/**
+	 * Gets the state of the Ring Indicator signal.
+	 * @return TRUE if the signal is on, FALSE otherwise.
+	 */
+	public boolean isRI ()
+	{
+		if ( s != null ) return s.isRI ();
+		return false;
+	}
+
+	/**
+	 * Gets the state of the Request To Send signal.
+	 * @return TRUE if the signal is on, FALSE otherwise.
+	 */
+	public boolean isRTS ()
+	{
+		if ( s != null ) return s.isRTS ();
+		return false;
+	}
+
+	/**
+	 * Reads the signal power from the phone.
+	 * @return the currently-deteted signal power (0-31 inclusive)
+	 *	or a negative value in case of error.
+	 */
+	public int getSignalPower ()
+	{
+		try
+		{
+			String rcvd = tryCommand ("AT+CSQ\r", null);				// NOI18N
+			if ( rcvd.trim ().length() == 0 )						// NOI18N
+				return -2;
+			Matcher sigMatcher = sigPowerPattern.matcher (rcvd);
+			// NOT "matches()", because we can get "AT+CSQ" in the reply
+			if ( sigMatcher.find () )
+			{
+				try
+				{
+					return Integer.parseInt (sigMatcher.group (1));
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex,
+						"DataTransporter.getSignalPower: '"		// NOI18N
+						+ sigMatcher.group (1) + "'");			// NOI18N
+				}
+			}
+			return -3;
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.getSignalPower");		// NOI18N
+			return -1;
+		}
 	}
 
 	/**
@@ -2025,6 +1883,7 @@ public class DataTransporter
 		/**
 		 * Gets the PIN_STATUS that's name looks like the given String
 		 * (except maybe for whitespace, dashes etc.).
+		 * @return a PIN_STATUS that is roughly equal to the required one.
 		 */
 		public static PIN_STATUS looseValueOf (String name)
 		{
@@ -2034,8 +1893,10 @@ public class DataTransporter
 			{
 				for ( int i = 0; i < values.length; i++ )
 				{
-					if ( values[i].toString ().replaceAll ("\\s", "_")
-						.replaceAll ("-", "_").trim ().equals (name.trim ()) )
+					if ( values[i].toString ()
+						.replaceAll ("\\s", "_")		// NOI18N
+						.replaceAll ("-", "_")			// NOI18N
+						.trim ().equals (name.trim ()) )
 					{
 						return values[i];
 					}
