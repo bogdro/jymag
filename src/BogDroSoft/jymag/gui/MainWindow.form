@@ -3,13 +3,14 @@
 <Form version="1.5" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="title" type="java.lang.String" value="Your Music and Graphics" noResource="true"/>
+    <Property name="title" type="java.lang.String" value="Jig Your Music and Graphics" noResource="true"/>
     <Property name="iconImage" type="java.awt.Image" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-      <Connection code="(new javax.swing.ImageIcon (getClass ().getResource (&quot;/BogDroSoft/jymag/rsrc/jymag.png&quot;))).getImage ()" type="code"/>
+      <Connection code="(new javax.swing.ImageIcon (getClass ().getResource (&quot;/BogDroSoft/jymag/rsrc/jymag-icon-phone.png&quot;))).getImage ()" type="code"/>
     </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <Events>
     <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
@@ -56,13 +57,11 @@
                       <EmptySpace min="-2" pref="365" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="816" max="32767" attributes="0"/>
-                      <Component id="signalButton" linkSize="1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="816" max="32767" attributes="0"/>
-                      <Component id="exitBut" linkSize="1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="signalButton" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="exitBut" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -320,6 +319,9 @@
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="port_speed" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="@SuppressWarnings(&quot;rawtypes&quot;)&#xa;"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="speedLabel">
               <Properties>
@@ -348,7 +350,7 @@
             <Component class="javax.swing.JButton" name="aboutBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/QMARK8.png"/>
+                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/about.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="About_JYMAG..." replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -390,7 +392,7 @@
             <Component class="javax.swing.JButton" name="rawBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/tools1.png"/>
+                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/manual-cmd.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Manual_commands" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -448,7 +450,7 @@
             <Component class="javax.swing.JButton" name="scanButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/SCAN5.png"/>
+                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/scan.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Scan_ports" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -512,7 +514,7 @@
             <Component class="javax.swing.JButton" name="getCapBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/capab.png"/>
+                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/capability.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Get_capabilities" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -582,7 +584,7 @@
                           <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Photos" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/pict-1.png"/>
+                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/pictures.png"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -602,7 +604,7 @@
                           <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Ringtones" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/ring.png"/>
+                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/ringtones.png"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -622,7 +624,7 @@
                           <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Addressbook" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/abook.png"/>
+                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/addrbook.png"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -662,7 +664,7 @@
                           <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="EventsTasksTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/event.png"/>
+                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/events.png"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -682,7 +684,7 @@
                           <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="AnimationsVideosTab" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/video.png"/>
+                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/videos.png"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -722,7 +724,7 @@
                           <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="Alarms" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/alarmclk.png"/>
+                          <Image iconType="3" name="/BogDroSoft/jymag/rsrc/alarm.png"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -816,6 +818,9 @@
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="data_bits" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="@SuppressWarnings(&quot;rawtypes&quot;)&#xa;"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="stopbitsLabel">
               <Properties>
@@ -871,6 +876,9 @@
               <Events>
                 <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="portComboItemStateChanged"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="@SuppressWarnings(&quot;rawtypes&quot;)&#xa;"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="subsNumLabel">
               <Properties>
@@ -909,6 +917,9 @@
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="stop_bits" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="@SuppressWarnings(&quot;rawtypes&quot;)&#xa;"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JComboBox" name="parityCombo">
               <Properties>
@@ -927,6 +938,9 @@
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="parity_type" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="@SuppressWarnings(&quot;rawtypes&quot;)&#xa;"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="subsNum">
               <Properties>
@@ -971,7 +985,7 @@
             <Component class="javax.swing.JButton" name="signalButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/antenna.png"/>
+                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/signal.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="BogDroSoft/jymag/i18n/MainWindow.properties" key="signal_power" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

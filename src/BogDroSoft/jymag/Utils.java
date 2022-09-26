@@ -1,13 +1,13 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,37 +15,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
 
-import BogDroSoft.jymag.gui.JYMAGFileFilter;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.WindowListener;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 
 /**
  * A utility class, containing some useful methods and fields.
@@ -57,7 +40,7 @@ public class Utils
 	 * A pattern describing the format of lists of elements received from
 	 * the phone.
 	 */
-	public final static Pattern listPattern;
+	public final static Pattern LIST_PATTERN;
 
 	/**
 	 * A Map containing all ID numbers connected to the given file
@@ -107,21 +90,40 @@ public class Utils
 	 */
 	private final static Map<String, Integer> javafileIDs;
 
-	private static final String emptyStr = "";				// NOI18N
-	private static final String dash = "-";					// NOI18N
-	private static final String colon = ":";				// NOI18N
-	private static final String zero = "0";					// NOI18N
-	private static final String space = " ";				// NOI18N
-	private static final String apos = "'";					// NOI18N
-	private static final String msgStart = ", Message='";			// NOI18N
-	private static final String dataStart = ", Data='";			// NOI18N
-	private static final String atStr = "\tat\t";				// NOI18N
-	private static final String unknClass = "<Unknown class>";		// NOI18N
-	private static final String dot = ".";					// NOI18N
-	private static final String unknMethod = "<Unknown method>";		// NOI18N
-	private static final String lParen = "(";				// NOI18N
-	private static final String rParen = ")";				// NOI18N
-	private static final String unknFile = "<Unknown file>";		// NOI18N
+	/** An empty String. */
+	public static final String EMPTY_STR = "";	// NOI18N
+	/** A String with the Carriage Return character. */
+	public static final String CR = "\r";		// NOI18N
+	/** A String with the Line Feed character. */
+	public static final String LF = "\n";		// NOI18N
+	/** A single colon String. */
+	public static final String COLON = ":";		// NOI18N
+	/** A String with a single comma character. */
+	public static final String COMMA = ",";		// NOI18N
+	/** A single zero ("0") String. */
+	public static final String ZERO = "0";		// NOI18N
+	/** A single space String. */
+	public static final String SPACE = " ";		// NOI18N
+	/** A String with a single apostrophe character. */
+	public static final String APOSTROPHE = "'";	// NOI18N
+	/** A String with a single dot. */
+	public static final String DOT = ".";		// NOI18N
+	/** A single left parenthesis String. */
+	public static final String L_PAREN = "(";	// NOI18N
+	/** A single right parenthesis String. */
+	public static final String R_PAREN = ")";	// NOI18N
+	/** A single question-mark String. */
+	public static final String QUESTION_MARK = "?";	// NOI18N
+	/** A String with a single "double quote" character. */
+	public static final String DQUOT = "\"";					// NOI18N
+
+	private static final String DASH = "-";					// NOI18N
+	private static final String MSG_START = ", Message='";			// NOI18N
+	private static final String DATA_START = ", Data='";			// NOI18N
+	private static final String EXCEPTION_AT_STR = "\tat\t";		// NOI18N
+	private static final String UNKNOWN_CLASS = "<Unknown class>";		// NOI18N
+	private static final String UNKNOWN_METHOD = "<Unknown method>";	// NOI18N
+	private static final String UNKNOWN_FILE = "<Unknown file>";		// NOI18N
 
 	static
 	{
@@ -130,7 +132,7 @@ public class Utils
 		 * +KPSL: "5303650005022001FFFF",1,2016,"PICTURES","FGIF","0000065535","","Zzz"
 				Id	    HIDDEN,LENG, CATEGORY, CONTENT, LOCATION  FLAG, NAME
 		 */
-		listPattern = Pattern.compile ("\\s*\\+KPSL:\\s*\\" + '"'	// NOI18N
+		LIST_PATTERN = Pattern.compile ("\\s*\\+KPSL:\\s*\\" + '"'	// NOI18N
 				+ "([0-9A-Fa-f]+)" + "\\" + '"' + ",(\\d+),\\d+,\\" + '"'	// NOI18N
 				+ "\\w+\\" + '"' + ",\\" + '"' + "(\\w+)\\"+ '"'	// NOI18N
 				+ ",[^,]+,[^,]+,\\"+ '"' + "([^\"]+)\\" + '"');	// NOI18N
@@ -389,12 +391,12 @@ public class Utils
 			int minute = c.get (Calendar.MINUTE);
 			int second = c.get (Calendar.SECOND);
 
-			String time = c.get (Calendar.YEAR) + dash
-				+ ((month  < 10)? zero : emptyStr ) + month  + dash
-				+ ((day    < 10)? zero : emptyStr ) + day    + space
-				+ ((hour   < 10)? zero : emptyStr ) + hour   + colon
-				+ ((minute < 10)? zero : emptyStr ) + minute + colon
-				+ ((second < 10)? zero : emptyStr ) + second + colon + space;
+			String time = c.get (Calendar.YEAR) + DASH
+				+ ((month  < 10)? ZERO : EMPTY_STR ) + month  + DASH
+				+ ((day    < 10)? ZERO : EMPTY_STR ) + day    + SPACE
+				+ ((hour   < 10)? ZERO : EMPTY_STR ) + hour   + COLON
+				+ ((minute < 10)? ZERO : EMPTY_STR ) + minute + COLON
+				+ ((second < 10)? ZERO : EMPTY_STR ) + second + COLON + SPACE;
 
 			displayExceptionLine (time + ex, false);
 		}
@@ -408,7 +410,7 @@ public class Utils
 			String msg = ex.getMessage ();
 			if ( msg != null )
 			{
-				displayExceptionLine (msgStart + msg + apos, false);
+				displayExceptionLine (MSG_START + msg + APOSTROPHE, false);
 			}
 		}
 		catch (Throwable e)
@@ -420,7 +422,7 @@ public class Utils
 		{
 			if ( data != null )
 			{
-				displayExceptionLine (dataStart + data.toString () + apos, false);
+				displayExceptionLine (DATA_START + data.toString () + APOSTROPHE, false);
 			}
 		}
 		catch (Throwable e)
@@ -430,7 +432,7 @@ public class Utils
 
 		try
 		{
-			displayExceptionLine (emptyStr, true);
+			displayExceptionLine (EMPTY_STR, true);
 		}
 		catch (Throwable e)
 		{
@@ -450,7 +452,7 @@ public class Utils
 						String file = ste[i].getFileName ();
 						String function = ste[i].getMethodName ();
 						int line = ste[i].getLineNumber ();
-						String toShow = atStr;
+						String toShow = EXCEPTION_AT_STR;
 						if ( clazz != null )
 						{
 							// let's display only our files
@@ -463,122 +465,31 @@ public class Utils
 						}
 						else
 						{
-							toShow += unknClass;
+							toShow += UNKNOWN_CLASS;
 						}
 						if ( function != null )
 						{
-							toShow += dot + function;
+							toShow += DOT + function;
 						}
 						else
 						{
-							toShow += dot + unknMethod;
+							toShow += DOT + UNKNOWN_METHOD;
 						}
 						if ( file != null )
 						{
-							toShow += space + lParen + file;
+							toShow += SPACE + L_PAREN + file;
 						}
 						else
 						{
-							toShow += space + lParen + unknFile;
+							toShow += SPACE + L_PAREN + UNKNOWN_FILE;
 						}
-						toShow += colon + String.valueOf (line) + rParen;
+						toShow += COLON + String.valueOf (line) + R_PAREN;
 
 						displayExceptionLine (toShow, true);
 					}
 					catch (Throwable e)
 					{
 						// ignore here to avoid recurrency
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Method used to change the GUI - runs r.run () on the
-	 * EventDispatchThread and waits for it to exit.
-	 * @param r The code to run.
-	 */
-	public synchronized static void changeGUI (final Runnable r)
-	{
-		if ( r == null )
-		{
-			return;
-		}
-		if ( SwingUtilities.isEventDispatchThread () )
-		{
-			try
-			{
-				r.run ();
-			}
-			catch (Throwable ex)
-			{
-				Utils.handleException (ex, "changeGUI->r.run");	// NOI18N
-			}
-		}
-		else
-		{
-			try
-			{
-				SwingUtilities.invokeAndWait (new Runnable ()
-				{
-					@Override
-					public synchronized void run ()
-					{
-						try
-						{
-							r.run ();
-						}
-						catch (Throwable ex)
-						{
-							Utils.handleException (ex,
-								"changeGUI->invokeAndWait->r.run");// NOI18N
-						}
-					}
-
-					@Override
-					public String toString ()
-					{
-						return "Utils.changeGUI.Runnable";	// NOI18N
-					}
-				});
-			}
-			catch (InterruptedException ex)
-			{
-				// can be called when closing the program, so ignore
-				//Utils.handleException (ex, "changeGUI->invokeAndWait->Interrupt");// NOI18N
-			}
-			catch (Throwable ex)
-			{
-				Utils.handleException (ex, "changeGUI->invokeAndWait");	// NOI18N
-			}
-		}
-	}
-
-	/**
-	 * Set the given font size in all the components in the given
-	 * Component (recursively, if it's a Container).
-	 * @param c The Component with Components that will have their font
-	 *	size changed.
-	 * @param newSize The new font size to set.
-	 */
-	public static void setFontSize (Component c, float newSize)
-	{
-		if ( c == null )
-		{
-			return;
-		}
-		c.setFont (c.getFont ().deriveFont (newSize));
-		if ( c instanceof Container )
-		{
-			Component[] subComps = ((Container)c).getComponents ();
-			if ( subComps != null )
-			{
-				for ( int i = 0; i < subComps.length; i++ )
-				{
-					if ( subComps[i] != null )
-					{
-						setFontSize (subComps[i], newSize);
 					}
 				}
 			}
@@ -631,23 +542,6 @@ public class Utils
 	}
 
 	/**
-	 * Crates a file chooser for opening single files of the given type.
-	 * @param description The description to display in the filters list.
-	 * @param filetype The Map with file extensions as keys.
-	 * @return The file chooser for opening of selected file types.
-	 */
-	public static JFileChooser createOpenFileChooser (
-		final String description, final Map<String, Integer> filetype)
-	{
-		JFileChooser fc = new JFileChooser ();
-		fc.setAcceptAllFileFilterUsed (false);
-		fc.setMultiSelectionEnabled (false);
-		fc.setDialogType (JFileChooser.OPEN_DIALOG);
-		fc.setFileFilter (new JYMAGFileFilter (description, filetype));
-		return fc;
-	}
-
-	/**
 	 * This function joins 2 arrays of bytes together.
 	 * @param orig The first array.
 	 * @param toAdd The array to add.
@@ -667,26 +561,6 @@ public class Utils
 		System.arraycopy (orig, 0, ret, 0, orig.length);
 		System.arraycopy (toAdd, 0, ret, orig.length, toAdd.length);
 		return ret;
-	}
-
-	/**
-	 * Returns the font size as intepreted from the given spinner.
-	 * @param spinner the spinner to read the font size from.
-	 * @return the font size as intepreted from the given spinner,
-	 *	or a default value.
-	 */
-	public static float getFontSize (JSpinner spinner)
-	{
-		float fontSize = 12;
-		if ( spinner != null )
-		{
-			Object val = spinner.getValue ();
-			if ( val != null && (val instanceof Number) )
-			{
-				fontSize = ((Number)val).floatValue ();
-			}
-		}
-		return fontSize;
 	}
 
 	/**
@@ -740,41 +614,6 @@ public class Utils
 	}
 
 	/**
-	 * A class that selects all rows of a JTable when its header is clicked.
-	 */
-	public static class TableMouseListener extends MouseAdapter
-	{
-		private final JTable table;
-
-		/**
-		 * Creates a new TableMouseListener for the given JTable.
-		 * @param datatable The JTable to select on mouse click.
-		 */
-		public TableMouseListener (JTable datatable)
-		{
-			table = datatable;
-		}
-
-		@Override
-		public void mouseClicked (MouseEvent me)
-		{
-			if ( me.getButton () == MouseEvent.BUTTON1 )
-			{
-				if ( table != null )
-				{
-					table.selectAll ();
-				}
-			}
-		}
-
-		@Override
-		public String toString ()
-		{
-			return "Utils.TableMouseListener";	// NOI18N
-		}
-	}
-
-	/**
 	 * The enumeration of possible program states.
 	 */
 	public static enum STATUS
@@ -813,11 +652,11 @@ public class Utils
 			{
 				return recvString;
 			}
-			return emptyStr;
+			return EMPTY_STR;
 		}
 	}
 
-	private static final Color greenStatusColour = new Color (0, 204, 0)/*Color.GREEN*/;
+	private static final Color GREEN_STATUS_COLOR = new Color (0, 204, 0)/*Color.GREEN*/;
 
 	public static class StatusChangeRunnable implements Runnable
 	{
@@ -835,7 +674,7 @@ public class Utils
 			statusValue = s;
 			if ( STATUS.READY.equals(s) )
 			{
-				c = greenStatusColour;
+				c = GREEN_STATUS_COLOR;
 			}
 			else
 			{

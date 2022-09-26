@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="pictures.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview1601"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="14.538721"
+     inkscape:cx="12.724641"
+     inkscape:cy="16.576424"
+     inkscape:window-width="1366"
+     inkscape:window-height="701"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     width="32px">
+    <inkscape:grid
+       type="xygrid"
+       id="grid1664" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1596">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2577"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2573"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2569"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect216"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect220"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect224"
+       is_visible="true"
+       lpeversion="1" />
+  </defs>
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#a4ffff;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2430"
+       width="25.674458"
+       height="25.379948"
+       x="3.5338669"
+       y="4.2104177" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 3.5338668,29.590366 14.183619,19.818693"
+       id="path2567"
+       inkscape:path-effect="#path-effect2569"
+       inkscape:original-d="M 3.5338668,29.590366 C 7.0839963,26.333354 10.633914,23.076129 14.183619,19.818693" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 14.183619,19.818693 15.024706,9.771673"
+       id="path2571"
+       inkscape:path-effect="#path-effect2573"
+       inkscape:original-d="m 14.183619,19.818693 c 5.008448,3.257436 10.016684,6.514661 15.024706,9.771673" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 29.208325,16.900392 18.477292,22.611185"
+       id="path2575"
+       inkscape:path-effect="#path-effect2577"
+       inkscape:original-d="m 29.208325,16.900392 c -3.576798,1.90381 -7.153809,3.807407 -10.731033,5.710793" />
+    <ellipse
+       style="fill:#ffff00;fill-opacity:1;stroke:none;stroke-width:0.502;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path2681"
+       cx="22.287361"
+       cy="11.053633"
+       rx="3.0576766"
+       ry="3.0570259" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path3269"
+       cx="11.02328"
+       cy="13.787697"
+       rx="4.077455"
+       ry="2.1248415" />
+    <path
+       style="fill:#00ff00;fill-opacity:1;stroke:#00fd00;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 24.094791,26.274453 c -2.389067,-1.642374 -4.560075,-3.136259 -4.82446,-3.319743 l -0.480701,-0.333607 3.88282,-2.181854 c 2.135551,-1.20002 4.332938,-2.434163 4.883085,-2.74254 l 1.000264,-0.560687 v 6.065835 c 0,3.336209 -0.02638,6.064237 -0.05862,6.062283 -0.03224,-0.0019 -2.013315,-1.347314 -4.402383,-2.989687 z"
+       id="path3787" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path3269-3"
+       cx="15.100736"
+       cy="15.912538"
+       rx="4.077455"
+       ry="2.1248415" />
+    <path
+       style="fill:#00ff00;fill-opacity:1;stroke:#00fd00;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 4.018936,29.154039 c 0,-0.04074 9.857929,-8.868906 10.072234,-9.020089 0.122211,-0.08622 1.105074,0.510293 7.263943,4.408544 3.917434,2.479535 7.157873,4.539468 7.200975,4.57763 0.04404,0.03899 -5.312332,0.06938 -12.229393,0.06938 -6.7692675,0 -12.307759,-0.01595 -12.307759,-0.03547 z"
+       id="path3748" />
+  </g>
+  <metadata
+     id="metadata1075">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Bogdan 'bogdro' Drozdowski</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

@@ -1,13 +1,13 @@
 /*
  * JYMAGFileFilter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,16 +15,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.gui;
 
+import BogDroSoft.jymag.Utils;
 import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,12 +34,7 @@ import javax.swing.filechooser.FileFilter;
  */
 public class JYMAGFileFilter extends FileFilter {
 
-	private static final String COMMA = ",";			// NOI18N
-	private static final String SPACE = " ";			// NOI18N
-	private static final String L_PAREN = "(";		// NOI18N
-	private static final String R_PAREN = ")";		// NOI18N
 	private static final String ALL_FILE_NAMES = "*.";	// NOI18N
-	private static final String DOT = ".";			// NOI18N
 
 	private final String filterDescription;
 	private final Map<String, Integer> filterFiletypes;
@@ -65,18 +56,18 @@ public class JYMAGFileFilter extends FileFilter {
 			Iterator<String> keys = filetype.keySet ().iterator ();
 			if ( keys != null )
 			{
-				desc.append (SPACE).append (L_PAREN);
+				desc.append (Utils.SPACE).append (Utils.L_PAREN);
 				while ( keys.hasNext () )
 				{
 					desc.append (ALL_FILE_NAMES);
 					desc.append (keys.next ());
 					if ( keys.hasNext () )
 					{
-						desc.append (COMMA)
-							.append (SPACE);
+						desc.append (Utils.COMMA)
+							.append (Utils.SPACE);
 					}
 				}
-				desc.append (R_PAREN);
+				desc.append (Utils.R_PAREN);
 			}
 		}
 		filterDescription = desc.toString ();

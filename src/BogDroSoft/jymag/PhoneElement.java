@@ -1,13 +1,13 @@
 /*
  * PhoneElement.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,36 +15,31 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
  * This class represents an element in the phone (picture, ringtone, ...).
  * @author Bogdan Drozdowski
  */
-public class PhoneElement
+public class PhoneElement implements Serializable
 {
-	private String id;
-	private String type;
-	private String filename;
+	private static final long serialVersionUID = 91L;
 
-	private static final String comma = ",";						// NOI18N
-	private static final String dot = ".";							// NOI18N
-	private static final String toStringStart = "PhoneElement[";				// NOI18N
-	private static final String toStringEnd = "]";						// NOI18N
-	private static final String toStringID = "ID=";						// NOI18N
+	private final String id;
+	private final String type;
+	private final String filename;
+
+	private static final String TOSTRING_BEGIN = "PhoneElement[";	// NOI18N
+	private static final String TOSTRING_END = "]";			// NOI18N
+	private static final String TOSTRING_ID = "ID=";		// NOI18N
 	// the rest can be empty. The user needs to know only where the ID is
-	private static final String toStringName = "";						// NOI18N
-	private static final String empty = "";						// NOI18N
+	private static final String TOSTRING_NAME = "";			// NOI18N
 
 	/**
 	 * Creates a new instance of PhoneElement.
@@ -76,7 +71,7 @@ public class PhoneElement
 	{
 		if ( type == null )
 		{
-			return empty;
+			return Utils.EMPTY_STR;
 		}
 		if ( type.equals ("FGIF") )
 		{
@@ -162,7 +157,7 @@ public class PhoneElement
 	{
 		if ( filename == null )
 		{
-			return empty;
+			return Utils.EMPTY_STR;
 		}
 		return filename
 			.replaceAll ("\\s", "_")		// NOI18N
@@ -203,7 +198,8 @@ public class PhoneElement
 	@Override
 	public String toString ()
 	{
-		return toStringStart + toStringID + id + comma + toStringName
-			+ filename + dot + getExt () + toStringEnd;
+		return TOSTRING_BEGIN + TOSTRING_ID + id + Utils.COMMA
+			+ TOSTRING_NAME	+ filename + Utils.DOT + getExt ()
+			+ TOSTRING_END;
 	}
 }

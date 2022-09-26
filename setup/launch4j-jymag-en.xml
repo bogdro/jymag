@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
@@ -8,28 +9,33 @@
   <chdir></chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl>http://jymag.sf.net</supportUrl>
-  <customProcName>false</customProcName>
+  <supportUrl>https://jymag.sourceforge.io/</supportUrl>
   <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>jymag.ico</icon>
   <jre>
     <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
     <minVersion>1.6.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>32/64</runtimeBits>
     <opt>-Duser.language=en -Duser.country=US</opt>
   </jre>
   <versionInfo>
-    <fileVersion>1.7.0.0</fileVersion>
-    <txtFileVersion>1.7</txtFileVersion>
+    <fileVersion>3.0.0.0</fileVersion>
+    <txtFileVersion>3.0</txtFileVersion>
     <fileDescription>JYMAG launcher</fileDescription>
-    <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2020</copyright>
-    <productVersion>1.7.0.0</productVersion>
-    <txtProductVersion>1.7</txtProductVersion>
+    <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2022</copyright>
+    <productVersion>3.0.0.0</productVersion>
+    <txtProductVersion>3.0</txtProductVersion>
     <productName>JYMAG</productName>
     <companyName></companyName>
     <internalName>JYMAG</internalName>
     <originalFilename>JYMAG.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
   </versionInfo>
 </launch4jConfig>

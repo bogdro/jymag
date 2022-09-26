@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="capability.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview829"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="14.53872"
+     inkscape:cx="7.5316121"
+     inkscape:cy="16.438861"
+     inkscape:window-width="1366"
+     inkscape:window-height="701"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     width="32px">
+    <inkscape:grid
+       type="xygrid"
+       id="grid892" />
+  </sodipodi:namedview>
+  <defs
+     id="defs824">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2132"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2128"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2609"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2402"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2329"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2325"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2006"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect1856"
+       is_visible="true"
+       lpeversion="1" />
+  </defs>
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;stroke:#008000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect1542"
+       width="27.072598"
+       height="26.85574"
+       x="2.4550803"
+       y="2.6498263" />
+    <g
+       id="g3519"
+       transform="translate(-0.35288478,-0.81527728)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1646"
+         width="7.4490752"
+         height="7.4474068"
+         x="3.9966762"
+         y="4.7217274" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:0.755904;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 4.6236314,7.9249945 7.0409915,10.873624"
+         id="path1854"
+         inkscape:path-effect="#path-effect1856"
+         inkscape:original-d="m 4.6236314,7.9249945 c 0.806008,0.9830976 1.6117947,1.9659739 2.4173601,2.9486295" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:0.755904;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 7.0409915,10.873624 10.61875,6.077524"
+         id="path2004"
+         inkscape:path-effect="#path-effect2006"
+         inkscape:original-d="M 7.0409915,10.873624 C 8.2337989,9.2751451 9.426385,7.6764452 10.61875,6.077524" />
+    </g>
+    <g
+       id="g3527"
+       transform="translate(-0.35288478,-0.81527728)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1646-7"
+         width="7.4490752"
+         height="7.4474068"
+         x="4.0133648"
+         y="13.391109" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:0.755904;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 4.64032,16.594376 2.4173601,2.94863"
+         id="path1854-5"
+         inkscape:path-effect="#path-effect2325"
+         inkscape:original-d="m 4.64032,16.594376 c 0.806008,0.983098 1.6117947,1.965974 2.4173601,2.94863" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:0.755904;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 7.0576801,19.543006 3.5777579,-4.7961"
+         id="path2004-3"
+         inkscape:path-effect="#path-effect2329"
+         inkscape:original-d="m 7.0576801,19.543006 c 1.1928074,-1.598479 2.3853935,-3.197179 3.5777579,-4.7961" />
+    </g>
+    <g
+       id="g3535"
+       transform="translate(-0.35288478,-0.81527728)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1646-7-6"
+         width="7.4490752"
+         height="7.4474068"
+         x="4.0142045"
+         y="22.114555" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:0.755904;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 4.6411597,25.317822 2.4173601,2.94863"
+         id="path1854-5-7"
+         inkscape:path-effect="#path-effect2128"
+         inkscape:original-d="m 4.6411597,25.317822 c 0.806008,0.983098 1.6117947,1.965974 2.4173601,2.94863" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:0.755904;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 7.0585198,28.266452 3.5777582,-4.7961"
+         id="path2004-3-5"
+         inkscape:path-effect="#path-effect2132"
+         inkscape:original-d="m 7.0585198,28.266452 c 1.1928074,-1.598479 2.3853935,-3.197179 3.5777582,-4.7961" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:13.3333px;line-height:1.25;font-family:sans-serif"
+       x="-16.154688"
+       y="14.628067"
+       id="text53534"><tspan
+         sodipodi:role="line"
+         id="tspan53532"></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8px;line-height:1.25;font-family:sans-serif"
+       x="12.322206"
+       y="9.929122"
+       id="text56610"><tspan
+         sodipodi:role="line"
+         id="tspan56608"
+         x="12.322206"
+         y="9.929122"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono'">BMP</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8px;line-height:1.25;font-family:sans-serif"
+       x="10.885722"
+       y="19.054995"
+       id="text56610-2"><tspan
+         sodipodi:role="line"
+         id="tspan56608-2"
+         x="10.885722"
+         y="19.054995"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono'">MIDI</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8px;line-height:1.25;font-family:sans-serif"
+       x="12.704759"
+       y="27.384703"
+       id="text56610-8"><tspan
+         sodipodi:role="line"
+         id="tspan56608-9"
+         x="12.704759"
+         y="27.384703"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono'">VCF</tspan></text>
+  </g>
+  <metadata
+     id="metadata3511">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Bogdan 'bogdro' Drozdowski</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

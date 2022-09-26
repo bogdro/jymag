@@ -1,13 +1,13 @@
 /*
  * SignalDisplayer.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,20 +15,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.gui;
 
-import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.Utils;
+import BogDroSoft.jymag.comm.DataTransporter;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 
 /**
@@ -40,19 +34,18 @@ public class SignalDisplayer extends javax.swing.JFrame
 	private static final long serialVersionUID = 78L;
 
 	/** The Thread that updates the power level display. */
-	private Thread updater = null;
+	private transient Thread updater = null;
 	/** The thread control field. */
 	private volatile boolean runUpdater = true;
 
 	/** The DataTransporter used for retrieveing the signal power level. */
-	private final DataTransporter dt;
+	private final transient DataTransporter dt;
 	/** The synchronization field. */
 	private final Object sync;
 	/** The refresh interval, in milliseconds. */
-	private static final int refreshTime = 1000;
+	private static final int REFRESH_TIME = 1000;
 
-	private static final String dBm = "dBm";	// NOI18N
-	private static final String qMark = "?";	// NOI18N
+	private static final String DBM_STR = "dBm";	// NOI18N
 
 	private final MainWindow mw;
 
@@ -77,14 +70,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 		}
 
 		initComponents ();
-		// change the size so that the scrollbars fit:
-		Dimension size = getSize ();
-		if ( size != null )
-		{
-			size.height += 50;
-			size.width += 50;
-			setSize (size);
-		}
+		UiUtils.changeSizeToScreen(this);
 
 		fontSpin.setValue (fontSize);	// refresh the font in the window
 		/* add the Esc key listener to the frame and all components. */
@@ -102,7 +88,8 @@ public class SignalDisplayer extends javax.swing.JFrame
 	 */
 	@SuppressWarnings("unchecked")
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-        private void initComponents() {
+        private void initComponents()
+        {
 
                 jScrollPane1 = new javax.swing.JScrollPane();
                 jPanel1 = new javax.swing.JPanel();
@@ -117,9 +104,11 @@ public class SignalDisplayer extends javax.swing.JFrame
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SignalDisplayer"); // NOI18N
                 setTitle(bundle.getString("title_signal")); // NOI18N
-                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag.png"))).getImage ());
-                addWindowListener(new java.awt.event.WindowAdapter() {
-                        public void windowClosing(java.awt.event.WindowEvent evt) {
+                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag-icon-phone.png"))).getImage ());
+                addWindowListener(new java.awt.event.WindowAdapter()
+                {
+                        public void windowClosing(java.awt.event.WindowEvent evt)
+                        {
                                 formWindowClosing(evt);
                         }
                 });
@@ -134,8 +123,10 @@ public class SignalDisplayer extends javax.swing.JFrame
 
                 exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
                 exitBut.setText(bundle.getString("exit")); // NOI18N
-                exitBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 exitButActionPerformed(evt);
                         }
                 });
@@ -146,21 +137,27 @@ public class SignalDisplayer extends javax.swing.JFrame
 
                 jLabel4.setText(bundle.getString("font_size")); // NOI18N
 
-                fontSpin.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(12), Integer.valueOf(1), null, Integer.valueOf(1)));
-                fontSpin.addChangeListener(new javax.swing.event.ChangeListener() {
-                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                fontSpin.setModel(new javax.swing.SpinnerNumberModel(12, 1, null, 1));
+                fontSpin.addChangeListener(new javax.swing.event.ChangeListener()
+                {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt)
+                        {
                                 fontSpinStateChanged(evt);
                         }
                 });
 
                 onTopCB.setText(bundle.getString("on_top")); // NOI18N
-                onTopCB.addChangeListener(new javax.swing.event.ChangeListener() {
-                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                onTopCB.addChangeListener(new javax.swing.event.ChangeListener()
+                {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt)
+                        {
                                 onTopCBStateChanged(evt);
                         }
                 });
-                onTopCB.addItemListener(new java.awt.event.ItemListener() {
-                        public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                onTopCB.addItemListener(new java.awt.event.ItemListener()
+                {
+                        public void itemStateChanged(java.awt.event.ItemEvent evt)
+                        {
                                 onTopCBItemStateChanged(evt);
                         }
                 });
@@ -250,7 +247,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 
 	private void fontSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSpinStateChanged
 
-		Utils.setFontSize (this, Utils.getFontSize (fontSpin));
+		UiUtils.setFontSize (this, UiUtils.getFontSize (fontSpin));
 
 	}//GEN-LAST:event_fontSpinStateChanged
 
@@ -314,7 +311,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 	 */
 	private void setLevel (final int level)
 	{
-		Utils.changeGUI (new Runnable ()
+		UiUtils.changeGUI (new Runnable ()
 		{
 			@Override
 			public synchronized void run ()
@@ -329,12 +326,12 @@ public class SignalDisplayer extends javax.swing.JFrame
 							0			// blue
 						));
 					powerLabel.setText (
-						String.valueOf (-113 + level*2) + dBm);
+						String.valueOf (-113 + level*2) + DBM_STR);
 				}
 				else
 				{
 					powerLevel.setValue (0);
-					powerLabel.setText (qMark);
+					powerLabel.setText (Utils.QUESTION_MARK);
 				}
 			}
 
@@ -377,7 +374,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 					}
 					try
 					{
-						Thread.sleep (refreshTime);
+						Thread.sleep (REFRESH_TIME);
 					}
 					catch (InterruptedException intex)
 					{

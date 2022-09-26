@@ -32,7 +32,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
+          <Component id="jScrollPane2" alignment="0" pref="730" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -52,51 +52,48 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="licLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="licValue" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="suppOperLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="thanksLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="thanksTo" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="authorLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="authorVal" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="emailLabel" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="wwwLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="www2Label" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="www1Label" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="www3Label" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="1">
                               <Component id="jymagLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="fontSizeLab" min="-2" pref="127" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="fontSizeSpin" min="-2" pref="54" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
                           </Group>
-                      </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" pref="657" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="licLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="licValue" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="suppOperLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="thanksLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="thanksTo" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="authorLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="authorVal" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="emailLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="wwwLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="www2Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="www1Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Component id="jScrollPane1" alignment="0" min="-2" pref="570" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -121,9 +118,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="www2Label" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="www3Label" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="licLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="licValue" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -141,14 +136,9 @@
                           <Component id="thanksLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="thanksTo" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="169" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="696" max="32767" attributes="0"/>
-                          <Component id="jScrollPane1" min="-2" pref="120" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
+                      <EmptySpace pref="43" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" min="-2" pref="120" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -157,10 +147,10 @@
             <Component class="javax.swing.JLabel" name="jymagLabel">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/QMARK8.png"/>
+                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/about.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;JYMAG - Java Your Music And Graphics &quot; /* NOI18N */ + MainWindow.verString" type="code"/>
+                  <Connection code="&quot;JYMAG - Jig Your Music And Graphics &quot; /* NOI18N */ + MainWindow.JYMAG_VERSION" type="code"/>
                 </Property>
                 <Property name="iconTextGap" type="int" value="40"/>
               </Properties>
@@ -185,7 +175,7 @@
             <Component class="javax.swing.JLabel" name="emailLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;mailto:&quot; + emailAddr + &quot;\&quot;&gt;&quot; + emailAddr + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
+                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;mailto:&quot; + EMAIL_ADDR + &quot;\&quot;&gt;&quot; + EMAIL_ADDR + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
@@ -210,7 +200,7 @@
             <Component class="javax.swing.JLabel" name="www1Label">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + www1Addr + &quot;\&quot;&gt;&quot; + www1Addr + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
+                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + WWW_ADDR1 + &quot;\&quot;&gt;&quot; + WWW_ADDR1 + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
@@ -225,7 +215,7 @@
             <Component class="javax.swing.JLabel" name="www2Label">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + www2Addr + &quot;\&quot;&gt;&quot; + www2Addr + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
+                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + WWW_ADDR2 + &quot;\&quot;&gt;&quot; + WWW_ADDR2 + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
@@ -235,21 +225,6 @@
               </AccessibilityProperties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="www2LabelMouseClicked"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="www3Label">
-              <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + www3Addr + &quot;\&quot;&gt;&quot; + www3Addr + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
-                </Property>
-              </Properties>
-              <AccessibilityProperties>
-                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/AboutBox.properties" key="3rdWWW" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-              </AccessibilityProperties>
-              <Events>
-                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="www3LabelMouseClicked"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="licLabel">
@@ -290,7 +265,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="thanksTo">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;Sharp (sharpy+at+xox.pl) for GetPic.pl, sebtx452 @ gmail.com for wxPicSound,&lt;br&gt;&#xa;MIKSOFT for &quot;Mobile Media Converter&quot;, &quot;ffmpeg project&quot; for ffmpeg&#xa;&lt;/html&gt;" noResource="true"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;Sharp (sharpy+at+xox.pl) for GetPic.pl, sebtx452 @ gmail.com for wxPicSound,&lt;br&gt;&#xa;MIKSOFT for &quot;Mobile Media Converter&quot;, &quot;ffmpeg project&quot; for ffmpeg,&lt;br&gt;&#xa;Fizzed, Inc. (http://fizzed.com/) for new RxTx binaries&#xa;&lt;/html&gt;" noResource="true"/>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="thanks" noResource="true"/>

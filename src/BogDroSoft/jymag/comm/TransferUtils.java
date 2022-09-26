@@ -1,13 +1,13 @@
 /*
  * TransferUtils.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,37 +15,34 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.comm;
 
+import BogDroSoft.jymag.CommandLineParser;
 import BogDroSoft.jymag.PhoneAlarm;
 import BogDroSoft.jymag.PhoneElement;
 import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.Utils;
+import BogDroSoft.jymag.comm.fake.FakeCommPortIdentifier;
+import BogDroSoft.jymag.gui.UiUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * TransferUtils - utility methods connected to transfering data.
@@ -56,209 +53,42 @@ public class TransferUtils
 	// ------------ i18n stuff
 	private static final ResourceBundle rb = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
 
-	private static final String tryPortStr   = rb.getString("Trying_port_");				// NOI18N
-	private static final String gotAnsStr    = rb.getString("Got_answer!");					// NOI18N
-	private static final String noAnsStr     = rb.getString("No_answers_received");				// NOI18N
-	private static final String errString    = rb.getString("Error");					// NOI18N
-	private static final String unsuppType   = rb.getString("Unsupported_file_type:");			// NOI18N
-	private static final String getFileStr   = rb.getString("Getting_file");				// NOI18N
+	private static final String TRY_PORT_STRING   = rb.getString("Trying_port_");				// NOI18N
+	private static final String GOT_REPLY_STRING  = rb.getString("Got_answer!");					// NOI18N
+	private static final String NO_REPLIES_STRING = rb.getString("No_answers_received");				// NOI18N
+	private static final String ERR_STRING        = rb.getString("Error");					// NOI18N
+	private static final String UNSUPPORTED_TYPE  = rb.getString("Unsupported_file_type:");			// NOI18N
+	private static final String GETTING_FILE      = rb.getString("Getting_file");				// NOI18N
 	// error messages for file upload:
-	private static final String uploadMsg1   = rb.getString("File_upload_init_failed");			// NOI18N
-	private static final String uploadMsg2   = rb.getString("Sending_file_names_length_failed");		// NOI18N
-	private static final String uploadMsg3   = rb.getString("Sending_file_name_failed");			// NOI18N
-	private static final String uploadMsg4   = rb.getString("Format_not_suported_by_phone");		// NOI18N
-	private static final String uploadMsg5   = rb.getString("File_not_accepted");				// NOI18N
-	private static final String uploadMsg6   = rb.getString("Closing_transmission_failed");			// NOI18N
-	private static final String uploadMsg7   = rb.getString("Exception_occurred");				// NOI18N
-	private static final String uploadMsg8   = rb.getString("Incorrect_parameter");				// NOI18N
-	private static final String uploadMsg9   = rb.getString("Format_not_suported_by_JYMAG");		// NOI18N
-	private static final String uploadMsg10  = rb.getString("Number_of_attempts_exceeded");			// NOI18N
-	private static final String uploadMsg11  = rb.getString("Incorrect_parameter");				// NOI18N
+	private static final String UPLOAD_MSG_1   = rb.getString("File_upload_init_failed");			// NOI18N
+	private static final String UPLOAD_MSG_2   = rb.getString("Sending_file_names_length_failed");		// NOI18N
+	private static final String UPLOAD_MSG_3   = rb.getString("Sending_file_name_failed");			// NOI18N
+	private static final String UPLOAD_MSG_4   = rb.getString("Format_not_suported_by_phone");		// NOI18N
+	private static final String UPLOAD_MSG_5   = rb.getString("File_not_accepted");				// NOI18N
+	private static final String UPLOAD_MSG_6   = rb.getString("Closing_transmission_failed");			// NOI18N
+	private static final String UPLOAD_MSG_7   = rb.getString("Exception_occurred");				// NOI18N
+	private static final String UPLOAD_MSG_8   = rb.getString("Incorrect_parameter");				// NOI18N
+	private static final String UPLOAD_MSG_9   = rb.getString("Format_not_suported_by_JYMAG");		// NOI18N
+	private static final String UPLOAD_MSG_10  = rb.getString("Number_of_attempts_exceeded");			// NOI18N
+	private static final String UPLOAD_MSG_11  = rb.getString("Incorrect_parameter");				// NOI18N
 	// error messages for file download:
-	private static final String downloadMsg1 = rb.getString("Exception_occurred");				// NOI18N
-	private static final String downloadMsg2 = rb.getString("No_data");					// NOI18N
-	private static final String downloadMsg3 = rb.getString("Incorrect_parameter");				// NOI18N
+	private static final String DOWNLOAD_MSG_1 = rb.getString("Exception_occurred");				// NOI18N
+	private static final String DOWNLOAD_MSG_2 = rb.getString("No_data");					// NOI18N
+	private static final String DOWNLOAD_MSG_3 = rb.getString("Incorrect_parameter");				// NOI18N
 
-	private static final String emptyStr = "";				// NOI18N
-	private static final String comma = ",";				// NOI18N
-	private static final String dot = ".";					// NOI18N
-	private static final String colon = ":";				// NOI18N
-	private static final String space = " ";				// NOI18N
-	private static final String apos = "'";					// NOI18N
-	private static final String filenameForbiddenCharsRegex = "\\s";	// NOI18N
-	private static final String filenameForbiddenCharsReplace = "_";	// NOI18N
-	private static final String zero = "0";					// NOI18N
-	private static final String qMark = "?";				// NOI18N
-	private static final String ellipsis = "...";				// NOI18N
+	private static final String FILENAME_FORBIDDEN_CHARS_REGEX = "\\s";	// NOI18N
+	private static final String FILENAME_FORBIDDEN_CHARS_REPLACE = "_";	// NOI18N
+	private static final String ELLIPSIS = "...";				// NOI18N
 
 	// non-instantiable
 	private TransferUtils () {}
-
-	/**
-	 * A class describing the operation to perform.
-	 */
-	private static abstract class TUOperation<T>
-	{
-		private String opName;
-		private String opErrorParams;
-		private Runnable opOnDone;
-		private boolean opWaitFor;
-		private Object opSync;
-		private boolean opQuiet;
-		private boolean opQuietGUI;
-		private Component opParentFrame;
-
-		/**
-		 * The TUOperation constructor, setting basic data.
-		 * @param name the name of this operation.
-		 * @param errorParams a description or value of any paramters.
-		 * @param onDone the code to run after performing the operation.
-		 * @param waitFor whether the program should wait until the
-		 * 	operation is completed.
-		 * @param sync the transmission synchronization object.
-		 *	 Can't be null.
-		 * @param quiet whether the operation should NOT display
-		 *	any messages.
-		 * @param quietGUI whether the operation should NOT display
-		 *	any GUI messages.
-		 * @param parentFrame the parent frame for displaying
-		 *	GUI messages.
-		 */
-		public TUOperation (String name, String errorParams,
-			Runnable onDone, boolean waitFor, Object sync,
-			boolean quiet, boolean quietGUI, Component parentFrame)
-		{
-			if ( sync == null )
-			{
-				throw new IllegalArgumentException (
-					"TUOperation.TUOperation: sync==null");		// NOI18N
-			}
-			opName = name;
-			opErrorParams = errorParams;
-			opOnDone = onDone;
-			opWaitFor = waitFor;
-			opSync = sync;
-			opQuiet = quiet;
-			opQuietGUI = quietGUI;
-			opParentFrame = parentFrame;
-		}
-
-		/**
-		 * Performs the operation.
-		 * @return the result of the operation.
-		 */
-		public abstract T perform () throws Exception;
-
-		/**
-		 * Gets an error message for the given error code.
-		 * @param errCode the error code to get the message for.
-		 * @return an error message for the given error code.
-		 */
-		public String msgForError (int errCode)
-		{
-			return emptyStr;
-		}
-
-		/**
-		 * The name of this operation.
-		 * @return the name of this operation.
-		 */
-		public String getName ()
-		{
-			return opName;
-		}
-
-		/**
-		 * A description or value of any paramters that may
-		 * have cause an error and can be useful for error messages.
-		 * @return a description or value of any paramters.
-		 */
-		public String getErrorParams ()
-		{
-			return opErrorParams;
-		}
-
-		/**
-		 * This method runs after performing the operation.
-		 */
-		public void runOnDone ()
-		{
-			if ( opOnDone != null )
-			{
-				opOnDone.run ();
-			}
-		}
-
-		/**
-		 * Tells whether the program should wait until the
-		 * operation is completed.
-		 * @return TRUE if the program should wait until the
-		 * operation is completed.
-		 */
-		public boolean isWaitFor ()
-		{
-			return opWaitFor;
-		}
-
-		/**
-		 * Gets the transmission synchronization object.
-		 * @return the transmission synchronization object.
-		 */
-		public Object getSync ()
-		{
-			return opSync;
-		}
-
-		/**
-		 * Tells whether the operation should NOT display any messages.
-		 * @return TRUE if the operation should NOT display any messages.
-		 */
-		public boolean isQuiet ()
-		{
-			return opQuiet;
-		}
-
-		/**
-		 * Tells whether the operation should NOT display any GUI messages.
-		 * @return TRUE if the operation should NOT display any GUI messages.
-		 */
-		public boolean isQuietGUI ()
-		{
-			return opQuietGUI;
-		}
-
-		/**
-		 * Returns the parent frame for displaying GUI messages.
-		 * @return the parent frame for displaying GUI messages.
-		 */
-		public Component getParentFrame ()
-		{
-			return opParentFrame;
-		}
-
-		/**
-		 * Performs any additional processing of the received data
-		 * if the data is not a Number.
-		 * @param t the received data to process.
-		 */
-		public void processData (T t)
-		{
-			// empty by default
-		}
-
-		@Override
-		public String toString ()
-		{
-			return "TransferUtils." + getName () + ".TUOperation";	// NOI18N
-		}
-	}
 
 	/**
 	 * Common method to perform the given operation.
 	 * @param op the operation to perform.
 	 * @return the result of the operation.
 	 */
-	private static <T> int performOperation (final TUOperation<T> op)
+	private static <T> int performOperation (final TransferOperation<T> op)
 	{
 		if ( op == null )
 		{
@@ -327,27 +157,18 @@ public class TransferUtils
 						if ( ! op.isQuiet () )
 						{
 							System.out.println (
-								errString + colon
-								+ space + msg + colon
-								+ space + op.getErrorParams ());
+								ERR_STRING + Utils.COLON
+								+ Utils.SPACE + msg + Utils.COLON
+								+ Utils.SPACE + op.getErrorParams ());
 						}
 						if ( ! op.isQuietGUI () )
 						{
-							try
-							{
-								JOptionPane.showMessageDialog (
-									op.getParentFrame (),
-									errString + colon + space + msg
-									+ colon + space + op.getErrorParams (),
-									errString,
-									JOptionPane.ERROR_MESSAGE );
-							}
-							catch (Exception ex)
-							{
-								Utils.handleException (ex,
-									"JOptionPane.showMessageDialog: "	// NOI18N
-									+ op.getName ());
-							}
+							UiUtils.showErrorMessage(
+								op.getParentFrame (),
+								ERR_STRING + Utils.COLON
+								+ Utils.SPACE + msg
+								+ Utils.COLON + Utils.SPACE
+								+ op.getErrorParams ());
 						}
 					}
 				}
@@ -426,26 +247,26 @@ public class TransferUtils
 		}
 
 		final String fname = f.getName ();
-		if ( ! fname.contains (dot) )
+		if ( ! fname.contains (Utils.DOT) )
 		{
 			return -9;
 		}
 
 		final String fext = fname.substring
-			(fname.lastIndexOf (dot)+1)
+			(fname.lastIndexOf (Utils.DOT)+1)
 			.toLowerCase (Locale.ENGLISH);
 
 		if ( ! Utils.getFiletypeIDs ().containsKey (fext))
 		{
 			if ( ! quiet )
 			{
-				System.out.println (unsuppType + colon
-					+ space + apos + fext + apos);
+				System.out.println (UNSUPPORTED_TYPE + Utils.COLON
+					+ Utils.SPACE + Utils.APOSTROPHE + fext + Utils.APOSTROPHE);
 			}
 			return -10;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("uploadFile", fname, onDone, waitFor, tp.getSync (),		// NOI18N
 			quiet, quietGUI, parent)
 			{
@@ -458,9 +279,9 @@ public class TransferUtils
 						tp.getStopBits (),
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.putFile (f, fname.substring
-						(0, fname.indexOf (dot))
-						.replaceAll (filenameForbiddenCharsRegex,
-							filenameForbiddenCharsReplace)
+						(0, fname.indexOf (Utils.DOT))
+						.replaceAll (FILENAME_FORBIDDEN_CHARS_REGEX,
+							FILENAME_FORBIDDEN_CHARS_REPLACE)
 						);
 					dt.close ();
 					return Integer.valueOf (ret);
@@ -472,47 +293,47 @@ public class TransferUtils
 					String msg = String.valueOf (errCode);
 					if ( errCode == -1 )
 					{
-						msg = uploadMsg1;
+						msg = UPLOAD_MSG_1;
 					}
 					else if ( errCode == -2 )
 					{
-						msg = uploadMsg2;
+						msg = UPLOAD_MSG_2;
 					}
 					else if ( errCode == -3 )
 					{
-						msg = uploadMsg3;
+						msg = UPLOAD_MSG_3;
 					}
 					else if ( errCode == -4 )
 					{
-						msg = uploadMsg4;
+						msg = UPLOAD_MSG_4;
 					}
 					else if ( errCode == -5 )
 					{
-						msg = uploadMsg5;
+						msg = UPLOAD_MSG_5;
 					}
 					else if ( errCode == -6 )
 					{
-						msg = uploadMsg6;
+						msg = UPLOAD_MSG_6;
 					}
 					else if ( errCode == -7 )
 					{
-						msg = uploadMsg7;
+						msg = UPLOAD_MSG_7;
 					}
 					else if ( errCode == -8 )
 					{
-						msg = uploadMsg8;
+						msg = UPLOAD_MSG_8;
 					}
 					else if ( errCode == -9 )
 					{
-						msg = uploadMsg9;
+						msg = UPLOAD_MSG_9;
 					}
 					else if ( errCode == -10 )
 					{
-						msg = uploadMsg10;
+						msg = UPLOAD_MSG_10;
 					}
 					else if ( errCode == -11 )
 					{
-						msg = uploadMsg11;
+						msg = UPLOAD_MSG_11;
 					}
 					return msg;
 				}
@@ -550,9 +371,9 @@ public class TransferUtils
 			return -9;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("downloadFile", element.getFilename ()			// NOI18N
-			+ comma + space + f.getName (), onDone, waitFor,
+			+ Utils.COMMA + Utils.SPACE + f.getName (), onDone, waitFor,
 			tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -574,15 +395,15 @@ public class TransferUtils
 					String msg = String.valueOf (errCode);
 					if ( errCode == -1 )
 					{
-						msg = downloadMsg1;
+						msg = DOWNLOAD_MSG_1;
 					}
 					else if ( errCode == -2 )
 					{
-						msg = downloadMsg2;
+						msg = DOWNLOAD_MSG_2;
 					}
 					else if ( errCode == -3 )
 					{
-						msg = downloadMsg3;
+						msg = DOWNLOAD_MSG_3;
 					}
 					return msg;
 				}
@@ -611,7 +432,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("deleteFile", element.getFilename (),			// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -631,7 +452,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -658,7 +479,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("uploadAlarm", alarm.getAlarmString (),	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -678,7 +499,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -705,7 +526,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("deleteAlarm", String.valueOf(alarmNo),	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -725,7 +546,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -774,7 +595,7 @@ public class TransferUtils
 			return -8;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("downloadFiles", type,			// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -795,13 +616,14 @@ public class TransferUtils
 							File received = new File (
 								destDir + File.separator
 								+ elems.get (i).getFilename ()
-								+ dot + elems.get (i).getExt ());
+								+ Utils.DOT + elems.get (i).getExt ());
 							if ( ! quiet )
 							{
-								System.out.println (getFileStr + space + apos
+								System.out.println (GETTING_FILE
+									+ Utils.SPACE + Utils.APOSTROPHE
 									+ elems.get (i).getFilename ()
-									+ dot + elems.get (i).getExt ()
-									+ apos);
+									+ Utils.DOT + elems.get (i).getExt ()
+									+ Utils.APOSTROPHE);
 							}
 							int res = dt.getFile (received, elems.get (i));
 							if ( res != 0 )
@@ -821,7 +643,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -852,7 +674,7 @@ public class TransferUtils
 			return -8;
 		}
 
-		return performOperation (new TUOperation<Vector<PhoneElement>>
+		return performOperation (new TransferOperation<Vector<PhoneElement>>
 			("downloadList", ofWhat,	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -872,7 +694,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return downloadMsg2;
+					return DOWNLOAD_MSG_2;
 				}
 
 				@Override
@@ -890,7 +712,7 @@ public class TransferUtils
 						{
 							dtm.addRow (new String[]
 								{ret.get (i).getFilename ()
-									+ dot + ret.get (i).getExt () }
+									+ Utils.DOT + ret.get (i).getExt () }
 								);
 						}
 					}
@@ -924,7 +746,7 @@ public class TransferUtils
 
 		final AtomicInteger alarmNumber = new AtomicInteger (0);
 
-		return performOperation (new TUOperation<Vector<PhoneAlarm>>
+		return performOperation (new TransferOperation<Vector<PhoneAlarm>>
 			("downloadAlarmList", "ALARM",			// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -945,7 +767,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return downloadMsg2;
+					return DOWNLOAD_MSG_2;
 				}
 
 				@Override
@@ -972,7 +794,7 @@ public class TransferUtils
 								String colName = model.getColumnName (i);
 								if ( colName == null )
 								{
-									colName = emptyStr;
+									colName = Utils.EMPTY_STR;
 								}
 								colNames.add (colName);
 							}
@@ -1003,24 +825,27 @@ public class TransferUtils
 							}
 							if ( date == null )
 							{
-								date = emptyStr;
+								date = Utils.EMPTY_STR;
 							}
 							String time = al.getTimeString ();
 							if ( time == null )
 							{
-								time = qMark;
+								time = Utils.QUESTION_MARK;
 							}
 							String days = al.getDaysString ();
 							if ( days == null )
 							{
-								days = zero;
+								days = Utils.ZERO;
 							}
 							if ( days.isEmpty () )
 							{
-								days = zero;
+								days = Utils.ZERO;
 							}
 							int num = al.getNumber ();
-							if ( num <= 0 ) num = 1;
+							if ( num <= 0 )
+							{
+								num = 1;
+							}
 							dtm.insertRow (num-1, new Object[]
 								{
 									Integer.valueOf (num),
@@ -1033,7 +858,9 @@ public class TransferUtils
 							dtm.addRow (new String[]
 								{
 									String.valueOf (i),
-									emptyStr, emptyStr, emptyStr
+									Utils.EMPTY_STR,
+									Utils.EMPTY_STR,
+									Utils.EMPTY_STR
 								}
 							);
 						}
@@ -1067,7 +894,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Vector<PhoneMessage>>
+		return performOperation (new TransferOperation<Vector<PhoneMessage>>
 			("downloadMessageList", "SMS",	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -1087,7 +914,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return downloadMsg2;
+					return DOWNLOAD_MSG_2;
 				}
 
 				@Override
@@ -1113,7 +940,7 @@ public class TransferUtils
 								String colName = model.getColumnName (i);
 								if ( colName == null )
 								{
-									colName = emptyStr;
+									colName = Utils.EMPTY_STR;
 								}
 								colNames.add (colName);
 							}
@@ -1141,27 +968,27 @@ public class TransferUtils
 							String id = msg.getID ();
 							if ( id == null )
 							{
-								id = emptyStr;
+								id = Utils.EMPTY_STR;
 							}
 							String status = msg.getStatus ();
 							if ( status == null )
 							{
-								status = emptyStr;
+								status = Utils.EMPTY_STR;
 							}
 							String phoneNum = msg.getRecipientNum ();
 							if ( phoneNum == null )
 							{
-								phoneNum = emptyStr;
+								phoneNum = Utils.EMPTY_STR;
 							}
 							String datetime = msg.getDateTime ();
 							if ( datetime == null )
 							{
-								datetime = emptyStr;
+								datetime = Utils.EMPTY_STR;
 							}
 							String msgBody = msg.getMessage ();
 							if ( msgBody == null )
 							{
-								msgBody = emptyStr;
+								msgBody = Utils.EMPTY_STR;
 							}
 							dtm.addRow (new Object[]
 								{
@@ -1198,7 +1025,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("deleteMessage", element.getID (),	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -1219,7 +1046,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1246,7 +1073,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("sendMessage", element.getRecipientNum (),	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -1266,7 +1093,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1297,7 +1124,7 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
+		return performOperation (new TransferOperation<Integer>
 			("dialNumber", number,		// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
@@ -1318,7 +1145,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1343,8 +1170,8 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
-			("hangup", emptyStr,		// NOI18N
+		return performOperation (new TransferOperation<Integer>
+			("hangup", Utils.EMPTY_STR,		// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1363,7 +1190,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1388,8 +1215,8 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
-			("answer", emptyStr,		// NOI18N
+		return performOperation (new TransferOperation<Integer>
+			("answer", Utils.EMPTY_STR,		// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1408,7 +1235,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1433,8 +1260,8 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
-			("volumeUp", emptyStr,		// NOI18N
+		return performOperation (new TransferOperation<Integer>
+			("volumeUp", Utils.EMPTY_STR,		// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1462,7 +1289,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1487,8 +1314,8 @@ public class TransferUtils
 			return -7;
 		}
 
-		return performOperation (new TUOperation<Integer>
-			("volumeDown", emptyStr,	// NOI18N
+		return performOperation (new TransferOperation<Integer>
+			("volumeDown", Utils.EMPTY_STR,	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1516,7 +1343,7 @@ public class TransferUtils
 				@Override
 				public String msgForError (int errCode)
 				{
-					return uploadMsg11;
+					return UPLOAD_MSG_11;
 				}
 			});
 	}
@@ -1548,8 +1375,8 @@ public class TransferUtils
 			return -10;
 		}
 
-		return performOperation (new TUOperation<String>
-			("sendFileAsCommands", emptyStr,	// NOI18N
+		return performOperation (new TransferOperation<String>
+			("sendFileAsCommands", Utils.EMPTY_STR,	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1563,18 +1390,36 @@ public class TransferUtils
 					int read = -1;
 					byte[] b = new byte[1024];
 					StringBuilder ret = new StringBuilder(1000);
-					FileInputStream fis =
-						new FileInputStream (f);
-					synchronized (tp.getSync ())
+					FileInputStream fis = null;
+					try
 					{
-						do
+						fis = new FileInputStream (f);
+						synchronized (tp.getSync ())
 						{
-							read = fis.read (b);
-							if ( read <= 0 )
+							do
 							{
-								break;
+								read = fis.read (b);
+								if ( read <= 0 )
+								{
+									break;
+								}
+								dt.send (b, 0, read);
+								if ( dt.getAvailableBytes () > 0 )
+								{
+									// don't force any encodings,
+									// because the data may
+									// be invalid in any given encoding
+									ret.append (new String (dt.recv (null)));
+								}
+							} while ( true );
+							try
+							{
+								Thread.sleep (1000);
 							}
-							dt.send (b, 0, read);
+							catch (InterruptedException ex)
+							{
+								// ignore
+							}
 							if ( dt.getAvailableBytes () > 0 )
 							{
 								// don't force any encodings,
@@ -1582,25 +1427,26 @@ public class TransferUtils
 								// be invalid in any given encoding
 								ret.append (new String (dt.recv (null)));
 							}
-						} while ( true );
-						try
-						{
-							Thread.sleep (1000);
 						}
-						catch (InterruptedException ex)
+						fis.close ();
+						dt.close ();
+					}
+					catch (Throwable t)
+					{
+						Utils.handleException(t, "TransferUtils.sendFileAsCommands");
+						if (fis != null)
 						{
-							// ignore
-						}
-						if ( dt.getAvailableBytes () > 0 )
-						{
-							// don't force any encodings,
-							// because the data may
-							// be invalid in any given encoding
-							ret.append (new String (dt.recv (null)));
+							try
+							{
+								fis.close();
+							}
+							catch (Throwable t2)
+							{
+								Utils.handleException(t2,
+									"TransferUtils.sendFileAsCommands->exception");
+							}
 						}
 					}
-					fis.close ();
-					dt.close ();
 					return ret.toString ();
 				}
 
@@ -1620,28 +1466,61 @@ public class TransferUtils
 	 * @return The identifier for the selected port, the identifier of the first serial port,
 	 *	or null if port/identifier not found.
 	 */
-	public static CommPortIdentifier getIdentifierForPort (String port)
+	public static Object /*CommPortIdentifier*/ getIdentifierForPort (String port)
 	{
 		try
 		{
 			if ( port == null )
 			{
 				// get the first serial port's identifier.
-				Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers ();
-
+				Enumeration<?> portList = getPortList();
 				while (portList.hasMoreElements ())
 				{
-					CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
-
-					if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+					Object portID = portList.nextElement ();
+					if ( portID == null )
 					{
-						return id;
+						continue;
+					}
+					if (CommandLineParser.mock
+						&& "138b7ce0632d70dd9d6fc7b571fd9199".equals(System.getProperty("mock", "")))
+					{
+						if (! (portID instanceof FakeCommPortIdentifier) )
+						{
+							continue;
+						}
+						FakeCommPortIdentifier id = (FakeCommPortIdentifier) portID;
+
+						if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+						{
+							return id;
+						}
+					}
+					else
+					{
+						if (! (portID instanceof CommPortIdentifier) )
+						{
+							continue;
+						}
+						CommPortIdentifier id = (CommPortIdentifier) portID;
+
+						if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+						{
+							return id;
+						}
 					}
 				}
 			}
 			else
 			{
-				return CommPortIdentifier.getPortIdentifier (port);
+				if (CommandLineParser.mock
+					&& "138b7ce0632d70dd9d6fc7b571fd9199".equals(System.getProperty("mock", "")))
+				{
+					return FakeCommPortIdentifier.getPortIdentifier (port);
+				}
+				else
+				{
+					return CommPortIdentifier.getPortIdentifier (port);
+				}
 			}
 		}
 		catch (NoSuchPortException nspex)
@@ -1674,116 +1553,142 @@ public class TransferUtils
 		Runnable afterPort)
 	{
 		int active = 0;
+		String portName;
 
-		Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers ();
+		Enumeration<?> portList = getPortList();
 		while (portList.hasMoreElements ())
 		{
 			Object portID = portList.nextElement ();
-			if ( portID == null || ! (portID instanceof CommPortIdentifier) )
+			if ( portID == null )
 			{
 				continue;
 			}
-
-			CommPortIdentifier id = (CommPortIdentifier) portID;
-
-			if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+			if (CommandLineParser.mock
+				&& "138b7ce0632d70dd9d6fc7b571fd9199".equals(System.getProperty("mock", "")))
 			{
-				String portName = id.getName ();
-				// scan ports for "AT"-"OK"
-				if ( ! quiet )
+				if (! (portID instanceof FakeCommPortIdentifier) )
 				{
-					System.out.print (tryPortStr + portName + ellipsis);
+					continue;
 				}
-				try
+				FakeCommPortIdentifier id = (FakeCommPortIdentifier) portID;
+
+				if (id.getPortType () != CommPortIdentifier.PORT_SERIAL)
 				{
-					DataTransporter dt = new DataTransporter (id);
-					dt.open (tp.getSpeed (), tp.getDataBits (),
-						tp.getStopBits (),
-						tp.getParity (), tp.getFlow ());
-					int scanRes = dt.test ();
-					if ( dt.test () != 0 )
-					{
-						dt.close ();
-						if ( ! quiet )
-						{
-							System.out.println ();
-						}
-						/* run in "finally"
-						if ( afterPort != null )
-						{
-							afterPort.run ();
-						}
-						*/
-						continue;
-					}
+					continue;
+				}
+				portID = id;
+				portName = id.getName ();
+			}
+			else
+			{
+				if (! (portID instanceof CommPortIdentifier) )
+				{
+					continue;
+				}
+				CommPortIdentifier id = (CommPortIdentifier) portID;
+
+				if (id.getPortType () != CommPortIdentifier.PORT_SERIAL)
+				{
+					continue;
+				}
+				portID = id;
+				portName = id.getName ();
+			}
+
+			// scan ports for "AT"-"OK"
+			if ( ! quiet )
+			{
+				System.out.print (TRY_PORT_STRING + portName + ELLIPSIS);
+			}
+			try
+			{
+				DataTransporter dt = new DataTransporter (portID);
+				dt.open (tp.getSpeed (), tp.getDataBits (),
+					tp.getStopBits (),
+					tp.getParity (), tp.getFlow ());
+				int scanRes = dt.test ();
+				if ( dt.test () != 0 )
+				{
+					dt.close ();
 					if ( ! quiet )
 					{
-						System.out.println (gotAnsStr);
+						System.out.println ();
 					}
-					active++;
-
-					if ( replied != null )
-					{
-						replied.add (portName);
-					}
-
-					if ( firmwares != null )
-					{
-						// get firmware version
-						firmwares.put (portName, dt.getFirmwareVersion ());
-					}
-					if ( phoneTypes != null )
-					{
-						// get phone type
-						phoneTypes.put (portName, dt.getDeviceType ());
-						// get additional phone type
-						String addType = dt.getExtraDeviceType ();
-						if ( addType != null )
-						{
-							String type = null;
-							try
-							{
-								type = phoneTypes.get (portName);
-							}
-							catch (Exception ex)
-							{
-								// ignore, defaults provided
-							}
-							if ( type == null )
-							{
-								type = emptyStr;
-							}
-							if ( ! type.isEmpty () )
-							{
-								type += comma + space;
-							}
-							type += addType;
-							phoneTypes.put (portName, type);
-						}
-					}
-					if ( phoneIMEIs != null )
-					{
-						// get phone IMEI
-						phoneIMEIs.put (portName, dt.getIMEI ());
-					}
-					if ( phoneSubsNums != null )
-					{
-						// get subscriber phone numbers:
-						phoneSubsNums.put (portName, dt.getSubscriberNumbers ());
-					}
-					dt.close ();
-				}
-				catch (Exception ex)
-				{
-					Utils.handleException (ex, "TransferUtils.scanPorts:"	// NOI18N
-						+ portName);
-				}
-				finally
-				{
+					/* run in "finally"
 					if ( afterPort != null )
 					{
 						afterPort.run ();
 					}
+					*/
+					continue;
+				}
+				if ( ! quiet )
+				{
+					System.out.println (GOT_REPLY_STRING);
+				}
+				active++;
+
+				if ( replied != null )
+				{
+					replied.add (portName);
+				}
+
+				if ( firmwares != null )
+				{
+					// get firmware version
+					firmwares.put (portName, dt.getFirmwareVersion ());
+				}
+				if ( phoneTypes != null )
+				{
+					// get phone type
+					phoneTypes.put (portName, dt.getDeviceType ());
+					// get additional phone type
+					String addType = dt.getExtraDeviceType ();
+					if ( addType != null )
+					{
+						String type = null;
+						try
+						{
+							type = phoneTypes.get (portName);
+						}
+						catch (Exception ex)
+						{
+							// ignore, defaults provided
+						}
+						if ( type == null )
+						{
+							type = Utils.EMPTY_STR;
+						}
+						if ( ! type.isEmpty () )
+						{
+							type += Utils.COMMA + Utils.SPACE;
+						}
+						type += addType;
+						phoneTypes.put (portName, type);
+					}
+				}
+				if ( phoneIMEIs != null )
+				{
+					// get phone IMEI
+					phoneIMEIs.put (portName, dt.getIMEI ());
+				}
+				if ( phoneSubsNums != null )
+				{
+					// get subscriber phone numbers:
+					phoneSubsNums.put (portName, dt.getSubscriberNumbers ());
+				}
+				dt.close ();
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "TransferUtils.scanPorts:"	// NOI18N
+					+ portName);
+			}
+			finally
+			{
+				if ( afterPort != null )
+				{
+					afterPort.run ();
 				}
 			}
 		}
@@ -1791,7 +1696,7 @@ public class TransferUtils
 		{
 			if ( ! quiet )
 			{
-				System.out.println (noAnsStr);
+				System.out.println (NO_REPLIES_STRING);
 			}
 			return -1;
 		}
@@ -1805,25 +1710,64 @@ public class TransferUtils
 	public synchronized static Vector<String> getSerialPortNames ()
 	{
 		Vector<String> ret = new Vector<String> (32);
-		Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers ();
+		Enumeration<?> portList = getPortList();
 		if ( portList != null )
 		{
 			while ( portList.hasMoreElements () )
 			{
 				Object portID = portList.nextElement ();
-				if ( portID == null || ! (portID instanceof CommPortIdentifier) )
+				if ( portID == null )
 				{
 					continue;
 				}
-
-				CommPortIdentifier id = (CommPortIdentifier) portID;
-
-				if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+				if (CommandLineParser.mock
+					&& "138b7ce0632d70dd9d6fc7b571fd9199".equals(System.getProperty("mock", "")))
 				{
-					ret.add (id.getName ());
+					if (! (portID instanceof FakeCommPortIdentifier) )
+					{
+						continue;
+					}
+					FakeCommPortIdentifier id = (FakeCommPortIdentifier) portID;
+
+					if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+					{
+						ret.add (id.getName ());
+					}
+				}
+				else
+				{
+					if (! (portID instanceof CommPortIdentifier) )
+					{
+						continue;
+					}
+					CommPortIdentifier id = (CommPortIdentifier) portID;
+
+					if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+					{
+						ret.add (id.getName ());
+					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	/**
+	 * Returns the list of (real or fake) ports.
+	 * @return the list of (real or fake) ports.
+	 */
+	private static Enumeration<?> getPortList()
+	{
+		Enumeration<?> portList;
+		if (CommandLineParser.mock
+			&& "138b7ce0632d70dd9d6fc7b571fd9199".equals(System.getProperty("mock", "")))
+		{
+			portList = FakeCommPortIdentifier.getPortIdentifiers();
+		}
+		else
+		{
+			portList = CommPortIdentifier.getPortIdentifiers ();
+		}
+		return portList;
 	}
 }

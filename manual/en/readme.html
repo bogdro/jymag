@@ -10,36 +10,32 @@
 
 <TITLE> Read Me - JYMAG </TITLE>
 
-<link rel="alternate" type="text/html" href="../pl/readme.html" hreflang="pl" lang="pl" title="Wersja polska">
-
 <META NAME="Author" CONTENT="Bogdan D.">
-<META NAME="Description" CONTENT="JYMAG - Java Your Music And Graphics">
+<META NAME="Description" CONTENT="JYMAG - Jig Your Music And Graphics">
 <META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
 <META NAME="Language" CONTENT="en">
 <META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
 </HEAD><BODY>
 
-<h1 class="nag">JYMAG - Read Me</h1>
-<BR><BR>
+<h1 class="hdr">JYMAG - Read Me</h1>
 
 <p>
-This is the README file for JYMAG (Java Your Music and Graphics), a program
+This is the README file for JYMAG (Jig Your Music and Graphics), a program
  for communicating with mobile phones.
 </p>
 <p>
 JYMAG's main functionality is retrieving and sending multimedia and other
- objects from and to a Sagem mobile phone (tested on Linux with a
+ objects from and to AT-based phones or devices, like a Sagem mobile phone (tested on Linux with a
  "Sagem MY X5-2").
 </p>
 <p>
 JYMAG can also be used with other phones and devices (modems) and serve as
  a general-purpose serial port terminal or a Java library for programmers.
 </p>
-<br>
 
-<p>Author: Bogdan Drozdowski, bogdro AT users . sourceforge . net or bogdandr AT op . pl
- (English accepted, just say '[SOFT]' in the title).</p>
-<p>License: <a href="license.html" hreflang="en">GPLv3+</a> for the program,
+<p>Author: Bogdan Drozdowski, bogdro AT users . sourceforge . net
+ (English accepted, just say '<code>[SOFT]</code>' in the title).</p>
+<p>License: <a href="../rsrc/license.html" hreflang="en">GPLv3+</a> for the program,
 MIT License for the launching helper programs (jymag*.exe). See the COPYING file.</p>
 
 
@@ -48,50 +44,51 @@ MIT License for the launching helper programs (jymag*.exe). See the COPYING file
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Running</h2>
+<h2 class="hdr">Running</h2>
 
 
 <p>Requirements:</p>
 <ul>
  <li>RxTx Java Transmission package from one of the pages:
 	<ul>
-	 <li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>
+	 <!--<li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>-->
+	 <li><a href="https://github.com/rxtx/rxtx" hreflang="en">github.com/rxtx/rxtx</a></li>
+	 <li><a href="http://fizzed.com/oss/rxtx-for-java" hreflang="en">fizzed.com/oss/rxtx-for-java</a></li>
 	 <li><a href="http://rxtx.qbang.org" hreflang="en">rxtx.qbang.org</a></li>
 	 <li><a href="http://users.frii.com/jarvi/rxtx/download.html" hreflang="en">users.frii.com/jarvi/rxtx/download.html</a></li>
-	 <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li>
+	 <!-- <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li> -->
 	</ul>
 	or any equivalent</li>
- <li>JRE, the <a href="http://java.sun.com" hreflang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
+ <li>JRE, the <a href="https://www.java.com/" hreflang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
  <li>permissions to use the serial ports</li>
  <li>port locking permissions may be required by RxTx. On Un*x, adding the user
   running JYMAG to the <code>uucp</code> and <code>lock</code> user groups should be enough. If not,
   add write permissions to the <code>/var/lock</code> directory.</li>
 </ul>
 <p>
-Using NetBeans: open the JYMAG directory as a NetBeans Project
- and click "Run" (or press F6).
+Using <a href="https://netbeans.apache.org/" hreflang="en">Apache NetBeans</a>: open the JYMAG directory as a NetBeans Project
+ and click "Run" (or press <kbd>F6</kbd>).
 </p><p>
 By hand (after unpacking):</p>
 <ul>
- <li>double-click the JYMAG\dist\JYMAG.jar file (works on MS Windows) or</li>
+ <li>double-click the <code>JYMAG-X.Y\dist\JYMAG.jar</code> file (works on MS Windows) or</li>
  <li><code>run.bat</code> (on MS Windows) or</li>
- <li><code>run.sh</code> (on Un*x) or</li>
+ <li><code>./run.sh</code> (on Un*x) or</li>
  <li><code>java -jar JYMAG/dist/JYMAG.jar</code> (on Un*x) or</li>
  <li><code>java -jar JYMAG\dist\JYMAG.jar</code> (on MS Windows)</li>
 </ul>
 You can also do one of the following:
 <ul>
- <li>Under Un*x: copy JYMAG/dist/JYMAG.jar and run.sh to one directory in  a suitable location
- (like in your PATH). Running <code>run.sh</code> will be enough. The <code>java</code> binary
- must be in your PATH environment variable.<br><br></li>
+ <li>Under Un*x: copy <code>JYMAG-X.Y\dist\JYMAG.jar</code> and <code>run.sh</code> to one directory in  a suitable location
+ (like in your <code>PATH</code>). Running <code>./run.sh</code> will be enough. The <code>java</code> binary
+ must be in your <code>PATH</code> environment variable.<br><br></li>
 
  <li>Under Windows: a double click on the JAR file should be enough. If not, copy
- JYMAG/dist/JYMAG.jar and run.bat to one directory in a suitable location
- (like in your PATH). Running <code>run.bat</code> will be enough.
+ <code>JYMAG-X.Y\dist\JYMAG.jar</code> and <code>run.bat</code> to one directory in a suitable location
+ (like in your <code>PATH</code>). Running <code>run.bat</code> will be enough.
  When using the second approach, the <code>java.exe</code> binary must be
- in your PATH environment variable too.</li>
+ in your <code>PATH</code> environment variable too.</li>
 </ul>
 
 
@@ -99,9 +96,8 @@ You can also do one of the following:
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Running in the default language (no translations)</h2>
+<h2 class="hdr">Running in the default language (no translations)</h2>
 
 
 
@@ -109,10 +105,12 @@ You can also do one of the following:
 <ul>
  <li>RxTx Java Transmission package from one of the pages:
 	<ul>
-	 <li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>
+	 <!--<li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>-->
+	 <li><a href="https://github.com/rxtx/rxtx" hreflang="en">github.com/rxtx/rxtx</a></li>
+	 <li><a href="http://fizzed.com/oss/rxtx-for-java" hreflang="en">fizzed.com/oss/rxtx-for-java</a></li>
 	 <li><a href="http://rxtx.qbang.org" hreflang="en">rxtx.qbang.org</a></li>
 	 <li><a href="http://users.frii.com/jarvi/rxtx/download.html" hreflang="en">users.frii.com/jarvi/rxtx/download.html</a></li>
-	 <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li>
+	 <!-- <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li> -->
 	</ul>
 	or any equivalent</li>
  <li>JRE, the <a href="http://java.sun.com" hreflang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
@@ -122,34 +120,34 @@ You can also do one of the following:
   add write permissions to the <code>/var/lock</code> directory.</li>
 </ul>
 <p>
-Using NetBeans: open the JYMAG folder as a NetBeans Project,
+Using Apache NetBeans: open the JYMAG folder as a NetBeans Project,
  right-click the project's root element in the project's tree on the
  left side of the window (the "Projects" sub-window), then click "Properties".
  Click "Run" in the tree and put</p>
 <pre>	-Duser.language=en -Duser.country=US</pre>
 <p>
-in the "VM Options" field. Click OK and click "Run" (or press F6).
+in the "VM Options" field. Click OK and click "Run" (or press <kbd>F6</kbd>).
 </p>
 <p>
 By hand (after unpacking):</p>
 <ul>
  <li><code>run-en.bat</code> (on MS Windows) or</li>
- <li><code>run-en.sh</code> (on Un*x) or</li>
+ <li><code>./run-en.sh</code> (on Un*x) or</li>
  <li><code>java -jar -Duser.language=en -Duser.country=US JYMAG/dist/JYMAG.jar</code> (on Un*x) or</li>
  <li><code>java -jar -Duser.language=en -Duser.country=US JYMAG\dist\JYMAG.jar</code> (on MS Windows)</li>
 </ul>
 
 You can also do one of the following:
 <ul>
- <li>Under Un*x: copy JYMAG/dist/JYMAG.jar and run-en.sh to one directory in  a suitable location
- (like in your PATH). Running <code>run-en.sh</code> will be enough. The <code>java</code> binary
- must be in your PATH environment variable.<br><br></li>
+ <li>Under Un*x: copy <code>JYMAG-X.Y\dist\JYMAG.jar</code> and <code>run-en.sh</code> to one directory in  a suitable location
+ (like in your <code>PATH</code>). Running <code>./run-en.sh</code> will be enough. The <code>java</code> binary
+ must be in your <code>PATH</code> environment variable.<br><br></li>
 
  <li>Under Windows: copy
- JYMAG/dist/JYMAG.jar and run-en.bat to one directory in a suitable location
- (like in your PATH). Running <code>run-en.bat</code> will be enough.
+ <code>JYMAG-X.Y\dist\JYMAG.jar</code> and <code>run-en.bat</code> to one directory in a suitable location
+ (like in your <code>PATH</code>). Running <code>run-en.bat</code> will be enough.
  When using the second approach, the <code>java.exe</code> binary must be
- in your PATH environment variable too.</li>
+ in your <code>PATH</code> environment variable too.</li>
 </ul>
 
 
@@ -158,9 +156,8 @@ You can also do one of the following:
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Compiling (if necessary)</h2>
+<h2 class="hdr">Compiling (if necessary)</h2>
 
 
 
@@ -168,18 +165,20 @@ You can also do one of the following:
 <ul>
  <li>RxTx Java Transmission package from one of the pages:
 	<ul>
-	 <li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>
+	 <!--<li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>-->
+	 <li><a href="https://github.com/rxtx/rxtx" hreflang="en">github.com/rxtx/rxtx</a></li>
+	 <li><a href="http://fizzed.com/oss/rxtx-for-java" hreflang="en">fizzed.com/oss/rxtx-for-java</a></li>
 	 <li><a href="http://rxtx.qbang.org" hreflang="en">rxtx.qbang.org</a></li>
 	 <li><a href="http://users.frii.com/jarvi/rxtx/download.html" hreflang="en">users.frii.com/jarvi/rxtx/download.html</a></li>
-	 <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li>
+	 <!-- <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li> -->
 	</ul>
 	or any equivalent</li>
  <li>JDK, the <a href="http://java.sun.com" hreflang="en">Java SE Development Kit</a> &gt;= (1.)6.0</li>
 </ul>
 
 <p>
-Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
- and click "Build Main Project" (or press F11) if it is your main project
+Compiling using Apache NetBeans: open the JYMAG folder as a NetBeans Project
+ and click "Build Main Project" (or press <kbd>F11</kbd>) if it is your main project
  (bold font). If it's not your main project, right-click the JYMAG project
  icon and click "Build".
 </p>
@@ -189,8 +188,7 @@ Compiling using "ant" from NetBeans (you may need to provide the full
 </p>
 <pre>
 	cd JYMAG-X.Y
-	ant jar
-</pre>
+	ant jar</pre>
 <p>
 Compiling by hand (you may need to provide the full path to "javac"):
 </p>
@@ -214,9 +212,8 @@ Compiling by hand (you may need to provide the full path to "javac"):
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Usage (GUI)</h2>
+<h2 class="hdr">Usage (GUI)</h2>
 
 <p>
 Phone setup: connect it to the computer using a cable or IrDA or
@@ -252,22 +249,21 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Usage (command line)</h2>
+<h2 class="hdr">Usage (command line)</h2>
 
 
 
 <p>The following command-line (case-insensitive) options are supported:</p>
 <ul>
- <li><code>--conf &lt;file&gt;</code>		- read configuration from &lt;file&gt;</li>
+ <li><code>--conf &lt;file&gt;</code>		- read configuration from <code>&lt;file&gt;</code></li>
  <li><code>--databits &lt;5,6,7,8&gt;</code>	- sets the number of data bits
 					  (default: 8)</li>
  <li><code>--delete-after-download</code>     - delete the downloaded elements if
 					  downloaded successfully</li>
- <li><code>--delete-alarm &lt;N&gt;</code>          - delete the alarm number N</li>
- <li><code>--delete-element &lt;ID&gt;</code>          - delete the element (file) with the given ID</li>
- <li><code>--delete-sms &lt;N&gt;</code>		- delete the SMS message with ID=N</li>
+ <li><code>--delete-alarm &lt;N&gt;</code>          - delete the alarm number <code>N</code></li>
+ <li><code>--delete-element &lt;ID&gt;</code>          - delete the element (file) with the given <code>ID</code></li>
+ <li><code>--delete-sms &lt;N&gt;</code>		- delete the SMS message with ID=<code>N</code></li>
  <li><code>--dial-data &lt;number&gt;</code>		- dials the given number for a data connection</li>
  <li><code>--dial-voice &lt;number&gt;</code>		- dials the given number for a voice connection</li>
  <li><code>--download-all-animations</code>	- downloads all animations/videos
@@ -290,10 +286,10 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
  <li><code>--hangup</code>			- stops the current call, if any</li>
  <li><code>--help</code>			- display help</li>
  <li><code>--lang LL_CC_VV</code>		- select the language to use by JYMAG:
-	    				  "LL" is the language, "CC" is the
-	    				  country code, "VV" is the variant.
+	    				  <code>LL</code> is the language, <code>CC</code> is the
+	    				  country code, <code>VV</code> is the variant.
 	    				  Separate them using underscores.
-					  Only LL is required.</li>
+					  Only <code>LL</code> is required.</li>
  <li><code>--license</code>, <code>--licence</code>	- display license information</li>
  <li><code>--list-alarms</code>			- display the alarms in the phone</li>
  <li><code>--list-elements</code>			- display the elements (files) in the phone</li>
@@ -302,11 +298,11 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
 					  (default: none)</li>
  <li><code>--port &lt;filename&gt;</code>		- sets the default port</li>
  <li><code>--scan</code>			- scans available ports for "OK"
-	    				  answers and exits the program</li>
+	    				  replies and exits the program</li>
  <li><code>--send-cmd-file &lt;file&gt;</code>	- sends the contents of the given file
 					  (as commands or data or mix of these)</li>
- <li><code>--send-sms &lt;number&gt; &lt;msg&gt;</code>	- send the given &lt;msg&gt; message as an
-					  SMS to the given recipient &lt;number&gt;</li>
+ <li><code>--send-sms &lt;number&gt; &lt;msg&gt;</code>	- send the given <code>&lt;msg&gt;</code> message as an
+					  SMS to the given recipient <code>&lt;number&gt;</code></li>
  <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000&gt;</code>
@@ -315,8 +311,8 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
  <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- sets the number of stop bits
 					  (default: 1)</li>
  <li><code>--update-alarm "DD/MM/YY,HH:MM:SS",N,"days"</code>	- updates the given
-					  alarm in the phone. N is the alarm
-					  number. Days are comma-separated
+					  alarm in the phone. <code>N</code> is the alarm
+					  number. <code>Days</code> are comma-separated
 					  numbers (1-Monday) or 0 for all days</li>
  <li><code>--upload &lt;filename&gt;</code>		- uploads the given file to the phone
 					  and exits</li>
@@ -330,9 +326,8 @@ To send an SMS message, click the "Upload" button. A new window will appear allo
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Converting ringtones</h2>
+<h2 class="hdr">Converting ringtones</h2>
 
 
 <p>
@@ -350,10 +345,14 @@ To convert a ringtone to a WAV format accepted by the phone, use the
 <pre>
 	ffmpeg -i &lt;ringtone file&gt; -ar 8000 -t 10 -ac 1 -acodec adpcm_ima_wav &lt;output file&gt;.wav</pre>
 <p>
-(the number after "-t" is the ringtone duration in seconds). I've only been
+(the number after "<code>-t</code>" is the ringtone duration in seconds). I've only been
 able to upload ringtones created with the above command. It may be possible
 to upload longer ringtones, in greater sampling rates, stereo, ..., but
 I haven't tried all that (my 30-second ringtones are rejected).
+</p>
+<p>
+You can also use <a href="https://imyplay.sourceforge.io/" hreflang="en">IMYplay</a> to convert IMY
+ringtones to sample files and then to WAV files.
 </p>
 
 
@@ -363,9 +362,8 @@ I haven't tried all that (my 30-second ringtones are rejected).
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Translating</h2>
+<h2 class="hdr">Translating</h2>
 
 
 <p>
@@ -380,14 +378,14 @@ To translate the program to your language, make a copy of each *.properties
 <p>
  Then open each file in UTF-8 mode and translate the words AFTER the "=" in
  each line. When you've finished all the files, send them to me. Remember,
- UTF-8, not ISO-8859-*, not windows-*, not cp*.
+ UTF-8, <em class="important">NOT</em> ISO-8859-*, <em class="important">NOT</em> windows-*, <em class="important">NOT</em> cp*.
 </p>
 <p>
-<em class="wazne">NOTE:</em> If you change the words before the "=", your translations won't
+<em class="important">NOTE:</em> If you change the words before the "=", your translations won't
  be seen by the program.
 </p>
 <p>
-<em class="wazne">NOTE:</em> Alternatively, use can use the NetBeans IDE to translate. Just open
+<em class="important">NOTE:</em> Alternatively, use can use the Apache NetBeans IDE to translate. Just open
  the JYMAG project, right-click any of the main properties' file, choose
  "Add" and "Locale". Choose your language and select OK. Now right-click
  the chosen file and select "Open". Edit the strings in your language.
@@ -400,9 +398,8 @@ To translate the program to your language, make a copy of each *.properties
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">If not working</h2>
+<h2 class="hdr">If not working</h2>
 
 
 <ol>
@@ -426,12 +423,12 @@ To translate the program to your language, make a copy of each *.properties
    </p></li>
 
  <li>The program doesn't start and gives
-   "class not found/java.lang.NoClassDefFoundError" messages.
+   "<code>class not found/java.lang.NoClassDefFoundError</code>" messages.
    <p>
    Run <code>java</code> with its full path, like <code>/usr/bin/java -jar JYMAG.jar</code>.
-   You can also try adding the path to RxTx to your CLASSPATH environment
+   You can also try adding the path to RxTx to your <code>CLASSPATH</code> environment
    variable (create one if it doesn't exist). Try adding both the directory
-   containing the RXTXcomm.jar file and the path to the file to CLASSPATH.
+   containing the RXTXcomm.jar file and the path to the file to <code>CLASSPATH</code>.
    </p></li>
 
  <li> Downloaded elements are corrupted.
@@ -459,11 +456,17 @@ To translate the program to your language, make a copy of each *.properties
 </ol>
 
 
-<br><br>
+
+
+
 <hr>
-<h2 class="nag">Reporting problems</h2>
+<h2 class="hdr">Reporting problems</h2>
 
 
+<p>
+Any defects, issues or improvement suggestions can be reported by e-mail (you can find it at the top of this file) or in the
+<a href="https://sourceforge.net/p/jymag/defects/" hreflang="en">SourceForge project defect manager</a>.
+</p>
 <ol>
  <li> Check if you have the newest versions of JYMAG.<br><br></li>
  <li> Include your Java and RxTx version numbers. See if the program works with a
@@ -472,14 +475,14 @@ To translate the program to your language, make a copy of each *.properties
    problematic version numbers.<br><br></li>
  <li> Include precise steps for reproducing the error, if possible. This will
    make finding the problem easier.<br><br></li>
- <li> If the program crashed, include "jymag.log" in your report. It should be
+ <li> If the program crashed, include <code>jymag.log</code> in your report. It should be
    in the current JYMAG working directory.<br><br></li>
- <li> If the program exited normally, but the "jymag.log" still exists after
+ <li> If the program exited normally, but the <code>jymag.log</code> still exists after
    closing the program and is not empty, include it in your report.<br><br></li>
+ <li> Try with another phone or file, if possible.<br><br></li>
  <li> Take all the information from the above steps and any additional
-   information you can give and send it to my e-mail address (you can find it
-   at the top of this file).<br><br></li>
+   information you can give (like a minimalistic input file that causes the problem)
+   and add it to the defect report.<br><br></li>
 </ol>
 
 </body></html>
-

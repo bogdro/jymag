@@ -10,37 +10,32 @@
 
 <TITLE> Informacje o programie - JYMAG </TITLE>
 
-<link rel="alternate" type="text/html" href="../en/readme.html" hreflang="en" lang="en" title="English version">
-
 <META NAME="Author" CONTENT="Bogdan D.">
-<META NAME="Description" CONTENT="JYMAG - Java Your Music And Graphics">
+<META NAME="Description" CONTENT="JYMAG - Jig Your Music And Graphics">
 <META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
 <META NAME="Language" CONTENT="en">
 <META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
 </HEAD><BODY>
 
-<h1 class="nag">JYMAG - Informacje o programie</h1>
-<BR><BR>
+<h1 class="hdr">JYMAG - Informacje o programie</h1>
 
 <p>
-To jest plik README dla JYMAG (<span lang="en">Java Your Music and Graphics</span>), programu do
+To jest plik README dla JYMAG (<span lang="en">Jig Your Music and Graphics</span>), programu do
  komunikacji z telefonami komórkowymi.
 </p>
 <p>
 G³ówn± funkcjonalno¶ci± programu JYMAG jest pobieranie i wysy³anie multimediów
- i innych obiektów z i do telefonu komórkowego marki Sagem (przetestowane na
- Linuksie z telefonem "Sagem MY X5-2").
+ i innych obiektów z i do telefonów lub urz±dzeñ opartych na komendach AT, jak
+ telefon komórkowy marki Sagem (przetestowane na Linuksie z telefonem "Sagem MY X5-2").
 </p>
 <p>
 JYMAG mo¿e te¿ byæ u¿ywany z innymi telefonami i urz±dzeniami (modemy) lub s³u¿yæ jako terminal
  szeregowy ogólnego przeznaczenia lub jako biblioteka Javy dla programistów.
 </p>
 
-<br>
-
-<p>Autor: Bogdan Drozdowski, bogdro AT users . sourceforge . net lub bogdandr AT op . pl
- (polski akceptowany, napisz '[SOFT]' w tytule).</p>
-<p>Licencja: <a href="license.html" hreflang="en">GPLv3+</a> na program,
+<p>Autor: Bogdan Drozdowski, bogdro AT users . sourceforge . net
+ (polski akceptowany, napisz '<code>[SOFT]</code>' w tytule).</p>
+<p>Licencja: <a href="../rsrc/license.html" hreflang="en">GPLv3+</a> na program,
 Licencja MIT na pomocnicze programy uruchamiaj±ce (jymag*.exe). Zobacz plik COPYING.</p>
 
 
@@ -49,50 +44,51 @@ Licencja MIT na pomocnicze programy uruchamiaj±ce (jymag*.exe). Zobacz plik COPY
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Uruchamianie</h2>
+<h2 class="hdr">Uruchamianie</h2>
 
 
 <p>Wymagania:</p>
 <ul>
  <li>RxTx z jednej ze stron:
 	<ul>
-	 <li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>
+	 <!--<li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>-->
+	 <li><a href="https://github.com/rxtx/rxtx" hreflang="en">github.com/rxtx/rxtx</a></li>
+	 <li><a href="http://fizzed.com/oss/rxtx-for-java" hreflang="en">fizzed.com/oss/rxtx-for-java</a></li>
 	 <li><a href="http://rxtx.qbang.org" hreflang="en">rxtx.qbang.org</a></li>
 	 <li><a href="http://users.frii.com/jarvi/rxtx/download.html" hreflang="en">users.frii.com/jarvi/rxtx/download.html</a></li>
-	 <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li>
+	 <!-- <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li> -->
 	</ul>
 	lub dowolne oprogramowanie równowa¿ne</li>
- <li>JRE, <a href="http://java.sun.com" hreflang="en" lang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
+ <li>JRE, <a href="https://www.java.com/" hreflang="en" lang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
  <li>uprawnienia do korzystania z portów szeregowych</li>
  <li>uprawnienia do blokowania portów szeregowych mog± byæ wymagane przez RxTx. Na Un*x
  	dodanie u¿ytkownika uruchamiaj±cego JYMAG do grup <code>uucp</code> i <code>lock</code>
  	powinno wystarczyæ. Je¶li nie, nale¿y dodaæ mu uprawnienia do zapisu w katalogu <code>/var/lock</code>.</li>
 </ul>
 <p>
-Korzystaj±c z NetBeans: otwórz katalog JYMAG jako projekt NetBeans i kliknij
- <span lang="en">"Run"</span> (lub wci¶nij F6).
+Korzystaj±c z <a href="https://netbeans.apache.org/" hreflang="en">Apache NetBeans</a>: otwórz katalog JYMAG jako projekt NetBeans i kliknij
+ <span lang="en">"Run"</span> (lub wci¶nij <kbd>F6</kbd>).
 </p><p>
 Rêcznie (po rozpakowaniu):</p>
 <ul>
- <li>kliknij dwukrotnie plik JYMAG\dist\JYMAG.jar (dzia³a na MS Windows) albo</li>
+ <li>kliknij dwukrotnie plik <code>JYMAG-X.Y\dist\JYMAG.jar</code> (dzia³a na MS Windows) albo</li>
  <li><code>run.bat</code> (na MS Windows) albo</li>
- <li><code>run.sh</code> (na Un*x) albo</li>
+ <li><code>./run.sh</code> (na Un*x) albo</li>
  <li><code>java -jar JYMAG/dist/JYMAG.jar</code> (na Un*x) albo</li>
  <li><code>java -jar JYMAG\dist\JYMAG.jar</code> (na MS Windows)</li>
 </ul>
 Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 <ul>
- <li>Pod Un*x: skopiuj JYMAG/dist/JYMAG.jar i run.sh do jednego katalogu w dogodnym miejscu
- (na przyk³ad tam, gdzie wskazuje PATH). Uruchomienie <code>run.sh</code> wystarczy. Program
- <code>java</code> musi byæ w Twojej zmiennej ¶rodowiskowej PATH.<br><br></li>
+ <li>Pod Un*x: skopiuj <code>JYMAG-X.Y\dist\JYMAG.jar</code> i <code>run.sh</code> do jednego katalogu w dogodnym miejscu
+ (na przyk³ad tam, gdzie wskazuje <code>PATH</code>). Uruchomienie <code>./run.sh</code> wystarczy. Program
+ <code>java</code> musi byæ w Twojej zmiennej ¶rodowiskowej <code>PATH</code>.<br><br></li>
 
  <li>Pod Windows: podwójne klikniêcie na plik JAR powinno wystarczyæ. Je¶li nie, skopiuj
- JYMAG/dist/JYMAG.jar i run.bat do jednego katalogu w dogodnym miejscu
- (na przyk³ad tam, gdzie wskazuje PATH). Uruchomienie <code>run.bat</code> wystarczy.
+ <code>JYMAG-X.Y\dist\JYMAG.jar</code> i <code>run.bat</code> do jednego katalogu w dogodnym miejscu
+ (na przyk³ad tam, gdzie wskazuje <code>PATH</code>). Uruchomienie <code>run.bat</code> wystarczy.
  Gdy korzysta siê z drugiego sposobu, program
- <code>java</code> te¿ musi byæ w Twojej zmiennej ¶rodowiskowej PATH.</li>
+ <code>java</code> te¿ musi byæ w Twojej zmiennej ¶rodowiskowej <code>PATH</code>.</li>
 </ul>
 
 
@@ -100,9 +96,8 @@ Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Uruchamianie w jêzyku domy¶lnym (bez t³umaczeñ)</h2>
+<h2 class="hdr">Uruchamianie w jêzyku domy¶lnym (bez t³umaczeñ)</h2>
 
 
 
@@ -110,10 +105,12 @@ Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 <ul>
  <li>RxTx z jednej ze stron:
 	<ul>
-	 <li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>
+	 <!--<li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>-->
+	 <li><a href="https://github.com/rxtx/rxtx" hreflang="en">github.com/rxtx/rxtx</a></li>
+	 <li><a href="http://fizzed.com/oss/rxtx-for-java" hreflang="en">fizzed.com/oss/rxtx-for-java</a></li>
 	 <li><a href="http://rxtx.qbang.org" hreflang="en">rxtx.qbang.org</a></li>
 	 <li><a href="http://users.frii.com/jarvi/rxtx/download.html" hreflang="en">users.frii.com/jarvi/rxtx/download.html</a></li>
-	 <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li>
+	 <!-- <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li> -->
 	</ul>
 	lub dowolne oprogramowanie równowa¿ne</li>
  <li>JRE, <a href="http://java.sun.com" hreflang="en" lang="en">Java SE Runtime Environment</a> &gt;= (1.)6.0</li>
@@ -123,13 +120,13 @@ Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
  	powinno wystarczyæ. Je¶li nie, nale¿y dodaæ mu uprawnienia do zapisu w katalogu <code>/var/lock</code>.</li>
 </ul>
 <p>
-Korzystaj±c z NetBeans: otwórz katalog JYMAG jako projekt NetBeans, kliknij prawym
+Korzystaj±c z Apache NetBeans: otwórz katalog JYMAG jako projekt NetBeans, kliknij prawym
  przyciskiem na g³ówny element projektu w drzewie projektu po lewej stronie okna
  (podoknie <span lang="en">"Projects"</span>), po czym kliknij <span lang="en">"Properties"</span>.
 W drzewie kliknij <span lang="en">"Run"</span> i wpisz</p>
 <pre>	-Duser.language=en -Duser.country=US</pre>
 <p>
-w polu <span lang="en">"VM Options"</span>. Kliknij OK i kliknij "Run" (lub wci¶nij F6).
+w polu <span lang="en">"VM Options"</span>. Kliknij OK i kliknij "Run" (lub wci¶nij <kbd>F6</kbd>).
 </p>
 <p>
 Rêcznie (po rozpakowaniu):</p>
@@ -141,15 +138,15 @@ Rêcznie (po rozpakowaniu):</p>
 </ul>
 Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 <ul>
- <li>Pod Un*x: skopiuj JYMAG/dist/JYMAG.jar i run-en.sh do jednego katalogu w dogodnym miejscu
- (na przyk³ad tam, gdzie wskazuje PATH). Uruchomienie <code>run-en.sh</code> wystarczy. Program
- <code>java</code> musi byæ w Twojej zmiennej ¶rodowiskowej PATH.<br><br></li>
+ <li>Pod Un*x: skopiuj <code>JYMAG-X.Y\dist\JYMAG.jar</code> i <code>run-en.sh</code> do jednego katalogu w dogodnym miejscu
+ (na przyk³ad tam, gdzie wskazuje <code>PATH</code>). Uruchomienie <code>./run-en.sh</code> wystarczy. Program
+ <code>java</code> musi byæ w Twojej zmiennej ¶rodowiskowej <code>PATH</code>.<br><br></li>
 
  <li>Pod Windows: skopiuj
- JYMAG/dist/JYMAG.jar i run-en.bat do jednego katalogu w dogodnym miejscu
- (na przyk³ad tam, gdzie wskazuje PATH). Uruchomienie <code>run-en.bat</code> wystarczy.
+ <code>JYMAG-X.Y\dist\JYMAG.jar</code> i <code>run-en.bat</code> do jednego katalogu w dogodnym miejscu
+ (na przyk³ad tam, gdzie wskazuje <code>PATH</code>). Uruchomienie <code>run-en.bat</code> wystarczy.
  Gdy korzysta siê z drugiego sposobu, program
- <code>java</code> te¿ musi byæ w Twojej zmiennej ¶rodowiskowej PATH.</li>
+ <code>java</code> te¿ musi byæ w Twojej zmiennej ¶rodowiskowej <code>PATH</code>.</li>
 </ul>
 
 
@@ -159,9 +156,8 @@ Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Kompilacja (je¶li trzeba)</h2>
+<h2 class="hdr">Kompilacja (je¶li trzeba)</h2>
 
 
 
@@ -169,18 +165,20 @@ Mo¿esz te¿ zrobiæ jedn± z nastêpuj±cych rzeczy:
 <ul>
  <li>RxTx z jednej ze stron:
 	<ul>
-	 <li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>
+	 <!--<li><a href="http://www.rxtx.org" hreflang="en">www.rxtx.org</a></li>-->
+	 <li><a href="https://github.com/rxtx/rxtx" hreflang="en">github.com/rxtx/rxtx</a></li>
+	 <li><a href="http://fizzed.com/oss/rxtx-for-java" hreflang="en">fizzed.com/oss/rxtx-for-java</a></li>
 	 <li><a href="http://rxtx.qbang.org" hreflang="en">rxtx.qbang.org</a></li>
 	 <li><a href="http://users.frii.com/jarvi/rxtx/download.html" hreflang="en">users.frii.com/jarvi/rxtx/download.html</a></li>
-	 <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li>
+	 <!-- <li><a href="http://mfizz.com/oss/rxtx-for-java" hreflang="en">mfizz.com/oss/rxtx-for-java</a></li> -->
 	</ul>
 	lub dowolne oprogramowanie równowa¿ne</li>
  <li>JDK, <a href="http://java.sun.com" hreflang="en" lang="en">Java SE Development Kit</a> &gt;= (1.)6.0</li>
 </ul>
 
 <p>
-Kompilacja z wykorzystaniem NetBeans: otwórz katalog JYMAG jako projekt NetBeans i kliknij
- <span lang="en">"Build Main Project"</span> (lub wci¶nij F11), je¶li to jest g³ówny projekt
+Kompilacja z wykorzystaniem Apache NetBeans: otwórz katalog JYMAG jako projekt NetBeans i kliknij
+ <span lang="en">"Build Main Project"</span> (lub wci¶nij <kbd>F11</kbd>), je¶li to jest g³ówny projekt
  (wyt³uszczona czcionka). Je¶li to nie jest g³ówny projekt, kliknij prawym na ikonê projektu JYMAG
  i kliknij <span lang="en">"Build"</span>.
 </p>
@@ -190,8 +188,7 @@ Kompilacja z wykorzystaniem "ant" z NetBeans (mo¿e byæ wymagane podanie pe³nej
 </p>
 <pre>
 	cd JYMAG-X.Y
-	ant jar
-</pre>
+	ant jar</pre>
 <p>
 Kompilacja rêczna (mo¿e byæ wymagane podanie pe³nej
  ¶cie¿ki do programu "javac"):
@@ -216,9 +213,8 @@ Kompilacja rêczna (mo¿e byæ wymagane podanie pe³nej
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Korzystanie z programu (GUI - tryb graficzny)</h2>
+<h2 class="hdr">Korzystanie z programu (GUI - tryb graficzny)</h2>
 
 <p>
 Ustawienie telefonu: pod³±cz go do komputera, u¿ywaj±c kabla, IrDA lub czegokolwiek,
@@ -254,21 +250,20 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Korzystanie z programu (linia poleceñ)</h2>
+<h2 class="hdr">Korzystanie z programu (linia poleceñ)</h2>
 
 
 
 <p>Obs³ugiwane s± nastêpuj±ce opcje linii poleceñ (niewra¿liwe na wielko¶æ liter):</p>
 <ul>
- <li><code>--conf &lt;plik&gt;</code>		- odczytaj konfiguracjê z &lt;pliku&gt;</li>
+ <li><code>--conf &lt;plik&gt;</code>		- odczytaj konfiguracjê z <code>&lt;pliku&gt;</code></li>
  <li><code>--databits &lt;5,6,7,8&gt;</code>	- ustaw liczbê bitów danych
 					  (domy¶lnie: 8)</li>
  <li><code>--delete-after-download</code>     - skasuj elementy pobrane pomy¶lnie</li>
- <li><code>--delete-alarm &lt;N&gt;</code>          - skasuj budzik o numerze N</li>
- <li><code>--delete-element &lt;ID&gt;</code>          - skasuj element (plik) o danym identyfikatorze ID</li>
- <li><code>--delete-sms &lt;N&gt;</code>		- skasuj wiadomo¶æ SMS o ID=N</li>
+ <li><code>--delete-alarm &lt;N&gt;</code>          - skasuj budzik o numerze <code>N</code></li>
+ <li><code>--delete-element &lt;ID&gt;</code>          - skasuj element (plik) o danym identyfikatorze <code>ID</code></li>
+ <li><code>--delete-sms &lt;N&gt;</code>		- skasuj wiadomo¶æ SMS o ID=<code>N</code></li>
  <li><code>--dial-data &lt;numer&gt;</code>		- wykrêca dany numer dla po³±czenia danych</li>
  <li><code>--dial-voice &lt;numer&gt;</code>		- wykrêca dany numer dla po³±czenia g³osowego</li>
  <li><code>--download-all-animations</code>	- pobierz wszystkie animacje/filmy z telefonu i wyjd¼</li>
@@ -284,21 +279,21 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
  <li><code>--hangup</code>			- roz³±cza bie¿±ce po³±czenie, je¶li jakie¶ jest</li>
  <li><code>--help</code>			- wy¶wietla pomoc</li>
  <li><code>--lang LL_CC_VV</code>		- wybiera jêzyk dla JYMAG:
-	    				  "LL" to jêzyk, "CC" to kod kraju,
-					  "VV" to wariant. Rozdziel je podkre¶leniami. Wymagane jest tylko LL.</li>
+	    				  <code>LL</code> to jêzyk, <code>CC</code> to kod kraju,
+					  <code>VV</code> to wariant. Rozdziel je podkre¶leniami. Wymagane jest tylko <code>LL</code>.</li>
  <li><code>--license</code>, <code>--licence</code>	- wy¶wietla informacje o licencji</li>
  <li><code>--list-alarms</code>			- wy¶wietla budziki w telefonie</li>
  <li><code>--list-elements</code>			- wy¶wietla elementy (pliki) w telefonie</li>
  <li><code>--list-sms</code>			- wy¶wietla wiadomo¶ci SMS w telefonie</li>
  <li><code>--parity &lt;none, even, odd, space, mark&gt;</code>	- ustawia tryb kontroli parzysto¶ci
-					  (domy¶lnie: none)</li>
+					  (domy¶lnie: <code>none</code>)</li>
  <li><code>--port &lt;nazwa&gt;</code>		- ustawia domy¶lny port</li>
  <li><code>--scan</code>			- skanuje dostêpne porty na odpowiedzi "OK"
 	    				  i wychodzi</li>
  <li><code>--send-cmd-file &lt;plik&gt;</code>	- wysy³a zawarto¶æ podanego pliku (jako komendy,
 						 dane lub mieszankê)</li>
- <li><code>--send-sms &lt;numer&gt; &lt;tre¶æ&gt;</code>	- wy¶lij dan± &lt;tre¶æ&gt; jako SMS
-					  do odbiorcy o numerze &lt;numer&gt;</li>
+ <li><code>--send-sms &lt;numer&gt; &lt;tre¶æ&gt;</code>	- wy¶lij dan± <code>&lt;tre¶æ&gt;</code> jako SMS
+					  do odbiorcy o numerze <code>&lt;numer&gt;</code></li>
  <li><code>--speed &lt;1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 		230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000&gt;</code>
@@ -307,7 +302,7 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
  <li><code>--stopbits &lt;1,1.5,2&gt;</code>	- ustawia liczbê bitów stopu
 					  (domy¶lnie: 1)</li>
  <li><code>--update-alarm "DD/MM/YY,HH:MM:SS",N,"dni"</code>	- aktualizuje dany budzik
-					  w telefonie. N to numer budzika. Dni s± numerami
+					  w telefonie. <code>N</code> to numer budzika. <code>Dni</code> s± numerami
 					  rozdzielonymi przecinkami (1-Poniedzia³ek) lub 0
 					  oznaczaj±cym wszystkie dni</li>
  <li><code>--upload &lt;plik&gt;</code>		- wysy³a dany plik do telefonu i wychodzi</li>
@@ -321,9 +316,8 @@ siê nowe okno umo¿liwiaj±ce wpisanie numeru telefonu i tre¶ci wiadomo¶ci.
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Konwertowanie dzwonków</h2>
+<h2 class="hdr">Konwertowanie dzwonków</h2>
 
 
 <p>
@@ -341,10 +335,14 @@ Aby przerobiæ dzwonek na format WAV przyjmowany przez telefon, skorzystaj z nast
 <pre>
 	ffmpeg -i &lt;ringtone file&gt; -ar 8000 -t 10 -ac 1 -acodec adpcm_ima_wav &lt;output file&gt;.wav</pre>
 <p>
-(liczba po "-t" to czas trwania dzwonka w sekundach). Uda³o mi siê wys³aæ
+(liczba po "<code>-t</code>" to czas trwania dzwonka w sekundach). Uda³o mi siê wys³aæ
 dzwonki stworzone tylko powy¿sz± komend±. Byæ mo¿e da siê wys³aæ d³u¿sze
 dzwonki, w wiêkszych czêstotliwo¶ciach próbkowania, stereo itd, ale
 nie próbowa³em tego wszystkiego (moje 30-sekundowe dzwonki s± odrzucane).
+</p>
+<p>
+Mo¿esz te¿ u¿yæ <a href="https://imyplay.sourceforge.io/" hreflang="en">IMYplay</a>, aby przekonwertowaæ
+dzwonki IMY na pliki próbek, po czym na pliki WAV.
 </p>
 
 
@@ -354,9 +352,8 @@ nie próbowa³em tego wszystkiego (moje 30-sekundowe dzwonki s± odrzucane).
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">T³umaczenie</h2>
+<h2 class="hdr">T³umaczenie</h2>
 
 
 <p>
@@ -369,14 +366,15 @@ tych kopii, aby koñczy³y siê kodem Twojego jêzyka i kraju, na przyk³ad:
 </p>
 <p>
 Otwórz ka¿dy plik w trybie UTF-8 i przet³umacz s³owa PO znaku "=" w kazdej linii.
-Gdy wszystkie pliki s± skoñczone, wy¶lij mi je. Pamiêtaj, UTF, nie ISO-8859-*, nie windows-*, nie cp*.
+Gdy wszystkie pliki s± skoñczone, wy¶lij mi je. Pamiêtaj, UTF-8,
+<em class="important">nie</em> ISO-8859-*, <em class="important">nie</em> windows-*, <em class="important">nie</em> cp*.
 </p>
 <p>
-<em class="wazne">UWAGA:</em> Je¶li zmienisz s³owa przed znakiem "=", Twoje t³umaczenia
+<em class="important">UWAGA:</em> Je¶li zmienisz s³owa przed znakiem "=", Twoje t³umaczenia
  nie bêd± widziane przez program.
 </p>
 <p>
-<em class="wazne">UWAGA:</em> Alternatywnie, mo¿esz skorzystaæ ze ¶rodowiska NetBeans,
+<em class="important">UWAGA:</em> Alternatywnie, mo¿esz skorzystaæ ze ¶rodowiska Apache NetBeans,
 aby przet³umaczyæ program. Otwórz projekt JYMAG, kliknij prawym klawiszem na dowolny z g³ównych plików
 "properties", wybierz <span lang="en">"Add"</span> i <span lang="en">"Locale"</span>.
 Wybierz swój jêzyk i kliknij OK. Teraz kliknij
@@ -390,9 +388,8 @@ prawym klawiszem na wybrany plik i wybierz <span lang="en">"Open"</span>. Edytuj
 
 
 
-<br><br>
 <hr>
-<h2 class="nag">Je¶li nie dzia³a</h2>
+<h2 class="hdr">Je¶li nie dzia³a</h2>
 
 
 <ol>
@@ -415,13 +412,13 @@ prawym klawiszem na wybrany plik i wybierz <span lang="en">"Open"</span>. Edytuj
    </p></li>
 
  <li>Program siê nie uruchamia i wy¶wietla wiadomo¶ci
-   <span lang="en">"class not found/java.lang.NoClassDefFoundError"</span>.
+   <code lang="en">"class not found/java.lang.NoClassDefFoundError"</code>.
    <p>
    Uruchom program <code>java</code>, podaj±c pe³n± ¶cie¿kê, na przyk³ad
    <code>/usr/bin/java -jar JYMAG.jar</code>. Mo¿esz spróbowaæ dodaæ ¶cie¿kê
-   do RxTx do swojej zmiennej ¶rodowiskowej CLASSPATH (stwórz tak±, je¶li nie masz).
+   do RxTx do swojej zmiennej ¶rodowiskowej <code>CLASSPATH</code> (stwórz tak±, je¶li nie masz).
    Spróbuj dodaæ zarówno katalog zawieraj±cy RXTXcomm.jar, jak i ¶cie¿kê do
-   tego pliku do zmiennej CLASSPATH.
+   tego pliku do zmiennej <code>CLASSPATH</code>.
    </p></li>
 
  <li> Pobrane elementy s± uszkodzone.
@@ -449,26 +446,29 @@ prawym klawiszem na wybrany plik i wybierz <span lang="en">"Open"</span>. Edytuj
 </ol>
 
 
-<br><br>
 <hr>
-<h2 class="nag">Zg³aszanie problemów</h2>
+<h2 class="hdr">Zg³aszanie problemów</h2>
 
 
+<p>
+Wszelkie defekty, problemy i propozycje usprawnieñ mog± byæ zg³aszane przez e-mail (adres mo¿esz znale¼æ na górze tego pliku) lub przez
+<a href="https://sourceforge.net/p/jymag/defects/" hreflang="en">stronê zarz±dzania defektami na SourceForge</a>.
+</p>
 <ol>
  <li> Sprawd¼, czy masz najnowsz± wersjê JYMAG.<br><br></li>
- <li> Do³±cz swoje wersje Javy i RxTx. Sprawd¼, czy program dzia³a ze starsz±/nowsz±
+ <li> Do³±cz swoje numery wersji Javy i RxTx. Sprawd¼, czy program dzia³a ze starsz±/nowsz±
    wersj± Java/RxTx. Je¶li dzia³a ze starsz± wersj±, a nie z now±, problem rozwi±zany,
    ale i tak przy¶lij mi problematyczne numery wersji.<br><br></li>
  <li> Podaj dok³adne kroki prowadz±ce do b³êdu, je¶li to mo¿liwe. To u³atwi znalezienie
    problemu.<br><br></li>
- <li> Je¶li program siê zamkn±³, do³±cz "jymag.log" w swoim zg³oszeniu. Plik ten powinien
+ <li> Je¶li program siê zamkn±³, do³±cz <code>jymag.log</code> w swoim zg³oszeniu. Plik ten powinien
    znajdowaæ siê w katalogu bie¿±cym JYMAG.<br><br></li>
- <li> Je¶li program zamkn±³ siê normalnie, ale "jymag.log" dalej istnieje po zamkniêciu
+ <li> Je¶li program zamkn±³ siê normalnie, ale <code>jymag.log</code> dalej istnieje po zamkniêciu
    programu i nie jest pusty, do³±cz go w swoim zg³oszeniu.<br><br></li>
+ <li> Spróbuj z innym telefonem lub plikiem, je¶li mo¿liwe.<br><br></li>
  <li> Zbierz wszystkie informacje z powy¿szych kroków oraz wszelkie dodatkowe informacje,
-   które jeste¶ w stanie podaæ, i wy¶lij je na mój adres e-mail (mo¿esz go znale¼æ
-   na górze tego pliku).<br><br></li>
+   które jeste¶ w stanie podaæ (jak minimalistyczny plik powoduj±cy problem),
+   i dodaj je do zg³oszenia defektu.<br><br></li>
 </ol>
 
 </body></html>
-

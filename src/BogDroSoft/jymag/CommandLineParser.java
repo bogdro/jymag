@@ -1,13 +1,14 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
@@ -51,13 +47,14 @@ public class CommandLineParser
 	private static volatile int x = 0;
 	private static volatile int y = 0;
 	private static boolean deleteAfterDownload = false;
+	public static volatile boolean mock = false;
 
 	// ----------- i18n stuff
 	private static final ResourceBundle b = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String progIntroStr = b.getString("is_a_program_") +
+	private static final String PROG_INTRO_STRING = b.getString("is_a_program_") +
 		b.getString("rxtx_multimedia_Sagem");
-	private static final String rxtxReqStr = b.getString("need_rxtx");
-	private static final String cmdLineStr = b.getString("Command-line_options:")+
+	private static final String RXTX_REQ_STRING = b.getString("need_rxtx");
+	private static final String CMD_LINE_STR = b.getString("Command-line_options:")+
 		":" +	// NOI18N
 		"\n--conf <file>\t\t- " +	// NOI18N
 		b.getString("read_configuration_from_<file>") +
@@ -145,7 +142,7 @@ public class CommandLineParser
 		"\n" +	// NOI18N
 		"\n" +	// NOI18N
 		b.getString("exit_zero_code");
-	private static final String verWord = b.getString("Version");
+	private static final String VER_WORD = b.getString("Version");
 	//private static final String getListStr = b.getString("Getting_list_of_");
 	//private static final String getFileStr = b.getString("Getting_file");
 
@@ -396,41 +393,38 @@ public class CommandLineParser
 				|| currentArg.equals ("-?")	// NOI18N
 				|| currentArg.equals ("/?") )	// NOI18N
 			{
-				System.out.println ("JYMAG (Java Your Music and Graphics) " + progIntroStr +	// NOI18N
-					"\n\n*** " + rxtxReqStr + " ***\n\n" +	// NOI18N
-					"Author: Bogdan Drozdowski, bogdandr @ op . pl\n" +	// NOI18N
+				System.out.println ("JYMAG (Jig Your Music and Graphics) " + PROG_INTRO_STRING +	// NOI18N
+					"\n\n*** " + RXTX_REQ_STRING + " ***\n\n" +	// NOI18N
+					"Author: Bogdan Drozdowski, bogdro (at) users . sourceforge . net\n" +	// NOI18N
 					"License: GPLv3+\n" +	// NOI18N
-					"http://jymag.sf.net\n\n" +	// NOI18N
-					cmdLineStr
+					"https://jymag.sourceforge.io/\n\n" +	// NOI18N
+					CMD_LINE_STR
 					);
 				Starter.closeProgram (0);
 			}
 			else if ( currentArg.equals ("--license")	// NOI18N
 				|| currentArg.equals ("--licence") )	// NOI18N
 			{
-				System.out.println ("JYMAG (Java Your Music and Graphics) "+ progIntroStr +	// NOI18N
-					"\nSee http://jymag.sf.net\n" +	// NOI18N
-					"Author: Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl.\n\n" +	// NOI18N
-					"    This program is free software; you can redistribute it and/or\n" +	// NOI18N
-					"    modify it under the terms of the GNU General Public License\n" +	// NOI18N
-					"    as published by the Free Software Foundation; either version 3\n" +	// NOI18N
-					"    of the License, or (at your option) any later version.\n\n" +	// NOI18N
+				System.out.println ("JYMAG (Jig Your Music and Graphics) "+ PROG_INTRO_STRING +	// NOI18N
+					"\nSee https://jymag.sourceforge.io/\n" +	// NOI18N
+					"Author: Bogdan 'bogdro' Drozdowski, bogdro (at) users . sourceforge . net.\n\n" +	// NOI18N
+					"    This program is free software: you can redistribute it and/or modify\n" +	// NOI18N
+					"    it under the terms of the GNU General Public License as published by\n" +	// NOI18N
+					"    the Free Software Foundation, either version 3 of the License, or\n" +	// NOI18N
+					"    (at your option) any later version.\n" +	// NOI18N
 					"    This program is distributed in the hope that it will be useful,\n" +	// NOI18N
 					"    but WITHOUT ANY WARRANTY; without even the implied warranty of\n" +	// NOI18N
 					"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" +	// NOI18N
-					"    GNU General Public License for more details.\n\n" +	// NOI18N
+					"    GNU General Public License for more details.\n" +	// NOI18N
 					"    You should have received a copy of the GNU General Public License\n" +	// NOI18N
-					"    along with this program; if not, write to the Free Software Foundation:\n" +	// NOI18N
-					"               Free Software Foundation\n" +	// NOI18N
-					"               51 Franklin Street, Fifth Floor\n" +	// NOI18N
-					"               Boston, MA 02110-1301\n" +	// NOI18N
-					"               USA\n");	// NOI18N
+					"    along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"	// NOI18N
+					);
 				Starter.closeProgram (0);
 			}
 			else if ( currentArg.equals ("--version")	// NOI18N
 				|| currentArg.equals ("-v") )	// NOI18N
 			{
-				System.out.println ("JYMAG " + verWord + " " + MainWindow.JYMAG_VERSION);	// NOI18N
+				System.out.println ("JYMAG " + VER_WORD + " " + MainWindow.JYMAG_VERSION);	// NOI18N
 				Starter.closeProgram (0);
 			}
 			else if ( currentArg.equals ("--port") )	// NOI18N
@@ -956,6 +950,10 @@ public class CommandLineParser
 					}
 					i++;
 				}
+			}
+			else if ( currentArg.equals ("--mock") )	// NOI18N
+			{
+				mock = true;
 			}
 		}	// for i
 	}

@@ -1,13 +1,13 @@
 /*
  * Starter.java, part of the JYMAG package.
  *
- * Copyright (C) 2009-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2009-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,22 +15,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
 
 import BogDroSoft.jymag.gui.MainWindow;
-
+import BogDroSoft.jymag.gui.UiUtils;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ResourceBundle;
-import javax.swing.JOptionPane;
 
 /**
  * This class starts the JYMAG program or reports an error to the user.
@@ -38,12 +32,9 @@ import javax.swing.JOptionPane;
  */
 public class Starter
 {
-	private static final String startError
+	private static final String START_ERROR
 		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/Starter")
 		.getString("JYMAG_Start_Error");
-	private static final String errString
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow")
-		.getString("Error");
 
 	private static String logFile = "jymag.log";	// NOI18N
 
@@ -70,16 +61,8 @@ public class Starter
 		}
 		catch (Throwable ex)
 		{
-			Utils.handleException (ex, "*** " + startError + " ***"); // NOI18N
-			try
-			{
-				JOptionPane.showMessageDialog (null, startError,
-					errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// ignore exceptions thrown when displaying an exception
-			}
+			Utils.handleException (ex, "*** " + START_ERROR + " ***"); // NOI18N
+			UiUtils.showErrorMessage(null, START_ERROR);
 			// close the log file:
 			redirectStderrToFile (null);
 			// exit the program:

@@ -1,13 +1,13 @@
 /*
  * JYMAGTransferHandler.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,18 +15,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.gui;
 
-import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.Utils;
+import BogDroSoft.jymag.comm.TransferUtils;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -50,9 +45,9 @@ public class JYMAGTransferHandler extends TransferHandler
 
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
 	private static volatile DataFlavor uriFileListFlavor = null;
-	private static final String uriFileListFlavorType = "text/uri-list;class=java.lang.String";	// NOI18N
+	private static final String URI_FILE_LIST_FLAVOR_TYPE = "text/uri-list;class=java.lang.String";	// NOI18N
 
-	private static final String newLines = "\r\n";	// NOI18N
+	private static final String NEWLINES = "\r\n";	// NOI18N
 
 	/**
 	 * Creates a new TransferHandler that takes its transfer
@@ -73,7 +68,7 @@ public class JYMAGTransferHandler extends TransferHandler
 		{
 			try
 			{
-				uriFileListFlavor = new DataFlavor (uriFileListFlavorType);
+				uriFileListFlavor = new DataFlavor (URI_FILE_LIST_FLAVOR_TYPE);
 			}
 			catch (ClassNotFoundException ex)
 			{
@@ -163,7 +158,7 @@ public class JYMAGTransferHandler extends TransferHandler
 					Object data = t.getTransferData (uriFileListFlavor);
 					if ( data != null )
 					{
-						String[] fileURIs = data.toString ().split (newLines);
+						String[] fileURIs = data.toString ().split (NEWLINES);
 						if ( fileURIs != null )
 						{
 							for ( int i = 0; i < fileURIs.length; i++ )

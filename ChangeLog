@@ -1,4 +1,193 @@
-2020-02-05	Bogdan Drozdowski <bogdandr@op.pl>
+2022-01-27	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
+
+	* JYMAG version 3.0:
+	  Rebranding. Usability improvements. Defect fixes. Verified to start
+	  under OpenJDK version 17. Big refactoring. Coding style improved.
+	  Improvements in the testing area. Updates in the build system.
+	  Updates in the documentation. Signing keys changed. Version bumped
+	  to 3.0 also because the previous changes were not signified enough.
+	* src/**/*.java, Makefile, jymag.desktop, test/**/*.java: Fixed the
+	  license block.
+	* src/**/*.java, Makefile, jymag.desktop, setup/launch4j-jymag*.xml,
+	  ChangeLog, AUTHORS, manual/*/readme.html, test/**/*.java: Updated
+	  the copyright.
+	* AboutBox.java: Simplified the label code. Updated the URLs (website
+	  and mailto). Applied code changes shown by NetBeans. Layout improved.
+	* UiUtils.java: a new utility class for user interface utility methods.
+	* AboutBox.java (AboutBox), MainWindow.java (MainWindow),
+	  CapabilityWindow.java (CapabilityWindow), RawCommunicator.java
+	  (RawCommunicator), SMSWindow.java (SMSWindow), SignalDisplayer.java
+	  (SignalDisplayer): resizing the window to fit the screen in case it
+	  is initially bigger, using the new UiUtils class.
+	* CommandLineParser.java: Fixed displaying the license block when
+	  '--license' is given.
+	* MainWindow.java (MainWindow): stop putting the version number in
+	  the title bar. Set the status label's text after creating the
+	  Runnables to show the translated message.
+	* MainWindow.java (scanButtonActionPerformed, aboutButActionPerformed,
+	  rawButActionPerformed, getCapButActionPerformed,
+	  signalButtonActionPerformed, putListInTable,
+	  createAndOpenDataTransporter): use the new method from UiUtils to
+	  show error messageboxes.
+	* MainWindow.java: Applied code changes shown by NetBeans.
+	* JYMAGTransferHandler.java: Applied code changes shown by NetBeans.
+	* RawCommunicator.java: Applied code changes shown by NetBeans. Removed
+	  some constants duplicated by the Utils class.
+	* SMSWindow.java: Applied code changes shown by NetBeans.
+	* SignalDisplayer.java: Applied code changes shown by NetBeans.
+	* ConfigFile.java: Applied code changes shown by NetBeans.
+	* CommandLineParser.java: Applied code changes shown by NetBeans.
+	* PhoneAlarm.java: Applied code changes shown by NetBeans. Removed some
+	  constants duplicated by the Utils class.
+	* PhoneElement.java: Applied code changes shown by NetBeans. Removed
+	  some constants duplicated by the Utils class.
+	* PhoneMessage.java: Applied code changes shown by NetBeans. Removed
+	  some constants duplicated by the Utils class.
+	* Starter.java: Applied code changes shown by NetBeans.
+	* DataTransporter.java: Applied code changes shown by NetBeans. Removed
+	  some constants duplicated by the Utils class.
+	* TransferUtils.java: Applied code changes shown by NetBeans. Removed
+	  some constants duplicated by the Utils class.
+	* AddrBookPanel.java: Applied code changes shown by NetBeans.
+	* AlarmPanel.java: Applied code changes shown by NetBeans.
+	* DialPanel.java: Applied code changes shown by NetBeans.
+	* EventsPanel.java: Applied code changes shown by NetBeans.
+	* JYMAGTab.java: Applied code changes shown by NetBeans.
+	* JavasPanel.java: Applied code changes shown by NetBeans.
+	* MoviePanel.java: Applied code changes shown by NetBeans.
+	* PhotoPanel.java: Applied code changes shown by NetBeans.
+	* RingtonePanel.java: Applied code changes shown by NetBeans.
+	* SMSPanel.java: Applied code changes shown by NetBeans.
+	* TasksPanel.java: Applied code changes shown by NetBeans.
+	* Utils.java: Applied code changes shown by NetBeans. Moved the
+	  changeGUI(), setFontSize(), getFontSize() and createOpenFileChooser()
+	  methods and the TableMouseListener inner class to UiUtils. Moved some
+	  constants from other classes here.
+	* JYMAGFileFilter.java: Removed unused field. Removed some constants
+	  duplicated by the Utils class.
+	* DataTransporter.java (getPINStatus): Fixed using wrong reply pattern.
+	* DataTransporter.java (putFile): Removed loggers.
+	* FakeCommPortIdentifier.java, FakeDevice.java, FakeSerialPort.java,
+	  CommandLineParser.java (mock), TransferParameters.java,
+	  TransferUtils.java (getIdentifierForPort, scanPorts,
+	  getSerialPortNames), DataTransporter.java: Introduce a fake port for
+	  testing.
+	* DataTransporter.java (SPL): Removed unnecessary constructor.
+	* DataTransporter.java (send): Fix the check for input length. Make one
+	  send() call the other. Throw exceptions in case of problems instead
+	  of returning silently.
+	* DataTransporter.java (isTerminatorPresent, getDeviceType,
+	  getExtraDeviceType, getIMEI): Call trim() just once.
+	* TransferOperation.java: Extracted from TransferUtils.TUOperation.
+	* PanelUtils.java: A new class for utility methods for panels/tabs.
+	* MainWindow.java (putListInTable): Moved method to PanelUtils.
+	* AddrBookPanel.java (getAddrListButActionPerformed),
+	  EventsPanel.java (getEventListButActionPerformed),
+	  MoviePanel.java (getAnimListButActionPerformed),
+	  PhotoPanel.java (getPhotoListButActionPerformed),
+	  RingtonePanel.java (getRingListButActionPerformed),
+	  TasksPanel.java (getTodoListButActionPerformed):
+	  Moved common code to PanelUtils.putListInTable().
+	* AddrBookPanel.java (downloadAddrButdownloadButActionPerformed),
+	  EventsPanel.java (downloadEventButdownloadButActionPerformed),
+	  JavasPanel.java (downloadJavaButdownloadButActionPerformed),
+	  MoviePanel.java (downloadAnimButdownloadButActionPerformed),
+	  PhotoPanel.java (downloadPhotoButdownloadButActionPerformed),
+	  RingtonePanel.java (downloadRingButdownloadButActionPerformed),
+	  TasksPanel.java (downloadTodoButdownloadButActionPerformed):
+	  Moved common code to PanelUtils.download().
+	* AddrBookPanel.java (uploadAddrButActionPerformed),
+	  EventsPanel.java (uploadEventButActionPerformed),
+	  JavasPanel.java (uploadJavaButActionPerformed),
+	  MoviePanel.java (uploadAnimButActionPerformed),
+	  PhotoPanel.java (uploadPhotoButActionPerformed),
+	  RingtonePanel.java (uploadRingButActionPerformed),
+	  TasksPanel.java (uploadTodoButActionPerformed):
+	  Moved common code to PanelUtils.upload().
+	* AddrBookPanel.java (deleteAddrButdeleteButActionPerformed),
+	  EventsPanel.java (deleteEventButdeleteButActionPerformed),
+	  JavasPanel.java (deleteJavaButdeleteButActionPerformed),
+	  MoviePanel.java (deleteAnimButdeleteButActionPerformed),
+	  PhotoPanel.java (deletePhotoButdeleteButActionPerformed),
+	  RingtonePanel.java (deleteRingButdeleteButActionPerformed),
+	  TasksPanel.java (deleteTodoButdeleteButActionPerformed):
+	  Moved common code to PanelUtils.delete().
+	* MainWindow.java (dynamicUpload): Moved code to PanelUtils.upload()
+	  and deleted the method.
+	* MainWindow.java (setProgressCurrentValue, getProgressCurrentValue,
+	  setProgressMinimumValue, setProgressMaximumValue): New methods for
+	  manipulation the progress bar to avoid direct access.
+	* JYMAGTab.java, AddrBookPanel.java, EventsPanel.java, JavasPanel.java,
+	  MoviePanel.java, PhotoPanel.java, RingtonePanel.java, TasksPanel.java
+	  (setProgressBar): Removed unused method and the progress bar fields.
+	* AddrBookPanel.java, EventsPanel.java, JavasPanel.java,
+	  MoviePanel.java, PhotoPanel.java, RingtonePanel.java, TasksPanel.java
+	  (setProgressBar): Removed unused fields and imports after cleanup.
+	* AddrBookPanel.java, AlarmPanel.java, EventsPanel.java,
+	  JavasPanel.java, MoviePanel.java, PhotoPanel.java, RingtonePanel.java,
+	  SMSPanel.java, TasksPanel.java, MainWindow.java:
+	  Added @SuppressWarnings for generated code.
+	* PhoneElement.java, PhoneMessage.java: Made Serializable.
+	* ConfigFile.java (write): Close the stream on exception.
+	* DataTransporter.java (putFile): Close the stream on exception.
+	* TransferUtils.java (sendFileAsCommands): Close the stream on
+	  exception.
+	* RawCommunicator.java (sendFileButActionPerformed): Close the stream on
+	  exception.
+	* src/BogDroSoft/jymag/rsrc/*.{svg,png}, setup/jymag.ico: new icons,
+	  self-made using Inkscape (https://inkscape.org/).
+	* MainWindow.properties: removed the references to rxtx.org
+	* Makefile: Changed the URL passed to osslsigncode to the new URL
+	  https://jymag.sourceforge.io/. Added more timestamp servers and
+	  switched to the FreeTSA server. Changed the distribution file names
+	  to all begin with "JYMAG" for better sorting in file managers. Moved
+	  the NSIS options to a separate variable. Removed some deprecated,
+	  commented-out commands. Updated the link to HTMLdoc. Changed the
+	  signing certificate. Added a target for re-making PNG icons from the
+	  SVG icons and made the 'jar' target depend on it. Updated
+	  osslsigncode to version 2.2 and updated the link to the project.
+	  Deleting the signed installer before re-creating it to prevent
+	  errors from the new osslsigncode. Switched osslsigncode to use the
+	  RFC-3161 TSA option ("-ts") for the FreeTSA server.
+	* setup/launch4j-jymag*.xml, project properties: Changed the
+	  application's URL to https://jymag.sourceforge.io/.
+	* setup/jymag.nsi: Changed the output executable name to
+	  JYMAG-${VERSION}-setup.exe for better sorting in file managers.
+	  Changed the website link to https://jymag.sourceforge.io/. Added a
+	  commented-out Icon command. Added constants for the registry
+	  locations. Added the modern UI and conditional blocks to enable it
+	  (controlled by the Makefile). In the modern installer set the
+	  execution level to admin (it is required anyway to modify the
+	  registry, but setting it explicitly removes trashing the general
+	  Start Menu for all users in compatibility mode). Enabled Unicode
+	  mode in the modern installer. Updated the NSIS link.
+	* setup/launch4j-jymag*.xml: Upgraded to Launch4j version 3.14.
+	* run*.sh: Added the final end-of-line
+	* manual/*/readme.html: Added information about IMYplay. Fixed the
+	  link to the license file. Updated the link to Java SE downloads.
+	  Added the links to Apache NetBeans. Corrected the path to the JAR
+	  file in the binary distribution. Corrected starting the './run*.sh'
+	  files. More formatting. More details in error reporting and a link
+	  to the SourceForge defect reporting page.
+	* manual/*/*.html: Removed the cross-links to alternate versions
+	  because not all may always get installed. HTML corrections.
+	* manual/*/manual_cmd.html: Make the file sending more clear.
+	* manual/rsrc/css/jymag.css: Cleanup.
+	* manual/*/rsrc/*png: New screenshots after changing the icons.
+	* MainWindow.properties, manual/*/index.html, manual/*/readme.html,
+	  README: Use the more general phrase "AT-based phones", with Sagem as
+	  an example.
+	* manual/*/index.html, README: Updated legal information. Added a link
+	  to JYMAG's website on SourceForge.
+	* manual/*/index.html, manual/*/readme.html, README: Updated links to
+	  the RxTx sites.
+	* manual/*/title.html, Makefile: Added a title page just for inserting
+	  the digital signature.
+	* project properties: changed the license to GPL3
+	* build system: Switched from PortableSigner to JSignPdf. Switched to
+	  Apache NetBeans 12.6.
+
+2020-02-05	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.7:
 	  Re-set the list of current ports when "Scan ports" is clicked.
@@ -71,7 +260,7 @@
 	* README, manual/*/readme.html: allow equivalents of RxTx to be used,
 	  more details about port locking permissions.
 
-2018-06-03	Bogdan Drozdowski <bogdandr@op.pl>
+2018-06-03	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.6:
 	  This is mainly a fixing/improvement release. UI responsiveness
@@ -103,7 +292,7 @@
 	* MainWindow.java: disabling controls while performing operations.
 	  Disable also the buttons for port scanning, capabilities, raw
 	  commands and signal power window, because when an operation is in
-	  progress, opening a scan or any ofthose windows will cause a "port
+	  progress, opening a scan or any of those windows will cause a "port
 	  in use" error anyway. Added dedicated methods for changing the status
 	  label.
 	* DataTransporter.java: corrected the regex for "extra phone type"
@@ -164,10 +353,10 @@
 	  when it's finished. Since the upload is done on the EDT, the change
 	  may not be reflected immediately on the GUI.
 
-2016-06-30	Bogdan Drozdowski <bogdandr@op.pl>
+2016-06-30	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.5:
-	  This is mostly a bugfix and maintenenace release. Updated unit tests
+	  This is mostly a bugfix and maintenance release. Updated unit tests
 	  (Mockito-1.10.x now required). Improvements to the build system.
 	  Fixes to capabilities' scan and port scan. Other minor improvements.
 	  Documentation updated.
@@ -231,7 +420,7 @@
 	* TransferUtils.java (performOperation): improved checking if the work
 	  is done, because the UI could hang
 
-2014-08-15	Bogdan Drozdowski <bogdandr@op.pl>
+2014-08-15	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.4:
 	  Code cleanup. Minor fixes and optimizations to the application.
@@ -277,13 +466,13 @@
 	  manual command is selected
 	* PhoneMessage.java: corrected the response match patterns
 
-2013-02-17	Bogdan Drozdowski <bogdandr@op.pl>
+2013-02-17	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.3:
 	  Code cleanup and organizing into packages (GUI, communication).
 	  Added answering a call and changing the volume level. Added sending
 	  a file with commands/data on the command line. Removed the
-	  dependency on the beansbinding library, making the binary
+	  dependency on the "beansbinding" library, making the binary
 	  distibution smaller.
 	* Utils.STATUS: get the bundle and the strings just once
 	* Makefile: allowing excluding files from source distribution, signing
@@ -318,7 +507,7 @@
 	* SignalDisplayer.java: fixed closing the window when there is no
 	  communication.
 
-2012-06-30	Bogdan Drozdowski <bogdandr@op.pl>
+2012-06-30	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.2:
 	  Dialing numbers. GUI improvements. Fixed some of the warnings
@@ -364,13 +553,13 @@
 	  options: --dial-voice, --dial-data, --hangup.
 	* README, manual/en/readme.html, manual/pl/readme.html: added new
 	  command-line options, fixed typos.
-	* setup/jymag.nsi: corrected the "send to" shorcut
+	* setup/jymag.nsi: corrected the "send to" shortcut
 	* run.bat, run-en.bat: corrected the end-of-line sequence and
 	  replaced "java" with "javaw"
 	* manual/*/{index.html,main_window.html,manual_cmd.html,
 	  tables.html}: updated with new features and screenshots.
 
-2011-11-06	Bogdan Drozdowski <bogdandr@op.pl>
+2011-11-06	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.1:
 	  Listing, reading, sending and deleting SMS messages. Improved
@@ -409,7 +598,7 @@
 	* setup/launch4j-jymag.xml: the launch4j configuration file.
 	* setup/jymag.nsi: the NSIS installer for JYMAG.
 
-2011-04-26	Bogdan Drozdowski <bogdandr@op.pl>
+2011-04-26	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 1.0:
 	  Code changes and simplification. Drag&drop support. More terminal
@@ -422,7 +611,7 @@
 	* CapabilityWindow.java (getCapButActionPerformed): using a
 	  SwingWorker to perform phone operations.
 	* DataTransporter.java: added untested methods for sending, receiving,
-	  deleting and getting the list of SMS messges (nothing more possible
+	  deleting and getting the list of SMS messages (nothing more possible
 	  because of the unknown format). Added methods for clearing and
 	  setting the RTS and DTR signals. Added method for reading the signal
 	  power. Added methods that check the state of the signals.
@@ -451,13 +640,13 @@
 	* DataTransporter.java (findBytes): fixed an ArrayIndexOutOfBounds
 	  exception.
 	* JYMAGTransferHandler.java: drag&drop support.
-	* RawCommunicator.java: pushbutton for the RTS and DTR signal, labels
+	* RawCommunicator.java: pushbuttons for the RTS and DTR signal, labels
 	  for the RI, CTS, DSR and DCD signals. Added the ability to send a
 	  file to the phone.
 	* SignalDisplayer.java: a window which displays the signal power
 	  detected by the phone.
 
-2010-08-01	Bogdan Drozdowski <bogdandr@op.pl>
+2010-08-01	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.9:
 	  Each window is now in a ScrollPane, so if the contents is too big
@@ -476,12 +665,12 @@
 	  class. Added methods for getting the number of supported alarms,
 	  getting the list of currently-enabled alarms, adding new alarms and
 	  deleting alarms.
-	* PhoneAlarm.java: a new class represning alarm clocks/times.
+	* PhoneAlarm.java: a new class representing alarm clocks/times.
 	* MainWindow.java: support for getting list of, updating and deleting
 	  phone alarms.
 	* Starter.java: fixed the startup error message displaying.
 
-2009-11-08	Bogdan Drozdowski <bogdandr@op.pl>
+2009-11-08	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.8:
 	  Fix for downloading non-Sagem JPG files. Unchecked downloading of CGM
@@ -513,7 +702,7 @@
 	* Starter.java: a new main class that tries to launch the program or
 	  displays an error to the user.
 
-2008-11-15	Bogdan Drozdowski <bogdandr@op.pl>
+2008-11-15	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.7:
 	  Verified uploading of AMR ringtones.
@@ -554,7 +743,7 @@
 	* run-en.sh, run-en.bat: these files allow running the program in
 	  English, no matter what the system language is.
 
-2008-08-13	Bogdan Drozdowski <bogdandr@op.pl>
+2008-08-13	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.6:
 	  Moving listeners to private inner classes and minimizing the number
@@ -592,7 +781,7 @@
 	  because I don't know if it would work). Had to do it, because when a
 	  port disappears (unplugged etc.), RxTx crashes the program.
 
-2008-07-12	Bogdan Drozdowski <bogdandr@op.pl>
+2008-07-12	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.5:
 	* DataTransporter.java: Better contents matching using byte arrays
@@ -608,15 +797,15 @@
 	* MainWindow.java: added icons for the tabs. Redirect standard error
 	  stream to a file to save exceptions for easier bug reporting. Using
 	  SwingWorker threads to do long-lasting background jobs, so that the
-	  GUI remains respondive. Central exception handling. A new label with
+	  GUI remains responsive. Central exception handling. A new label with
 	  the current program state. A new label with the currently selected
 	  phone's firmware version. File choosing windows now all remember the
-	  last used directory. More upload error messgaes, reflecting the changes
+	  last used directory. More upload error messages, reflecting the changes
 	  in file upload. Changed download dialog box to "save" type.
-	* Utils.java: a new utility class containig some useful methods and
+	* Utils.java: a new utility class containing some useful methods and
 	  fields.
 
-2008-04-08	Bogdan Drozdowski <bogdandr@op.pl>
+2008-04-08	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.4:
 	  - icons moved to a separate directory/package
@@ -631,7 +820,7 @@
 	  data receiving attempts. This fixes the hanging. Fixed bug with
 	  unrecognised file type - the contents was written twice.
 
-2008-03-30	Bogdan Drozdowski <bogdandr@op.pl>
+2008-03-30	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.3:
 	  - downloading addressbook entries (vCards)
@@ -649,7 +838,7 @@
 	* MainWindow.java: fixed bug with file choosers. Better layout in
 	  maximized window.
 
-2008-03-26	Bogdan Drozdowski <bogdandr@op.pl>
+2008-03-26	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.2:
 	  - uploading and downloading WAV ringtones
@@ -683,15 +872,15 @@
 	* DataTransporter.java (putFile): double check if the file has a
 	  supported extension
 
-2008-03-22	Bogdan Drozdowski <bogdandr@op.pl>
+2008-03-22	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 0.1 features:
 	  - port scanning
 	  - setting port parameters
 	  - retrieving the list of photos
 	  - retrieving the list of ringtones
-	  - retrieveing JPG, GIF, BMP and PNG pictures
-	  - retrieveing MIDI and AMR ringtones
+	  - retrieving JPG, GIF, BMP and PNG pictures
+	  - retrieving MIDI and AMR ringtones
 	  - uploading JPG, GIF, BMP and PNG pictures
 	  - uploading MIDI ringtones
 	  - command-line options: --help, -h, -?, /?, --version, -v,

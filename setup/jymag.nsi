@@ -5,28 +5,36 @@
 !define PUBLISHER "Bogdan 'bogdro' Drozdowski"
 
 ; The JYMAG website address
-!define JYMAGURL "http://jymag.sf.net"
+!define JYMAGURL "https://jymag.sourceforge.io/"
 
 !define REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\JYMAG"
+!define REG_DIR_INSTDIR "Software\JYMAG"
+!define REG_KEY_INSTDIR "Install_Dir"
 
 SetCompressor /solid lzma
-;Unicode true; use when only newer Windowses will be supported
+!if "${OLDSETUP}" != 1
+	Unicode true	; use only in the modern installer
+!endif
 
 !include "Sections.nsh"
 !include "FileFunc.nsh"
+
+!if "${OLDSETUP}" != 1
+	!include "MUI2.nsh"
+!endif
 
 ; The name of the installer, displayed in the title bar:
 Name "JYMAG ${VERSION}"
 
 ; The name of the installer FILE (.exe)
-OutFile "Setup-JYMAG-${VERSION}.exe"
+OutFile "JYMAG-${VERSION}-setup.exe"
 
 ; The default installation directory:
 InstallDir "$PROGRAMFILES\JYMAG"
 
 ; Registry key to check for directory (so if you install again, it will
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\JYMAG" "Install_Dir"
+InstallDirRegKey HKLM "${REG_DIR_INSTDIR}" "${REG_KEY_INSTDIR}"
 
 CRCCheck force
 
@@ -71,13 +79,28 @@ CRCCheck force
 ;!define DAYOFMONTH 03
 
 VIAddVersionKey "ProductName" "JYMAG"
-VIAddVersionKey "Comments" "Installer created on ${YEAR}-${MONTH}-${DAYOFMONTH}, ${__TIME__} with the free Nullsoft Scriptable Install System, http://nsis.sf.net"
+; comments seem to appear only in MSI files
+VIAddVersionKey "Comments" "Installer created on ${YEAR}-${MONTH}-${DAYOFMONTH}, ${__TIME__} with the free Nullsoft Scriptable Install System, https://nsis.sourceforge.io"
 VIAddVersionKey "LegalCopyright" "Copyright (c) 2008-${YEAR} ${PUBLISHER}"
 VIAddVersionKey "FileDescription" "The JYMAG installer for Windows"
 VIAddVersionKey "FileVersion" "${VERSION}"
 VIAddVersionKey "ProductVersion" "${VERSION}"
 
-RequestExecutionLevel none
+!if "${OLDSETUP}" != 1
+	RequestExecutionLevel none
+!else
+	; prevent trashing the common menu for all users:
+	RequestExecutionLevel admin
+!endif
+
+; leave the default NSIS icon for now, otherwise many files will have the same icon
+!if "${OLDSETUP}" != 1
+	;!define MUI_ICON jymag.ico
+	;!define MUI_UNICON jymag.ico
+!else
+	;Icon jymag.ico
+!endif
+
 LicenseData "license.txt"
 
 ; -----------------------------
@@ -91,14 +114,38 @@ Var has_start_menu
 ; -----------------------------
 ; Installer pages (screens)
 
-Page license
-Page components
-; "" "" afterComponentSelect
-Page directory "" "" afterDirSelect
-Page instfiles "" "" afterInstall
+!if "${OLDSETUP}" != 1
 
-UninstPage uninstConfirm
-UninstPage instfiles
+	!define MUI_FINISHPAGE_NOAUTOCLOSE
+	!define MUI_UNFINISHPAGE_NOAUTOCLOSE
+
+	!insertmacro MUI_PAGE_WELCOME
+	!insertmacro MUI_PAGE_LICENSE "license.txt"
+	!insertmacro MUI_PAGE_COMPONENTS
+
+	!define MUI_PAGE_CUSTOMFUNCTION_LEAVE afterDirSelect
+	!insertmacro MUI_PAGE_DIRECTORY
+
+	!define MUI_PAGE_CUSTOMFUNCTION_LEAVE afterInstall
+	!insertmacro MUI_PAGE_INSTFILES
+
+	!insertmacro MUI_PAGE_FINISH
+
+	!insertmacro MUI_UNPAGE_WELCOME
+	!insertmacro MUI_UNPAGE_CONFIRM
+	!insertmacro MUI_UNPAGE_INSTFILES
+	!insertmacro MUI_UNPAGE_FINISH
+
+	!insertmacro MUI_LANGUAGE "English"
+!else
+	Page license
+	Page components
+	Page directory "" "" afterDirSelect
+	Page instfiles "" "" afterInstall
+
+	UninstPage uninstConfirm
+	UninstPage instfiles
+!endif
 
 ; -----------------------------
 ; Functions:
@@ -111,7 +158,7 @@ Function afterInstall
 	StrCmp $is_removable "1" skip_reg
 
 		; Write the installation path into the registry
-		WriteRegStr   HKLM "SOFTWARE\JYMAG" "Install_Dir" "$INSTDIR"
+		WriteRegStr   HKLM "${REG_DIR_INSTDIR}" "${REG_KEY_INSTDIR}" "$INSTDIR"
 
 		; write unintallation information for the Control Panel:
 		WriteRegStr   HKLM "${REG_KEY}" "DisplayIcon" "$INSTDIR\jymag-en.exe"
@@ -276,7 +323,7 @@ SectionGroupEnd
 Section "Uninstall"
 
 	; delete the last-installed directory information
-	DeleteRegKey HKLM "SOFTWARE\JYMAG"
+	DeleteRegKey HKLM "${REG_DIR_INSTDIR}"
 	; delete uninstallation information from the Control Panel:
 	DeleteRegKey HKLM "${REG_KEY}"
 
@@ -308,15 +355,19 @@ Section "Uninstall"
 	Delete /REBOOTOK "$QUICKLAUNCH\JYMAG.lnk"
 	Delete /REBOOTOK "$SENDTO\JYMAG.lnk"
 
+	; Reboot is handled by the Modern UI automatically,
+	; so handle it manually only in the classic UI:
+!if "${OLDSETUP}" == 1
+
 	IfRebootFlag 0 end
 		MessageBox MB_YESNOCANCEL "The system needs to be rebooted to finish the uninstallation.\
 			$\r$\nDo you wish to reboot now?" IDNO end IDCANCEL end
 		Reboot
 
 	end:
+!endif
 
 SectionEnd
-
 
 ; -----------------------------
 
@@ -373,4 +424,3 @@ Function afterDirSelect
 		StrCpy $is_removable "0"
 
 FunctionEnd
-

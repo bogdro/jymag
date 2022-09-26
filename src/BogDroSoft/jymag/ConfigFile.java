@@ -1,13 +1,13 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
@@ -40,7 +35,6 @@ import java.util.regex.Pattern;
 public class ConfigFile
 {
 	private final File cfgFile;
-	private static final String emptyString = "";		// NOI18N
 
 	// communication parameters:
 	private String port;
@@ -59,33 +53,33 @@ public class ConfigFile
 	private int selectedTab;
 
 	// patterns for matching:
-	private static final Pattern portPat = Pattern.compile
+	private static final Pattern PORT_PATTERN = Pattern.compile
 			("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern speedPat = Pattern.compile
+	private static final Pattern SPEED_PATTERN = Pattern.compile
 			("speed\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern dBitsPat = Pattern.compile
+	private static final Pattern DATA_BITS_PATTERN = Pattern.compile
 			("databits\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern parityPat = Pattern.compile
+	private static final Pattern PARITY_PATTERN = Pattern.compile
 			("parity\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern sBitsPat = Pattern.compile
+	private static final Pattern STOP_BITS_PATTERN = Pattern.compile
 			("stopbits\\s*=\\s*([\\d\\.]+)", Pattern.CASE_INSENSITIVE);	// NOI18N
-	private static final Pattern flowCtlPat = Pattern.compile
+	private static final Pattern FLOW_CONTROL_PATTERN = Pattern.compile
 			("flowcontrol\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);	// NOI18N
-	private static final Pattern xPat = Pattern.compile
+	private static final Pattern X_COORD_PATTERN = Pattern.compile
 			("x\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern yPat = Pattern.compile
+	private static final Pattern Y_COORD_PATTERN = Pattern.compile
 			("y\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern widthPat = Pattern.compile
+	private static final Pattern WIDTH_PATTERN = Pattern.compile
 			("width\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern heightPat = Pattern.compile
+	private static final Pattern HEIGHT_PATTERN = Pattern.compile
 			("height\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern isMaxPat = Pattern.compile
+	private static final Pattern IS_MAXIMIZED_PATTERN = Pattern.compile
 			("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern fontSizePat = Pattern.compile
+	private static final Pattern FONT_SIZE_PATTERN = Pattern.compile
 			("font_size\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern selectedTabPat = Pattern.compile
+	private static final Pattern SELECTED_TAB_PATTERN = Pattern.compile
 			("tab\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern commentPat = Pattern.compile
+	private static final Pattern COMMENT_PATTERN = Pattern.compile
 			("^#.*");		// NOI18N
 
 	private Matcher portM;
@@ -123,7 +117,7 @@ public class ConfigFile
 	 */
 	public void read () throws Exception
 	{
-		port = emptyString;
+		port = Utils.EMPTY_STR;
 		speed = 115200;
 		dBits = 8;
 		parity = 0;
@@ -160,20 +154,20 @@ public class ConfigFile
 			{
 				continue;
 			}
-			portM = portPat.matcher (line);
-			speedM = speedPat.matcher (line);
-			dBitsM = dBitsPat.matcher (line);
-			parityM = parityPat.matcher (line);
-			sBitsM = sBitsPat.matcher (line);
-			flowCtlM = flowCtlPat.matcher (line);
-			xM = xPat.matcher (line);
-			yM = yPat.matcher (line);
-			widthM = widthPat.matcher (line);
-			heightM = heightPat.matcher (line);
-			isMaxM = isMaxPat.matcher (line);
-			fontSizeM = fontSizePat.matcher (line);
-			selectedTabM = selectedTabPat.matcher (line);
-			commentM = commentPat.matcher (line);
+			portM = PORT_PATTERN.matcher (line);
+			speedM = SPEED_PATTERN.matcher (line);
+			dBitsM = DATA_BITS_PATTERN.matcher (line);
+			parityM = PARITY_PATTERN.matcher (line);
+			sBitsM = STOP_BITS_PATTERN.matcher (line);
+			flowCtlM = FLOW_CONTROL_PATTERN.matcher (line);
+			xM = X_COORD_PATTERN.matcher (line);
+			yM = Y_COORD_PATTERN.matcher (line);
+			widthM = WIDTH_PATTERN.matcher (line);
+			heightM = HEIGHT_PATTERN.matcher (line);
+			isMaxM = IS_MAXIMIZED_PATTERN.matcher (line);
+			fontSizeM = FONT_SIZE_PATTERN.matcher (line);
+			selectedTabM = SELECTED_TAB_PATTERN.matcher (line);
+			commentM = COMMENT_PATTERN.matcher (line);
 
 			if ( commentM.matches () )
 			{
@@ -379,40 +373,59 @@ public class ConfigFile
 	public void write () throws Exception
 	{
 		// don't force any encodings, because the filesystems' names may be in a different encoding
-		BufferedWriter w = new BufferedWriter(new PrintWriter (cfgFile));
-		w.write ("port = " + port);	// NOI18N
-		w.newLine ();
-		w.write ("speed = " + speed);	// NOI18N
-		w.newLine ();
-		w.write ("databits = " + dBits);	// NOI18N
-		w.newLine ();
-		w.write ("# Parity: 0=none, 1=even, 2=odd, 3=space, 4=mark.");	// NOI18N
-		w.newLine ();
-		w.write ("parity = " + parity);	// NOI18N
-		w.newLine ();
-		w.write ("# Stop bits: 0=1 bit, 1=1.5 bits, 2=2 bits.");	// NOI18N
-		w.newLine ();
-		w.write ("stopbits = " + sBits);	// NOI18N
-		w.newLine ();
-		w.write ("# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware.");	// NOI18N
-		w.newLine ();
-		w.write ("flowcontrol = " + flowCtl);	// NOI18N
-		w.newLine ();
-		w.write ("x = " + x);	// NOI18N
-		w.newLine ();
-		w.write ("y = " + y);	// NOI18N
-		w.newLine ();
-		w.write ("width = " + width);	// NOI18N
-		w.newLine ();
-		w.write ("height = " + height);	// NOI18N
-		w.newLine ();
-		w.write ("ismax = " + ((isMax)? 1 : 0));	// NOI18N
-		w.newLine ();
-		w.write ("font_size = " + fontSize);	// NOI18N
-		w.newLine ();
-		w.write ("tab = " + selectedTab);	// NOI18N
-		w.newLine ();
-		w.close ();
+		BufferedWriter w = null;
+		try
+		{
+			w = new BufferedWriter(new PrintWriter (cfgFile));
+			w.write ("port = " + port);	// NOI18N
+			w.newLine ();
+			w.write ("speed = " + speed);	// NOI18N
+			w.newLine ();
+			w.write ("databits = " + dBits);	// NOI18N
+			w.newLine ();
+			w.write ("# Parity: 0=none, 1=even, 2=odd, 3=space, 4=mark.");	// NOI18N
+			w.newLine ();
+			w.write ("parity = " + parity);	// NOI18N
+			w.newLine ();
+			w.write ("# Stop bits: 0=1 bit, 1=1.5 bits, 2=2 bits.");	// NOI18N
+			w.newLine ();
+			w.write ("stopbits = " + sBits);	// NOI18N
+			w.newLine ();
+			w.write ("# Flow control: 0=none, 1=software (XON/XOFF), 2=hardware (RTS/CTS), 3=software+hardware.");	// NOI18N
+			w.newLine ();
+			w.write ("flowcontrol = " + flowCtl);	// NOI18N
+			w.newLine ();
+			w.write ("x = " + x);	// NOI18N
+			w.newLine ();
+			w.write ("y = " + y);	// NOI18N
+			w.newLine ();
+			w.write ("width = " + width);	// NOI18N
+			w.newLine ();
+			w.write ("height = " + height);	// NOI18N
+			w.newLine ();
+			w.write ("ismax = " + ((isMax)? 1 : 0));	// NOI18N
+			w.newLine ();
+			w.write ("font_size = " + fontSize);	// NOI18N
+			w.newLine ();
+			w.write ("tab = " + selectedTab);	// NOI18N
+			w.newLine ();
+			w.close ();
+		}
+		catch (Throwable t)
+		{
+			Utils.handleException(t, "ConfigFile.write");
+			if (w != null)
+			{
+				try
+				{
+					w.close();
+				}
+				catch (Throwable t2)
+				{
+					Utils.handleException(t2, "ConfigFile.write->exception");
+				}
+			}
+		}
 	}
 
 	// ================ setters:

@@ -1,13 +1,13 @@
 /*
  * PhoneMessage.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,16 +15,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,8 +28,10 @@ import java.util.regex.Pattern;
  * This class represents a message in the phone.
  * @author Bogdan Drozdowski
  */
-public class PhoneMessage
+public class PhoneMessage implements Serializable
 {
+	private static final long serialVersionUID = 92L;
+
 	private String message = null;
 	private String recipientNum = null;
 	private String datetime = null;
@@ -52,44 +50,43 @@ public class PhoneMessage
 	+CMGR: "<status>",
 	<body>
 */
-	private static final Pattern messageListPattern
+	private static final Pattern MESSAGE_LIST_PATTERN
 		= Pattern.compile ("(\\+CMGL:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"		// NOI18N
 			+ "\\s*\"(\\+?\\d+)\"\\s*,"						// NOI18N
 			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
 			+ "\\s*,\\d+[\r\n]+([\\w\\s]+)[\r\n]",					// NOI18N
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-	private static final Pattern messageListPatternNotFull
+	private static final Pattern MESSAGE_LIST_PATTERN_NOT_FULL
 		= Pattern.compile ("(\\+CMGL:)?\\s*(\\d+)\\s*,\\s*\"([\\w\\s]*)\"\\s*,"		// NOI18N
 			+ "\\s*(\"(\\+?\\d+)\"\\s*,"						// NOI18N
 			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
 			+ "\\s*,\\d+)?[\r\n]+([\\w\\s]+)[\r\n]",				// NOI18N
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-	private static final Pattern messagePatternCMGR
+	private static final Pattern MESSAGE_PATTERN_CMGR
 		= Pattern.compile ("(\\+CMGR:)?\\s*\"([\\w\\s]*)\"\\s*,"			// NOI18N
 			+ "\\s*\"(\\+?\\d+)\"\\s*,"						// NOI18N
 			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
 			+ "\\s*,\\d+[\r\n]+([\\w\\s]+)[\r\n]",					// NOI18N
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-	private static final Pattern messagePatternCMGRNotFull
+	private static final Pattern MESSAGE_PATTERN_CMGR_NOT_FULL
 		= Pattern.compile ("(\\+CMGR:)?\\s*\"([\\w\\s]*)\"\\s*,"			// NOI18N
 			+ "\\s*(\"(\\+?\\d+)\"\\s*,"						// NOI18N
 			+ "\\s*\"(\\d{2}/\\d{2}/\\d{2},\\d{2}:\\d{2}:\\d{2}\\+\\d{2})\"\\s*,"	// NOI18N
 			+ "\\s*,\\d+)?[\r\n]+([\\w\\s]+)[\r\n]",				// NOI18N
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-	private static final String esc = "\033" /* ESC */;					// NOI18N
-	private static final String comma = ",";						// NOI18N
-	private static final String toStringStart = "PhoneMessage[";				// NOI18N
-	private static final String toStringEnd = "]";						// NOI18N
-	private static final String toStringID = "ID=";						// NOI18N
+	private static final String ESC = "\033" /* ESC */;					// NOI18N
+	private static final String TOSTRING_BEGIN = "PhoneMessage[";				// NOI18N
+	private static final String TOSTRING_END = "]";						// NOI18N
+	private static final String TOSTRING_ID = "ID=";						// NOI18N
 	// the rest can be empty. The user needs to know only where the ID is
-	private static final String toStringStatus = "";					// NOI18N
-	private static final String toStringNumber = "";					// NOI18N
-	private static final String toStringDateTime = "";					// NOI18N
-	private static final String toStringBody = "";						// NOI18N
+	private static final String TOSTRING_STATUS = "";					// NOI18N
+	private static final String TOSTRING_NUMBER = "";					// NOI18N
+	private static final String TOSTRING_DATETIME = "";					// NOI18N
+	private static final String TOSTRING_BODY = "";						// NOI18N
 
 	/* ==================================================== */
 
@@ -194,7 +191,7 @@ public class PhoneMessage
 	 */
 	public synchronized String getMessageString ()
 	{
-		return message + esc;
+		return message + ESC;
 	}
 
 	/**
@@ -209,7 +206,7 @@ public class PhoneMessage
 			return null;
 		}
 
-		Matcher m = messageListPattern.matcher (response);
+		Matcher m = MESSAGE_LIST_PATTERN.matcher (response);
 		if ( m.matches () )
 		{
 			PhoneMessage msg = new PhoneMessage();
@@ -220,7 +217,7 @@ public class PhoneMessage
 			msg.setMessage (m.group (6));
 			return msg;
 		}
-		m = messageListPatternNotFull.matcher (response);
+		m = MESSAGE_LIST_PATTERN_NOT_FULL.matcher (response);
 		if ( m.matches () )
 		{
 			PhoneMessage msg = new PhoneMessage();
@@ -231,7 +228,7 @@ public class PhoneMessage
 			msg.setMessage (m.group (7));
 			return msg;
 		}
-		m = messagePatternCMGR.matcher (response);
+		m = MESSAGE_PATTERN_CMGR.matcher (response);
 		if ( m.matches () )
 		{
 			PhoneMessage msg = new PhoneMessage();
@@ -241,7 +238,7 @@ public class PhoneMessage
 			msg.setMessage (m.group (5));
 			return msg;
 		}
-		m = messagePatternCMGRNotFull.matcher (response);
+		m = MESSAGE_PATTERN_CMGR_NOT_FULL.matcher (response);
 		if ( m.matches () )
 		{
 			PhoneMessage msg = new PhoneMessage();
@@ -263,8 +260,10 @@ public class PhoneMessage
 	@Override
 	public synchronized String toString ()
 	{
-		return toStringStart + toStringID + id + comma + toStringStatus + status + comma
-			+ toStringNumber + recipientNum + comma + toStringDateTime + datetime + comma
-			+ toStringBody + message + toStringEnd;
+		return TOSTRING_BEGIN + TOSTRING_ID + id + Utils.COMMA
+			+ TOSTRING_STATUS + status + Utils.COMMA
+			+ TOSTRING_NUMBER + recipientNum + Utils.COMMA
+			+ TOSTRING_DATETIME + datetime + Utils.COMMA
+			+ TOSTRING_BODY + message + TOSTRING_END;
 	}
 }

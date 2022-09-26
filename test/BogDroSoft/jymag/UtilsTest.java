@@ -1,13 +1,13 @@
 /*
  * UtilsTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,16 +15,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
 
+import BogDroSoft.jymag.gui.UiUtils;
 import java.awt.Component;
 import java.io.File;
 import java.util.Calendar;
@@ -94,7 +90,7 @@ public class UtilsTest
 	{
 		System.out.println ("changeGUI");
 		Runnable r = null;
-		Utils.changeGUI (r);
+		UiUtils.changeGUI (r);
 		// passing anything different from null can't be checked,
 		// because there's no GUI
 	}
@@ -108,7 +104,7 @@ public class UtilsTest
 		System.out.println ("setFontSize");
 		Component c = new JLabel ("testLabel");
 		float newSize = 11.0F;
-		Utils.setFontSize (c, newSize);
+		UiUtils.setFontSize (c, newSize);
 		if ( Math.abs (newSize - c.getFont ().getSize ()) > 0.1 )
 		{
 			fail ("Size differs: new=" + c.getFont ().getSize ()
@@ -287,7 +283,7 @@ public class UtilsTest
 		String description = "";
 		Map<String, Integer> filetype = new HashMap<String, Integer> (1);
 		filetype.put ("ext", Integer.valueOf (0));
-		JFileChooser result = Utils.createOpenFileChooser (description, filetype);
+		JFileChooser result = UiUtils.createOpenFileChooser (description, filetype);
 		assertNotNull (result);
 		FileFilter resultFilter = result.getFileFilter ();
 		assertTrue (resultFilter.accept (new File ("test.ext")));
@@ -478,7 +474,7 @@ public class UtilsTest
 		System.out.println ("getFontSize");
 		JSpinner spin = new JSpinner();
 		spin.setValue(Integer.valueOf(fontSize));
-		assertTrue(Math.abs(fontSize - Utils.getFontSize(spin)) < 0.001);
+		assertTrue(Math.abs(fontSize - UiUtils.getFontSize(spin)) < 0.001);
 	}
 
 }

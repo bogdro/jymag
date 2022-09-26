@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32.0px"
+   height="32.0px"
+   viewBox="0 0 32.0 32.0"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="sms.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14352"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="14.538721"
+     inkscape:cx="17.780106"
+     inkscape:cy="16.43886"
+     inkscape:window-width="1366"
+     inkscape:window-height="701"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-object-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid14415" />
+  </sodipodi:namedview>
+  <defs
+     id="defs14347">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect14933"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect14904"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect14796"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect14679"
+       is_visible="true"
+       lpeversion="1" />
+  </defs>
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g14977"
+       transform="translate(0.02294267,-0.09750331)">
+      <rect
+         style="fill:#ffff00;stroke:#000000;stroke-width:0.4;stroke-linecap:round;stroke-linejoin:round"
+         id="rect14562"
+         width="29.398003"
+         height="15.198365"
+         x="1.2630603"
+         y="12.061203" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.377953;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1.2630603,12.061203 30.661062,27.259567"
+         id="path14677"
+         inkscape:path-effect="#path-effect14679"
+         inkscape:original-d="M 1.2630603,12.061203 C 11.063394,17.128324 20.862728,22.194446 30.661062,27.259567" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.377953;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 16.048169,4.6300481 30.643747,12.085457"
+         id="path14677-6"
+         inkscape:path-effect="#path-effect14933"
+         inkscape:original-d="m 16.048169,4.6300481 c 4.865689,2.4856266 9.730882,4.9707633 14.595578,7.4554089" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.377953;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1.2630603,27.259567 30.661062,12.061203"
+         id="path14794"
+         inkscape:path-effect="#path-effect14796"
+         inkscape:original-d="M 1.2630603,27.259567 C 11.063394,22.194446 20.862728,17.128324 30.661062,12.061203" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.377953;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1.2801572,12.085159 15.858322,4.6056696"
+         id="path14794-3"
+         inkscape:path-effect="#path-effect14904"
+         inkscape:original-d="M 1.2801572,12.085159 C 6.1400413,9.592488 10.99943,7.0993246 15.858322,4.6056696" />
+    </g>
+  </g>
+</svg>

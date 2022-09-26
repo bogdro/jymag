@@ -1,13 +1,13 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.comm;
@@ -29,7 +24,9 @@ import BogDroSoft.jymag.PhoneAlarm;
 import BogDroSoft.jymag.PhoneElement;
 import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.Utils;
+import BogDroSoft.jymag.comm.fake.FakeCommPortIdentifier;
 import gnu.io.CommPortIdentifier;
+import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
@@ -51,7 +48,8 @@ import java.util.regex.Pattern;
  */
 public class DataTransporter
 {
-	private CommPortIdentifier portID;
+	//private final CommPortIdentifier portID;
+	private final Object portID;
 	private SerialPort s;
 	private InputStream inputStream;
 	private final Object inputStreamLock = new Object ();
@@ -62,92 +60,82 @@ public class DataTransporter
 	private static final int DT_TIMEOUT = 250;
 
 	/** The firmware version Pattern. */
-	private static final Pattern verPattern
+	private static final Pattern VERSION_PATTERN
 		= Pattern.compile ("\\s*\\+KPSV:\\s*(.+)");				// NOI18N
 	/** The PIN status Pattern. */
-	private static final Pattern PINPattern
+	private static final Pattern PIN_PATTERN
 		= Pattern.compile ("\\s*\\+CPIN:\\s*(.+)");				// NOI18N
 	/** The alarm number Pattern. */
-	private static final Pattern alnumPattern
+	private static final Pattern ALNUM_PATTERN
 		= Pattern.compile ("\\s*\\+CALA:\\s*\\((.+)\\),\\((.+)\\)");		// NOI18N
 	/** The signal power Pattern. */
-	private static final Pattern sigPowerPattern
+	private static final Pattern SIGNAL_POWER_PATTERN
 		= Pattern.compile ("\\s*\\+CSQ:\\s*(\\d+),(\\d+).*");			// NOI18N
 	/** The volume level Pattern. */
-	private static final Pattern volLevelPattern
+	private static final Pattern VOLUME_LEVEL_PATTERN
 		= Pattern.compile ("\\+CLVL\\s*:\\s*(.*)");				// NOI18N
 
 	/** The default encoding for commands. */
-	public static final String defaultEncoding = "US-ASCII";
+	public static final String DEFAULT_ENCODING = "US-ASCII";
 
-	/** A String with a single Carriage Return character. */
-	public static final String CRStr = "\r";					// NOI18N
-	/** An empty String. */
-	public static final String emptyStr = "";					// NOI18N
-	/** A String with a single dot. */
-	public static final String dot = ".";						// NOI18N
 	/** A String with a quotation character and a Carriage Return. */
-	public static final String dquotCR = "\"\r";					// NOI18N
-	/** A String with a single comma character. */
-	public static final String commaStr = ",";					// NOI18N
-	/** A String with a single "double quote" character. */
-	public static final String dquot = "\"";					// NOI18N
+	public static final String DQUOT_CR = "\"\r";					// NOI18N
 	/** A String with a comma followed by a space. */
-	public static final String commaSpace = ", ";					// NOI18N
-	/** A String with a single semicolon. */
-	public static final String semicolon = ";";					// NOI18N
+	public static final String COMMA_SPACE_STR = ", ";				// NOI18N
+	/** A String with a single SEMICOLON. */
+	public static final String SEMICOLON = ";";					// NOI18N
 
-	private static final String OKStr = "OK";					// NOI18N
-	private static final String ERRORStr = "ERROR";					// NOI18N
-	private static final String NOCARStr = "NO CARRIER";				// NOI18N
-	private static final String CONNStr = "CONNECT";				// NOI18N
-	private static final String transferResetBytes = "AT+KDOBJ=1,0\r";		// NOI18N
-	private static final String transferInitCmd = "AT+KDOBJ=1,1\r";			// NOI18N
-	private static final String transferFileLenCmd = "AT+KDOBJ=2,1,3,0,";		// NOI18N
-	private static final String transferFileTypeCmd = "AT+KDOBJ=2,1,0,";		// NOI18N
-	private static final String transferFileEndCmd = "AT+KDOBJ=1,0\r";		// NOI18N
-	private static final String fileRetrCmdStart = "AT+KPSR=\"";			// NOI18N
-	private static final String charsetCmd = "AT+CSCS=\"8859-1\"\r";		// NOI18N
-	private static final String listCmdStart = "AT+KPSL=\"";			// NOI18N
-	private static final String listCmdEnd = "\",1\r";				// NOI18N
-	private static final String newlineRegEx = "[\\r\\n]{1,2}";			// NOI18N
-	private static final String delCmdStart = "AT+KPSD=\"";				// NOI18N
-	private static final String portOpenProgName = "JYMAG";				// NOI18N
-	private static final String ATCmdBytes = "AT\r";				// NOI18N
-	private static final String versionCmd = "AT+KPSV\r";				// NOI18N
-	private static final String imeiCmd = "ATIMEI\r";				// NOI18N
-	private static final String imeiReply = "ATIMEI";				// NOI18N
-	private static final String typeCmd = "AT+CGMR\r";				// NOI18N
-	private static final String typeReplyRegex = "\\+CGMR:\\s*";			// NOI18N
-	private static final String serialNumCmd = "AT+CGSN\r";				// NOI18N
-	private static final String serialNumReply = "CGSN";				// NOI18N
-	private static final String subsNumCmd = "AT+CNUM\r";				// NOI18N
-	private static final String subsNumReplyRegex = "\\+CNUM: ";			// NOI18N
-	private static final String capabCmd = "AT+KPSCAP=\"";				// NOI18N
- 	private static final String poweroffCmd = "AT*PSCPOF\r";			// NOI18N
-	private static final String pinStatusCmd = "AT+CPIN?\r";			// NOI18N
-	private static final String sendPINCmdStart = "AT+CPIN=";			// NOI18N
-	private static final String alarmNumCmd = "AT+CALA=?\r";			// NOI18N
-	private static final String alarmDelCmd = "AT+CALD=";				// NOI18N
-	private static final String alarmAddCmd = "AT+CALA=";				// NOI18N
-	private static final String alarmListCmd = "AT+CALA?\r";			// NOI18N
-	private static final String msgDelCmd = "AT+CMGD=";				// NOI18N
-	private static final String msgListCmd = "AT+CMGL\r";				// NOI18N
-	private static final String lastOKRegex = "OK[\r\n]*$";				// NOI18N
-	private static final String msgListReplyRegex = "\\+CMG[LR]\\s*:\\s*";		// NOI18N
-	private static final String msgGetCmd = "AT+CMGR=";				// NOI18N
-	private static final String msgSendCmd = "AT+CMGS=";				// NOI18N
-	private static final String signalPowerCmd = "AT+CSQ\r";			// NOI18N
-	private static final String msgTextModeCmd = "AT+CMGF=1\r";			// NOI18N
-	private static final String msgStorageCmd = "AT+CPMS=";				// NOI18N
-	private static final String msgPrompt = ">";					// NOI18N
-	private static final String dialCommandAuto = "ATD";				// NOI18N
-	private static final String dialCommandTone = "ATDT";				// NOI18N
-	private static final String dialCommandPulse = "ATDP";				// NOI18N
-	private static final String hangupCommand = "ATH\r";				// NOI18N
-	private static final String answerCommand = "ATA\r";				// NOI18N
-	private static final String currVolCommand = "AT+CLVL?\r";			// NOI18N
-	private static final String setVolCommand = "AT+CLVL=";				// NOI18N
+	private static final String OK_STRING = "OK";					// NOI18N
+	private static final String ERROR_STRING = "ERROR";				// NOI18N
+	private static final String NOCAR_STRING = "NO CARRIER";			// NOI18N
+	private static final String CONN_STRING = "CONNECT";				// NOI18N
+	private static final String TRANSFER_RESET_BYTES = "AT+KDOBJ=1,0\r";		// NOI18N
+	private static final String TRANSFER_INIT_CMD = "AT+KDOBJ=1,1\r";		// NOI18N
+	private static final String TRANSFER_FILE_LEN_CMD = "AT+KDOBJ=2,1,3,0,";	// NOI18N
+	private static final String TRANSFER_FILE_TYPE_CMD = "AT+KDOBJ=2,1,0,";		// NOI18N
+	private static final String TRANSFER_FILE_END_CMD = "AT+KDOBJ=1,0\r";		// NOI18N
+	private static final String FILE_RETR_CMD_START = "AT+KPSR=\"";			// NOI18N
+	private static final String CHARSET_CMD = "AT+CSCS=\"8859-1\"\r";		// NOI18N
+	private static final String LIST_CMD_START = "AT+KPSL=\"";			// NOI18N
+	private static final String LIST_CMD_END = "\",1\r";				// NOI18N
+	private static final String NEWLINE_REGEX = "[\\r\\n]{1,2}";			// NOI18N
+	private static final String DEL_CMD_START = "AT+KPSD=\"";			// NOI18N
+	private static final String PORT_OPEN_PROG_NAME = "JYMAG";			// NOI18N
+	private static final String AT_CMD = "AT\r";					// NOI18N
+	private static final String VERSION_CMD = "AT+KPSV\r";				// NOI18N
+	private static final String IMEI_CMD = "ATIMEI\r";				// NOI18N
+	private static final String IMEI_REPLY = "ATIMEI";				// NOI18N
+	private static final String TYPE_CMD = "AT+CGMR\r";				// NOI18N
+	private static final String TYPE_REPLY_REGEX = "\\+CGMR:\\s*";			// NOI18N
+	private static final String SERIALNUM_CMD = "AT+CGSN\r";			// NOI18N
+	private static final String SERIALNUM_REPLY = "CGSN";				// NOI18N
+	private static final String SUBSCR_NUM_CMD = "AT+CNUM\r";			// NOI18N
+	private static final String SUBSCR_NUM_REPLY_REGEX = "\\+CNUM: ";		// NOI18N
+	private static final String CAPABILITY_CMD = "AT+KPSCAP=\"";			// NOI18N
+ 	private static final String POWEROFF_CMD = "AT*PSCPOF\r";			// NOI18N
+	private static final String PIN_STATUS_CMD = "AT+CPIN?\r";			// NOI18N
+	private static final String SEND_PIN_CMD_START = "AT+CPIN=";			// NOI18N
+	private static final String ALARM_NUM_CMD = "AT+CALA=?\r";			// NOI18N
+	private static final String ALARM_DEL_CMD = "AT+CALD=";				// NOI18N
+	private static final String ALARM_ADD_CMD = "AT+CALA=";				// NOI18N
+	private static final String ALARM_LIST_CMD = "AT+CALA?\r";			// NOI18N
+	private static final String MSG_DEL_CMD = "AT+CMGD=";				// NOI18N
+	private static final String MSG_LIST_CMD = "AT+CMGL\r";				// NOI18N
+	private static final String LAST_OK_REGEX = "OK[\r\n]*$";			// NOI18N
+	private static final String MSG_LIST_REPLY_REGEX = "\\+CMG[LR]\\s*:\\s*";	// NOI18N
+	private static final String MSG_GET_CMD = "AT+CMGR=";				// NOI18N
+	private static final String MSG_SEND_CMD = "AT+CMGS=";				// NOI18N
+	private static final String SIGNAL_POWER_CMD = "AT+CSQ\r";			// NOI18N
+	private static final String MSG_TEXT_MODE_CMD = "AT+CMGF=1\r";			// NOI18N
+	private static final String MSG_STORAGE_CMD = "AT+CPMS=";			// NOI18N
+	private static final String MSG_PROMPT = ">";					// NOI18N
+	private static final String DIAL_CMD_AUTO = "ATD";				// NOI18N
+	private static final String DIAL_CMD_TONE = "ATDT";				// NOI18N
+	private static final String DIAL_CMD_PULSE = "ATDP";				// NOI18N
+	private static final String HANGUP_CMD = "ATH\r";				// NOI18N
+	private static final String ANSWER_CALL_CMD = "ATA\r";				// NOI18N
+	private static final String CURRENT_VOLUME_CMD = "AT+CLVL?\r";			// NOI18N
+	private static final String SET_VOLUME_CMD = "AT+CLVL=";			// NOI18N
 
 	private final SPL spl = new SPL ();
 
@@ -340,7 +328,7 @@ public class DataTransporter
 		};
 
 	// i18n stuff:
-	private static final String ansString =
+	private static final String REPLY_STRING =
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DataTransporter").getString("answer");
 
 	/**
@@ -348,7 +336,7 @@ public class DataTransporter
 	 * @param id Port identifier for the port which will be used to
 	 * transfer data.
 	 */
-	public DataTransporter (CommPortIdentifier id)
+	public DataTransporter (Object /*CommPortIdentifier*/ id)
 	{
 		portID = id;
 	}
@@ -372,7 +360,7 @@ public class DataTransporter
 		{
 			throw new IllegalArgumentException ("DataTransporter.open: portID == null");	// NOI18N
 		}
-		String portName = portID.getName ();
+		String portName = getPortName();
 		if ( ! portName.startsWith ("COM") )	// NOI18N
 		{
 			File portFile = new File (portName);
@@ -382,7 +370,7 @@ public class DataTransporter
 					+ portName);
 			}
 		}
-		s = (SerialPort) portID.open (portOpenProgName, 2000);
+		reopenRealOrFake();
 		synchronized (inputStreamLock)
 		{
 			inputStream  = s.getInputStream ();
@@ -621,11 +609,12 @@ public class DataTransporter
 		{
 			return false;
 		}
-		if ( haystack.trim ().startsWith (OKStr)
-			|| haystack.trim ().endsWith (OKStr)
-			|| haystack.trim ().startsWith (ERRORStr)
-			|| haystack.trim ().endsWith (ERRORStr)
-			|| haystack.contains (NOCARStr) )
+		String haystackTrimmed = haystack.trim ();
+		if ( haystackTrimmed.startsWith (OK_STRING)
+			|| haystackTrimmed.endsWith (OK_STRING)
+			|| haystackTrimmed.startsWith (ERROR_STRING)
+			|| haystackTrimmed.endsWith (ERROR_STRING)
+			|| haystack.contains (NOCAR_STRING) )
 		{
 			return true;
 		}
@@ -649,15 +638,7 @@ public class DataTransporter
 	 */
 	public void send (byte[] b) throws IOException
 	{
-		synchronized (inputStreamLock)
-		{
-			if ( b == null || outputStream == null )
-			{
-				return;
-			}
-			outputStream.write (b);
-			outputStream.flush ();
-		}
+		send (b, 0, (b != null)? b.length : 0);
 	}
 
 	/**
@@ -671,11 +652,15 @@ public class DataTransporter
 	{
 		synchronized (inputStreamLock)
 		{
-			if ( b == null || outputStream == null )
+			if ( b == null )
 			{
-				return;
+				throw new IllegalArgumentException("b == null");
 			}
-			if ( start + length >= b.length || start < 0
+			if ( outputStream == null )
+			{
+				throw new IllegalStateException("outputStream == null");
+			}
+			if ( start + length > b.length || start < 0
 				|| length <= 0 )
 			{
 				return;
@@ -716,12 +701,12 @@ public class DataTransporter
 		}
 		String fName = f.getName ();
 		// check if type is supported.
-		if ( ! fName.contains (dot))
+		if ( ! fName.contains (Utils.DOT))
 		{
 			return -8;
 		}
 		if ( ! Utils.getFiletypeIDs ().containsKey (fName.substring
-			(fName.lastIndexOf (dot)+1)
+			(fName.lastIndexOf (Utils.DOT)+1)
 			.toLowerCase (Locale.ENGLISH)))
 		{
 			return -9;
@@ -729,13 +714,14 @@ public class DataTransporter
 		if ( newName == null )
 		{
 			newName = fName.substring (0,
-				fName.indexOf (dot));
+				fName.indexOf (Utils.DOT));
 		}
 
 		String rcvd;
 		byte[] recvdB;
 		// number of attempts.
 		int trials = 0;
+		FileInputStream fis = null;
 		MAIN: while (trials <= MAX_TRIALS)
 		{
 			// stage variable, useful when an exception is caught.
@@ -743,13 +729,13 @@ public class DataTransporter
 			try
 			{
 				// reset file upload
-				send (transferResetBytes.getBytes (defaultEncoding));
+				send (TRANSFER_RESET_BYTES.getBytes (DEFAULT_ENCODING));
 				recvdB = recv (null);
-				rcvd = new String (recvdB, defaultEncoding);
+				rcvd = new String (recvdB, DEFAULT_ENCODING);
 
 				if ( rcvd.isEmpty ()
-					|| (! rcvd.contains (OKStr)
-					&& ! rcvd.contains (ERRORStr)) )
+					|| (! rcvd.contains (OK_STRING)
+					&& ! rcvd.contains (ERROR_STRING)) )
 				{
 					reopen ();
 					trials++;
@@ -767,10 +753,9 @@ public class DataTransporter
 			try
 			{
 				//initiate transfer
-				rcvd = tryCommand (transferInitCmd, null);
-				if ( ! rcvd.contains (OKStr) )
+				rcvd = tryCommand (TRANSFER_INIT_CMD, null);
+				if ( ! rcvd.contains (OK_STRING) )
 				{
-					System.out.println (ansString + "1=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
 					if ( trials > MAX_TRIALS )
@@ -783,11 +768,10 @@ public class DataTransporter
 				stage++;
 
 				// send filename length (the last parameter)
-				rcvd = tryCommand (transferFileLenCmd + newName.length () + CRStr,
-					new String[] { CONNStr });
-				if ( rcvd.contains (ERRORStr) || ! rcvd.contains (CONNStr) )
+				rcvd = tryCommand (TRANSFER_FILE_LEN_CMD + newName.length () + Utils.CR,
+					new String[] { CONN_STRING });
+				if ( rcvd.contains (ERROR_STRING) || ! rcvd.contains (CONN_STRING) )
 				{
-					System.out.println (ansString + "2=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
 					if ( trials > MAX_TRIALS )
@@ -800,10 +784,9 @@ public class DataTransporter
 				stage++;
 
 				// send the filename
-				rcvd = tryCommand (newName + CRStr, null);
-				if ( ! rcvd.contains (OKStr) )
+				rcvd = tryCommand (newName + Utils.CR, null);
+				if ( ! rcvd.contains (OK_STRING) )
 				{
-					System.out.println (ansString + "3=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
 					if ( trials > MAX_TRIALS )
@@ -816,16 +799,15 @@ public class DataTransporter
 				stage++;
 
 				// send file type (4th param) and length (5th parameter)
-				rcvd = tryCommand (transferFileTypeCmd
+				rcvd = tryCommand (TRANSFER_FILE_TYPE_CMD
 						+ Utils.getFiletypeIDs ().get
 							(f.getName ().substring
-								(f.getName ().lastIndexOf (dot)+1)
+								(f.getName ().lastIndexOf (Utils.DOT)+1)
 							.toLowerCase (Locale.ENGLISH)).intValue ()
-						+ commaStr + f.length () + CRStr,
-						new String[] { CONNStr });
-				if ( rcvd.contains (ERRORStr) || ! rcvd.contains (CONNStr) )
+						+ Utils.COMMA + f.length () + Utils.CR,
+						new String[] { CONN_STRING });
+				if ( rcvd.contains (ERROR_STRING) || ! rcvd.contains (CONN_STRING) )
 				{
-					System.out.println (ansString + "4=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
 					if ( trials > MAX_TRIALS )
@@ -844,7 +826,7 @@ public class DataTransporter
 					// ignore
 				}
 				// send file data here:
-				FileInputStream fis = new FileInputStream (f);
+				fis = new FileInputStream (f);
 				byte[] contents = new byte[10240];
 				int read = -1;
 				stage++;
@@ -862,7 +844,7 @@ public class DataTransporter
 				do
 				{
 					recvdB = recv (null);
-					rcvd = new String (recvdB, defaultEncoding);
+					rcvd = new String (recvdB, DEFAULT_ENCODING);
 
 					if ( rcvd.trim ().isEmpty () )
 					{
@@ -879,9 +861,8 @@ public class DataTransporter
 				{
 					return -5;
 				}
-				if ( ! rcvd.contains (OKStr) )
+				if ( ! rcvd.contains (OK_STRING) )
 				{
-					System.out.println (ansString + "5=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
 					if ( trials > MAX_TRIALS )
@@ -894,10 +875,9 @@ public class DataTransporter
 				stage++;
 
 				// close file upload
-				rcvd = tryCommand (transferFileEndCmd, null);
-				if ( ! rcvd.contains (OKStr) )
+				rcvd = tryCommand (TRANSFER_FILE_END_CMD, null);
+				if ( ! rcvd.contains (OK_STRING) )
 				{
-					System.out.println (ansString + "6=" + rcvd);	// NOI18N
 					reopen ();
 					trials++;
 					if ( trials > MAX_TRIALS )
@@ -923,6 +903,18 @@ public class DataTransporter
 				}*/
 				Utils.handleException (ex, "DataTransporter.putFile:end"	// NOI18N
 					+ f.getName () + ", newName=" + newName);	// NOI18N
+				if (fis != null)
+				{
+					try
+					{
+						fis.close();
+					}
+					catch (Throwable t2)
+					{
+						Utils.handleException(t2,
+							"DataTransporter.putFile->close->exception");
+					}
+				}
 				reopen ();
 				trials++;
 				if ( trials > MAX_TRIALS )
@@ -931,7 +923,7 @@ public class DataTransporter
 				}
 				continue MAIN;
 			}
-		} // MAIN while
+		} // MAIN while // MAIN while // MAIN while // MAIN while
 		return -10;	// number of trials exceeded
 	}
 
@@ -997,7 +989,7 @@ public class DataTransporter
 					// ignore
 				}
 				// send file retrieve command
-				send ((fileRetrCmdStart + el.getID () + dquotCR).getBytes (defaultEncoding));
+				send ((FILE_RETR_CMD_START + el.getID () + DQUOT_CR).getBytes (DEFAULT_ENCODING));
 				/*
 				 * Receiving format:
 				 * AT+KPSR="<ID repeated>"
@@ -1020,7 +1012,7 @@ public class DataTransporter
 			} while ( (rcvd.trim ().isEmpty () || recvdB.length == 0)
 				&& trials < MAX_TRIALS);
 			if ( rcvd.trim ().isEmpty () || recvdB.length == 0
-				|| ! rcvd.contains (NOCARStr) )
+				|| ! rcvd.contains (NOCAR_STRING) )
 			{
 				return -2;
 			}
@@ -1247,7 +1239,7 @@ public class DataTransporter
 	{
 		if ( cmd == null )
 		{
-			return emptyStr;
+			return Utils.EMPTY_STR;
 		}
 		StringBuilder rcvd = new StringBuilder (10000);
 		byte[] recvdB;
@@ -1269,7 +1261,7 @@ public class DataTransporter
 			try
 			{
 				// send the command
-				send (cmd.getBytes (defaultEncoding));
+				send (cmd.getBytes (DEFAULT_ENCODING));
 
 				recvdB = recv (extraTerminators);
 			}
@@ -1308,8 +1300,8 @@ public class DataTransporter
 		try
 		{
 			// removed: sending ATZ and AT115200
-			String rcvd = tryCommand (charsetCmd, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (CHARSET_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return res;
 			}
@@ -1320,18 +1312,18 @@ public class DataTransporter
 			 * +KPSL: "53036500050220030045",0,48006,"RINGTONES","AMR","0000000069","","aaa"
 					Id	    HIDDEN,LENG, CATEGORY, CONTENT, LOCATION  FLAG, NAME
 			 */
-			rcvd = tryCommand (listCmdStart + ofWhat + listCmdEnd, null);
-			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OKStr) )
+			rcvd = tryCommand (LIST_CMD_START + ofWhat + LIST_CMD_END, null);
+			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OK_STRING) )
 			{
 				return null;
 			}
 
 			Matcher m;
 			// split into lines
-			String[] lines = rcvd.split (newlineRegEx);
+			String[] lines = rcvd.split (NEWLINE_REGEX);
 			for ( int i=0; i < lines.length; i++ )
 			{
-				m = Utils.listPattern.matcher (lines[i]);
+				m = Utils.LIST_PATTERN.matcher (lines[i]);
 				if ( m.matches () )
 				{
 					if ( m.group (2).equals ("0") )			// NOI18N
@@ -1357,10 +1349,13 @@ public class DataTransporter
 	 */
 	public int deleteFile (PhoneElement el)
 	{
-		if ( el == null ) return -3;
+		if ( el == null )
+		{
+			return -3;
+		}
 		try
 		{
-			String rcvd = tryCommand (delCmdStart + el.getID () + dquotCR, null);
+			String rcvd = tryCommand (DEL_CMD_START + el.getID () + DQUOT_CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -2;
@@ -1403,7 +1398,7 @@ public class DataTransporter
 		try
 		{
 			close ();
-			s = (SerialPort) portID.open (portOpenProgName, 2000);
+			reopenRealOrFake();
 			if ( s != null )
 			{
 				synchronized (inputStreamLock)
@@ -1421,7 +1416,21 @@ public class DataTransporter
 		catch (Exception ex)
 		{
 			Utils.handleException (ex, "DataTransporter.reopen:"	// NOI18N
-				+ portID.getName ());
+				+ getPortName());
+		}
+	}
+
+	private void reopenRealOrFake() throws PortInUseException
+	{
+		if (portID instanceof CommPortIdentifier)
+		{
+			s = (SerialPort) ((CommPortIdentifier)portID)
+				.open (PORT_OPEN_PROG_NAME, 2000);
+		}
+		else if (portID instanceof FakeCommPortIdentifier)
+		{
+			s = (SerialPort) ((FakeCommPortIdentifier)portID)
+				.open (PORT_OPEN_PROG_NAME, 2000);
 		}
 	}
 
@@ -1434,7 +1443,7 @@ public class DataTransporter
 	{
 		try
 		{
-			byte[] cmd = ATCmdBytes.getBytes (defaultEncoding);
+			byte[] cmd = AT_CMD.getBytes (DEFAULT_ENCODING);
 			// 3 times gets bigger probability for an answer
 			send (cmd);
 			send (cmd);
@@ -1442,7 +1451,7 @@ public class DataTransporter
 			// don't force any encodings, because the reply may
 			// contain trash that may be invalid in any given encoding
 			String res = new String (recv (null));
-			if ( res.contains (OKStr) )
+			if ( res.contains (OK_STRING) )
 			{
 				return 0;
 			}
@@ -1451,7 +1460,7 @@ public class DataTransporter
 		catch ( Exception ex )
 		{
 			Utils.handleException (ex, "DataTransporter.test:"	// NOI18N
-				+ portID.getName ());
+				+ getPortName());
 			return -2;
 		}
 	}
@@ -1462,14 +1471,14 @@ public class DataTransporter
 	 */
 	public String getFirmwareVersion ()
 	{
-		String rcvd = tryCommand (versionCmd, null);
+		String rcvd = tryCommand (VERSION_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			// sample: "+KPSV: 2.04"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1478,7 +1487,7 @@ public class DataTransporter
 						{
 							continue;
 						}
-						Matcher m = verPattern.matcher (lines[i]);
+						Matcher m = VERSION_PATTERN.matcher (lines[i]);
 						if ( m.matches () )
 						{
 							return m.group (1);
@@ -1500,14 +1509,14 @@ public class DataTransporter
 	 */
 	public String getDeviceType ()
 	{
-		String rcvd = tryCommand (imeiCmd, null);
+		String rcvd = tryCommand (IMEI_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			// sample: "myX5-2 GPRS"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1516,10 +1525,11 @@ public class DataTransporter
 						{
 							continue;
 						}
-						if ( (! lines[i].trim ().isEmpty ())
-							&& ! lines[i].contains (imeiReply) )
+						String lineTrimmed = lines[i].trim ();
+						if ( (! lineTrimmed.trim ().isEmpty ())
+							&& ! lines[i].contains (IMEI_REPLY) )
 						{
-							return lines[i].trim ();
+							return lineTrimmed;
 						}
 					}
 				}
@@ -1538,14 +1548,14 @@ public class DataTransporter
 	 */
 	public String getExtraDeviceType ()
 	{
-		String rcvd = tryCommand (typeCmd, null);
+		String rcvd = tryCommand (TYPE_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			// sample: "+CGMR: SAGEM KB3,ME"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1554,10 +1564,12 @@ public class DataTransporter
 						{
 							continue;
 						}
-						lines[i] = lines[i].replaceAll (typeReplyRegex, emptyStr);
-						if ( ! lines[i].trim ().isEmpty () )
+						lines[i] = lines[i].replaceAll
+							(TYPE_REPLY_REGEX, Utils.EMPTY_STR)
+							.trim ();
+						if ( ! lines[i].isEmpty () )
 						{
-							return lines[i].trim ();
+							return lines[i];
 						}
 					}
 				}
@@ -1576,7 +1588,7 @@ public class DataTransporter
 	 */
 	public String getIMEI ()
 	{
-		String rcvd = tryCommand (serialNumCmd, null);
+		String rcvd = tryCommand (SERIALNUM_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			// sample: "AT+CGSN
@@ -1585,7 +1597,7 @@ public class DataTransporter
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1594,10 +1606,11 @@ public class DataTransporter
 						{
 							continue;
 						}
-						if ( (! lines[i].trim ().isEmpty ())
-							&& ! lines[i].contains (serialNumReply) )
+						String lineTrimmed = lines[i].trim ();
+						if ( (! lineTrimmed.isEmpty ())
+							&& ! lines[i].contains (SERIALNUM_REPLY) )
 						{
-							return lines[i].trim ();
+							return lineTrimmed;
 						}
 					}
 				}
@@ -1616,14 +1629,14 @@ public class DataTransporter
 	 */
 	public String getSubscriberNumbers ()
 	{
-		String rcvd = tryCommand (subsNumCmd, null);
+		String rcvd = tryCommand (SUBSCR_NUM_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
-			// sample: "+CNUM: "","+48788118746",145"
+			// sample: "+CNUM: "","+001123456789",145"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					String type = null;
@@ -1633,28 +1646,29 @@ public class DataTransporter
 						{
 							continue;
 						}
-						lines[i] = lines[i].replaceAll (subsNumReplyRegex, emptyStr);
+						lines[i] = lines[i].replaceAll
+							(SUBSCR_NUM_REPLY_REGEX, Utils.EMPTY_STR);
 						if ( ! lines[i].trim ().isEmpty () )
 						{
-							String[] elems = lines[i].trim ().split (commaStr);
-							String newElem = emptyStr;
+							String[] elems = lines[i].trim ().split (Utils.COMMA);
+							String newElem = Utils.EMPTY_STR;
 							if ( elems != null )
 							{
 								if ( elems.length > 1 )
 								{
 									newElem = elems[1].trim()
-										.replaceAll (dquot, emptyStr);
+										.replaceAll (Utils.DQUOT, Utils.EMPTY_STR);
 								}
 							}
 							if ( ! newElem.isEmpty () )
 							{
 								if ( type == null )
 								{
-									type = emptyStr;
+									type = Utils.EMPTY_STR;
 								}
 								if ( ! type.isEmpty () )
 								{
-									type += commaSpace;
+									type += COMMA_SPACE_STR;
 								}
 								type += newElem;
 							}
@@ -1682,13 +1696,13 @@ public class DataTransporter
 		{
 			return null;
 		}
-		String rcvd = tryCommand (capabCmd + type + dquotCR, null);
+		String rcvd = tryCommand (CAPABILITY_CMD + type + DQUOT_CR, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			try
 			{
-				int connIndex = rcvd.indexOf (CONNStr);
-				int endIndex = rcvd.indexOf (NOCARStr);
+				int connIndex = rcvd.indexOf (CONN_STRING);
+				int endIndex = rcvd.indexOf (NOCAR_STRING);
 				if ( connIndex >= 0 && endIndex >= 0 )
 				{
 					return rcvd.substring (connIndex+7,
@@ -1710,7 +1724,7 @@ public class DataTransporter
 	{
 		try
 		{
-			send (poweroffCmd.getBytes (defaultEncoding));
+			send (POWEROFF_CMD.getBytes (DEFAULT_ENCODING));
 		}
 		catch (Exception ex)
 		{
@@ -1724,14 +1738,13 @@ public class DataTransporter
 	 */
 	public DataTransporter.PIN_STATUS getPINStatus ()
 	{
-		String rcvd = tryCommand (pinStatusCmd, null);
+		String rcvd = tryCommand (PIN_STATUS_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
-			// sample: "+CNUM: "","+48788118746",145"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1740,7 +1753,7 @@ public class DataTransporter
 						{
 							continue;
 						}
-						Matcher m = verPattern.matcher (lines[i]);
+						Matcher m = PIN_PATTERN.matcher (lines[i]);
 						if ( m.matches () )
 						{
 							return DataTransporter.PIN_STATUS.
@@ -1774,20 +1787,20 @@ public class DataTransporter
 		if ( status.equals (DataTransporter.PIN_STATUS.SIM_PUK)
 			|| status.equals (DataTransporter.PIN_STATUS.SIM_PUK2) )
 		{
-			cmd = sendPINCmdStart + PIN + commaStr + newPIN + CRStr;
+			cmd = SEND_PIN_CMD_START + PIN + Utils.COMMA + newPIN + Utils.CR;
 		}
 		else
 		{
-			cmd = sendPINCmdStart + PIN + CRStr;
+			cmd = SEND_PIN_CMD_START + PIN + Utils.CR;
 		}
-		String rcvd = tryCommand (cmd + CRStr, null);
+		String rcvd = tryCommand (cmd + Utils.CR, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			// expecting: "OK"
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1797,7 +1810,7 @@ public class DataTransporter
 							continue;
 						}
 						if ( lines[i].toUpperCase (Locale.ENGLISH)
-							.contains (OKStr) )
+							.contains (OK_STRING) )
 						{
 							return 0;
 						}
@@ -1831,7 +1844,7 @@ public class DataTransporter
 	 */
 	public int getNumberOfAlarms ()
 	{
-		String rcvd = tryCommand (alarmNumCmd, null);
+		String rcvd = tryCommand (ALARM_NUM_CMD, null);
 		if ( ! rcvd.trim ().isEmpty () )
 		{
 			// sample: "+CALA: (1),(sound)
@@ -1839,7 +1852,7 @@ public class DataTransporter
 			try
 			{
 				// have to split to make it work
-				String[] lines = rcvd.split (CRStr);
+				String[] lines = rcvd.split (Utils.CR);
 				if ( lines != null )
 				{
 					for ( int i=0; i < lines.length; i++ )
@@ -1848,7 +1861,7 @@ public class DataTransporter
 						{
 							continue;
 						}
-						Matcher m = alnumPattern.matcher (lines[i]);
+						Matcher m = ALNUM_PATTERN.matcher (lines[i]);
 						if ( m.matches () )
 						{
 							return Integer.parseInt (m.group (1));
@@ -1873,15 +1886,18 @@ public class DataTransporter
 	 */
 	public int deleteAlarm (int number)
 	{
-		if ( number < 0 ) return -1;
+		if ( number < 0 )
+		{
+			return -1;
+		}
 		try
 		{
-			String rcvd = tryCommand (alarmDelCmd + String.valueOf (number) + CRStr, null);
+			String rcvd = tryCommand (ALARM_DEL_CMD + String.valueOf (number) + Utils.CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -2;
 			}
-			if ( rcvd.contains (OKStr) )
+			if ( rcvd.contains (OK_STRING) )
 			{
 				return 0;
 			}
@@ -1919,12 +1935,12 @@ public class DataTransporter
 				al.setNumber (num);
 				al.setOneTimeAlarm (oneTime);
 			}
-			String rcvd = tryCommand (alarmAddCmd + alString + CRStr, null);
+			String rcvd = tryCommand (ALARM_ADD_CMD + alString + Utils.CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -2;
 			}
-			if ( rcvd.contains (OKStr) )
+			if ( rcvd.contains (OK_STRING) )
 			{
 				return 0;
 			}
@@ -1947,20 +1963,20 @@ public class DataTransporter
 		Vector<PhoneAlarm> res = new Vector<PhoneAlarm> (1);
 		try
 		{
-			String rcvd = tryCommand (alarmListCmd, null);
+			String rcvd = tryCommand (ALARM_LIST_CMD, null);
 			/*
 			 * Receiving format:
 			 * +CALA: "08/08/02,06:30:00"
 			 * +CALA: "08/08/02,06:30:00"
 			 * OK
 			 */
-			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OKStr) )
+			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OK_STRING) )
 			{
 				return null;
 			}
 
 			// split into lines
-			String[] lines = rcvd.split (newlineRegEx);
+			String[] lines = rcvd.split (NEWLINE_REGEX);
 			for ( int i=0; i < lines.length; i++ )
 			{
 				PhoneAlarm pa = PhoneAlarm.parseReponse (lines[i]);
@@ -1991,17 +2007,17 @@ public class DataTransporter
 		}
 		try
 		{
-			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (MSG_TEXT_MODE_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return -2;
 			}
-			rcvd = tryCommand (msgDelCmd + String.valueOf (number) + CRStr, null);
+			rcvd = tryCommand (MSG_DEL_CMD + String.valueOf (number) + Utils.CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -3;
 			}
-			if ( rcvd.contains (OKStr) )
+			if ( rcvd.contains (OK_STRING) )
 			{
 				return 0;
 			}
@@ -2023,22 +2039,22 @@ public class DataTransporter
 		Vector<PhoneMessage> res = new Vector<PhoneMessage> (1);
 		try
 		{
-			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (MSG_TEXT_MODE_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return null;
 			}
 
-			rcvd = tryCommand (msgListCmd, null);
-			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OKStr) )
+			rcvd = tryCommand (MSG_LIST_CMD, null);
+			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OK_STRING) )
 			{
 				return null;
 			}
 
 			// remove the final "OK"
-			rcvd = rcvd.replaceAll (lastOKRegex, emptyStr);
+			rcvd = rcvd.replaceAll (LAST_OK_REGEX, Utils.EMPTY_STR);
 			// split into lines
-			String[] lines = rcvd.split (msgListReplyRegex);
+			String[] lines = rcvd.split (MSG_LIST_REPLY_REGEX);
 			for ( int i=0; i < lines.length; i++ )
 			{
 				PhoneMessage pm = PhoneMessage.parseReponse (lines[i]);
@@ -2063,21 +2079,24 @@ public class DataTransporter
 	 */
 	public PhoneMessage getMessage (int number)
 	{
-		if ( number < 0 ) return null;
+		if ( number < 0 )
+		{
+			return null;
+		}
 		try
 		{
-			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (MSG_TEXT_MODE_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return null;
 			}
-			rcvd = tryCommand (msgGetCmd + String.valueOf (number) + CRStr, null);
+			rcvd = tryCommand (MSG_GET_CMD + String.valueOf (number) + Utils.CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return null;
 			}
 			// remove the final "OK"
-			rcvd = rcvd.replaceAll (lastOKRegex, emptyStr);
+			rcvd = rcvd.replaceAll (LAST_OK_REGEX, Utils.EMPTY_STR);
 			return PhoneMessage.parseReponse (rcvd);
 		}
 		catch ( Exception ex )
@@ -2094,30 +2113,33 @@ public class DataTransporter
 	 */
 	public int sendMessage (PhoneMessage msg)
 	{
-		if ( msg == null ) return -1;
+		if ( msg == null )
+		{
+			return -1;
+		}
 		try
 		{
-			String rcvd = tryCommand (msgTextModeCmd, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (MSG_TEXT_MODE_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return -2;
 			}
 
 			// first send the command and wait for the prompt:
-			rcvd = tryCommand (msgSendCmd + "\"" + msg.getRecipientNum ()
-				+ "\"" + CRStr, new String[] { msgPrompt });
-			if ( ! rcvd.contains (msgPrompt) )
+			rcvd = tryCommand (MSG_SEND_CMD + "\"" + msg.getRecipientNum ()
+				+ "\"" + Utils.CR, new String[] { MSG_PROMPT });
+			if ( ! rcvd.contains (MSG_PROMPT) )
 			{
 				return -3;
 			}
 
 			// after getting the prompt send the message:
-			rcvd = tryCommand (msg.getMessageString () + CRStr, null);
+			rcvd = tryCommand (msg.getMessageString () + Utils.CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -4;
 			}
-			if ( rcvd.contains (OKStr) )
+			if ( rcvd.contains (OK_STRING) )
 			{
 				return 0;
 			}
@@ -2138,15 +2160,18 @@ public class DataTransporter
 	 */
 	public int setMessageStorage (STORAGE_TYPE stor)
 	{
-		if ( stor == null ) return -1;
+		if ( stor == null )
+		{
+			return -1;
+		}
 		try
 		{
-			String rcvd = tryCommand (msgStorageCmd + stor.toString () + CRStr, null);
+			String rcvd = tryCommand (MSG_STORAGE_CMD + stor.toString () + Utils.CR, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -2;
 			}
-			if ( rcvd.contains (OKStr) )
+			if ( rcvd.contains (OK_STRING) )
 			{
 				return 0;
 			}
@@ -2271,12 +2296,12 @@ public class DataTransporter
 	{
 		try
 		{
-			String rcvd = tryCommand (signalPowerCmd, null);
+			String rcvd = tryCommand (SIGNAL_POWER_CMD, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -2;
 			}
-			Matcher sigMatcher = sigPowerPattern.matcher (rcvd);
+			Matcher sigMatcher = SIGNAL_POWER_PATTERN.matcher (rcvd);
 			// NOT "matches()", because we can get "AT+CSQ" in the reply
 			if ( sigMatcher.find () )
 			{
@@ -2304,7 +2329,7 @@ public class DataTransporter
 	 * Dials the specified number.
 	 * @param number the number to dial. Must be non-null.
 	 * @param isVoice whether the connection is for voice or data. Voice connections
-	 *	will be initiated by adding a semicolon to the end of the number.
+	will be initiated by adding a SEMICOLON to the end of the number.
 	 * @param dialMode The dial mode (tone, pulse, auto). Defaults to "auto" if null.
 	 * @return 0 in case of success or a negative value in case of error.
 	 */
@@ -2314,30 +2339,29 @@ public class DataTransporter
 		{
 			return -1;
 		}
-		String command = dialCommandAuto;
+		String command = DIAL_CMD_AUTO;
 		if ( dialMode != null && DIAL_MODE.TONE.equals (dialMode) )
 		{
-			command = dialCommandTone;
+			command = DIAL_CMD_TONE;
 		}
 		if ( dialMode != null && DIAL_MODE.PULSE.equals (dialMode) )
 		{
-			command = dialCommandPulse;
+			command = DIAL_CMD_PULSE;
 		}
 		command += number;
 		if ( isVoice )
 		{
-			command += semicolon;
+			command += SEMICOLON;
 		}
 		try
 		{
-			// reset file upload
-			send ((command + CRStr).getBytes (defaultEncoding));
+			send ((command + Utils.CR).getBytes (DEFAULT_ENCODING));
 			byte[] recvdB = recv (null);
-			String rcvd = new String (recvdB, defaultEncoding);
+			String rcvd = new String (recvdB, DEFAULT_ENCODING);
 
 			if ( rcvd.isEmpty ()
-				|| rcvd.contains (ERRORStr)
-				|| rcvd.contains (NOCARStr))
+				|| rcvd.contains (ERROR_STRING)
+				|| rcvd.contains (NOCAR_STRING))
 			{
 				return -3;
 			}
@@ -2358,8 +2382,8 @@ public class DataTransporter
 	{
 		try
 		{
-			String rcvd = tryCommand (hangupCommand, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (HANGUP_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return -2;
 			}
@@ -2380,8 +2404,8 @@ public class DataTransporter
 	{
 		try
 		{
-			String rcvd = tryCommand (answerCommand, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (ANSWER_CALL_CMD, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return -2;
 			}
@@ -2402,12 +2426,12 @@ public class DataTransporter
 	{
 		try
 		{
-			String rcvd = tryCommand (currVolCommand, null);
+			String rcvd = tryCommand (CURRENT_VOLUME_CMD, null);
 			if ( rcvd.trim ().isEmpty () )
 			{
 				return -2;
 			}
-			Matcher volMatcher = volLevelPattern.matcher (rcvd);
+			Matcher volMatcher = VOLUME_LEVEL_PATTERN.matcher (rcvd);
 			if ( volMatcher.find () )
 			{
 				try
@@ -2443,9 +2467,9 @@ public class DataTransporter
 			{
 				return -4;
 			}
-			String rcvd = tryCommand (setVolCommand
-				+ String.valueOf(vol) + CRStr, null);
-			if ( ! rcvd.contains (OKStr) )
+			String rcvd = tryCommand (SET_VOLUME_CMD
+				+ String.valueOf(vol) + Utils.CR, null);
+			if ( ! rcvd.contains (OK_STRING) )
 			{
 				return -2;
 			}
@@ -2481,13 +2505,26 @@ public class DataTransporter
 		}
 	}
 
+	private String getPortName()
+	{
+		if (portID == null)
+		{
+			return null;
+		}
+		String portName = null;
+		if (portID instanceof CommPortIdentifier)
+		{
+			portName = ((CommPortIdentifier)portID).getName ();
+		}
+		else if (portID instanceof FakeCommPortIdentifier)
+		{
+			portName = ((FakeCommPortIdentifier)portID).getName ();
+		}
+		return portName;
+	}
+
 	private class SPL implements SerialPortEventListener
 	{
-		public SPL ()
-		{
-			// empty constructor
-		}
-
 		/**
 		 * Used to receive events for the port.
 		 * @param event A received port event.

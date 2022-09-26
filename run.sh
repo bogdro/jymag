@@ -5,3 +5,4 @@ if ( [ -e dist/JYMAG.jar ] ); then
 elif ( [ -e JYMAG.jar ] ); then
 	java -jar JYMAG.jar "$*"
 fi
+

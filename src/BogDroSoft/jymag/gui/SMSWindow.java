@@ -1,13 +1,13 @@
 /*
  * SMSWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,23 +15,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.gui;
 
+import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
-import BogDroSoft.jymag.PhoneMessage;
-import BogDroSoft.jymag.Utils;
-
-import java.awt.Dimension;
-import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JLabel;
 
@@ -43,16 +34,18 @@ import javax.swing.JLabel;
 public class SMSWindow extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 80L;
-	private final TransferParameters tp;
+	private final transient TransferParameters tp;
 	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
+	/*
 	private static final ResourceBundle swBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow");
-	private static final String errString = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
-	private static final String okString = swBundle.getString("message_sent");
-	private static final String sendError = swBundle.getString("send_error");
+	private static final String ERR_STRING = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static final String OK_STRING = swBundle.getString("message_sent");
+	private static final String SEND_ERROR = swBundle.getString("send_error");
 
-	private static final String space = " ";	// NOI18N
+	private static final String SPACE = " ";	// NOI18N
+	*/
 	private final MainWindow mw;
 
 	/**
@@ -91,14 +84,8 @@ public class SMSWindow extends javax.swing.JDialog
 			msgArea.setText (msg.getMessage ());
 		}
 
-		// change the size so that the scrollbars fit:
-		Dimension size = getSize ();
-		if ( size != null )
-		{
-			size.height += 50;
-			size.width += 50;
-			setSize (size);
-		}
+		UiUtils.changeSizeToScreen(this);
+
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
@@ -286,7 +273,7 @@ public class SMSWindow extends javax.swing.JDialog
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_fontSizeSpinStateChanged
 	{//GEN-HEADEREND:event_fontSizeSpinStateChanged
 
-		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+		UiUtils.setFontSize (this, UiUtils.getFontSize (fontSizeSpin));
 
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 

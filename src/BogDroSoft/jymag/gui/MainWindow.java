@@ -1,13 +1,13 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,26 +15,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.gui;
 
 import BogDroSoft.jymag.CommandLineParser;
 import BogDroSoft.jymag.ConfigFile;
-import BogDroSoft.jymag.PhoneElement;
 import BogDroSoft.jymag.Starter;
 import BogDroSoft.jymag.Utils;
 import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.panels.JYMAGTab;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -56,7 +49,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.DefaultTableModel;
 
 /**
  * This class represents the main window of the JYMAG program.
@@ -87,7 +79,7 @@ public class MainWindow extends JFrame
 			@Override
 			public synchronized void run ()
 			{
-				Utils.changeGUI (new Runnable ()
+				UiUtils.changeGUI (new Runnable ()
 				{
 					@Override
 					public synchronized void run ()
@@ -114,7 +106,7 @@ public class MainWindow extends JFrame
 			}
 		};
 
-	private static final FileFilter	cfgFileFilter = new FileFilter ()
+	private static final FileFilter	CFG_FILE_FILTER = new FileFilter ()
 		{
 			@Override
 			public boolean accept ( File f )
@@ -134,7 +126,7 @@ public class MainWindow extends JFrame
 			@Override
 			public String getDescription ()
 			{
-				return mwBundle.getString("JYMAG_configuration_files")	// NOI18N
+				return MW_BUNDLE.getString("JYMAG_configuration_files")	// NOI18N
 					+ " (*.cfg)";	// NOI18N
 			}
 
@@ -148,14 +140,20 @@ public class MainWindow extends JFrame
 	private final transient Utils.StatusChangeRunnable setSendingStatus;
 	private final transient Utils.StatusChangeRunnable setReceivingStatus;
 	// ------------ i18n stuff
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String noAnsString = mwBundle.getString("No_answers_received");
-	private static final String multiAnsString = mwBundle.getString("Multiple_answers");
-	private static final String whichString = mwBundle.getString("Which_one");
-	public static final String errString = mwBundle.getString("Error");
-	public static final String noPortMsg = mwBundle.getString("no_ports_selected");
+	private static final ResourceBundle MW_BUNDLE = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String NO_REPLY_STRING = MW_BUNDLE.getString("No_answers_received");
+	private static final String MULTI_REPLIES_STRING = MW_BUNDLE.getString("Multiple_answers");
+	private static final String WHICH_STRING = MW_BUNDLE.getString("Which_one");
+	public static final String ERR_STRING = MW_BUNDLE.getString("Error");
+	public static final String NO_PORT_MSG = MW_BUNDLE.getString("no_ports_selected");
+	public static final String FILE_EXISTS_OVERWRITE = MW_BUNDLE.getString("_exists._Overwrite");
+	public static final String OVERWRITE_STRING = MW_BUNDLE.getString("Overwrite?");
+	public static final String FILE_NOT_WRITABLE_MSG=  MW_BUNDLE.getString("Cant_write_to_file");
+	public static final String PICT_TYPES_STRING = MW_BUNDLE.getString("Supported_pictures");
+	public static final String DELETE_QUESTION = MW_BUNDLE.getString("want_to_delete");
+	public static final String QUESTION_STRING = MW_BUNDLE.getString("Question");
 
-	private static final String pressScanMsg = "(" + mwBundle.getString("(press_Scan)") + ")";	// NOI18N
+	private static final String PRESS_SCAN_MSG = "(" + MW_BUNDLE.getString("(press_Scan)") + ")";	// NOI18N
 
 	// ------------ static variables for command-line
 
@@ -216,13 +214,12 @@ public class MainWindow extends JFrame
 
 		initComponents ();
 
-		setTitle (getTitle () + " " + JYMAG_VERSION);	// NOI18N
+		//setTitle (getTitle () + " " + JYMAG_VERSION);	// NOI18N
 		fontSizeSpin.setValue (fontSizeSpin.getValue ());	// refresh the font in the window
-		firmware.setText (pressScanMsg);
-		phone.setText (pressScanMsg);
-		IMEI.setText (pressScanMsg);
-		subsNum.setText (pressScanMsg);
-		setReadyStatus ();
+		firmware.setText (PRESS_SCAN_MSG);
+		phone.setText (PRESS_SCAN_MSG);
+		IMEI.setText (PRESS_SCAN_MSG);
+		subsNum.setText (PRESS_SCAN_MSG);
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		setPorts ();
@@ -230,6 +227,9 @@ public class MainWindow extends JFrame
 		setReadyStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.READY);
 		setSendingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.SENDING);
 		setReceivingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.RECEIVING);
+		setReadyStatus ();
+
+		UiUtils.changeSizeToScreen(this);
 
 		/* add the Esc key listener to the frame and all components. */
 		new EscKeyListener (this).install();
@@ -244,7 +244,8 @@ public class MainWindow extends JFrame
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-        private void initComponents() {
+        private void initComponents()
+        {
 
                 jScrollPane15 = new javax.swing.JScrollPane();
                 jPanel1 = new javax.swing.JPanel();
@@ -305,10 +306,12 @@ public class MainWindow extends JFrame
                 signalButton = new javax.swing.JButton();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-                setTitle("Your Music and Graphics"); // NOI18N
-                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag.png"))).getImage ());
-                addWindowListener(new java.awt.event.WindowAdapter() {
-                        public void windowClosing(java.awt.event.WindowEvent evt) {
+                setTitle("Jig Your Music and Graphics"); // NOI18N
+                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag-icon-phone.png"))).getImage ());
+                addWindowListener(new java.awt.event.WindowAdapter()
+                {
+                        public void windowClosing(java.awt.event.WindowEvent evt)
+                        {
                                 formWindowClosing(evt);
                         }
                 });
@@ -316,8 +319,10 @@ public class MainWindow extends JFrame
                 loadConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/loadconf.png"))); // NOI18N
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
                 loadConfBut.setText(bundle.getString("Load_configuration")); // NOI18N
-                loadConfBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadConfBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 loadConfButActionPerformed(evt);
                         }
                 });
@@ -331,10 +336,12 @@ public class MainWindow extends JFrame
 
                 parityLabel.setText(bundle.getString("Parity:")); // NOI18N
 
-                aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
+                aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/about.png"))); // NOI18N
                 aboutBut.setText(bundle.getString("About_JYMAG...")); // NOI18N
-                aboutBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 aboutButActionPerformed(evt);
                         }
                 });
@@ -343,10 +350,12 @@ public class MainWindow extends JFrame
 
                 progressLabel.setText(bundle.getString("Progress:")); // NOI18N
 
-                rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/tools1.png"))); // NOI18N
+                rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/manual-cmd.png"))); // NOI18N
                 rawBut.setText(bundle.getString("Manual_commands")); // NOI18N
-                rawBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rawBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 rawButActionPerformed(evt);
                         }
                 });
@@ -358,10 +367,12 @@ public class MainWindow extends JFrame
 
                 statusLabel.setText(bundle.getString("Program_status:")); // NOI18N
 
-                scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/SCAN5.png"))); // NOI18N
+                scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/scan.png"))); // NOI18N
                 scanButton.setText(bundle.getString("Scan_ports")); // NOI18N
-                scanButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scanButton.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 scanButtonActionPerformed(evt);
                         }
                 });
@@ -372,10 +383,12 @@ public class MainWindow extends JFrame
 
                 portLabel.setText(bundle.getString("Port:")); // NOI18N
 
-                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capab.png"))); // NOI18N
+                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capability.png"))); // NOI18N
                 getCapBut.setText(bundle.getString("Get_capabilities")); // NOI18N
-                getCapBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getCapBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 getCapButActionPerformed(evt);
                         }
                 });
@@ -386,8 +399,10 @@ public class MainWindow extends JFrame
 
                 exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
                 exitBut.setText(bundle.getString("Exit")); // NOI18N
-                exitBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 exitButActionPerformed(evt);
                         }
                 });
@@ -396,15 +411,15 @@ public class MainWindow extends JFrame
 
                 jScrollPane7.setViewportView(photoPanel);
 
-                tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pict-1.png")), jScrollPane7); // NOI18N
+                tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pictures.png")), jScrollPane7); // NOI18N
 
                 jScrollPane8.setViewportView(ringtonePanel);
 
-                tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/ring.png")), jScrollPane8); // NOI18N
+                tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/ringtones.png")), jScrollPane8); // NOI18N
 
                 jScrollPane9.setViewportView(addrBookPanel);
 
-                tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/abook.png")), jScrollPane9); // NOI18N
+                tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/addrbook.png")), jScrollPane9); // NOI18N
 
                 jScrollPane10.setViewportView(tasksPanel);
 
@@ -412,11 +427,11 @@ public class MainWindow extends JFrame
 
                 jScrollPane11.setViewportView(eventsPanel);
 
-                tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/event.png")), jScrollPane11); // NOI18N
+                tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/events.png")), jScrollPane11); // NOI18N
 
                 jScrollPane12.setViewportView(moviePanel);
 
-                tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/video.png")), jScrollPane12); // NOI18N
+                tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/videos.png")), jScrollPane12); // NOI18N
 
                 jScrollPane13.setViewportView(javasPanel);
 
@@ -424,7 +439,7 @@ public class MainWindow extends JFrame
 
                 jScrollPane16.setViewportView(alarmPanel);
 
-                tabPane.addTab(bundle.getString("Alarms"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/alarmclk.png")), jScrollPane16); // NOI18N
+                tabPane.addTab(bundle.getString("Alarms"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/alarm.png")), jScrollPane16); // NOI18N
 
                 jScrollPane18.setViewportView(sMSPanel);
 
@@ -446,14 +461,18 @@ public class MainWindow extends JFrame
 
                 saveConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/saveconf.png"))); // NOI18N
                 saveConfBut.setText(bundle.getString("Save_configuration")); // NOI18N
-                saveConfBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveConfBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 saveConfButActionPerformed(evt);
                         }
                 });
 
-                portCombo.addItemListener(new java.awt.event.ItemListener() {
-                        public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                portCombo.addItemListener(new java.awt.event.ItemListener()
+                {
+                        public void itemStateChanged(java.awt.event.ItemEvent evt)
+                        {
                                 portComboItemStateChanged(evt);
                         }
                 });
@@ -468,19 +487,23 @@ public class MainWindow extends JFrame
 
                 subsNum.setText("-"); // NOI18N
 
-                fontSizeSpin.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(12), Integer.valueOf(1), null, Integer.valueOf(1)));
-                fontSizeSpin.addChangeListener(new javax.swing.event.ChangeListener() {
-                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                fontSizeSpin.setModel(new javax.swing.SpinnerNumberModel(12, 1, null, 1));
+                fontSizeSpin.addChangeListener(new javax.swing.event.ChangeListener()
+                {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt)
+                        {
                                 fontSizeSpinStateChanged(evt);
                         }
                 });
 
                 fontSizeLab.setText(bundle.getString("Font_size")); // NOI18N
 
-                signalButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/antenna.png"))); // NOI18N
+                signalButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/signal.png"))); // NOI18N
                 signalButton.setText(bundle.getString("signal_power")); // NOI18N
-                signalButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                signalButton.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 signalButtonActionPerformed(evt);
                         }
                 });
@@ -496,12 +519,10 @@ public class MainWindow extends JFrame
                                 .addComponent(fontSizeSpin, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(365, 365, 365))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(816, Short.MAX_VALUE)
-                                .addComponent(signalButton)
-                                .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(816, Short.MAX_VALUE)
-                                .addComponent(exitBut)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(signalButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(exitBut, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addContainerGap())
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -652,7 +673,7 @@ public class MainWindow extends JFrame
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(getCapBut)))
                                         .addGap(58, 58, 58)
-                                        .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+                                        .addComponent(tabPane, javax.swing.GroupLayout.PREFERRED_SIZE, 342, Short.MAX_VALUE)
                                         .addContainerGap()))
                 );
 
@@ -750,19 +771,17 @@ public class MainWindow extends JFrame
 					Vector<String> active = get ();
 					if ( active == null )
 					{
-						JOptionPane.showMessageDialog (mw,
-							noAnsString, errString,
-							JOptionPane.ERROR_MESSAGE);
-						firmware.setText (pressScanMsg);
-						phone.setText (pressScanMsg);
+						UiUtils.showErrorMessage(mw,
+							NO_REPLY_STRING);
+						firmware.setText (PRESS_SCAN_MSG);
+						phone.setText (PRESS_SCAN_MSG);
 					}
 					else if (active.isEmpty ())
 					{
-						JOptionPane.showMessageDialog (mw,
-							noAnsString, errString,
-							JOptionPane.ERROR_MESSAGE);
-						firmware.setText (pressScanMsg);
-						phone.setText (pressScanMsg);
+						UiUtils.showErrorMessage(mw,
+							NO_REPLY_STRING);
+						firmware.setText (PRESS_SCAN_MSG);
+						phone.setText (PRESS_SCAN_MSG);
 					}
 					else if (active.size () == 1)
 					{
@@ -775,8 +794,8 @@ public class MainWindow extends JFrame
 					{
 						// let the user choose
 						int res = JOptionPane.showOptionDialog (mw,
-							multiAnsString,
-							whichString,
+							MULTI_REPLIES_STRING,
+							WHICH_STRING,
 							JOptionPane.OK_CANCEL_OPTION,
 							JOptionPane.QUESTION_MESSAGE,
 							null,
@@ -816,64 +835,15 @@ public class MainWindow extends JFrame
 
 		try
 		{
-			new AboutBox (this, true, Utils.getFontSize (fontSizeSpin))
+			new AboutBox (this, true, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 		}
 		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "MainWindow.AboutBox.start");	// NOI18N
-			try
-			{
-				JOptionPane.showMessageDialog (null, ex.toString (),
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(this, ex.toString ());
 		}
 	}//GEN-LAST:event_aboutButActionPerformed
-
-	/**
-	 * Uploads the given file using the current settings.
-	 * @param f the fie to upload.
-	 */
-	public void dynamicUpload (final File f)
-	{
-		if ( f == null )
-		{
-			return;
-		}
-		try
-		{
-			setSendingStatus ();
-			progressBar.setValue (0);
-			progressBar.setMinimum (0);
-			progressBar.setMaximum (1);
-
-			TransferParameters tp = getTransferParameters ();
-			TransferUtils.uploadFile (f, tp,
-				new Runnable ()
-				{
-					@Override
-					public synchronized void run ()
-					{
-						setReadyStatus ();
-					}
-
-					@Override
-					public String toString ()
-					{
-						return "MainWindow.dynamicUpload.Runnable";	// NOI18N
-					}
-				}, this, false, false, false);
-		}
-		catch (Exception ex)
-		{
-			setReadyStatus ();
-			Utils.handleException (ex, "dynUpload");	// NOI18N
-		}
-	}
 
 	private void rawButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rawButActionPerformed
 
@@ -884,22 +854,14 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			new RawCommunicator (dt, this, sync, Utils.getFontSize (fontSizeSpin))
+			new RawCommunicator (dt, this, sync, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 			dt.close ();
 		}
 		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "MainWindow.RawCommunnicator.start");	// NOI18N
-			try
-			{
-				JOptionPane.showMessageDialog (null, ex.toString (),
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(this, ex.toString ());
 		}
 	}//GEN-LAST:event_rawButActionPerformed
 
@@ -912,22 +874,14 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			new CapabilityWindow (dt, this, sync, Utils.getFontSize (fontSizeSpin))
+			new CapabilityWindow (dt, this, sync, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 			dt.close ();
 		}
 		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "MainWindow.CapabilityWindow.start");	// NOI18N
-			try
-			{
-				JOptionPane.showMessageDialog (null, ex.toString (),
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(this, ex.toString ());
 		}
 	}//GEN-LAST:event_getCapButActionPerformed
 
@@ -945,7 +899,7 @@ public class MainWindow extends JFrame
 			if ( item != null )
 			{
 				String itemName = item.toString ();
-				String fw = pressScanMsg;
+				String fw = PRESS_SCAN_MSG;
 				if ( firmwares != null )
 				{
 					if ( firmwares.containsKey (itemName) )
@@ -955,7 +909,7 @@ public class MainWindow extends JFrame
 				}
 				firmware.setText (fw);
 
-				String pType = pressScanMsg;
+				String pType = PRESS_SCAN_MSG;
 				if ( phoneTypes != null )
 				{
 					if ( phoneTypes.containsKey (itemName) )
@@ -965,7 +919,7 @@ public class MainWindow extends JFrame
 				}
 				phone.setText (pType);
 
-				String pIMEI = pressScanMsg;
+				String pIMEI = PRESS_SCAN_MSG;
 				if ( phoneIMEIs != null )
 				{
 					if ( phoneIMEIs.containsKey (itemName) )
@@ -975,7 +929,7 @@ public class MainWindow extends JFrame
 				}
 				IMEI.setText (pIMEI);
 
-				String pNumber = pressScanMsg;
+				String pNumber = PRESS_SCAN_MSG;
 				if ( phoneSubsNums != null )
 				{
 					if ( phoneSubsNums.containsKey (itemName) )
@@ -1079,7 +1033,7 @@ public class MainWindow extends JFrame
 				cfg.setWidth (getWidth ());
 				cfg.setHeight (getHeight ());
 				cfg.setIsMaximized ((getExtendedState () & JFrame.MAXIMIZED_BOTH) != 0);
-				cfg.setFontSizeValue ((int)Utils.getFontSize(fontSizeSpin));
+				cfg.setFontSizeValue ((int)UiUtils.getFontSize(fontSizeSpin));
 				cfg.setSelectedTab (tabPane.getSelectedIndex());
 				cfg.write ();
 			}
@@ -1092,7 +1046,7 @@ public class MainWindow extends JFrame
 
 	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
 
-		Utils.setFontSize (this, Utils.getFontSize (fontSizeSpin));
+		UiUtils.setFontSize (this, UiUtils.getFontSize (fontSizeSpin));
 
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
@@ -1105,79 +1059,16 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			new SignalDisplayer (dt, this, sync, Utils.getFontSize (fontSizeSpin))
+			new SignalDisplayer (dt, this, sync, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 			//dt.close ();	// do NOT close, because the window is NOT modal
 		}
 		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "MainWindow.SignalDisplayer.start");	// NOI18N
-			try
-			{
-				JOptionPane.showMessageDialog (null, ex.toString (),
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(this, ex.toString ());
 		}
 	}//GEN-LAST:event_signalButtonActionPerformed
-
-	/**
-	 * Puts the list of the given elements in the given table.
-	 * @param ofWhat Tells which elements should be downloaded.
-	 * @param dtm The table to put the data in.
-	 * @param placeForData The place for the downloaded elements.
-	 */
-	public void putListInTable (final String ofWhat,
-		final DefaultTableModel dtm,
-		final Vector<PhoneElement> placeForData)
-	{
-		TransferParameters tp = getTransferParameters ();
-		if ( tp == null || tp.getId () == null )
-		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
-			return;
-		}
-		try
-		{
-			setReceivingStatus ();
-			progressBar.setValue (0);
-			progressBar.setMinimum (0);
-			progressBar.setMaximum (1);
-
-			TransferUtils.downloadList (ofWhat, tp,
-				new Runnable ()
-				{
-					@Override
-					public synchronized void run ()
-					{
-						progressBar.setValue (1);
-						setReadyStatus ();
-					}
-
-					@Override
-					public String toString ()
-					{
-						return "MainWindow.putListInTable.Runnable";	// NOI18N
-					}
-				}, this, false, false, false, dtm, placeForData);
-		}
-		catch (Exception ex)
-		{
-			setReadyStatus ();
-			Utils.handleException (ex, "putListInTable");	// NOI18N
-		}
-	}
 
 	private void disablePortControls ()
 	{
@@ -1214,7 +1105,7 @@ public class MainWindow extends JFrame
 		if ( cfgFC == null )
 		{
 			cfgFC = new JFileChooser ();
-			cfgFC.setFileFilter ( cfgFileFilter );
+			cfgFC.setFileFilter ( CFG_FILE_FILTER );
 			cfgFC.setAcceptAllFileFilterUsed (false);
 			cfgFC.setMultiSelectionEnabled (false);
 		}
@@ -1226,7 +1117,7 @@ public class MainWindow extends JFrame
 	public void setSendingStatus ()
 	{
 		disablePortControls ();
-		Utils.changeGUI(setSendingStatus);
+		UiUtils.changeGUI(setSendingStatus);
 	}
 
 	/**
@@ -1235,7 +1126,7 @@ public class MainWindow extends JFrame
 	public void setReceivingStatus ()
 	{
 		disablePortControls ();
-		Utils.changeGUI(setReceivingStatus);
+		UiUtils.changeGUI(setReceivingStatus);
 	}
 
 	/**
@@ -1244,8 +1135,44 @@ public class MainWindow extends JFrame
 	public void setReadyStatus ()
 	{
 		enablePortControls ();
-		Utils.changeGUI(setReadyStatus);
+		UiUtils.changeGUI(setReadyStatus);
 		progressBar.setValue (0);
+	}
+
+	/**
+	 * Sets the current value on the progress bar.
+	 * @param value The value to set.
+	 */
+	public void setProgressCurrentValue (int value)
+	{
+		progressBar.setValue (value);
+	}
+
+	/**
+	 * Gets the current value on the progress bar.
+	 * @return The current value.
+	 */
+	public int getProgressCurrentValue ()
+	{
+		return progressBar.getValue();
+	}
+
+	/**
+	 * Sets the minimum value on the progress bar.
+	 * @param value The value to set.
+	 */
+	public void setProgressMinimumValue (int value)
+	{
+		progressBar.setMinimum(value);
+	}
+
+	/**
+	 * Sets the maximum value on the progress bar.
+	 * @param value The value to set.
+	 */
+	public void setProgressMaximumValue (int value)
+	{
+		progressBar.setMaximum(value);
 	}
 
 	private void updateControls ()
@@ -1378,7 +1305,6 @@ public class MainWindow extends JFrame
 		if ( c instanceof JYMAGTab )
 		{
 			JYMAGTab tab = (JYMAGTab)c;
-			tab.setProgressBar (progressBar);
 			tab.setDestDir (destDirName);
 			tab.setMainWindow (this);
 			tab.setFontSizeSpin (fontSizeSpin);
@@ -1431,15 +1357,7 @@ public class MainWindow extends JFrame
 	{
 		if ( portCombo.getSelectedItem () == null )
 		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(this, NO_PORT_MSG);
 			return null;
 		}
 		DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
@@ -1505,7 +1423,7 @@ public class MainWindow extends JFrame
         private BogDroSoft.jymag.gui.panels.AddrBookPanel addrBookPanel;
         private BogDroSoft.jymag.gui.panels.AlarmPanel alarmPanel;
         private javax.swing.JLabel bpsLabel;
-	@SuppressWarnings("rawtypes")
+        @SuppressWarnings("rawtypes")
         private javax.swing.JComboBox dataBitsCombo;
         private javax.swing.JLabel databitsLabel;
         private BogDroSoft.jymag.gui.panels.DialPanel dialPanel;
@@ -1534,13 +1452,13 @@ public class MainWindow extends JFrame
         private BogDroSoft.jymag.gui.panels.JavasPanel javasPanel;
         private javax.swing.JButton loadConfBut;
         private BogDroSoft.jymag.gui.panels.MoviePanel moviePanel;
-	@SuppressWarnings("rawtypes")
+        @SuppressWarnings("rawtypes")
         private javax.swing.JComboBox parityCombo;
         private javax.swing.JLabel parityLabel;
         private javax.swing.JLabel phone;
         private javax.swing.JLabel phoneTypeLabel;
         private BogDroSoft.jymag.gui.panels.PhotoPanel photoPanel;
-	@SuppressWarnings("rawtypes")
+        @SuppressWarnings("rawtypes")
         private javax.swing.JComboBox portCombo;
         private javax.swing.JLabel portLabel;
         private final javax.swing.JProgressBar progressBar = new javax.swing.JProgressBar();
@@ -1551,12 +1469,12 @@ public class MainWindow extends JFrame
         private javax.swing.JButton saveConfBut;
         private javax.swing.JButton scanButton;
         private javax.swing.JButton signalButton;
-	@SuppressWarnings("rawtypes")
+        @SuppressWarnings("rawtypes")
         private javax.swing.JComboBox speedCombo;
         private javax.swing.JLabel speedLabel;
         private final javax.swing.JLabel status = new javax.swing.JLabel();
         private javax.swing.JLabel statusLabel;
-	@SuppressWarnings("rawtypes")
+        @SuppressWarnings("rawtypes")
         private javax.swing.JComboBox stopBitsCombo;
         private javax.swing.JLabel stopbitsLabel;
         private javax.swing.JLabel subsNum;

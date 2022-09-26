@@ -1,13 +1,13 @@
 /*
  * DialPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2012-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,27 +15,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag.gui.panels;
 
+import BogDroSoft.jymag.Utils;
 import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.MainWindow;
-import BogDroSoft.jymag.Utils;
-
+import BogDroSoft.jymag.gui.UiUtils;
 import java.awt.event.ItemEvent;
-import java.util.ResourceBundle;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.SwingWorker;
 
@@ -48,9 +40,6 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	private static final long serialVersionUID = 81L;
 
 	private volatile MainWindow mw;
-
-	private static final ResourceBundle rcBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DialPanel");
-	private static final String exString = rcBundle.getString("Exception");
 
 	/** Creates new form DialPanel. */
 	public DialPanel()
@@ -76,7 +65,8 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	 */
 	@SuppressWarnings("unchecked")
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-        private void initComponents() {
+        private void initComponents()
+        {
 
                 dialTypeGroup = new javax.swing.ButtonGroup();
                 voiceDataDialGroup = new javax.swing.ButtonGroup();
@@ -113,117 +103,151 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                 dialNumRadio.setSelected(true);
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DialPanel"); // NOI18N
                 dialNumRadio.setText(bundle.getString("dial_the_number")); // NOI18N
-                dialNumRadio.addChangeListener(new javax.swing.event.ChangeListener() {
-                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                dialNumRadio.addChangeListener(new javax.swing.event.ChangeListener()
+                {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt)
+                        {
                                 dialNumRadioStateChanged(evt);
                         }
                 });
-                dialNumRadio.addItemListener(new java.awt.event.ItemListener() {
-                        public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dialNumRadio.addItemListener(new java.awt.event.ItemListener()
+                {
+                        public void itemStateChanged(java.awt.event.ItemEvent evt)
+                        {
                                 dialNumRadioItemStateChanged(evt);
                         }
                 });
 
                 dialTypeGroup.add(dialCmdRadio);
                 dialCmdRadio.setText(bundle.getString("dial_command")); // NOI18N
-                dialCmdRadio.addChangeListener(new javax.swing.event.ChangeListener() {
-                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                dialCmdRadio.addChangeListener(new javax.swing.event.ChangeListener()
+                {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt)
+                        {
                                 dialCmdRadioStateChanged(evt);
                         }
                 });
-                dialCmdRadio.addItemListener(new java.awt.event.ItemListener() {
-                        public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dialCmdRadio.addItemListener(new java.awt.event.ItemListener()
+                {
+                        public void itemStateChanged(java.awt.event.ItemEvent evt)
+                        {
                                 dialCmdRadioItemStateChanged(evt);
                         }
                 });
 
                 but1.setText("1");
-                but1.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but1.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but2.setText("2");
-                but2.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but2.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but3.setText("3");
-                but3.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but3.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but4.setText("4");
-                but4.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but4.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but5.setText("5");
-                but5.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but5.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but6.setText("6");
-                but6.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but6.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but7.setText("7");
-                but7.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but7.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but8.setText("8");
-                but8.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but8.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but9.setText("9");
-                but9.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but9.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 butAst.setText("*");
-                butAst.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                butAst.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 but0.setText("0");
-                but0.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                but0.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 butHash.setText("#");
-                butHash.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                butHash.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
 
                 butPlus.setText("+");
-                butPlus.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                butPlus.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 numberButActionPerformed(evt);
                         }
                 });
@@ -237,16 +261,20 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
                 dialBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/dialnum.png"))); // NOI18N
                 dialBut.setText(bundle.getString("dial_button_text")); // NOI18N
-                dialBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dialBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 dialButActionPerformed(evt);
                         }
                 });
 
-                hangUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/stopcall.png"))); // NOI18N
+                hangUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/hangup.png"))); // NOI18N
                 hangUpBut.setText(bundle.getString("hangup_button_text")); // NOI18N
-                hangUpBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hangUpBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 hangUpButActionPerformed(evt);
                         }
                 });
@@ -263,24 +291,30 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
                 answerBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pickup.png"))); // NOI18N
                 answerBut.setText(bundle.getString("answer_call")); // NOI18N
-                answerBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                answerBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 answerButActionPerformed(evt);
                         }
                 });
 
                 volumeUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/volup.png"))); // NOI18N
                 volumeUpBut.setText(bundle.getString("volume_up")); // NOI18N
-                volumeUpBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                volumeUpBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 volumeUpButActionPerformed(evt);
                         }
                 });
 
                 volumeDownBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/voldown.png"))); // NOI18N
                 volumeDownBut.setText(bundle.getString("volume_down")); // NOI18N
-                volumeDownBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                volumeDownBut.addActionListener(new java.awt.event.ActionListener()
+                {
+                        public void actionPerformed(java.awt.event.ActionEvent evt)
+                        {
                                 volumeDownButActionPerformed(evt);
                         }
                 });
@@ -436,15 +470,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		TransferParameters tp = mw.getTransferParameters ();
 		if ( tp == null || tp.getId () == null )
 		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(mw, MainWindow.NO_PORT_MSG);
 			return;
 		}
 		try
@@ -472,8 +498,8 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 				dt.open (tp.getSpeed (), tp.getDataBits (),
 					tp.getStopBits (),
 					tp.getParity (), tp.getFlow ());
-				final byte[] cmd = (dialCmdField.getText () + DataTransporter.CRStr)
-					.getBytes (DataTransporter.defaultEncoding);
+				final byte[] cmd = (dialCmdField.getText () + Utils.CR)
+					.getBytes (DataTransporter.DEFAULT_ENCODING);
 				// send a custom command
 				SwingWorker<Void, Void> sw =
 					new SwingWorker<Void, Void> ()
@@ -510,11 +536,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		catch (Exception ex)
 		{
 			Utils.handleException (ex, "dialButActionPerformed");	// NOI18N
-			try
-			{
-				JOptionPane.showMessageDialog (mw, ex.toString (),
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception ex2) {}
+			UiUtils.showErrorMessage(mw, ex.toString ());
 		}
 	}//GEN-LAST:event_dialButActionPerformed
 
@@ -524,15 +546,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		TransferParameters tp = mw.getTransferParameters ();
 		if ( tp == null || tp.getId () == null )
 		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(mw, MainWindow.NO_PORT_MSG);
 			return;
 		}
 		try
@@ -584,15 +598,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		TransferParameters tp = mw.getTransferParameters ();
 		if ( tp == null || tp.getId () == null )
 		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(mw, MainWindow.NO_PORT_MSG);
 			return;
 		}
 		try
@@ -612,15 +618,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		TransferParameters tp = mw.getTransferParameters ();
 		if ( tp == null || tp.getId () == null )
 		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(mw, MainWindow.NO_PORT_MSG);
 			return;
 		}
 		try
@@ -640,15 +638,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		TransferParameters tp = mw.getTransferParameters ();
 		if ( tp == null || tp.getId () == null )
 		{
-			try
-			{
-				JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
-					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
-			}
-			catch (Exception ex2)
-			{
-				// don't display exceptions about displaying exceptions
-			}
+			UiUtils.showErrorMessage(mw, MainWindow.NO_PORT_MSG);
 			return;
 		}
 		try
@@ -710,12 +700,6 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 		autoDialRadio.setEnabled (false);
 
 		dialCmdField.setEnabled (true);
-	}
-
-	@Override
-	public void setProgressBar (JProgressBar progressBar)
-	{
-		// not needed
 	}
 
 	@Override

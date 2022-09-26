@@ -1,6 +1,6 @@
-/* Motyw zimowo-niebieski */
+/* A winter-blue theme */
 
-/* CSS 1 (wiekszosc) */
+/* CSS 1 (most) */
 
 body		{
 			/*font-family: sans-serif, serif, arial;*/
@@ -41,7 +41,8 @@ pre		{
 			color: black;
 		}
 
-code, kbd	{
+code, kbd, samp, var
+		{
 /* 			font-family: monospace, "courier new", courier; */
 			background-color: #A0EEEE;
 			color: black;
@@ -57,17 +58,20 @@ img:focus	{
 			outline-width: 0px;
 		}
 
-img.ramka	{
+/* Frames around selected pictures */
+img.frame	{
 			border-style: solid;
 			border-color: blue;
 		}
 
+/* Graphical signification of acronyms and abbreviations */
 acronym, abbr	{
 			border-bottom: 1px dotted black;
 			cursor:	help; 		/* CSS 2 */
 		}
 
-.wazne		{
+/* Important information */
+.important	{
 			/*text-transform: uppercase;*/
 			text-decoration: underline;
 			font-weight: bold;
@@ -96,7 +100,8 @@ ol.rom		{	list-style-type: upper-roman;	}
 
 ol.alfa		{	list-style-type: lower-alpha;	}
 
-.nag		{
+/* Chapter header */
+.hdr		{
 			font-size: 200%;
 			text-align: center;
 			font-weight: normal;
@@ -128,23 +133,14 @@ td		{
 			border-color: gray gray gray gray;
 		}
 
-td.numpad	{
-			color: black;
-			background-color: yellow;
-		}
-
 td hr		{	display: none;			}
-td .niewidTD	{	display: none;			}
 
-
-.lewa		{	float: left;			}
-.prawa		{	float: right;			}
 
 /* =============================================================== */
 /* CSS 2 */
 @media print {
 
-/* Druk tylko czarno-bialy, na wszelki wypadek */
+/* Print only in black & white, just in case */
   body		{
 			text-align: justify;
 			background-color: white;
@@ -173,11 +169,9 @@ td .niewidTD	{	display: none;			}
 		}
 
 
-  .bezdruk	{	display: none;			}
-
   acronym, abbr	{	border-bottom: none;		}
 
-  .nag		{	page-break-after: avoid;	}
+  .hdr		{	page-break-after: avoid;	}
 
   tr		{	page-break-inside: avoid;	}
 
@@ -209,14 +203,14 @@ td .niewidTD	{	display: none;			}
 
   table, td	{	speak-header: always;		}
 
-  .wazne	{
+  .important	{
   			pitch: medium;
   			stress: 90;
   			richness: 90;
   			volume: medium;
 		}
 
-  .nag		{	volume: loud;			}
+  .hdr		{	volume: loud;			}
 
   hr		{
   			speak: none;

@@ -1,13 +1,13 @@
 /*
  * PhoneAlarm.java, part of the JYMAG package.
  *
- * Copyright (C) 2010-2020 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2010-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foudation:
- *		Free Software Foundation
- *		51 Franklin Street, Fifth Floor
- *		Boston, MA 02110-1301
- *		USA
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package BogDroSoft.jymag;
@@ -46,30 +41,25 @@ public class PhoneAlarm
 	private int number;
 
 	// alarm recurrences could also show up here
-	private static final Pattern datetimePattern
+	private static final Pattern DATETIME_PATTERN
 		= Pattern.compile ("(\\+CALA:)?(\\s*)?\"?(\\d{2})/(\\d{2})/(\\d{2}),"		// NOI18N
 			+ "(\\d{2}):(\\d{2}):(\\d{2})\"?(\\s*,(\\d+))?(\\s*,\""			// NOI18N
 			+ "(\\d)((,\\d))+\")?\\s*.*",						// NOI18N
 			Pattern.CASE_INSENSITIVE);
 
-	private static final Pattern timePattern
+	private static final Pattern TIME_PATTERN
 		= Pattern.compile ("(\\+CALA:)?(\\s*)?\"?(\\d{2}):(\\d{2}):(\\d{2})\"?"		// NOI18N
 			+ "(\\s*,(\\d+))?(\\s*,\"(\\d)((,\\d)+)\")?\\s*.*",			// NOI18N
 			Pattern.CASE_INSENSITIVE);
 
-	private static final String dQuote = "\"";		// NOI18N
-	private static final String comma = ",";		// NOI18N
-	private static final String slash = "/";		// NOI18N
-	private static final String colon = ":";		// NOI18N
-	private static final String zero = "0";			// NOI18N
-	private static final String empty = "";			// NOI18N
+	private static final String SLASH = "/";			// NOI18N
 
-	private static final String toStringStart = "PhoneAlarm[";				// NOI18N
-	private static final String toStringEnd = "]";						// NOI18N
-	private static final String toStringID = "ID=";						// NOI18N
+	private static final String TOSTRING_BEGIN = "PhoneAlarm[";	// NOI18N
+	private static final String TOSTRING_END = "]";			// NOI18N
+	private static final String TOSTRING_ID = "ID=";		// NOI18N
 	// the rest can be empty. The user needs to know only where the ID is
-	private static final String toStringDateTime = "";					// NOI18N
-	private static final String toStringDays = "";						// NOI18N
+	private static final String TOSTRING_DATETIME = "";		// NOI18N
+	private static final String TOSTRING_DAYS = "";			// NOI18N
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
@@ -189,7 +179,7 @@ public class PhoneAlarm
 		}
 		else
 		{
-			String[] parts = dateString.split (slash);
+			String[] parts = dateString.split (SLASH);
 			if ( parts.length != 3 )
 			{
 				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:dateString: " + dateString);	// NOI18N
@@ -215,7 +205,7 @@ public class PhoneAlarm
 		}
 		else
 		{
-			String[] parts = timeString.split (colon);
+			String[] parts = timeString.split (Utils.COLON);
 			if ( parts.length != 3 )
 			{
 				throw new IllegalArgumentException ("PhoneAlarm.PhoneAlarm:timeString: " + timeString);	// NOI18N
@@ -236,7 +226,7 @@ public class PhoneAlarm
 		else
 		{
 			forAllDays = false;
-			String[] recurrs = daysString.split (comma);
+			String[] recurrs = daysString.split (Utils.COMMA);
 			if ( recurrs != null )
 			{
 				Set<Integer> tmpDays = makeSetFromArray (recurrs);
@@ -408,22 +398,22 @@ public class PhoneAlarm
 	 */
 	public synchronized String getAlarmString ()
 	{
-		String result = dQuote;
+		String result = Utils.DQUOT;
 		if ( oneTime )
 		{
-			result += getDateString () + comma;
+			result += getDateString () + Utils.COMMA;
 		}
-		result += getTimeString () + dQuote;
+		result += getTimeString () + Utils.DQUOT;
 		if ( number != -1 )
 		{
-			result += comma + number + comma;
+			result += Utils.COMMA + number + Utils.COMMA;
 			if ( forAllDays || days == null )
 			{
-				result += zero;
+				result += Utils.ZERO;
 			}
 			else
 			{
-				result += dQuote + getDaysString () + dQuote;
+				result += Utils.DQUOT + getDaysString () + Utils.DQUOT;
 			}
 		}
 		return result;
@@ -442,9 +432,9 @@ public class PhoneAlarm
 			int month = Utils.convertCalendarMonthToReal (time.get (Calendar.MONTH));
 			int day   = time.get (Calendar.DAY_OF_MONTH);
 
-			return ((day<10)? zero : empty ) + day + slash
-				+ ((month<10)? zero : empty ) + month + slash
-				+ ((year<10)? zero : empty ) + year;
+			return ((day<10)? Utils.ZERO : Utils.EMPTY_STR ) + day + SLASH
+				+ ((month<10)? Utils.ZERO : Utils.EMPTY_STR ) + month + SLASH
+				+ ((year<10)? Utils.ZERO : Utils.EMPTY_STR ) + year;
 		}
 		return null;
 	}
@@ -459,9 +449,9 @@ public class PhoneAlarm
 		int minute = time.get (Calendar.MINUTE);
 		int second = time.get (Calendar.SECOND);
 
-		return ((hour<10)? zero : empty ) + hour + colon
-			+ ((minute<10)? zero : empty ) + minute + colon
-			+ ((second<10)? zero : empty ) + second;
+		return ((hour<10)? Utils.ZERO : Utils.EMPTY_STR ) + hour + Utils.COLON
+			+ ((minute<10)? Utils.ZERO : Utils.EMPTY_STR ) + minute + Utils.COLON
+			+ ((second<10)? Utils.ZERO : Utils.EMPTY_STR ) + second;
 	}
 
 	/**
@@ -472,11 +462,11 @@ public class PhoneAlarm
 	{
 		if ( days == null )
 		{
-			return empty;
+			return Utils.EMPTY_STR;
 		}
 		if ( days.contains (ALL_DAYS) )
 		{
-			return zero;
+			return Utils.ZERO;
 		}
 		else
 		{
@@ -494,13 +484,13 @@ public class PhoneAlarm
 					result.append (nextInt.toString ());
 					if ( it.hasNext () )
 					{
-						result.append (comma);
+						result.append (Utils.COMMA);
 					}
 				}
 			}
 			if ( result.length () == 0 )
 			{
-				result.append (zero);
+				result.append (Utils.ZERO);
 			}
 			return result.toString ();
 		}
@@ -564,7 +554,7 @@ public class PhoneAlarm
 		{
 			return null;
 		}
-		Matcher m = datetimePattern.matcher (response);
+		Matcher m = DATETIME_PATTERN.matcher (response);
 		if ( m.matches () )
 		{
 			Calendar c = Calendar.getInstance ();
@@ -659,7 +649,7 @@ public class PhoneAlarm
 
 			return new PhoneAlarm (c, true, false, (int[])null, alNumber);
 		}
-		m = timePattern.matcher (response);
+		m = TIME_PATTERN.matcher (response);
 		if ( m.matches () )
 		{
 			Calendar c = Calendar.getInstance ();
@@ -729,7 +719,7 @@ public class PhoneAlarm
 				String g10 = m.group (10);
 				if ( g10 != null )
 				{
-					String[] recurrs = g10.split (comma);
+					String[] recurrs = g10.split (Utils.COMMA);
 					if ( recurrs != null )
 					{
 						tmpDays = makeSetFromArray (recurrs);
@@ -780,8 +770,9 @@ public class PhoneAlarm
 	@Override
 	public synchronized String toString ()
 	{
-		return toStringStart + toStringID + number + comma + toStringDateTime
-			+ sdf.format (time.getTime ()) + comma
-			+ toStringDays + getDaysString () + toStringEnd;
+		return TOSTRING_BEGIN + TOSTRING_ID + number + Utils.COMMA
+			+ TOSTRING_DATETIME + sdf.format (time.getTime ())
+			+ Utils.COMMA + TOSTRING_DAYS + getDaysString ()
+			+ TOSTRING_END;
 	}
 }
