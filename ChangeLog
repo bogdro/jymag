@@ -1,3 +1,41 @@
+2008-08-13	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.6:
+	  Moving listeners to private inner classes and minimizing the number
+	  of publicly-available methods. Allowing uploading of addressbook
+	  entries, to-do entries, events/tasks, WBMP images, MNG animations. New
+	  icons for download and upload. Downloading the list of animations/videos.
+	  Allowing downloading of WBMP images and MNG animations. Allowing deleting
+	  animations.
+	* AboutBox: a new class displaying the "About..." window with author,
+	  www, license and thanks info. The links are clickable and do the
+	  expected things (almost).
+	* MainWindow.java: The download button now displays a "Save" dialog
+	  instead of "Open". Clicking on any table header selects all rows.
+	  Deleting: setting the status to "sending" just once. Renamed
+	  "Events" to "Events/Tasks". Added supported file extensions to
+	  upload-mode file choosers. Added different background colours for
+	  different tabs. The current elements are now local to prevent data
+	  inconsistency. Added a progress bar. Making all available port
+	  speeds visible at the same time. Added a phone-type label and receiving
+	  phone type when "Scan" is pressed. Added the program version to the
+	  title bar. A new tab for animations/videos. Added an "Exit" button.
+	* package "gfx" renamed to "rsrc" (because the license file was added,
+	  the package is not only-graphics anymore).
+	* Utils.java: added the magic numbers for TO-DOs (thus also for the
+	  events as they are the same), addressbook files, WBMP images, MNG
+	  animations/videos. Corrected exception displaying. Added a new file
+	  extension (*.vcrd) for vCards.
+	* RawCommunicator.java: The command field now expands along with the
+	  window. Empty response won't add an empty new line in the response
+	  area. After sending the command, the focus returns to the
+	  command-typing area.
+	* DataTransporter.java: Fixed saving unknown files (too many bytes were
+	  written). Added the WBMP header and the MNG header. Added a check if the
+	  port still exists when trying to open (this doesn't check "COM*" ports,
+	  because I don't know if it would work). Had to do it, because when a
+	  port disappears (unplugged etc.), RxTx crashes the program.
+
 2008-07-12	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.5:

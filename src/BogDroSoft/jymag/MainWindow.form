@@ -28,9 +28,10 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="tabPane" alignment="0" pref="657" max="32767" attributes="1"/>
+                  <Component id="tabPane" alignment="0" pref="759" max="32767" attributes="1"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="phoneTypeLabel" min="-2" max="-2" attributes="0"/>
                           <Component id="firmwareLabel" min="-2" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -63,24 +64,34 @@
                               </Group>
                           </Group>
                           <Component id="statusLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="progressLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Component id="flowCombo" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="parityCombo" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="stopBitsCombo" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="status" min="-2" max="-2" attributes="0"/>
-                                  <Component id="firmware" min="-2" max="-2" attributes="0"/>
+                                  <Component id="status" alignment="0" min="-2" max="-2" attributes="1"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="phone" alignment="0" max="32767" attributes="1"/>
+                                      <Component id="firmware" alignment="0" max="32767" attributes="1"/>
+                                  </Group>
+                                  <Component id="progressBar" alignment="0" pref="280" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="137" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="aboutBut" linkSize="1" max="32767" attributes="1"/>
-                                  <Component id="scanButton" linkSize="1" alignment="0" min="-2" max="-2" attributes="1"/>
-                                  <Component id="rawBut" linkSize="1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="18" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="exitBut" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="aboutBut" linkSize="1" max="32767" attributes="1"/>
+                                          <Component id="scanButton" linkSize="1" alignment="0" min="-2" max="-2" attributes="1"/>
+                                      </Group>
+                                      <Component id="rawBut" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
-                          <Component id="flowCombo" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -90,7 +101,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
@@ -133,9 +144,13 @@
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="rawBut" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="phoneTypeLabel" alignment="3" min="-2" pref="14" max="-2" attributes="0"/>
+                          <Component id="phone" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="firmwareLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="firmware" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -145,10 +160,20 @@
                           <Component id="status" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="statusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+                          <Component id="progressLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="rawBut" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="exitBut" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="tabPane" pref="298" max="32767" attributes="0"/>
+              <Component id="tabPane" pref="371" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -234,7 +259,7 @@
     <Component class="javax.swing.JButton" name="scanButton">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/BogDroSoft/gfx/SCAN5.png"/>
+          <Image iconType="3" name="/BogDroSoft/rsrc/SCAN5.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Scan ports"/>
       </Properties>
@@ -247,12 +272,17 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="photoPane">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="f2" red="b8" type="rgb"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Photos">
                 <Property name="tabTitle" type="java.lang.String" value="Photos"/>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/pict-1.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/pict-1.png"/>
                 </Property>
               </JTabbedPaneConstraints>
             </Constraint>
@@ -264,7 +294,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane1" alignment="0" pref="628" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="0" pref="730" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="getPhotoListBut" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -282,7 +312,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jScrollPane1" pref="173" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="246" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="getPhotoListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -315,7 +345,7 @@
             <Component class="javax.swing.JButton" name="getPhotoListBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/list.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/list.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Get list"/>
               </Properties>
@@ -326,7 +356,7 @@
             <Component class="javax.swing.JButton" name="downloadPhotoBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12A.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/download.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Download selected"/>
               </Properties>
@@ -337,7 +367,7 @@
             <Component class="javax.swing.JButton" name="uploadPhotoBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12D.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/upload.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Upload"/>
               </Properties>
@@ -348,7 +378,7 @@
             <Component class="javax.swing.JButton" name="deletePhotoBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/delete.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/delete.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Delete selected"/>
               </Properties>
@@ -359,12 +389,17 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="ringPane">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="b3" green="ff" red="b3" type="rgb"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Ringtones">
                 <Property name="tabTitle" type="java.lang.String" value="Ringtones"/>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ring.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/ring.png"/>
                 </Property>
               </JTabbedPaneConstraints>
             </Constraint>
@@ -376,7 +411,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane2" alignment="0" pref="628" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" alignment="0" pref="730" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="getRingListBut" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -394,7 +429,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jScrollPane2" pref="173" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="246" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="getRingListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -427,7 +462,7 @@
             <Component class="javax.swing.JButton" name="getRingListBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/list.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/list.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Get list"/>
               </Properties>
@@ -438,7 +473,7 @@
             <Component class="javax.swing.JButton" name="downloadRingBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12A.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/download.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Download selected"/>
               </Properties>
@@ -449,7 +484,7 @@
             <Component class="javax.swing.JButton" name="uploadRingBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12D.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/upload.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Upload"/>
               </Properties>
@@ -460,7 +495,7 @@
             <Component class="javax.swing.JButton" name="deleteRingBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/delete.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/delete.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Delete selected"/>
               </Properties>
@@ -471,12 +506,17 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="addrBookPane">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="c1" green="ff" red="ff" type="rgb"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Addressbook">
                 <Property name="tabTitle" type="java.lang.String" value="Addressbook"/>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/abook.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/abook.png"/>
                 </Property>
               </JTabbedPaneConstraints>
             </Constraint>
@@ -488,7 +528,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane3" alignment="0" pref="628" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" alignment="0" pref="730" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="getAddrListBut" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -506,7 +546,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jScrollPane3" pref="173" max="32767" attributes="0"/>
+                      <Component id="jScrollPane3" pref="246" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="getAddrListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -539,7 +579,7 @@
             <Component class="javax.swing.JButton" name="getAddrListBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/list.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/list.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Get list"/>
               </Properties>
@@ -550,7 +590,7 @@
             <Component class="javax.swing.JButton" name="downloadAddrBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12A.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/download.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Download selected"/>
               </Properties>
@@ -561,10 +601,9 @@
             <Component class="javax.swing.JButton" name="uploadAddrBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12D.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/upload.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Upload"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uploadAddrButActionPerformed"/>
@@ -573,7 +612,7 @@
             <Component class="javax.swing.JButton" name="deleteAddrBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/delete.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/delete.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Delete selected"/>
               </Properties>
@@ -584,12 +623,17 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="todoPane">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="7f" green="c4" red="7f" type="rgb"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="To do">
                 <Property name="tabTitle" type="java.lang.String" value="To do"/>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/todo.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/todo.png"/>
                 </Property>
               </JTabbedPaneConstraints>
             </Constraint>
@@ -601,7 +645,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane4" alignment="0" pref="628" max="32767" attributes="0"/>
+                          <Component id="jScrollPane4" alignment="0" pref="730" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="getTodoListBut" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -619,7 +663,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jScrollPane4" pref="173" max="32767" attributes="0"/>
+                      <Component id="jScrollPane4" pref="246" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="getTodoListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -652,7 +696,7 @@
             <Component class="javax.swing.JButton" name="getTodoListBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/list.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/list.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Get list"/>
               </Properties>
@@ -663,7 +707,7 @@
             <Component class="javax.swing.JButton" name="downloadTodoBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12A.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/download.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Download selected"/>
               </Properties>
@@ -674,10 +718,9 @@
             <Component class="javax.swing.JButton" name="uploadTodoBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12D.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/upload.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Upload"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uploadTodoButActionPerformed"/>
@@ -686,7 +729,7 @@
             <Component class="javax.swing.JButton" name="deleteTodoBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/delete.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/delete.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Delete selected"/>
               </Properties>
@@ -697,12 +740,17 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="eventPane">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="9c" green="da" red="db" type="rgb"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Events">
-                <Property name="tabTitle" type="java.lang.String" value="Events"/>
+              <JTabbedPaneConstraints tabName="Events/Tasks">
+                <Property name="tabTitle" type="java.lang.String" value="Events/Tasks"/>
                 <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/event.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/event.png"/>
                 </Property>
               </JTabbedPaneConstraints>
             </Constraint>
@@ -714,7 +762,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane5" alignment="0" pref="628" max="32767" attributes="0"/>
+                          <Component id="jScrollPane5" alignment="0" pref="730" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="getEventListBut" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -732,7 +780,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jScrollPane5" pref="173" max="32767" attributes="0"/>
+                      <Component id="jScrollPane5" pref="246" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="getEventListBut" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -765,7 +813,7 @@
             <Component class="javax.swing.JButton" name="getEventListBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/list.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/list.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Get list"/>
               </Properties>
@@ -776,7 +824,7 @@
             <Component class="javax.swing.JButton" name="downloadEventBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12A.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/download.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Download selected"/>
               </Properties>
@@ -787,10 +835,9 @@
             <Component class="javax.swing.JButton" name="uploadEventBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/ARROW12D.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/upload.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Upload"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uploadEventButActionPerformed"/>
@@ -799,7 +846,124 @@
             <Component class="javax.swing.JButton" name="deleteEventBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/gfx/delete.png"/>
+                  <Image iconType="3" name="/BogDroSoft/rsrc/delete.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Delete selected"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteButActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="animPane">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ab" red="ab" type="rgb"/>
+            </Property>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Animations/Videos">
+                <Property name="tabTitle" type="java.lang.String" value="Animations/Videos"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/BogDroSoft/rsrc/video.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jScrollPane6" alignment="0" pref="730" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="getAnimListBut" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="downloadAnimBut" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="uploadAnimBut" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="deleteAnimBut" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="jScrollPane6" pref="246" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="getAnimListBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="downloadAnimBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="uploadAnimBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="deleteAnimBut" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JScrollPane" name="jScrollPane6">
+              <AuxValues>
+                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+              </AuxValues>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Component class="javax.swing.JTable" name="animTable">
+                  <Properties>
+                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;&#xa;    },&#xa;    new String [] {&#xa;        &quot;Name&quot;&#xa;    }&#xa;) {&#xa;&#x9;private static final long serialVersionUID = 73L;&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class&#xa;    };&#xa;    boolean[] canEdit = new boolean [] {&#xa;        false&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;&#xa;    public boolean isCellEditable(int rowIndex, int columnIndex) {&#xa;        return canEdit [columnIndex];&#xa;    }&#xa;}" type="code"/>
+                    </Property>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Component class="javax.swing.JButton" name="getAnimListBut">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/BogDroSoft/rsrc/list.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Get list"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getAnimListButActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="downloadAnimBut">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/BogDroSoft/rsrc/download.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Download selected"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="downloadButActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="uploadAnimBut">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/BogDroSoft/rsrc/upload.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Upload"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uploadAnimButActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="deleteAnimBut">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/BogDroSoft/rsrc/delete.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Delete selected"/>
               </Properties>
@@ -855,7 +1019,7 @@
     <Component class="javax.swing.JButton" name="aboutBut">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/BogDroSoft/gfx/QMARK8.png"/>
+          <Image iconType="3" name="/BogDroSoft/rsrc/QMARK8.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="About..."/>
       </Properties>
@@ -866,7 +1030,7 @@
     <Component class="javax.swing.JButton" name="rawBut">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/BogDroSoft/gfx/tools1.png"/>
+          <Image iconType="3" name="/BogDroSoft/rsrc/tools1.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Manual commands"/>
       </Properties>
@@ -901,6 +1065,34 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="-"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="progressLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Progress:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JProgressBar" name="progressBar">
+    </Component>
+    <Component class="javax.swing.JLabel" name="phoneTypeLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Phone type:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="phone">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="-"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="exitBut">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/BogDroSoft/rsrc/exit.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Exit"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitButActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

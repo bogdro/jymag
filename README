@@ -72,7 +72,9 @@ The following command-line (case-insensitive) options are supported:
 					  and exits the program
 	    --download-all-vcards	- downloads all addressbook entries
 					  from the phone and exits the program
-	    --download-all		- combines all "download" options
+	    --download-all-vcards	- downloads all animations/videos
+					  from the phone and exits the program
+	    --download-all			- combines all "download" options
 					  and exits the program
 	    --delete-after-download     - delete the downloaded elements if
 					  downloaded succesfully
@@ -81,18 +83,23 @@ The following command-line (case-insensitive) options are supported:
 ========================= Currently supported operations:
 
 1) Getting lists of: pictures, ringtones, addressbook entries,
-   to-do tasks and events
+   to-do tasks, events and animations/videos
 2) Downloading:
-   a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG
+   a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG, WBMP
    b) ringtones: MIDI, AMR, WAV
    c) addressbook entries (vCards)
    d) to-do tasks
    e) events (reminders, ...)
+   f) animation/videos: MNG, GIF
 3) Uploading:
-   a) pictures: JPG, GIF, BMP, PNG
+   a) pictures: JPG, GIF, BMP, PNG, WBMP
    b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)
+   c) addressbook entries (vCards)
+   d) to-do tasks
+   e) events (reminders, ...)
+   f) animation/videos: MNG, GIF
 4) Deleting pictures, ringtones, addressbook entries,
-   to-do tasks and events
+   to-do tasks, events and animations/videos
 
 ========================= Converting ringtones
 
@@ -146,7 +153,7 @@ I haven't tried all that (my 30-second ringtones are rejected).
    corrupted too. Have patience. If you know how to make this better, contact
    me (e-mail at the top of this file).
 
-========================= Reporting bugs
+========================= Reporting problems
 
 1. Check if you have the newest versions of JYMAG.
 2. Include your Java and RxTx version numbers. See if the program works with a

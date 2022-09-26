@@ -81,6 +81,12 @@ public class Utils
 	 */
 	public final static Hashtable<String, Integer> eventfileIDs;
 
+	/**
+	 * A Hashtable containing ID numbers connected to the given animation/video file
+	 * extensions, used for file uploading.
+	 */
+	public final static Hashtable<String, Integer> animfileIDs;
+
 	static
 	{
 		/*
@@ -96,7 +102,7 @@ public class Utils
 		ringfileIDs = new Hashtable<String, Integer> (6);
 		// seem to do something: 201-202, 205-207
 		// rejected: 3-12, 17, 20-22, 30-32, 40-42, 50-52, 60-62,
-		//	70-72, 80-82, 90-101, 106-111, 200, 203-204, 208-2012
+		//	70-72, 80-82, 90-101, 106-111, 200, 203-204, 208-212
 		//	120-122
 		ringfileIDs.put ("wav" ,   1);	// NOI18N
 //		ringfileIDs.put ("amr" ,   212);	// NOI18N
@@ -107,6 +113,7 @@ public class Utils
 //		ringfileIDs.put ("imy" ,   4);	// ?	// NOI18N
 
 		photofileIDs = new Hashtable<String, Integer> (6);
+		photofileIDs.put ("wbmp", 101);	// NOI18N
 		photofileIDs.put ("bmp" , 102);	// NOI18N
 		photofileIDs.put ("png" , 103);	// NOI18N
 		photofileIDs.put ("jpg" , 104);	// NOI18N
@@ -115,36 +122,37 @@ public class Utils
 		photofileIDs.put ("gif" , 105);	// NOI18N
 
 		addrfileIDs = new Hashtable<String, Integer> (2);
-		// vCard: not 201, 202, 205-207
-		//addrfileIDs.put  ("vcf"  , 207);	// NOI18N
-		//addrfileIDs.put  ("vcard", 207);	// NOI18N
+		addrfileIDs.put  ("vcf"  , 220);	// NOI18N
+		addrfileIDs.put  ("vcard", 220);	// NOI18N
+		addrfileIDs.put  ("vcrd" , 220);	// NOI18N
 
 		todofileIDs = new Hashtable<String, Integer> (4);
-		// vTODO: not 201, 202, 205-207
-		//todofileIDs.put  ("ics" , 207);	// NOI18N
-		//todofileIDs.put  ("ical", 207);	// NOI18N
-		//todofileIDs.put  ("ifb" , 207);	// NOI18N
-		//todofileIDs.put  ("icalendar" , 207);	// NOI18N
+		todofileIDs.put  ("ics" , 221);	// NOI18N
+		todofileIDs.put  ("ical", 221);	// NOI18N
+		todofileIDs.put  ("ifb" , 221);	// NOI18N
+		todofileIDs.put  ("icalendar" , 221);	// NOI18N
 
 		eventfileIDs = new Hashtable<String, Integer> (todofileIDs.size ());
-		// vEvent: not 201, 202, 205-207
 		eventfileIDs.putAll (todofileIDs);
+
+		animfileIDs = new Hashtable<String, Integer> (2);
+		animfileIDs.put  ("mng" , 202);	// NOI18N
+		animfileIDs.put  ("gif" , 105);	// NOI18N
 
 		filetypeIDs = new Hashtable<String, Integer> (ringfileIDs.size ()
 			+ photofileIDs.size () + addrfileIDs.size ()
-			+ todofileIDs.size () + eventfileIDs.size ());
+			+ todofileIDs.size () + eventfileIDs.size ()
+			+ animfileIDs.size ());
 		filetypeIDs.putAll (photofileIDs);
 		filetypeIDs.putAll (ringfileIDs);
 		filetypeIDs.putAll (addrfileIDs);
 		filetypeIDs.putAll (todofileIDs);
 		filetypeIDs.putAll (eventfileIDs);
-		// TODO: AMR, mp3?, vCard, vTODO, vEvent
+		filetypeIDs.putAll (animfileIDs);
 	}
 
 	// non-instantiable
-        private Utils ()
-        {
-        }
+	private Utils () {}
 
 	/**
 	 * Displays all the important information about exceptions.
@@ -153,7 +161,7 @@ public class Utils
 	 */
 	public static void handleException (Exception ex, Object data)
 	{
-		if ( ex == null || (System.out == null || System.err == null) ) return;
+		if ( ex == null || (System.out == null && System.err == null) ) return;
 		try
 		{
 			Calendar c = Calendar.getInstance ();

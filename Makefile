@@ -2,15 +2,14 @@
 # JYMAG hand-made Makefile for creating distribution packages.
 #
 
-VER	= 0.5
+VER	= 0.6
 
 all:	dist
 dist:	dist-src dist-bin
 
 dist-src:
 	cd .. && \
-	rm -f JYMAG-src-$(VER).tar.gz && \
-	rm -f JYMAG-src-$(VER).tar.gz.asc && \
+	rm -f JYMAG-src-$(VER).tar.gz JYMAG-src-$(VER).tar.gz.asc && \
 	cp -r JYMAG JYMAG-$(VER) && \
 	tar zcf JYMAG-src-$(VER).tar.gz JYMAG-$(VER)/ && \
 	rm -rf JYMAG-$(VER) && \
@@ -18,12 +17,12 @@ dist-src:
 
 dist-bin:
 	cd .. && \
-	rm -f JYMAG-bin-$(VER).tar.gz && \
-	rm -f JYMAG-bin-$(VER).tar.gz.asc && \
+	rm -f JYMAG-bin-$(VER).tar.gz JYMAG-bin-$(VER).tar.gz.asc && \
 	cp -r JYMAG JYMAG-$(VER) && \
 	tar zcf JYMAG-bin-$(VER).tar.gz \
 		JYMAG-$(VER)/AUTHORS	\
 		JYMAG-$(VER)/COPYING	\
+		JYMAG-$(VER)/ChangeLog	\
 		JYMAG-$(VER)/INSTALL	\
 		JYMAG-$(VER)/README	\
 		JYMAG-$(VER)/run.sh	\
@@ -33,5 +32,5 @@ dist-bin:
 	rm -rf JYMAG-$(VER) && \
 	gpg -ba JYMAG-bin-$(VER).tar.gz
 
-.PHONY:	dist-src dist-bin
+.PHONY:	dist-src dist-bin dist all
 

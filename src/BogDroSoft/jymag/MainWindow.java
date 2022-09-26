@@ -30,6 +30,8 @@ import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Enumeration;
@@ -50,23 +52,26 @@ import javax.swing.table.DefaultTableModel;
  * @author Bogdan Drozdowski
  */
 public class MainWindow extends javax.swing.JFrame
-	implements KeyListener
 {
 	private static final long serialVersionUID = 65L;
 	private final MainWindow mw = this;
-	private static final String verString = "0.5";	// NOI18N
-	private Vector<PhoneElement> currentElements;
+	private KL kl = new KL ();
+
+	/** Current version number as a String. */
+	public static final String verString = "0.6";	// NOI18N
 	private Vector<PhoneElement> currentRingElements;
 	private Vector<PhoneElement> currentPhotoElements;
 	private Vector<PhoneElement> currentAddrElements;
 	private Vector<PhoneElement> currentTodoElements;
 	private Vector<PhoneElement> currentEventElements;
+	private Vector<PhoneElement> currentAnimElements;
 
 	private String lastSelDir;
 	// synchronization variable:
 	private Object sync = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
 	private Hashtable<String, String> firmwares;
+	private Hashtable<String, String> phoneTypes;
 	private static Pattern verPattern;
 
 	private final static String logFile = "jymag.log";
@@ -78,16 +83,17 @@ public class MainWindow extends javax.swing.JFrame
 	private static String whichString = "Which one?";
 	private static String exOverString = " exists. Overwrite?";
 	private static String overwriteStr = "Overwrite?";
+	/** List of supported operations. */
 	private static String suppOperThank = "Supported opertations:"+
 		"\n" +	// NOI18N
-		"1) Getting lists of: pictures, ringtones, addressbook entries, to-do tasks and events"+
+		"1) Getting lists of: pictures, ringtones, addressbook entries, to-do tasks, events and animations/videos"+
 		"\n" +	// NOI18N
 		"2) Downloading:"+
 		"\n" +	// NOI18N
 		"   a) pictures:"+
 		" JPG (" + 	// NOI18N
 		"both Sagem and non-Sagem" +
-		"), GIF, BMP, PNG\n" +	// NOI18N
+		"), GIF, BMP, PNG, WBMP\n" +	// NOI18N
 		"   b) ringtones:"+
 		" MIDI, AMR, WAV\n" +	// NOI18N
 		"   c) addressbook entries (vCards)"+
@@ -96,26 +102,39 @@ public class MainWindow extends javax.swing.JFrame
 		"\n" +	// NOI18N
 		"   e) events (reminders, ...)"+
 		"\n" +	// NOI18N
+		"   f) animation/videos:"+
+		" MNG, GIF\n" +	// NOI18N
 		"3) Uploading:"+
 		"\n" +	// NOI18N
 		"   a) pictures:"+
-		" JPG, GIF, BMP, PNG\n" +	// NOI18N
+		" JPG, GIF, BMP, PNG, WBMP\n" +	// NOI18N
 		"   b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?)"+
 		"\n" +	// NOI18N
-		"4) Deleting pictures, ringtones, addressbook entries, to-do tasks and events"
+		"   c) addressbook entries (vCards)"+
+		"\n" +	// NOI18N
+		"   d) to-do tasks"+
+		"\n" +	// NOI18N
+		"   e) events (reminders, ...)"+
+		"\n" +	// NOI18N
+		"   f) animation/videos:"+
+		" MNG, GIF\n" +	// NOI18N
+		"4) Deleting pictures, ringtones, addressbook entries, to-do tasks, events and animations/videos"
 		+"\n" +	// NOI18N
 		"\n" +
 		"Run with --help for a list of command-line options."+
 		"\n\n" +	// NOI18N
 		"Thanks to:";
 	private static String aboutStr = "About";
+	/** A String that says "a Free 'My Pictures and Sounds' replacement." */
 	private static String freeMPASStr = "a Free 'My Pictures and Sounds' replacement.";
+	/** The "version" word. */
 	private static String verWord = "Version";
 	private static String picsString = "Supported pictures";
 	private static String soundsString = "Supported sounds";
 	private static String addrString = "Supported addressbook files";
 	private static String todoString = "Supported to-do files";
-	private static String eventString = "Supported event files";
+	private static String eventString = "Supported event and task files";
+	private static String animString = "Supported animation/video files";
 	private static String getListStr = "Getting list of ";
 	private static String getFileStr = "Getting file";
 	private static String unsuppType = "Unsupported file type:";
@@ -163,6 +182,8 @@ public class MainWindow extends javax.swing.JFrame
 		"download all events from the phone and exit"+
 		"\n--download-all-vcards\t- "+	// NOI18N
 		"download all addressbook entries from the phone and exit"+
+		"\n--download-all-animations\t- "+	// NOI18N
+		"download all animations/videos from the phone and exit"+
 		"\n--download-all\t\t- "+	// NOI18N
 		"combine all 'download' options and exit"+
 		"\n--delete-after-download\t- "+	// NOI18N
@@ -191,7 +212,7 @@ public class MainWindow extends javax.swing.JFrame
 	private static String downloadMsg2  = "No data received";
 	private static String downloadMsg3  = "Incorrect parameter";
 
-	private static String defFirmware = "(press Scan)";
+	private static String pressScanMsg = "(press Scan)";
 
 	// ------------ static variables for command-line
 
@@ -208,12 +229,16 @@ public class MainWindow extends javax.swing.JFrame
 	/**
 	 * Creates new form MainWindow.
 	 */
-        public MainWindow ()
-        {
+	private MainWindow ()
+	{
 		initComponents ();
-		firmware.setText (defFirmware);
+
+		setTitle (getTitle () + " " + verString);
+		firmware.setText (pressScanMsg);
+		phone.setText (pressScanMsg);
 		updateStatusLabel (STATUS.READY);
-                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+
+		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 		while (portList.hasMoreElements ())
 		{
 			CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
@@ -235,759 +260,989 @@ public class MainWindow extends javax.swing.JFrame
 		speedCombo.setSelectedItem (String.valueOf (speed));
 		flowCombo.setSelectedIndex (flow);
 		parityCombo.setSelectedIndex (parity);
+		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
 
-        	aboutBut.addKeyListener (this);
-        	addrBookPane.addKeyListener (this);
-        	addrTable.addKeyListener (this);
-        	dataBitsCombo.addKeyListener (this);
-        	deleteAddrBut.addKeyListener (this);
-        	deleteEventBut.addKeyListener (this);
-        	deletePhotoBut.addKeyListener (this);
-        	deleteRingBut.addKeyListener (this);
-        	deleteTodoBut.addKeyListener (this);
-        	downloadAddrBut.addKeyListener (this);
-        	downloadEventBut.addKeyListener (this);
-        	downloadPhotoBut.addKeyListener (this);
-        	downloadRingBut.addKeyListener (this);
-        	downloadTodoBut.addKeyListener (this);
-        	eventPane.addKeyListener (this);
-        	eventTable.addKeyListener (this);
-        	flowCombo.addKeyListener (this);
-        	getAddrListBut.addKeyListener (this);
-        	getEventListBut.addKeyListener (this);
-        	getPhotoListBut.addKeyListener (this);
-        	getRingListBut.addKeyListener (this);
-        	getTodoListBut.addKeyListener (this);
-        	jScrollPane1.addKeyListener (this);
-        	jScrollPane2.addKeyListener (this);
-        	jScrollPane3.addKeyListener (this);
-        	jScrollPane4.addKeyListener (this);
-        	jScrollPane5.addKeyListener (this);
-        	parityCombo.addKeyListener (this);
-        	photoPane.addKeyListener (this);
-        	photoTable.addKeyListener (this);
-        	portCombo.addKeyListener (this);
-        	rawBut.addKeyListener (this);
-        	ringPane.addKeyListener (this);
-        	ringTable.addKeyListener (this);
-        	scanButton.addKeyListener (this);
-        	speedCombo.addKeyListener (this);
-        	stopBitsCombo.addKeyListener (this);
-        	tabPane.addKeyListener (this);
-        	todoPane.addKeyListener (this);
-        	todoTable.addKeyListener (this);
-        	uploadAddrBut.addKeyListener (this);
-        	uploadEventBut.addKeyListener (this);
-        	uploadPhotoBut.addKeyListener (this);
-        	uploadRingBut.addKeyListener (this);
-        	uploadTodoBut.addKeyListener (this);
+		/* Make clicking on the table header select all rows */
+		photoTable.getTableHeader ().addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public void mouseClicked (MouseEvent me)
+			{
+				if ( me.getButton () == MouseEvent.BUTTON1 )
+				{
+					photoTable.selectAll ();
+				}
+			}
+		});
+
+		ringTable.getTableHeader ().addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public void mouseClicked (MouseEvent me)
+			{
+				if ( me.getButton () == MouseEvent.BUTTON1 )
+				{
+					ringTable.selectAll ();
+				}
+			}
+		});
+
+		addrTable.getTableHeader ().addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public void mouseClicked (MouseEvent me)
+			{
+				if ( me.getButton () == MouseEvent.BUTTON1 )
+				{
+					addrTable.selectAll ();
+				}
+			}
+		});
+
+		todoTable.getTableHeader ().addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public void mouseClicked (MouseEvent me)
+			{
+				if ( me.getButton () == MouseEvent.BUTTON1 )
+				{
+					todoTable.selectAll ();
+				}
+			}
+		});
+
+		eventTable.getTableHeader ().addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public void mouseClicked (MouseEvent me)
+			{
+				if ( me.getButton () == MouseEvent.BUTTON1 )
+				{
+					eventTable.selectAll ();
+				}
+			}
+		});
+
+		aboutBut.addKeyListener (kl);
+		addrBookPane.addKeyListener (kl);
+		addrTable.addKeyListener (kl);
+		dataBitsCombo.addKeyListener (kl);
+		deleteAddrBut.addKeyListener (kl);
+		deleteEventBut.addKeyListener (kl);
+		deletePhotoBut.addKeyListener (kl);
+		deleteRingBut.addKeyListener (kl);
+		deleteTodoBut.addKeyListener (kl);
+		downloadAddrBut.addKeyListener (kl);
+		downloadEventBut.addKeyListener (kl);
+		downloadPhotoBut.addKeyListener (kl);
+		downloadRingBut.addKeyListener (kl);
+		downloadTodoBut.addKeyListener (kl);
+		eventPane.addKeyListener (kl);
+		eventTable.addKeyListener (kl);
+		flowCombo.addKeyListener (kl);
+		getAddrListBut.addKeyListener (kl);
+		getEventListBut.addKeyListener (kl);
+		getPhotoListBut.addKeyListener (kl);
+		getRingListBut.addKeyListener (kl);
+		getTodoListBut.addKeyListener (kl);
+		jScrollPane1.addKeyListener (kl);
+		jScrollPane2.addKeyListener (kl);
+		jScrollPane3.addKeyListener (kl);
+		jScrollPane4.addKeyListener (kl);
+		jScrollPane5.addKeyListener (kl);
+		parityCombo.addKeyListener (kl);
+		photoPane.addKeyListener (kl);
+		photoTable.addKeyListener (kl);
+		portCombo.addKeyListener (kl);
+		rawBut.addKeyListener (kl);
+		ringPane.addKeyListener (kl);
+		ringTable.addKeyListener (kl);
+		scanButton.addKeyListener (kl);
+		speedCombo.addKeyListener (kl);
+		stopBitsCombo.addKeyListener (kl);
+		tabPane.addKeyListener (kl);
+		todoPane.addKeyListener (kl);
+		todoTable.addKeyListener (kl);
+		uploadAddrBut.addKeyListener (kl);
+		uploadEventBut.addKeyListener (kl);
+		uploadPhotoBut.addKeyListener (kl);
+		uploadRingBut.addKeyListener (kl);
+		uploadTodoBut.addKeyListener (kl);
 	}
 
-        /**
+	/**
 	 * This method is called from within the constructor to
-         * initialize the form.
-         * WARNING: Do NOT modify this code. The content of this method is
-         * always regenerated by the Form Editor.
-         */
-        // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-        private void initComponents() {
-
-                portCombo = new javax.swing.JComboBox();
-                speedCombo = new javax.swing.JComboBox();
-                dataBitsCombo = new javax.swing.JComboBox();
-                parityCombo = new javax.swing.JComboBox();
-                stopBitsCombo = new javax.swing.JComboBox();
-                scanButton = new javax.swing.JButton();
-                tabPane = new javax.swing.JTabbedPane();
-                photoPane = new javax.swing.JPanel();
-                jScrollPane1 = new javax.swing.JScrollPane();
-                photoTable = new javax.swing.JTable();
-                getPhotoListBut = new javax.swing.JButton();
-                downloadPhotoBut = new javax.swing.JButton();
-                uploadPhotoBut = new javax.swing.JButton();
-                deletePhotoBut = new javax.swing.JButton();
-                ringPane = new javax.swing.JPanel();
-                jScrollPane2 = new javax.swing.JScrollPane();
-                ringTable = new javax.swing.JTable();
-                getRingListBut = new javax.swing.JButton();
-                downloadRingBut = new javax.swing.JButton();
-                uploadRingBut = new javax.swing.JButton();
-                deleteRingBut = new javax.swing.JButton();
-                addrBookPane = new javax.swing.JPanel();
-                jScrollPane3 = new javax.swing.JScrollPane();
-                addrTable = new javax.swing.JTable();
-                getAddrListBut = new javax.swing.JButton();
-                downloadAddrBut = new javax.swing.JButton();
-                uploadAddrBut = new javax.swing.JButton();
-                deleteAddrBut = new javax.swing.JButton();
-                todoPane = new javax.swing.JPanel();
-                jScrollPane4 = new javax.swing.JScrollPane();
-                todoTable = new javax.swing.JTable();
-                getTodoListBut = new javax.swing.JButton();
-                downloadTodoBut = new javax.swing.JButton();
-                uploadTodoBut = new javax.swing.JButton();
-                deleteTodoBut = new javax.swing.JButton();
-                eventPane = new javax.swing.JPanel();
-                jScrollPane5 = new javax.swing.JScrollPane();
-                eventTable = new javax.swing.JTable();
-                getEventListBut = new javax.swing.JButton();
-                downloadEventBut = new javax.swing.JButton();
-                uploadEventBut = new javax.swing.JButton();
-                deleteEventBut = new javax.swing.JButton();
-                portLabel = new javax.swing.JLabel();
-                speedLabel = new javax.swing.JLabel();
-                databitsLabel = new javax.swing.JLabel();
-                parityLabel = new javax.swing.JLabel();
-                stopbitsLabel = new javax.swing.JLabel();
-                flowLabel = new javax.swing.JLabel();
-                flowCombo = new javax.swing.JComboBox();
-                aboutBut = new javax.swing.JButton();
-                rawBut = new javax.swing.JButton();
-                bpsLabel = new javax.swing.JLabel();
-                statusLabel = new javax.swing.JLabel();
-                status = new javax.swing.JLabel();
-                firmwareLabel = new javax.swing.JLabel();
-                firmware = new javax.swing.JLabel();
-
-                setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-                setTitle("Your Music and Graphics");
-                addWindowListener(new java.awt.event.WindowAdapter() {
-                        public void windowClosing(java.awt.event.WindowEvent evt) {
-                                formWindowClosing(evt);
-                        }
-                });
-
-                portCombo.addItemListener(new java.awt.event.ItemListener() {
-                        public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                                portComboItemStateChanged(evt);
-                        }
-                });
-
-                speedCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000" }));
-                speedCombo.setSelectedIndex(7);
-
-                dataBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8", "7", "6", "5" }));
-
-                parityCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Even", "Odd", "Space", "Mark" }));
-
-                stopBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "1.5", "2" }));
-
-                scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/SCAN5.png"))); // NOI18N
-                scanButton.setText("Scan ports");
-                scanButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                scanButtonActionPerformed(evt);
-                        }
-                });
-
-                photoTable.setModel(new javax.swing.table.DefaultTableModel(
-                        new Object [][] {
-
-                        },
-                        new String [] {
-                                "Name"
-                        }
-                ) {
-                        private static final long serialVersionUID = 66L;
-                        Class[] types = new Class [] {
-                                java.lang.String.class
-                        };
-                        boolean[] canEdit = new boolean [] {
-                                false
-                        };
-
-                        public Class getColumnClass(int columnIndex) {
-                                return types [columnIndex];
-                        }
-
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                                return canEdit [columnIndex];
-                        }
-                });
-                jScrollPane1.setViewportView(photoTable);
-
-                getPhotoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/list.png"))); // NOI18N
-                getPhotoListBut.setText("Get list");
-                getPhotoListBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                getPhotoListButActionPerformed(evt);
-                        }
-                });
-
-                downloadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12A.png"))); // NOI18N
-                downloadPhotoBut.setText("Download selected");
-                downloadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                downloadButActionPerformed(evt);
-                        }
-                });
-
-                uploadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12D.png"))); // NOI18N
-                uploadPhotoBut.setText("Upload");
-                uploadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                uploadPhotoButActionPerformed(evt);
-                        }
-                });
-
-                deletePhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/delete.png"))); // NOI18N
-                deletePhotoBut.setText("Delete selected");
-                deletePhotoBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                deleteButActionPerformed(evt);
-                        }
-                });
-
-                javax.swing.GroupLayout photoPaneLayout = new javax.swing.GroupLayout(photoPane);
-                photoPane.setLayout(photoPaneLayout);
-                photoPaneLayout.setHorizontalGroup(
-                        photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(photoPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
-                                        .addGroup(photoPaneLayout.createSequentialGroup()
-                                                .addComponent(getPhotoListBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(downloadPhotoBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(uploadPhotoBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(deletePhotoBut)))
-                                .addContainerGap())
-                );
-                photoPaneLayout.setVerticalGroup(
-                        photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(getPhotoListBut)
-                                        .addComponent(downloadPhotoBut)
-                                        .addComponent(uploadPhotoBut)
-                                        .addComponent(deletePhotoBut))
-                                .addContainerGap())
-                );
-
-                tabPane.addTab("Photos", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/pict-1.png")), photoPane); // NOI18N
-
-                ringTable.setModel(new javax.swing.table.DefaultTableModel(
-                        new Object [][] {
-
-                        },
-                        new String [] {
-                                "Name"
-                        }
-                ) {
-                        private static final long serialVersionUID = 67L;
-                        Class[] types = new Class [] {
-                                java.lang.String.class
-                        };
-                        boolean[] canEdit = new boolean [] {
-                                false
-                        };
-
-                        public Class getColumnClass(int columnIndex) {
-                                return types [columnIndex];
-                        }
-
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                                return canEdit [columnIndex];
-                        }
-                });
-                jScrollPane2.setViewportView(ringTable);
-
-                getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/list.png"))); // NOI18N
-                getRingListBut.setText("Get list");
-                getRingListBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                getRingListButActionPerformed(evt);
-                        }
-                });
-
-                downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12A.png"))); // NOI18N
-                downloadRingBut.setText("Download selected");
-                downloadRingBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                downloadButActionPerformed(evt);
-                        }
-                });
-
-                uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12D.png"))); // NOI18N
-                uploadRingBut.setText("Upload");
-                uploadRingBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                uploadRingButActionPerformed(evt);
-                        }
-                });
-
-                deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/delete.png"))); // NOI18N
-                deleteRingBut.setText("Delete selected");
-                deleteRingBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                deleteButActionPerformed(evt);
-                        }
-                });
-
-                javax.swing.GroupLayout ringPaneLayout = new javax.swing.GroupLayout(ringPane);
-                ringPane.setLayout(ringPaneLayout);
-                ringPaneLayout.setHorizontalGroup(
-                        ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(ringPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
-                                        .addGroup(ringPaneLayout.createSequentialGroup()
-                                                .addComponent(getRingListBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(downloadRingBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(uploadRingBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(deleteRingBut)))
-                                .addContainerGap())
-                );
-                ringPaneLayout.setVerticalGroup(
-                        ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(getRingListBut)
-                                        .addComponent(downloadRingBut)
-                                        .addComponent(uploadRingBut)
-                                        .addComponent(deleteRingBut))
-                                .addContainerGap())
-                );
-
-                tabPane.addTab("Ringtones", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ring.png")), ringPane); // NOI18N
-
-                addrTable.setModel(new javax.swing.table.DefaultTableModel(
-                        new Object [][] {
-
-                        },
-                        new String [] {
-                                "Name"
-                        }
-                ) {
-                        private static final long serialVersionUID = 68L;
-                        Class[] types = new Class [] {
-                                java.lang.String.class
-                        };
-                        boolean[] canEdit = new boolean [] {
-                                false
-                        };
-
-                        public Class getColumnClass(int columnIndex) {
-                                return types [columnIndex];
-                        }
-
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                                return canEdit [columnIndex];
-                        }
-                });
-                jScrollPane3.setViewportView(addrTable);
-
-                getAddrListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/list.png"))); // NOI18N
-                getAddrListBut.setText("Get list");
-                getAddrListBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                getAddrListButActionPerformed(evt);
-                        }
-                });
-
-                downloadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12A.png"))); // NOI18N
-                downloadAddrBut.setText("Download selected");
-                downloadAddrBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                downloadButActionPerformed(evt);
-                        }
-                });
-
-                uploadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12D.png"))); // NOI18N
-                uploadAddrBut.setText("Upload");
-                uploadAddrBut.setEnabled(false);
-                uploadAddrBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                uploadAddrButActionPerformed(evt);
-                        }
-                });
-
-                deleteAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/delete.png"))); // NOI18N
-                deleteAddrBut.setText("Delete selected");
-                deleteAddrBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                deleteButActionPerformed(evt);
-                        }
-                });
-
-                javax.swing.GroupLayout addrBookPaneLayout = new javax.swing.GroupLayout(addrBookPane);
-                addrBookPane.setLayout(addrBookPaneLayout);
-                addrBookPaneLayout.setHorizontalGroup(
-                        addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(addrBookPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
-                                        .addGroup(addrBookPaneLayout.createSequentialGroup()
-                                                .addComponent(getAddrListBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(downloadAddrBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(uploadAddrBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(deleteAddrBut)))
-                                .addContainerGap())
-                );
-                addrBookPaneLayout.setVerticalGroup(
-                        addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(getAddrListBut)
-                                        .addComponent(downloadAddrBut)
-                                        .addComponent(uploadAddrBut)
-                                        .addComponent(deleteAddrBut))
-                                .addContainerGap())
-                );
-
-                tabPane.addTab("Addressbook", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/abook.png")), addrBookPane); // NOI18N
-
-                todoTable.setModel(new javax.swing.table.DefaultTableModel(
-                        new Object [][] {
-
-                        },
-                        new String [] {
-                                "Name"
-                        }
-                ) {
-                        private static final long serialVersionUID = 69L;
-                        Class[] types = new Class [] {
-                                java.lang.String.class
-                        };
-                        boolean[] canEdit = new boolean [] {
-                                false
-                        };
-
-                        public Class getColumnClass(int columnIndex) {
-                                return types [columnIndex];
-                        }
-
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                                return canEdit [columnIndex];
-                        }
-                });
-                jScrollPane4.setViewportView(todoTable);
-
-                getTodoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/list.png"))); // NOI18N
-                getTodoListBut.setText("Get list");
-                getTodoListBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                getTodoListButActionPerformed(evt);
-                        }
-                });
-
-                downloadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12A.png"))); // NOI18N
-                downloadTodoBut.setText("Download selected");
-                downloadTodoBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                downloadButActionPerformed(evt);
-                        }
-                });
-
-                uploadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12D.png"))); // NOI18N
-                uploadTodoBut.setText("Upload");
-                uploadTodoBut.setEnabled(false);
-                uploadTodoBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                uploadTodoButActionPerformed(evt);
-                        }
-                });
-
-                deleteTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/delete.png"))); // NOI18N
-                deleteTodoBut.setText("Delete selected");
-                deleteTodoBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                deleteButActionPerformed(evt);
-                        }
-                });
-
-                javax.swing.GroupLayout todoPaneLayout = new javax.swing.GroupLayout(todoPane);
-                todoPane.setLayout(todoPaneLayout);
-                todoPaneLayout.setHorizontalGroup(
-                        todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(todoPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
-                                        .addGroup(todoPaneLayout.createSequentialGroup()
-                                                .addComponent(getTodoListBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(downloadTodoBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(uploadTodoBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(deleteTodoBut)))
-                                .addContainerGap())
-                );
-                todoPaneLayout.setVerticalGroup(
-                        todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(getTodoListBut)
-                                        .addComponent(downloadTodoBut)
-                                        .addComponent(uploadTodoBut)
-                                        .addComponent(deleteTodoBut))
-                                .addContainerGap())
-                );
-
-                tabPane.addTab("To do", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/todo.png")), todoPane); // NOI18N
-
-                eventTable.setModel(new javax.swing.table.DefaultTableModel(
-                        new Object [][] {
-
-                        },
-                        new String [] {
-                                "Name"
-                        }
-                ) {
-                        private static final long serialVersionUID = 70L;
-                        Class[] types = new Class [] {
-                                java.lang.String.class
-                        };
-                        boolean[] canEdit = new boolean [] {
-                                false
-                        };
-
-                        public Class getColumnClass(int columnIndex) {
-                                return types [columnIndex];
-                        }
-
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                                return canEdit [columnIndex];
-                        }
-                });
-                jScrollPane5.setViewportView(eventTable);
-
-                getEventListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/list.png"))); // NOI18N
-                getEventListBut.setText("Get list");
-                getEventListBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                getEventListButActionPerformed(evt);
-                        }
-                });
-
-                downloadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12A.png"))); // NOI18N
-                downloadEventBut.setText("Download selected");
-                downloadEventBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                downloadButActionPerformed(evt);
-                        }
-                });
-
-                uploadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/ARROW12D.png"))); // NOI18N
-                uploadEventBut.setText("Upload");
-                uploadEventBut.setEnabled(false);
-                uploadEventBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                uploadEventButActionPerformed(evt);
-                        }
-                });
-
-                deleteEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/delete.png"))); // NOI18N
-                deleteEventBut.setText("Delete selected");
-                deleteEventBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                deleteButActionPerformed(evt);
-                        }
-                });
-
-                javax.swing.GroupLayout eventPaneLayout = new javax.swing.GroupLayout(eventPane);
-                eventPane.setLayout(eventPaneLayout);
-                eventPaneLayout.setHorizontalGroup(
-                        eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(eventPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
-                                        .addGroup(eventPaneLayout.createSequentialGroup()
-                                                .addComponent(getEventListBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(downloadEventBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(uploadEventBut)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(deleteEventBut)))
-                                .addContainerGap())
-                );
-                eventPaneLayout.setVerticalGroup(
-                        eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
-                                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(getEventListBut)
-                                        .addComponent(downloadEventBut)
-                                        .addComponent(uploadEventBut)
-                                        .addComponent(deleteEventBut))
-                                .addContainerGap())
-                );
-
-                tabPane.addTab("Events", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/event.png")), eventPane); // NOI18N
-
-                portLabel.setText("Port:");
-
-                speedLabel.setText("Speed:");
-
-                databitsLabel.setText("Data bits:");
-
-                parityLabel.setText("Parity:");
-
-                stopbitsLabel.setText("Stop bits:");
-
-                flowLabel.setText("Flow control:");
-
-                flowCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Software (XON/XOFF)", "Hardware (CTS/RTS)" }));
-
-                aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/QMARK8.png"))); // NOI18N
-                aboutBut.setText("About...");
-                aboutBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                aboutButActionPerformed(evt);
-                        }
-                });
-
-                rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/gfx/tools1.png"))); // NOI18N
-                rawBut.setText("Manual commands");
-                rawBut.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                rawButActionPerformed(evt);
-                        }
-                });
-
-                bpsLabel.setText("bps");
-
-                statusLabel.setText("Program status:");
-
-                status.setForeground(new java.awt.Color(0, 204, 0));
-                status.setText("READY");
-
-                firmwareLabel.setText("Firmware:");
-
-                firmware.setText("-");
-
-                javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-                getContentPane().setLayout(layout);
-                layout.setHorizontalGroup(
-                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(tabPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(firmwareLabel)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(portLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(speedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(databitsLabel, javax.swing.GroupLayout.Alignment.TRAILING))
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addGap(12, 12, 12)
-                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                                .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                .addComponent(bpsLabel))
-                                                                                        .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(flowLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(stopbitsLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(parityLabel, javax.swing.GroupLayout.Alignment.TRAILING)))
-                                                        .addComponent(statusLabel))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(status)
-                                                                        .addComponent(firmware))
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 137, Short.MAX_VALUE)
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(aboutBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                        .addComponent(scanButton)
-                                                                        .addComponent(rawBut)))
-                                                        .addComponent(flowCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addContainerGap())
-                );
-
-                layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {aboutBut, rawBut, scanButton});
-
-                layout.setVerticalGroup(
-                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
+	 * initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is
+	 * always regenerated by the Form Editor.
+	 */
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        portCombo = new javax.swing.JComboBox();
+        speedCombo = new javax.swing.JComboBox();
+        dataBitsCombo = new javax.swing.JComboBox();
+        parityCombo = new javax.swing.JComboBox();
+        stopBitsCombo = new javax.swing.JComboBox();
+        scanButton = new javax.swing.JButton();
+        tabPane = new javax.swing.JTabbedPane();
+        photoPane = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        photoTable = new javax.swing.JTable();
+        getPhotoListBut = new javax.swing.JButton();
+        downloadPhotoBut = new javax.swing.JButton();
+        uploadPhotoBut = new javax.swing.JButton();
+        deletePhotoBut = new javax.swing.JButton();
+        ringPane = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        ringTable = new javax.swing.JTable();
+        getRingListBut = new javax.swing.JButton();
+        downloadRingBut = new javax.swing.JButton();
+        uploadRingBut = new javax.swing.JButton();
+        deleteRingBut = new javax.swing.JButton();
+        addrBookPane = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        addrTable = new javax.swing.JTable();
+        getAddrListBut = new javax.swing.JButton();
+        downloadAddrBut = new javax.swing.JButton();
+        uploadAddrBut = new javax.swing.JButton();
+        deleteAddrBut = new javax.swing.JButton();
+        todoPane = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        todoTable = new javax.swing.JTable();
+        getTodoListBut = new javax.swing.JButton();
+        downloadTodoBut = new javax.swing.JButton();
+        uploadTodoBut = new javax.swing.JButton();
+        deleteTodoBut = new javax.swing.JButton();
+        eventPane = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        eventTable = new javax.swing.JTable();
+        getEventListBut = new javax.swing.JButton();
+        downloadEventBut = new javax.swing.JButton();
+        uploadEventBut = new javax.swing.JButton();
+        deleteEventBut = new javax.swing.JButton();
+        animPane = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        animTable = new javax.swing.JTable();
+        getAnimListBut = new javax.swing.JButton();
+        downloadAnimBut = new javax.swing.JButton();
+        uploadAnimBut = new javax.swing.JButton();
+        deleteAnimBut = new javax.swing.JButton();
+        portLabel = new javax.swing.JLabel();
+        speedLabel = new javax.swing.JLabel();
+        databitsLabel = new javax.swing.JLabel();
+        parityLabel = new javax.swing.JLabel();
+        stopbitsLabel = new javax.swing.JLabel();
+        flowLabel = new javax.swing.JLabel();
+        flowCombo = new javax.swing.JComboBox();
+        aboutBut = new javax.swing.JButton();
+        rawBut = new javax.swing.JButton();
+        bpsLabel = new javax.swing.JLabel();
+        statusLabel = new javax.swing.JLabel();
+        status = new javax.swing.JLabel();
+        firmwareLabel = new javax.swing.JLabel();
+        firmware = new javax.swing.JLabel();
+        progressLabel = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
+        phoneTypeLabel = new javax.swing.JLabel();
+        phone = new javax.swing.JLabel();
+        exitBut = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Your Music and Graphics");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
+        portCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                portComboItemStateChanged(evt);
+            }
+        });
+
+        speedCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000" }));
+        speedCombo.setSelectedIndex(7);
+
+        dataBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8", "7", "6", "5" }));
+
+        parityCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Even", "Odd", "Space", "Mark" }));
+
+        stopBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "1.5", "2" }));
+
+        scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/SCAN5.png"))); // NOI18N
+        scanButton.setText("Scan ports");
+        scanButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scanButtonActionPerformed(evt);
+            }
+        });
+
+        photoPane.setBackground(new java.awt.Color(184, 242, 255));
+
+        photoTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name"
+            }
+        ) {
+            private static final long serialVersionUID = 66L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(photoTable);
+
+        getPhotoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
+        getPhotoListBut.setText("Get list");
+        getPhotoListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getPhotoListButActionPerformed(evt);
+            }
+        });
+
+        downloadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
+        downloadPhotoBut.setText("Download selected");
+        downloadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
+        uploadPhotoBut.setText("Upload");
+        uploadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadPhotoButActionPerformed(evt);
+            }
+        });
+
+        deletePhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
+        deletePhotoBut.setText("Delete selected");
+        deletePhotoBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout photoPaneLayout = new javax.swing.GroupLayout(photoPane);
+        photoPane.setLayout(photoPaneLayout);
+        photoPaneLayout.setHorizontalGroup(
+            photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(photoPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(photoPaneLayout.createSequentialGroup()
+                        .addComponent(getPhotoListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadPhotoBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadPhotoBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deletePhotoBut)))
+                .addContainerGap())
+        );
+        photoPaneLayout.setVerticalGroup(
+            photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getPhotoListBut)
+                    .addComponent(downloadPhotoBut)
+                    .addComponent(uploadPhotoBut)
+                    .addComponent(deletePhotoBut))
+                .addContainerGap())
+        );
+
+        tabPane.addTab("Photos", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/pict-1.png")), photoPane); // NOI18N
+
+        ringPane.setBackground(new java.awt.Color(179, 255, 179));
+
+        ringTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name"
+            }
+        ) {
+            private static final long serialVersionUID = 67L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(ringTable);
+
+        getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
+        getRingListBut.setText("Get list");
+        getRingListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getRingListButActionPerformed(evt);
+            }
+        });
+
+        downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
+        downloadRingBut.setText("Download selected");
+        downloadRingBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
+        uploadRingBut.setText("Upload");
+        uploadRingBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadRingButActionPerformed(evt);
+            }
+        });
+
+        deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
+        deleteRingBut.setText("Delete selected");
+        deleteRingBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout ringPaneLayout = new javax.swing.GroupLayout(ringPane);
+        ringPane.setLayout(ringPaneLayout);
+        ringPaneLayout.setHorizontalGroup(
+            ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ringPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(ringPaneLayout.createSequentialGroup()
+                        .addComponent(getRingListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadRingBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadRingBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteRingBut)))
+                .addContainerGap())
+        );
+        ringPaneLayout.setVerticalGroup(
+            ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getRingListBut)
+                    .addComponent(downloadRingBut)
+                    .addComponent(uploadRingBut)
+                    .addComponent(deleteRingBut))
+                .addContainerGap())
+        );
+
+        tabPane.addTab("Ringtones", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/ring.png")), ringPane); // NOI18N
+
+        addrBookPane.setBackground(new java.awt.Color(255, 255, 193));
+
+        addrTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name"
+            }
+        ) {
+            private static final long serialVersionUID = 68L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(addrTable);
+
+        getAddrListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
+        getAddrListBut.setText("Get list");
+        getAddrListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getAddrListButActionPerformed(evt);
+            }
+        });
+
+        downloadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
+        downloadAddrBut.setText("Download selected");
+        downloadAddrBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
+        uploadAddrBut.setText("Upload");
+        uploadAddrBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadAddrButActionPerformed(evt);
+            }
+        });
+
+        deleteAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
+        deleteAddrBut.setText("Delete selected");
+        deleteAddrBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout addrBookPaneLayout = new javax.swing.GroupLayout(addrBookPane);
+        addrBookPane.setLayout(addrBookPaneLayout);
+        addrBookPaneLayout.setHorizontalGroup(
+            addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(addrBookPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(addrBookPaneLayout.createSequentialGroup()
+                        .addComponent(getAddrListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadAddrBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadAddrBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteAddrBut)))
+                .addContainerGap())
+        );
+        addrBookPaneLayout.setVerticalGroup(
+            addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getAddrListBut)
+                    .addComponent(downloadAddrBut)
+                    .addComponent(uploadAddrBut)
+                    .addComponent(deleteAddrBut))
+                .addContainerGap())
+        );
+
+        tabPane.addTab("Addressbook", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/abook.png")), addrBookPane); // NOI18N
+
+        todoPane.setBackground(new java.awt.Color(127, 196, 127));
+
+        todoTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name"
+            }
+        ) {
+            private static final long serialVersionUID = 69L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(todoTable);
+
+        getTodoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
+        getTodoListBut.setText("Get list");
+        getTodoListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getTodoListButActionPerformed(evt);
+            }
+        });
+
+        downloadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
+        downloadTodoBut.setText("Download selected");
+        downloadTodoBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
+        uploadTodoBut.setText("Upload");
+        uploadTodoBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadTodoButActionPerformed(evt);
+            }
+        });
+
+        deleteTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
+        deleteTodoBut.setText("Delete selected");
+        deleteTodoBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout todoPaneLayout = new javax.swing.GroupLayout(todoPane);
+        todoPane.setLayout(todoPaneLayout);
+        todoPaneLayout.setHorizontalGroup(
+            todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(todoPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(todoPaneLayout.createSequentialGroup()
+                        .addComponent(getTodoListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadTodoBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadTodoBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteTodoBut)))
+                .addContainerGap())
+        );
+        todoPaneLayout.setVerticalGroup(
+            todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getTodoListBut)
+                    .addComponent(downloadTodoBut)
+                    .addComponent(uploadTodoBut)
+                    .addComponent(deleteTodoBut))
+                .addContainerGap())
+        );
+
+        tabPane.addTab("To do", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/todo.png")), todoPane); // NOI18N
+
+        eventPane.setBackground(new java.awt.Color(219, 218, 156));
+
+        eventTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name"
+            }
+        ) {
+            private static final long serialVersionUID = 70L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane5.setViewportView(eventTable);
+
+        getEventListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
+        getEventListBut.setText("Get list");
+        getEventListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getEventListButActionPerformed(evt);
+            }
+        });
+
+        downloadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
+        downloadEventBut.setText("Download selected");
+        downloadEventBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
+        uploadEventBut.setText("Upload");
+        uploadEventBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadEventButActionPerformed(evt);
+            }
+        });
+
+        deleteEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
+        deleteEventBut.setText("Delete selected");
+        deleteEventBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout eventPaneLayout = new javax.swing.GroupLayout(eventPane);
+        eventPane.setLayout(eventPaneLayout);
+        eventPaneLayout.setHorizontalGroup(
+            eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(eventPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(eventPaneLayout.createSequentialGroup()
+                        .addComponent(getEventListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadEventBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadEventBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteEventBut)))
+                .addContainerGap())
+        );
+        eventPaneLayout.setVerticalGroup(
+            eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getEventListBut)
+                    .addComponent(downloadEventBut)
+                    .addComponent(uploadEventBut)
+                    .addComponent(deleteEventBut))
+                .addContainerGap())
+        );
+
+        tabPane.addTab("Events/Tasks", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/event.png")), eventPane); // NOI18N
+
+        animPane.setBackground(new java.awt.Color(171, 171, 255));
+
+        animTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name"
+            }
+        ) {
+            private static final long serialVersionUID = 73L;
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane6.setViewportView(animTable);
+
+        getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/list.png"))); // NOI18N
+        getAnimListBut.setText("Get list");
+        getAnimListBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getAnimListButActionPerformed(evt);
+            }
+        });
+
+        downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/download.png"))); // NOI18N
+        downloadAnimBut.setText("Download selected");
+        downloadAnimBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButActionPerformed(evt);
+            }
+        });
+
+        uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/upload.png"))); // NOI18N
+        uploadAnimBut.setText("Upload");
+        uploadAnimBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadAnimButActionPerformed(evt);
+            }
+        });
+
+        deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/delete.png"))); // NOI18N
+        deleteAnimBut.setText("Delete selected");
+        deleteAnimBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout animPaneLayout = new javax.swing.GroupLayout(animPane);
+        animPane.setLayout(animPaneLayout);
+        animPaneLayout.setHorizontalGroup(
+            animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(animPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(animPaneLayout.createSequentialGroup()
+                        .addComponent(getAnimListBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadAnimBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadAnimBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteAnimBut)))
+                .addContainerGap())
+        );
+        animPaneLayout.setVerticalGroup(
+            animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, animPaneLayout.createSequentialGroup()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getAnimListBut)
+                    .addComponent(downloadAnimBut)
+                    .addComponent(uploadAnimBut)
+                    .addComponent(deleteAnimBut))
+                .addContainerGap())
+        );
+
+        tabPane.addTab("Animations/Videos", new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/video.png")), animPane); // NOI18N
+
+        portLabel.setText("Port:");
+
+        speedLabel.setText("Speed:");
+
+        databitsLabel.setText("Data bits:");
+
+        parityLabel.setText("Parity:");
+
+        stopbitsLabel.setText("Stop bits:");
+
+        flowLabel.setText("Flow control:");
+
+        flowCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Software (XON/XOFF)", "Hardware (CTS/RTS)" }));
+
+        aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/QMARK8.png"))); // NOI18N
+        aboutBut.setText("About...");
+        aboutBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutButActionPerformed(evt);
+            }
+        });
+
+        rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/tools1.png"))); // NOI18N
+        rawBut.setText("Manual commands");
+        rawBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rawButActionPerformed(evt);
+            }
+        });
+
+        bpsLabel.setText("bps");
+
+        statusLabel.setText("Program status:");
+
+        status.setForeground(new java.awt.Color(0, 204, 0));
+        status.setText("READY");
+
+        firmwareLabel.setText("Firmware:");
+
+        firmware.setText("-");
+
+        progressLabel.setText("Progress:");
+
+        phoneTypeLabel.setText("Phone type:");
+
+        phone.setText("-");
+
+        exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/rsrc/exit.png"))); // NOI18N
+        exitBut.setText("Exit");
+        exitBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitButActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tabPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 759, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(phoneTypeLabel)
+                            .addComponent(firmwareLabel)
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(portLabel)
-                                                        .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGap(7, 7, 7)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(speedLabel)
-                                                        .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(bpsLabel))
+                                    .addComponent(portLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(speedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(databitsLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(12, 12, 12)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(databitsLabel)
-                                                        .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(parityLabel)
-                                                        .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(stopbitsLabel)
-                                                        .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(flowCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(flowLabel)))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(scanButton)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(aboutBut)))
+                                                .addComponent(bpsLabel))
+                                            .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(rawBut)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(firmwareLabel)
-                                                        .addComponent(firmware))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(status)
-                                                        .addComponent(statusLabel))))
-                                .addGap(18, 18, 18)
-                                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
-                                .addContainerGap())
-                );
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(flowLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(stopbitsLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(parityLabel, javax.swing.GroupLayout.Alignment.TRAILING)))
+                            .addComponent(statusLabel)
+                            .addComponent(progressLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(flowCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(status)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(phone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(firmware, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(exitBut)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(aboutBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(scanButton))
+                                        .addComponent(rawBut)))))))
+                .addContainerGap())
+        );
 
-                pack();
-        }// </editor-fold>//GEN-END:initComponents
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {aboutBut, exitBut, rawBut, scanButton});
+
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(portLabel)
+                            .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(7, 7, 7)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(speedLabel)
+                            .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bpsLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(databitsLabel)
+                            .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(parityLabel)
+                            .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(stopbitsLabel)
+                            .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(flowCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(flowLabel)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(scanButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(aboutBut)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(phone))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(firmwareLabel)
+                            .addComponent(firmware))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(status)
+                            .addComponent(statusLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(progressLabel)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(rawBut)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exitBut)))
+                .addGap(18, 18, 18)
+                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
 	private void scanButtonActionPerformed (java.awt.event.ActionEvent evt)	{//GEN-FIRST:event_scanButtonActionPerformed
 
+		final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+		final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+		final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+		final int cParity = parityCombo.getSelectedIndex ();
+		final int cFlow = flowCombo.getSelectedIndex ();
+
 		updateStatusLabel (STATUS.SENDING);
+		progressBar.setValue (0);
+		progressBar.setMinimum (0);
+		int max = 0;
+		Enumeration temp = CommPortIdentifier.getPortIdentifiers ();
+		if ( temp != null )
+		{
+			while (temp.hasMoreElements ())
+			{
+				CommPortIdentifier id = (CommPortIdentifier) temp.nextElement ();
+				if ( id == null ) continue;
+				if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
+				{
+					max++;
+				}
+			}
+		}
+		progressBar.setMaximum (max);
 		SwingWorker<Vector<CommPortIdentifier>, Void> sw =
 			new SwingWorker<Vector<CommPortIdentifier>, Void> ()
 		{
@@ -996,10 +1251,11 @@ public class MainWindow extends javax.swing.JFrame
 			{
 				Vector<CommPortIdentifier> active = new Vector<CommPortIdentifier> (1);
 
-                		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 				while (portList.hasMoreElements ())
 				{
 					CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
+					if ( id == null ) continue;
 
 					if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
 					{
@@ -1009,17 +1265,15 @@ public class MainWindow extends javax.swing.JFrame
 							synchronized (sync)
 							{
 								DataTransporter dt = new DataTransporter (id);
-								dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
-									Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
-									Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
-									parityCombo.getSelectedIndex (),
-									flowCombo.getSelectedIndex ()
-									);
+								dt.open (cSpeed, cDataBits, cStopBits,
+									cParity, cFlow);
 								int testRes = dt.test ();
 								if ( testRes == 0 )
 								{
 									if ( firmwares == null )
 										firmwares = new Hashtable<String, String> (1);
+									if ( phoneTypes == null )
+										phoneTypes = new Hashtable<String, String> (1);
 									active.add (id);
 									// get firmware version
 									String rcvd = "";
@@ -1043,17 +1297,22 @@ public class MainWindow extends javax.swing.JFrame
 										// sample: "+KPSV: 2.04"
 										try
 										{
+											// have to split to make it work
 											String[] lines = rcvd.split ("\r");
-											for ( int i=0; i < lines.length; i++ )
+											if ( lines != null )
 											{
-												Matcher m = verPattern
-													.matcher (lines[i]);
-												if ( m.matches () )
+												for ( int i=0; i < lines.length; i++ )
 												{
-													firmwares.put (
-														id.getName (),
-														m.group (1));
-													break;
+													if ( lines[i] == null ) continue;
+													Matcher m = verPattern
+														.matcher (lines[i]);
+													if ( m.matches () )
+													{
+														firmwares.put (
+															id.getName (),
+															m.group (1));
+														break;
+													}
 												}
 											}
 										}
@@ -1061,6 +1320,51 @@ public class MainWindow extends javax.swing.JFrame
 										{
 											Utils.handleException (ex,
 												"pattern/matcher");	// NOI18N
+										}
+									}
+									// get phone type
+									rcvd = "";
+									trials = 0;
+									do
+									{
+										dt.send ( ("ATIMEI\r")	// NOI18N
+											.getBytes ());
+										byte[] recvdB = dt.recv (null);	// NOI18N
+										rcvd = new String (recvdB);
+
+										if ( rcvd.trim ().equals ("") )	// NOI18N
+										{
+											dt.reopen ();
+											trials++;
+										}
+									} while (rcvd.trim ().equals ("")	// NOI18N
+										&& trials <= DataTransporter.MAX_TRIALS);
+									if ( trials <= DataTransporter.MAX_TRIALS )
+									{
+										// sample: "myX5-2 GPRS"
+										try
+										{
+											// have to split to make it work
+											String[] lines = rcvd.split ("\r");
+											if ( lines != null )
+											{
+												for ( int i=0; i < lines.length; i++ )
+												{
+													if ( lines[i] == null ) continue;
+													if ( lines[i].trim ().length () > 0 )
+													{
+														phoneTypes.put (
+															id.getName (),
+															lines[i].trim ());
+														break;
+													}
+												}
+											}
+										}
+										catch (Exception ex)
+										{
+											Utils.handleException (ex,
+												"phone type");	// NOI18N
 										}
 									}
 								}
@@ -1072,6 +1376,17 @@ public class MainWindow extends javax.swing.JFrame
 							Utils.handleException (ex,
 								"scanning.SW:" + id.getName ());	// NOI18N
 						}
+						Utils.changeGUI (new Runnable ()
+						{
+							public void run ()
+							{
+								progressBar.setValue (progressBar.getValue ()+1);
+								if ( progressBar.getValue () == progressBar.getMaximum () )
+								{
+									progressBar.setValue (0);
+								}
+							}
+						});
 					}
 				}
 				return active;
@@ -1098,6 +1413,7 @@ public class MainWindow extends javax.swing.JFrame
 					}
 					else if (active.size () == 1)
 					{
+						// NOT setSelectedIndex (0)!
 						portCombo.setSelectedItem (active.get (0).getName ());
 						if ( firmwares != null )
 						{
@@ -1107,12 +1423,27 @@ public class MainWindow extends javax.swing.JFrame
 							}
 							else
 							{
-								firmware.setText (defFirmware);
+								firmware.setText (pressScanMsg);
 							}
 						}
 						else
 						{
-							firmware.setText (defFirmware);
+							firmware.setText (pressScanMsg);
+						}
+						if ( phoneTypes != null )
+						{
+							if ( phoneTypes.containsKey (active.get (0).getName ()) )
+							{
+								phone.setText (phoneTypes.get (active.get (0).getName ()));
+							}
+							else
+							{
+								phone.setText (pressScanMsg);
+							}
+						}
+						else
+						{
+							phone.setText (pressScanMsg);
 						}
 					}
 					else
@@ -1143,16 +1474,32 @@ public class MainWindow extends javax.swing.JFrame
 								}
 								else
 								{
-									firmware.setText (defFirmware);
+									firmware.setText (pressScanMsg);
 								}
 							}
 							else
 							{
-								firmware.setText (defFirmware);
+								firmware.setText (pressScanMsg);
+							}
+							if ( phoneTypes != null )
+							{
+								if ( phoneTypes.containsKey (active.get (res).getName ()) )
+								{
+									phone.setText (phoneTypes.get (active.get (res).getName ()));
+								}
+								else
+								{
+									phone.setText (pressScanMsg);
+								}
+							}
+							else
+							{
+								phone.setText (pressScanMsg);
 							}
 						}
 						else
 						{
+							// NOT setSelectedIndex (0)!
 							portCombo.setSelectedItem
 								(active.get (0).getName ());
 							if ( firmwares != null )
@@ -1163,12 +1510,27 @@ public class MainWindow extends javax.swing.JFrame
 								}
 								else
 								{
-									firmware.setText (defFirmware);
+									firmware.setText (pressScanMsg);
 								}
 							}
 							else
 							{
-								firmware.setText (defFirmware);
+								firmware.setText (pressScanMsg);
+							}
+							if ( phoneTypes != null )
+							{
+								if ( phoneTypes.containsKey (active.get (0).getName ()) )
+								{
+									phone.setText (phoneTypes.get (active.get (0).getName ()));
+								}
+								else
+								{
+									phone.setText (pressScanMsg);
+								}
+							}
+							else
+							{
+								phone.setText (pressScanMsg);
 							}
 						}
 					}
@@ -1233,35 +1595,50 @@ public class MainWindow extends javax.swing.JFrame
 			currentEventElements);
 	}//GEN-LAST:event_getEventListButActionPerformed
 
+	private void getAnimListButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getAnimListButActionPerformed
+		if ( currentAnimElements == null ) currentAnimElements =
+			new Vector<PhoneElement> (1);
+
+		putListInTable ("ANIMATIONS",	// NOI18N
+			(DefaultTableModel) animTable.getModel (),
+			currentAnimElements);
+	}//GEN-LAST:event_getAnimListButActionPerformed
+
 	private void downloadButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButActionPerformed
 
 		int[] selectedRows = null;
+		Vector<PhoneElement> temp = null;
 		if ( tabPane.getSelectedIndex () == 0 )
 		{
 			selectedRows = photoTable.getSelectedRows ();
-			currentElements = currentPhotoElements;
+			temp = currentPhotoElements;
 		}
 		else if ( tabPane.getSelectedIndex () == 1 )
 		{
 			selectedRows = ringTable.getSelectedRows ();
-			currentElements = currentRingElements;
+			temp = currentRingElements;
 		}
 		else if ( tabPane.getSelectedIndex () == 2 )
 		{
 			selectedRows = addrTable.getSelectedRows ();
-			currentElements = currentAddrElements;
+			temp = currentAddrElements;
 		}
 		else if ( tabPane.getSelectedIndex () == 3 )
 		{
 			selectedRows = todoTable.getSelectedRows ();
-			currentElements = currentTodoElements;
+			temp = currentTodoElements;
 		}
-
-		else //if ( tabPane.getSelectedIndex () == 4 )
+		else if ( tabPane.getSelectedIndex () == 4 )
 		{
 			selectedRows = eventTable.getSelectedRows ();
-			currentElements = currentEventElements;
+			temp = currentEventElements;
 		}
+		else //if ( tabPane.getSelectedIndex () == 5 )
+		{
+			selectedRows = animTable.getSelectedRows ();
+			temp = currentAnimElements;
+		}
+		final Vector<PhoneElement> currentElements = temp;
 		if ( selectedRows == null || currentElements == null ) return;
 		if ( selectedRows.length == 0 ) return;
 
@@ -1285,7 +1662,7 @@ public class MainWindow extends javax.swing.JFrame
 			jfc.setSelectedFile (d);
 			jfc.setCurrentDirectory (d);
 		}
-		int dialogRes = jfc.showOpenDialog (this);
+		int dialogRes = jfc.showSaveDialog (this);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
@@ -1295,20 +1672,29 @@ public class MainWindow extends javax.swing.JFrame
 				lastSelDir = destDir.getAbsolutePath ();
 				final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 					(portCombo.getSelectedItem ().toString ());
+				progressBar.setValue (0);
+				progressBar.setMinimum (0);
+				progressBar.setMaximum (selectedRows.length);
+				final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+				final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+				final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+				final int cParity = parityCombo.getSelectedIndex ();
+				final int cFlow = flowCombo.getSelectedIndex ();
 				final AtomicInteger threads = new AtomicInteger (0);
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
+					final int toGet = selectedRows[i];
 					final File received = new File (
 						destDir.getAbsolutePath () + File.separator
-						+ currentElements.get (selectedRows[i]).getFilename ()
+						+ currentElements.get (toGet).getFilename ()
 						+ "." 	// NOI18N
-						+ currentElements.get (selectedRows[i]).getExt ());
+						+ currentElements.get (toGet).getExt ());
 					if ( received.exists () )
 					{
 						int res = JOptionPane.showConfirmDialog (this,
-							currentElements.get (selectedRows[i]).getFilename ()
+							currentElements.get (toGet).getFilename ()
 							+ "." 	// NOI18N
-							+ currentElements.get (selectedRows[i]).getExt () +
+							+ currentElements.get (toGet).getExt () +
 							exOverString,
 							overwriteStr,
 							JOptionPane.YES_NO_CANCEL_OPTION);
@@ -1321,7 +1707,6 @@ public class MainWindow extends javax.swing.JFrame
 							errString, JOptionPane.ERROR_MESSAGE);
 						continue;
 					}
-					final int toGet = selectedRows[i];
 					updateStatusLabel (STATUS.RECEIVING);
 					SwingWorker<Integer, Void> sw =
 						new SwingWorker<Integer, Void> ()
@@ -1335,12 +1720,8 @@ public class MainWindow extends javax.swing.JFrame
 								try
 								{
 									final DataTransporter dt = new DataTransporter (id);
-									dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
-										Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
-										Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
-										parityCombo.getSelectedIndex (),
-										flowCombo.getSelectedIndex ()
-										);
+									dt.open (cSpeed, cDataBits, cStopBits,
+										cParity, cFlow);
 									int ret = dt.getFile (received,
 										currentElements.get (toGet));
 									dt.close ();
@@ -1361,6 +1742,7 @@ public class MainWindow extends javax.swing.JFrame
 							int th = threads.decrementAndGet ();
 							try
 							{
+								progressBar.setValue (progressBar.getValue () + 1);
 								if ( th == 0 )
 								{
 									updateStatusLabel (STATUS.READY);
@@ -1379,12 +1761,17 @@ public class MainWindow extends javax.swing.JFrame
 										errString,
 										JOptionPane.ERROR_MESSAGE );
 								}
+								if ( th == 0 )
+								{
+									progressBar.setValue (0);
+								}
 							}
 							catch (Exception ex)
 							{
 								if ( th == 0 )
 								{
 									updateStatusLabel (STATUS.READY);
+									progressBar.setValue (0);
 								}
 								Utils.handleException (ex,
 									"download.SW.done:"			// NOI18N
@@ -1407,20 +1794,7 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void aboutButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButActionPerformed
 
-		JOptionPane.showMessageDialog (this,
-			// Object, not necessarily a String
-			"JYMAG - Java Your Music and Graphics - " + freeMPASStr + "\n" +	// NOI18N
-			verWord + ": " + verString + "\n" +		// NOI18N
-			"Author: Bogdan Drozdowski, bogdandr@op.pl\n" +	// NOI18N
-			"http://rudy.mif.pg.gda.pl/~bogdro/soft, http://rudy.mif.pg.gda.pl/~bogdro/inne\n" +	// NOI18N
-			"License: GPLv3+\n\n" +				// NOI18N
-			suppOperThank +
-			"\nSharp (sharpy+at+xox.pl) for GetPic.pl\n"+	// NOI18N
-			"sebtx452 @ gmail.com for wxPicSound\n" +	// NOI18N
-			"MIKSOFT for \"Mobile Media Converter\"\n" +	// NOI18N
-			"\"ffmpeg project\" for ffmpeg",		// NOI18N
-			aboutStr, JOptionPane.INFORMATION_MESSAGE );
-
+		new AboutBox (this, true).setVisible (true);
 	}//GEN-LAST:event_aboutButActionPerformed
 
 	private void uploadPhotoButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadPhotoButActionPerformed
@@ -1444,7 +1818,27 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return picsString;
+				String desc = picsString;
+				try
+				{
+					Enumeration<String> keys = Utils.photofileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "photofileIDs.keys");
+				}
+				return desc;
 			}
 		} );
 
@@ -1484,7 +1878,27 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return soundsString;
+				String desc = soundsString;
+				try
+				{
+					Enumeration<String> keys = Utils.ringfileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "ringfileIDs.keys");
+				}
+				return desc;
 			}
 		} );
 
@@ -1524,7 +1938,27 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return addrString;
+				String desc = addrString;
+				try
+				{
+					Enumeration<String> keys = Utils.addrfileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "addrfileIDs.keys");
+				}
+				return desc;
 			}
 		} );
 
@@ -1564,7 +1998,27 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return todoString;
+				String desc = todoString;
+				try
+				{
+					Enumeration<String> keys = Utils.todofileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "todofileIDs.keys");
+				}
+				return desc;
 			}
 		} );
 
@@ -1604,7 +2058,27 @@ public class MainWindow extends javax.swing.JFrame
 
 			public String getDescription ()
 			{
-				return eventString;
+				String desc = eventString;
+				try
+				{
+					Enumeration<String> keys = Utils.eventfileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "eventfileIDs.keys");
+				}
+				return desc;
 			}
 		} );
 
@@ -1623,6 +2097,66 @@ public class MainWindow extends javax.swing.JFrame
 		}
 	}//GEN-LAST:event_uploadEventButActionPerformed
 
+	private void uploadAnimButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadAnimButActionPerformed
+
+		JFileChooser jfc = new JFileChooser ();
+		jfc.setFileFilter ( new javax.swing.filechooser.FileFilter ()
+		{
+			public boolean accept ( File f )
+			{
+				if ( f.isDirectory () ) return true;
+				if ( f.getName ().contains ("."))	// NOI18N
+				{
+					if ( Utils.animfileIDs.containsKey (f.getName ().substring
+						(f.getName ().lastIndexOf (".")+1)	// NOI18N
+						.toLowerCase ()))
+
+						return true;
+				}
+				return false;
+			}
+
+			public String getDescription ()
+			{
+				String desc = animString;
+				try
+				{
+					Enumeration<String> keys = Utils.animfileIDs.keys ();
+					if ( keys != null )
+					{
+						desc += " (";
+						while ( keys.hasMoreElements () )
+						{
+							desc += "*." + keys.nextElement () + ", ";
+						}
+						// remove the last comma and space
+						desc = desc.substring (0, desc.length () - 2);
+						desc += ")";
+					}
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "animfileIDs.keys");
+				}
+				return desc;
+			}
+		} );
+
+		jfc.setAcceptAllFileFilterUsed (false);
+		jfc.setMultiSelectionEnabled (false);
+		jfc.setDialogType (JFileChooser.OPEN_DIALOG);
+		if ( lastSelDir != null )
+			jfc.setCurrentDirectory (new File (lastSelDir));
+		int dialogRes = jfc.showOpenDialog (this);
+
+		if ( dialogRes == JFileChooser.APPROVE_OPTION )
+		{
+			File res = jfc.getSelectedFile ();
+			lastSelDir = res.getParent ();
+			dynamicUpload (res);
+		}
+	}//GEN-LAST:event_uploadAnimButActionPerformed
+
 	private void dynamicUpload (final File f)
 	{
 		try
@@ -1630,6 +2164,14 @@ public class MainWindow extends javax.swing.JFrame
 			final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 				(portCombo.getSelectedItem ().toString ());
 			updateStatusLabel (STATUS.SENDING);
+			progressBar.setValue (0);
+			progressBar.setMinimum (0);
+			progressBar.setMaximum (1);
+			final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+			final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+			final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+			final int cParity = parityCombo.getSelectedIndex ();
+			final int cFlow = flowCombo.getSelectedIndex ();
 			SwingWorker<Integer, Void> sw =
 				new SwingWorker<Integer, Void> ()
 			{
@@ -1641,12 +2183,8 @@ public class MainWindow extends javax.swing.JFrame
 						try
 						{
 							final DataTransporter dt = new DataTransporter (id);
-							dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
-								Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
-								Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
-								parityCombo.getSelectedIndex (),
-								flowCombo.getSelectedIndex ()
-								);
+							dt.open (cSpeed, cDataBits, cStopBits,
+								cParity, cFlow);
 							int ret = dt.putFile (f, f.getName ().substring
 								(0, f.getName ().indexOf ("."))	// NOI18N
 								.replaceAll ("\\s", "_")	// NOI18N
@@ -1667,8 +2205,11 @@ public class MainWindow extends javax.swing.JFrame
 				{
 					try
 					{
+						progressBar.setValue (progressBar.getValue () + 1);
 						updateStatusLabel (STATUS.READY);
-						int put = get ().intValue ();
+						int put = 0;
+						Integer res = get ();
+						if ( res != null ) put = res.intValue ();
 						if ( put != 0 )
 						{
 							String msg = String.valueOf (put);
@@ -1685,13 +2226,15 @@ public class MainWindow extends javax.swing.JFrame
 							else if ( put == -11 ) msg = uploadMsg11;
 
 							JOptionPane.showMessageDialog (mw,
-							errString + ": " + msg,	// NOI18N
-							errString, JOptionPane.ERROR_MESSAGE );
+								errString + ": " + msg,	// NOI18N
+								errString, JOptionPane.ERROR_MESSAGE );
 						}
+						progressBar.setValue (0);
 					}
 					catch (Exception ex)
 					{
 						updateStatusLabel (STATUS.READY);
+						progressBar.setValue (0);
 						Utils.handleException (ex,
 							"dynUpload.SW.done:" + f.getName ());	// NOI18N
 					}
@@ -1708,35 +2251,42 @@ public class MainWindow extends javax.swing.JFrame
 
 	private void deleteButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButActionPerformed
 
-		int[] selectedRows;
+		int[] selectedRows = null;
+		Vector<PhoneElement> temp = null;
 		if ( tabPane.getSelectedIndex () == 0 )
 		{
 			selectedRows = photoTable.getSelectedRows ();
-			currentElements = currentPhotoElements;
+			temp = currentPhotoElements;
 		}
 		else if ( tabPane.getSelectedIndex () == 1 )
 		{
 			selectedRows = ringTable.getSelectedRows ();
-			currentElements = currentRingElements;
+			temp = currentRingElements;
 		}
 		else if ( tabPane.getSelectedIndex () == 2 )
 		{
 			selectedRows = addrTable.getSelectedRows ();
-			currentElements = currentAddrElements;
+			temp = currentAddrElements;
 		}
 		else if ( tabPane.getSelectedIndex () == 3 )
 		{
 			selectedRows = todoTable.getSelectedRows ();
-			currentElements = currentTodoElements;
+			temp = currentTodoElements;
 		}
-
-		else //if ( tabPane.getSelectedIndex () == 4 )
+		else if ( tabPane.getSelectedIndex () == 4 )
 		{
 			selectedRows = eventTable.getSelectedRows ();
-			currentElements = currentEventElements;
+			temp = currentEventElements;
 		}
-		if ( selectedRows == null ) return;
+		else //if ( tabPane.getSelectedIndex () == 5 )
+		{
+			selectedRows = animTable.getSelectedRows ();
+			temp = currentAnimElements;
+		}
+		if ( selectedRows == null || temp == null ) return;
 		if ( selectedRows.length == 0 ) return;
+
+		final Vector<PhoneElement> currentElements = temp;
 
 		int dialogRes = JOptionPane.showConfirmDialog (this,
 			deleteQuestion,
@@ -1752,9 +2302,17 @@ public class MainWindow extends javax.swing.JFrame
 				final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 					(portCombo.getSelectedItem ().toString ());
 				final AtomicInteger threads = new AtomicInteger (0);
+				updateStatusLabel (STATUS.SENDING);
+				progressBar.setValue (0);
+				progressBar.setMinimum (0);
+				progressBar.setMaximum (selectedRows.length);
+				final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+				final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+				final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+				final int cParity = parityCombo.getSelectedIndex ();
+				final int cFlow = flowCombo.getSelectedIndex ();
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
-					updateStatusLabel (STATUS.SENDING);
 					final int toGet = selectedRows[i];
 					SwingWorker<Integer, Void> sw =
 						new SwingWorker<Integer, Void> ()
@@ -1768,12 +2326,8 @@ public class MainWindow extends javax.swing.JFrame
 								try
 								{
 									final DataTransporter dt = new DataTransporter (id);
-									dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
-										Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
-										Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
-										parityCombo.getSelectedIndex (),
-										flowCombo.getSelectedIndex ()
-										);
+									dt.open (cSpeed, cDataBits, cStopBits,
+										cParity, cFlow);
 									dt.deleteFile
 										(currentElements.get (toGet));
 									dt.close ();
@@ -1790,9 +2344,11 @@ public class MainWindow extends javax.swing.JFrame
 						@Override
 						protected void done ()
 						{
+							progressBar.setValue (progressBar.getValue () + 1);
 							if ( threads.decrementAndGet () == 0 )
 							{
 								updateStatusLabel (STATUS.READY);
+								progressBar.setValue (0);
 							}
 						}
 					};
@@ -1850,16 +2406,37 @@ public class MainWindow extends javax.swing.JFrame
 					}
 					else
 					{
-						firmware.setText (defFirmware);
+						firmware.setText (pressScanMsg);
 					}
 				}
 				else
 				{
-					firmware.setText (defFirmware);
+					firmware.setText (pressScanMsg);
+				}
+				if ( phoneTypes != null )
+				{
+					if ( phoneTypes.containsKey (item.toString ()) )
+					{
+						phone.setText (phoneTypes.get (item.toString ()));
+					}
+					else
+					{
+						phone.setText (pressScanMsg);
+					}
+				}
+				else
+				{
+					phone.setText (pressScanMsg);
 				}
 			}
 		}
 	}//GEN-LAST:event_portComboItemStateChanged
+
+	private void exitButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButActionPerformed
+
+		dispose ();
+		closeProgram (0);
+	}//GEN-LAST:event_exitButActionPerformed
 
 	private void putListInTable (final String ofWhat,
 		final DefaultTableModel dtm,
@@ -1870,6 +2447,14 @@ public class MainWindow extends javax.swing.JFrame
 			final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
 				(portCombo.getSelectedItem ().toString ());
 			updateStatusLabel (STATUS.RECEIVING);
+			progressBar.setValue (0);
+			progressBar.setMinimum (0);
+			progressBar.setMaximum (1);
+			final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+			final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+			final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+			final int cParity = parityCombo.getSelectedIndex ();
+			final int cFlow = flowCombo.getSelectedIndex ();
 			SwingWorker<Vector<PhoneElement>, Void> sw =
 				new SwingWorker<Vector<PhoneElement>, Void> ()
 			{
@@ -1882,12 +2467,8 @@ public class MainWindow extends javax.swing.JFrame
 						try
 						{
 							final DataTransporter dt = new DataTransporter (id);
-							dt.open (Integer.valueOf (speedCombo.getSelectedItem ().toString ()),
-								Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ()),
-								Float.valueOf (stopBitsCombo.getSelectedItem ().toString ()),
-								parityCombo.getSelectedIndex (),
-								flowCombo.getSelectedIndex ()
-								);
+							dt.open (cSpeed, cDataBits, cStopBits,
+								cParity, cFlow);
 							ret = dt.getList (ofWhat);
 							dt.close ();
 							return ret;
@@ -1903,6 +2484,7 @@ public class MainWindow extends javax.swing.JFrame
 				@Override
 				protected void done ()
 				{
+					progressBar.setValue (progressBar.getValue () + 1);
 					updateStatusLabel (STATUS.READY);
 					Vector<PhoneElement> ret = null;
 					try
@@ -1910,12 +2492,12 @@ public class MainWindow extends javax.swing.JFrame
 						ret = get ();
 						if ( ret != null )
 						{
-							dtm.setRowCount (0);
 							if ( placeForData != null )
 							{
 								placeForData.removeAllElements ();
 								placeForData.addAll (ret);
 							}
+							dtm.setRowCount (0);
 							for ( int i=0; i < ret.size (); i++ )
 							{
 								dtm.addRow (new String[]
@@ -1924,11 +2506,13 @@ public class MainWindow extends javax.swing.JFrame
 									);
 							}
 						}
+						progressBar.setValue (0);
 					}
 					catch (Exception ex)
 					{
+						progressBar.setValue (0);
 						Utils.handleException (ex,
-							"putListInTable.SW.done:"	// NOI18N
+							"putListInTable.SW.done: ret.size="	// NOI18N
 							+ ((ret != null)? ret.size () : "0") );	// NOI18N
 					}
 				}
@@ -1941,53 +2525,27 @@ public class MainWindow extends javax.swing.JFrame
 			Utils.handleException (ex, "putListInTable");	// NOI18N
 		}
 	}
-
-	/**
-	 * Receives key-typed events (called when the user types a key).
-	 * Used to react on pressing the Esc key.
-	 * @param ke The key-typed event.
-	 */
-	public void keyTyped (KeyEvent ke)
+/*
+	private void disablePortControls ()
 	{
-		if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
-		{
-			dispose ();
-		}
+		dataBitsCombo.setEnabled (false);
+		flowCombo.setEnabled (false);
+		parityCombo.setEnabled (false);
+		portCombo.setEnabled (false);
+		speedCombo.setEnabled (false);
+		stopBitsCombo.setEnabled (false);
 	}
 
-	/**
-	 * Receives key-pressed events (unused).
-	 * @param ke The key-pressed event.
-	 */
-	public void keyPressed (KeyEvent ke) {}
-
-	/**
-	 * Receives key-released events (unused).
-	 * @param ke The key-released event.
-	 */
-	public void keyReleased (KeyEvent ke) {}
-
-	/**
-	 * Called when the programs needs to close.
-	 * @param retval Return value passed to System.exit ().
-	 */
-	private static void closeProgram (int retval)
+	private void enablePortControls ()
 	{
-		// close logging
-		if ( System.err != null ) System.err.close ();
-		// remove the log file if empty
-		File log = new File (logFile);
-		if ( (! log.exists ()) || log.length () == 0 ) log.delete ();
-		// check if GUI was created, or only the command line was used
-		/*
-		if ( aboutBut != null )
-		{
-			// the window was constructed
-			dispose ();
-		}*/
-		System.exit (retval);
+		dataBitsCombo.setEnabled (true);
+		flowCombo.setEnabled (true);
+		parityCombo.setEnabled (true);
+		portCombo.setEnabled (true);
+		speedCombo.setEnabled (true);
+		stopBitsCombo.setEnabled (true);
 	}
-
+*/
 	private enum STATUS
 	{
 		READY,
@@ -2018,6 +2576,27 @@ public class MainWindow extends javax.swing.JFrame
 	}
 
 	// =============================== static methods
+
+	/**
+	 * Called when the programs needs to close.
+	 * @param retval Return value passed to System.exit ().
+	 */
+	private static void closeProgram (int retval)
+	{
+		// close logging
+		if ( System.err != null ) System.err.close ();
+		// remove the log file if empty
+		File log = new File (logFile);
+		if ( (! log.exists ()) || log.length () == 0 ) log.delete ();
+		// check if GUI was created, or only the command line was used
+		/*
+		if ( aboutBut != null )
+		{
+			// the window was constructed
+			dispose ();
+		}*/
+		System.exit (retval);
+	}
 
 	private static int getElementsOfType (String type)
 	{
@@ -2106,6 +2685,11 @@ public class MainWindow extends javax.swing.JFrame
 		return getElementsOfType ("VCARDS");	// NOI18N
 	}
 
+	private static int getAllAnimations ()
+	{
+		return getElementsOfType ("ANIMATIONS");	// NOI18N
+	}
+
 	private static int staticUpload (File f, String whichPort) throws Exception
 	{
 		if ( f == null ) return -7;
@@ -2170,7 +2754,7 @@ public class MainWindow extends javax.swing.JFrame
 	{
 		int active = 0;
 
-                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 		while (portList.hasMoreElements ())
 		{
 			CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
@@ -2206,21 +2790,21 @@ public class MainWindow extends javax.swing.JFrame
 		return 0;
 	}
 
-        /**
-         * Program starting point.
-         * @param args the command line arguments.
-         */
-        public static void main (String args[])
-        {
-        	// redirect stderr (caught and uncaught exceptions) to a file
-        	try
-        	{
-        		System.setErr (new PrintStream (new File (logFile)));
-        	}
-        	catch (Exception ex)
-        	{
-				Utils.handleException (ex, "stderr");	// NOI18N
-        	}
+	/**
+	 * Program starting point.
+	 * @param args the command line arguments.
+	 */
+	public static void main (String args[])
+	{
+		// redirect stderr (caught and uncaught exceptions) to a file
+		try
+		{
+			System.setErr (new PrintStream (new File (logFile)));
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "stderr");	// NOI18N
+		}
 		// firmware version pattern
 		verPattern = Pattern.compile ("\\s*\\+KPSV:\\s*(.+)");
 
@@ -2450,6 +3034,10 @@ public class MainWindow extends javax.swing.JFrame
 				{
 					closeProgram (getAllVcards ());
 				}
+				else if ( args[i].toLowerCase ().equals ("--download-all-vcards"))	// NOI18N
+				{
+					closeProgram (getAllAnimations ());
+				}
 				else if ( args[i].toLowerCase ().equals ("--download-all"))	// NOI18N
 				{
 					closeProgram (getAllPics ()
@@ -2457,6 +3045,7 @@ public class MainWindow extends javax.swing.JFrame
 						+ getAllTODOs ()
 						+ getAllEvents ()
 						+ getAllVcards ()
+						+ getAllAnimations ()
 						);
 				}
 				else if ( args[i].toLowerCase ().equals ("--download-dir"))	// NOI18N
@@ -2485,72 +3074,112 @@ public class MainWindow extends javax.swing.JFrame
 
 		//JFrame.setDefaultLookAndFeelDecorated (true);
 
-                SwingUtilities.invokeLater (new Runnable ()
-                {
-                        public void run ()
-                        {
-                                new MainWindow ().setVisible (true);
-                        }
-                });
-        }	// main ()
+		SwingUtilities.invokeLater (new Runnable ()
+		{
+				public void run ()
+				{
+						new MainWindow ().setVisible (true);
+				}
+		});
+	}	// main ()
 
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JButton aboutBut;
-        private javax.swing.JPanel addrBookPane;
-        private javax.swing.JTable addrTable;
-        private javax.swing.JLabel bpsLabel;
-        private javax.swing.JComboBox dataBitsCombo;
-        private javax.swing.JLabel databitsLabel;
-        private javax.swing.JButton deleteAddrBut;
-        private javax.swing.JButton deleteEventBut;
-        private javax.swing.JButton deletePhotoBut;
-        private javax.swing.JButton deleteRingBut;
-        private javax.swing.JButton deleteTodoBut;
-        private javax.swing.JButton downloadAddrBut;
-        private javax.swing.JButton downloadEventBut;
-        private javax.swing.JButton downloadPhotoBut;
-        private javax.swing.JButton downloadRingBut;
-        private javax.swing.JButton downloadTodoBut;
-        private javax.swing.JPanel eventPane;
-        private javax.swing.JTable eventTable;
-        private javax.swing.JLabel firmware;
-        private javax.swing.JLabel firmwareLabel;
-        private javax.swing.JComboBox flowCombo;
-        private javax.swing.JLabel flowLabel;
-        private javax.swing.JButton getAddrListBut;
-        private javax.swing.JButton getEventListBut;
-        private javax.swing.JButton getPhotoListBut;
-        private javax.swing.JButton getRingListBut;
-        private javax.swing.JButton getTodoListBut;
-        private javax.swing.JScrollPane jScrollPane1;
-        private javax.swing.JScrollPane jScrollPane2;
-        private javax.swing.JScrollPane jScrollPane3;
-        private javax.swing.JScrollPane jScrollPane4;
-        private javax.swing.JScrollPane jScrollPane5;
-        private javax.swing.JComboBox parityCombo;
-        private javax.swing.JLabel parityLabel;
-        private javax.swing.JPanel photoPane;
-        private javax.swing.JTable photoTable;
-        private javax.swing.JComboBox portCombo;
-        private javax.swing.JLabel portLabel;
-        private javax.swing.JButton rawBut;
-        private javax.swing.JPanel ringPane;
-        private javax.swing.JTable ringTable;
-        private javax.swing.JButton scanButton;
-        private javax.swing.JComboBox speedCombo;
-        private javax.swing.JLabel speedLabel;
-        private javax.swing.JLabel status;
-        private javax.swing.JLabel statusLabel;
-        private javax.swing.JComboBox stopBitsCombo;
-        private javax.swing.JLabel stopbitsLabel;
-        private javax.swing.JTabbedPane tabPane;
-        private javax.swing.JPanel todoPane;
-        private javax.swing.JTable todoTable;
-        private javax.swing.JButton uploadAddrBut;
-        private javax.swing.JButton uploadEventBut;
-        private javax.swing.JButton uploadPhotoBut;
-        private javax.swing.JButton uploadRingBut;
-        private javax.swing.JButton uploadTodoBut;
-        // End of variables declaration//GEN-END:variables
+	private class KL implements KeyListener
+	{
+		/**
+		 * Receives key-typed events (called when the user types a key).
+		 * @param ke The key-typed event.
+		 */
+		public void keyTyped (KeyEvent ke)
+		{
+			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
+			{
+				dispose ();
+			}
+		}
+
+		/**
+		 * Receives key-pressed events (unused).
+		 * @param ke The key-pressed event.
+		 */
+		public void keyPressed (KeyEvent ke) {}
+
+		/**
+		 * Receives key-released events (unused).
+		 * @param ke The key-released event.
+	 	 */
+		public void keyReleased (KeyEvent ke) {}
+	}
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton aboutBut;
+    private javax.swing.JPanel addrBookPane;
+    private javax.swing.JTable addrTable;
+    private javax.swing.JPanel animPane;
+    private javax.swing.JTable animTable;
+    private javax.swing.JLabel bpsLabel;
+    private javax.swing.JComboBox dataBitsCombo;
+    private javax.swing.JLabel databitsLabel;
+    private javax.swing.JButton deleteAddrBut;
+    private javax.swing.JButton deleteAnimBut;
+    private javax.swing.JButton deleteEventBut;
+    private javax.swing.JButton deletePhotoBut;
+    private javax.swing.JButton deleteRingBut;
+    private javax.swing.JButton deleteTodoBut;
+    private javax.swing.JButton downloadAddrBut;
+    private javax.swing.JButton downloadAnimBut;
+    private javax.swing.JButton downloadEventBut;
+    private javax.swing.JButton downloadPhotoBut;
+    private javax.swing.JButton downloadRingBut;
+    private javax.swing.JButton downloadTodoBut;
+    private javax.swing.JPanel eventPane;
+    private javax.swing.JTable eventTable;
+    private javax.swing.JButton exitBut;
+    private javax.swing.JLabel firmware;
+    private javax.swing.JLabel firmwareLabel;
+    private javax.swing.JComboBox flowCombo;
+    private javax.swing.JLabel flowLabel;
+    private javax.swing.JButton getAddrListBut;
+    private javax.swing.JButton getAnimListBut;
+    private javax.swing.JButton getEventListBut;
+    private javax.swing.JButton getPhotoListBut;
+    private javax.swing.JButton getRingListBut;
+    private javax.swing.JButton getTodoListBut;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JComboBox parityCombo;
+    private javax.swing.JLabel parityLabel;
+    private javax.swing.JLabel phone;
+    private javax.swing.JLabel phoneTypeLabel;
+    private javax.swing.JPanel photoPane;
+    private javax.swing.JTable photoTable;
+    private javax.swing.JComboBox portCombo;
+    private javax.swing.JLabel portLabel;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JLabel progressLabel;
+    private javax.swing.JButton rawBut;
+    private javax.swing.JPanel ringPane;
+    private javax.swing.JTable ringTable;
+    private javax.swing.JButton scanButton;
+    private javax.swing.JComboBox speedCombo;
+    private javax.swing.JLabel speedLabel;
+    private javax.swing.JLabel status;
+    private javax.swing.JLabel statusLabel;
+    private javax.swing.JComboBox stopBitsCombo;
+    private javax.swing.JLabel stopbitsLabel;
+    private javax.swing.JTabbedPane tabPane;
+    private javax.swing.JPanel todoPane;
+    private javax.swing.JTable todoTable;
+    private javax.swing.JButton uploadAddrBut;
+    private javax.swing.JButton uploadAnimBut;
+    private javax.swing.JButton uploadEventBut;
+    private javax.swing.JButton uploadPhotoBut;
+    private javax.swing.JButton uploadRingBut;
+    private javax.swing.JButton uploadTodoBut;
+    // End of variables declaration//GEN-END:variables
 
 }

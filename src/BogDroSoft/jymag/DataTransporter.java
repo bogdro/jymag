@@ -43,7 +43,7 @@ import java.util.regex.Matcher;
  * This class is used to send and receive data.
  * @author Bogdan Drozdowski
  */
-public class DataTransporter implements SerialPortEventListener
+public class DataTransporter
 {
 	private CommPortIdentifier portID;
 	private SerialPort s;
@@ -54,14 +54,7 @@ public class DataTransporter implements SerialPortEventListener
 	/** Timeout betwenn up/download stages, in milliseconds. */
 	private static final int TIMEOUT = 250;
 
-	/*
-	 * Element receiving format:
-	 * AT+KPSR="<ID repeated>"
-	 * +KPSR: 49203
-	 * CONNECT\r\n
-	 * <binary data>
-	 * \r\nNO CARRIER
-	 */
+	private SPL spl = new SPL ();
 
 	// file headers:
 	private final byte[] JPG = new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff };
@@ -89,6 +82,15 @@ public class DataTransporter implements SerialPortEventListener
 		(byte) 0x42, (byte) 0x45, (byte) 0x47, (byte) 0x49,
 		(byte) 0x4E, (byte) 0x3A, (byte) 0x76, (byte) 0x43,
 		(byte) 0x61, (byte) 0x72, (byte) 0x64 };
+	// WBMP: 0, 0
+	//private final byte[] WBMP = new byte[] { (byte) 0x00, (byte) 0x00 };
+	// the 2-bytes-zero header dosen't work well. Instead, let's look for '$'
+	// and skip 3 bytes after it.
+	private final byte[] WBMP = new byte[] { (byte) 0x24 };
+
+	// MNG: 8A 4D 4E 47
+	private final byte[] MNG = new byte[] {
+		(byte) 0x8A, (byte) 0x4D, (byte) 0x4E, (byte) 0x47 };
 
 	// "CONNECT\r\n"
 	private final byte[] START = new byte[] {
@@ -111,10 +113,10 @@ public class DataTransporter implements SerialPortEventListener
 	 * @param id Port identifier for the port which will be used to
 	 * transfer data.
 	 */
-        public DataTransporter (CommPortIdentifier id)
-        {
+	public DataTransporter (CommPortIdentifier id)
+	{
 		portID = id;
-        }
+	}
 
 	/**
 	 * Opens the port for communications.
@@ -131,6 +133,13 @@ public class DataTransporter implements SerialPortEventListener
 	public void open (int speed, int dataBits, float stopBits, int parity,
 		int flowControl) throws Exception
 	{
+		if ( portID == null ) throw new NullPointerException ("DataTransporter.open: portID == null");
+		if ( ! portID.getName ().startsWith ("COM") )
+		{
+			File portFile = new File (portID.getName ());
+			if ( ! portFile.exists () ) throw new IOException ("DataTransporter.open: ! portFile.exists: "
+					+ portID.getName ());
+		}
 		s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
 		inputStream  = s.getInputStream  ();
 		outputStream = s.getOutputStream ();
@@ -161,7 +170,7 @@ public class DataTransporter implements SerialPortEventListener
 		s.setSerialPortParams (speed, dBits, sBits, par);
 		s.setFlowControlMode (flow);
 
-		s.addEventListener (this);
+		s.addEventListener (spl);
 		s.notifyOnDataAvailable (true);
 	}
 
@@ -173,6 +182,7 @@ public class DataTransporter implements SerialPortEventListener
 	public byte[] recv (Object[] extraTerminators)
 	{
 		byte[] res = new byte[0];
+		if ( inputStream == null ) return res;
 		while (true)
 		{
 			try
@@ -270,7 +280,7 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public void send (byte[] b) throws IOException
 	{
-		if ( b == null ) return;
+		if ( b == null || outputStream == null ) return;
 		outputStream.write (b);
 		outputStream.flush ();
 	}
@@ -280,7 +290,7 @@ public class DataTransporter implements SerialPortEventListener
 	 */
 	public void close ()
 	{
-		s.close ();
+		if ( s != null ) s.close ();
 	}
 
 	/**
@@ -683,10 +693,21 @@ public class DataTransporter implements SerialPortEventListener
 				fos.write (recvdB, findBytes (recvdB, VCRD),
 					findBytes (recvdB, FINISH) - findBytes (recvdB, VCRD) );
 			}
+			else if ( findBytes (recvdB, WBMP) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, WBMP) + 4,
+					findBytes (recvdB, FINISH) - (findBytes (recvdB, WBMP)+4) );
+			}
+			else if ( findBytes (recvdB, MNG) >= 0 )
+			{
+				fos.write (recvdB, findBytes (recvdB, MNG),
+					findBytes (recvdB, FINISH) - findBytes (recvdB, MNG) );
+			}
 			else if ( findBytes (recvdB, START) >= 0 )
 			{
 				fos.write (recvdB, findBytes (recvdB, START) + START.length,
-					findBytes (recvdB, FINISH) - findBytes (recvdB, START) );
+					findBytes (recvdB, FINISH) -
+					(findBytes (recvdB, START) + START.length) );
 			}
 			fos.close ();
 			return 0;
@@ -822,28 +843,42 @@ public class DataTransporter implements SerialPortEventListener
 		}
 	}
 
+	// 'public' because used in MainWindow
 	/**
 	 * Reopens the transmission port used by thie DataTransporter,
 	 * saving its parameters.
 	 */
 	public void reopen ()
 	{
-		int bps = s.getBaudRate ();
-		int dbits = s.getDataBits ();
-		int parity = s.getParity ();
-		int flow = s.getFlowControlMode ();
-		int sbits = s.getStopBits ();
+		if ( portID == null ) return;
+		int bps = 115200;
+		int dbits = SerialPort.DATABITS_8;
+		int parity = SerialPort.PARITY_NONE;
+		int flow = SerialPort.FLOWCONTROL_NONE;
+		int sbits = SerialPort.STOPBITS_1;
+		if ( s != null )
+		{
+			s.removeEventListener ();
+			bps = s.getBaudRate ();
+			dbits = s.getDataBits ();
+			parity = s.getParity ();
+			flow = s.getFlowControlMode ();
+			sbits = s.getStopBits ();
+		}
 		try
 		{
-			s.close ();
+			close ();
 			s = (SerialPort) portID.open ("JYMAG", 2000);	// NOI18N
-			inputStream  = s.getInputStream  ();
-			outputStream = s.getOutputStream ();
-			s.setSerialPortParams ( bps, dbits, sbits, parity );
-			s.setFlowControlMode ( flow );
+			if ( s != null )
+			{
+				inputStream  = s.getInputStream  ();
+				outputStream = s.getOutputStream ();
+				s.setSerialPortParams ( bps, dbits, sbits, parity );
+				s.setFlowControlMode ( flow );
 
-			s.addEventListener (this);
-			s.notifyOnDataAvailable (true);
+				s.addEventListener (spl);
+				s.notifyOnDataAvailable (true);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -896,21 +931,24 @@ public class DataTransporter implements SerialPortEventListener
 		return ret;
 	}
 
-	/**
-	 * Used to receive events for the port.
-	 * @param event A received port event.
-	 */
-	public void serialEvent (SerialPortEvent event)
+	private class SPL implements SerialPortEventListener
 	{
-		if ( event == null ) return;
-		switch (event.getEventType ())
+		/**
+		 * Used to receive events for the port.
+		 * @param event A received port event.
+		 */
+		public void serialEvent (SerialPortEvent event)
 		{
-			case SerialPortEvent.DATA_AVAILABLE:
-				synchronized (inputStream)
-				{
-					inputStream.notifyAll ();
-				}
-				break;
+			if ( event == null ) return;
+			switch (event.getEventType ())
+			{
+				case SerialPortEvent.DATA_AVAILABLE:
+					synchronized (inputStream)
+					{
+						inputStream.notifyAll ();
+					}
+					break;
+			}
 		}
 	}
 }
