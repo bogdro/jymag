@@ -116,13 +116,13 @@
 	  and deleted the method.
 	* MainWindow.java (setProgressCurrentValue, getProgressCurrentValue,
 	  setProgressMinimumValue, setProgressMaximumValue): New methods for
-	  manipulation the progress bar to avoid direct access.
+	  manipulating the progress bar to avoid direct access.
 	* JYMAGTab.java, AddrBookPanel.java, EventsPanel.java, JavasPanel.java,
 	  MoviePanel.java, PhotoPanel.java, RingtonePanel.java, TasksPanel.java
 	  (setProgressBar): Removed unused method and the progress bar fields.
 	* AddrBookPanel.java, EventsPanel.java, JavasPanel.java,
-	  MoviePanel.java, PhotoPanel.java, RingtonePanel.java, TasksPanel.java
-	  (setProgressBar): Removed unused fields and imports after cleanup.
+	  MoviePanel.java, PhotoPanel.java, RingtonePanel.java,
+	  TasksPanel.java: Removed unused fields and imports after cleanup.
 	* AddrBookPanel.java, AlarmPanel.java, EventsPanel.java,
 	  JavasPanel.java, MoviePanel.java, PhotoPanel.java, RingtonePanel.java,
 	  SMSPanel.java, TasksPanel.java, MainWindow.java:
@@ -135,7 +135,7 @@
 	* RawCommunicator.java (sendFileButActionPerformed): Close the stream on
 	  exception.
 	* src/BogDroSoft/jymag/rsrc/*.{svg,png}, setup/jymag.ico: new icons,
-	  self-made using Inkscape (https://inkscape.org/).
+	  self-made using Inkscape(tm) (https://inkscape.org/).
 	* MainWindow.properties: removed the references to rxtx.org
 	* Makefile: Changed the URL passed to osslsigncode to the new URL
 	  https://jymag.sourceforge.io/. Added more timestamp servers and
@@ -162,7 +162,7 @@
 	  Start Menu for all users in compatibility mode). Enabled Unicode
 	  mode in the modern installer. Updated the NSIS link.
 	* setup/launch4j-jymag*.xml: Upgraded to Launch4j version 3.14.
-	* run*.sh: Added the final end-of-line
+	* run*.sh: Added the final end-of-line.
 	* manual/*/readme.html: Added information about IMYplay. Fixed the
 	  link to the license file. Updated the link to Java SE downloads.
 	  Added the links to Apache NetBeans. Corrected the path to the JAR
