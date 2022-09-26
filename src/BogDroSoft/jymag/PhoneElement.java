@@ -1,7 +1,7 @@
 /*
  * PhoneElement.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@ public class PhoneElement
 	 * Returns this element's ID number in the phone.
 	 * @return This element's ID number in the phone.
 	 */
-	public String getID ()
+	public synchronized String getID ()
 	{
 		return new String (id);
 	}
@@ -63,7 +63,7 @@ public class PhoneElement
 	 * Returns the file extension suitable for this element.
 	 * @return A file extension suitable for this element.
 	 */
-	public String getExt ()
+	public synchronized String getExt ()
 	{
 		     if ( type.equals ("FGIF") ) return "gif";		// NOI18N
 		else if ( type.equals ("JPEG") ) return "jpg";		// NOI18N
@@ -91,7 +91,7 @@ public class PhoneElement
 	 * replaced with underscores.
 	 * @return The file name for this element.
 	 */
-	public String getFilename ()
+	public synchronized String getFilename ()
 	{
 		byte[] quot = new byte[] { '"' };	// NOI18N
 		return filename

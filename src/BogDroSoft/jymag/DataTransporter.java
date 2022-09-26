@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class is used to send and receive data.
@@ -56,7 +57,14 @@ public class DataTransporter
 	/** DT_TIMEOUT betwenn up/download stages, in milliseconds. */
 	private static final int DT_TIMEOUT = 250;
 
-	private SPL spl = new SPL ();
+	private static final Pattern verPattern
+		= Pattern.compile ("\\s*\\+KPSV:\\s*(.+)");	// NOI18N
+	private static final Pattern PINPattern
+		= Pattern.compile ("\\s*\\+CPIN:\\s*(.+)");	// NOI18N
+	private static final Pattern alnumPattern
+		= Pattern.compile ("\\s*\\+CALA:\\s*\\((.+)\\),\\((.+)\\)");	// NOI18N
+
+	private final SPL spl = new SPL ();
 
 	// file headers:
 	// JPG/EXIF/MJPG
@@ -822,7 +830,8 @@ public class DataTransporter
 				int pos = findBytes (recvdB, JPG);
 				int pos2 = findBytes (Arrays.copyOfRange (recvdB, pos+1, recvdB.length),
 					JPG);
-				if ( pos2 >= 0 && recvdB[pos+1+pos2+2] == 0xff )
+				if ( pos2 >= 0 && (recvdB[pos+1+pos2+2] == 0xff ||
+					recvdB[pos+1+pos2+2] == -1) )
 				{
 					fos.write (recvdB, pos+1+pos2,
 						findBytes (recvdB, FINISH) - pos2-pos-1 );
@@ -1111,7 +1120,7 @@ public class DataTransporter
 				{
 					Thread.sleep (DT_TIMEOUT);
 				} catch (Exception ex) {}
-				// send file retrieve command
+				// send file delete command
 				send (("AT+KPSD=\"" + el.getID () + "\"\r").getBytes ());	// NOI18N
 
 				recvdB = recv (null);
@@ -1210,6 +1219,756 @@ public class DataTransporter
 	}
 
 	/**
+	 * Gets the firmware version from the phone.
+	 * @return the firmware version or null in case of error.
+	 */
+	public String getFirmwareVersion ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("AT+KPSV\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone firmware");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while (rcvd.trim ().equals ("")	// NOI18N
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "+KPSV: 2.04"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						Matcher m = verPattern.matcher (lines[i]);
+						if ( m.matches () )
+						{
+							return m.group (1);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone firmware");	// NOI18N
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the phone type.
+	 * @return the phone type or null in case of error.
+	 */
+	public String getDeviceType ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("ATIMEI\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone type");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("ATIMEI"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "myX5-2 GPRS"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						if ( lines[i].trim ().length () > 0
+							&& ! lines[i].contains ("ATIMEI") )	// NOI18N
+						{
+							return lines[i].trim ();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone type");	// NOI18N
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the additional phone type data.
+	 * @return the additional phone type or null in case of error.
+	 */
+	public String getExtraDeviceType ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("AT+CGMR\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "extra phone type");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CGMR"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "+CGMR: SAGEM KB3,ME"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						lines[i] = lines[i].replaceAll ("\\+CGMR: ", "");	// NOI18N
+						if ( lines[i].trim ().length () > 0 )
+						{
+							return lines[i].trim ();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "extra phone type");	// NOI18N
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the IMEI number from the phone.
+	 * @return the IMEI number or null in case of error.
+	 */
+	public String getIMEI ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("AT+CGSN\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone IMEI");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CGSN"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "AT+CGSN
+			// 353056005020024
+			// OK"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						if ( lines[i].trim ().length () > 0
+							&& ! lines[i].contains ("CGSN") )	// NOI18N
+						{
+							return lines[i].trim ();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone IMEI");	// NOI18N
+			}
+		}
+		// get subscriber phone numbers:
+		return null;
+	}
+
+	/**
+	 * Gets the subscriber phone numbers from the phone.
+	 * @return the subscriber phone numbers (separated with ", ") or null in case of error / no numbers.
+	 */
+	public String getSubscriberNumbers ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("AT+CNUM\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone subscriber numbers");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CNUM"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "+CNUM: "","+48788118746",145"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					String type = null;
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						lines[i] = lines[i].replaceAll ("\\+CNUM: ", "");	// NOI18N
+						if ( lines[i].trim ().length () > 0 )
+						{
+							String[] elems = lines[i].trim ().split (",");
+							String newElem = "";
+							if ( elems != null )
+							{
+								if ( elems.length > 1 )
+								{
+									newElem = elems[1].trim().replaceAll ("\"", "");
+								}
+							}
+							if ( newElem.length () > 0 )
+							{
+								if ( type == null ) type = "";	// NOI18N
+								if ( type.length () != 0 ) type += ", ";	// NOI18N
+								type += newElem;
+							}
+						}
+					}
+					return type;
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "phone subscriber numbers");	// NOI18N
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the given capabilities from the phone.
+	 * @param type The type of the capabilities to get.
+	 * @return the capabilities or null in case of error.
+	 */
+	public String getCapabilities (String type)
+	{
+		if ( type == null ) return null;
+		String rcvd = "";	// NOI18N
+		String cmd = "AT+KPSCAP=\"" + type + "\"";		// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( (cmd+"\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "Capability: send");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CNUM"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			try
+			{
+				if ( rcvd.trim ().length () > 0 )
+				{
+					return rcvd.substring (
+						rcvd.indexOf ("CONNECT")+7,	// NOI18N
+						rcvd.indexOf ("NO CARRIER")	// NOI18N
+						);
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "Capability: recv");	// NOI18N
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Switches off the phone.
+	 */
+	public void poweroff ()
+	{
+		try
+		{
+			send ( ("AT*PSCPOF\r").getBytes ());	// NOI18N
+		}
+		catch (Exception ex)
+		{
+			Utils.handleException (ex, "power off");	// NOI18N
+		}
+	}
+
+	/**
+	 * Tells which PIN the phone is waiting for.
+	 * @return the PIN the phone is waiting for (if any) or null in case of error.
+	 */
+	public DataTransporter.PIN_STATUS getPINStatus ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("AT+CPIN?\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "PIN status");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return null;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CNUM"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "+CNUM: "","+48788118746",145"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						Matcher m = verPattern.matcher (lines[i]);
+						if ( m.matches () )
+						{
+							return DataTransporter.PIN_STATUS.
+								looseValueOf (m.group (1));
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "PIN status");	// NOI18N
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Sends the given PIN and new PIN to the phone.
+	 * @param PIN The PIN to send.
+	 * @param newPIN The new PIN to send (in case when PIN is a PUK or PUK2 code).
+	 * @return 0 in case of no error.
+	 */
+	public int sendPIN (String PIN, String newPIN)
+	{
+		DataTransporter.PIN_STATUS status = getPINStatus ();
+		if ( status == null ) return -1;
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				if ( status.equals (DataTransporter.PIN_STATUS.SIM_PUK)
+					|| status.equals (DataTransporter.PIN_STATUS.SIM_PUK2) )
+				{
+					send ( ("AT+CPIN=" + PIN + "," + newPIN + "\r")
+						.getBytes ());	// NOI18N
+				}
+				else
+				{
+					send ( ("AT+CPIN=" + PIN + "\r").getBytes ());	// NOI18N
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "PIN send");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return -2;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CNUM"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// expecting: "OK"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						if ( lines[i].toUpperCase (Locale.ENGLISH)
+							.contains ("OK") ) return 0;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "PIN ack recv");	// NOI18N
+			}
+		}
+		return -3;
+	}
+
+	/**
+	 * Sends the given PIN and new PIN to the phone.
+	 * @param PIN The PIN to send.
+	 * @param newPIN The new PIN to send (in case when PIN is a PUK or PUK2 code).
+	 * @return 0 in case of no error.
+	 */
+	public int sendPIN (int PIN, int newPIN)
+	{
+		return sendPIN (String.valueOf (PIN), String.valueOf (newPIN));
+	}
+
+	/**
+	 * Tells how many alarms are supported by the phone.
+	 * @return the number of alarms supported or a negative number in case of no error.
+	 */
+	public int getNumberOfAlarms ()
+	{
+		String rcvd = "";	// NOI18N
+		int trials = 0;
+		do
+		{
+			try
+			{
+				send ( ("AT+CALA=?\r").getBytes ());	// NOI18N
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "alarm number - send");	// NOI18N
+				trials++;
+				if ( trials >= DataTransporter.MAX_TRIALS ) return -1;
+				continue;
+			}
+			byte[] recvdB = recv (null);	// NOI18N
+			rcvd = new String (recvdB);
+
+			if ( rcvd.trim ().equals ("") )	// NOI18N
+			{
+				reopen ();
+				trials++;
+			}
+		} while ( //(
+				rcvd.trim ().equals ("")	// NOI18N
+				//|| rcvd.contains ("CNUM"))
+			&& trials <= DataTransporter.MAX_TRIALS);
+		if ( trials <= DataTransporter.MAX_TRIALS )
+		{
+			// sample: "+CALA: (1),(sound)
+			//	OK"
+			try
+			{
+				// have to split to make it work
+				String[] lines = rcvd.split ("\r");	// NOI18N
+				if ( lines != null )
+				{
+					for ( int i=0; i < lines.length; i++ )
+					{
+						if ( lines[i] == null ) continue;
+						Matcher m = alnumPattern.matcher (lines[i]);
+						if ( m.matches () )
+						{
+							return Integer.parseInt (m.group (1));
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utils.handleException (ex, "alarm number recv");	// NOI18N
+			}
+		}
+		return -2;
+	}
+
+	/**
+	 * Deletes the specified alarm from the phone.
+	 * @param number The number of the alarm to delete.
+	 * @return 0 in case of success.
+	 */
+	public int deleteAlarm (int number)
+	{
+		try
+		{
+			String rcvd;
+			byte[] recvdB;
+			int trials = 0;
+			do
+			{
+				try
+				{
+					Thread.sleep (DT_TIMEOUT);
+				} catch (Exception ex) {}
+				// send alarm delete command
+				send (("AT+CALD=" + String.valueOf (number) + "\r").getBytes ());	// NOI18N
+
+				recvdB = recv (null);
+				rcvd = new String (recvdB);
+
+				if ( rcvd.trim ().equals ("") )	// NOI18N
+				{
+					reopen ();
+					trials++;
+				}
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || trials >= MAX_TRIALS )		// NOI18N
+				return -2;
+			if ( rcvd.contains ("OK") ) return 0;		// NOI18N
+			return -3;
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.deleteAlarm:" + number );	// NOI18N
+			return -1;
+		}
+	}
+
+	/**
+	 * Adds the specified alarm to the phone.
+	 * @param al The alarm to add.
+	 * @return 0 in case of success.
+	 */
+	public int addAlarm (PhoneAlarm al)
+	{
+		if ( al == null ) return -1;
+		try
+		{
+			String rcvd;
+			byte[] recvdB;
+			int trials = 0;
+			do
+			{
+				try
+				{
+					Thread.sleep (DT_TIMEOUT);
+				} catch (Exception ex) {}
+				// send alarm delete command
+				String alString = al.getAlarmString ();
+				if ( getNumberOfAlarms () == 1 )
+				{
+					// when the supported number of alarms, don't send the days
+					int num = al.getNumber ();
+					boolean oneTime = al.isOneTimeAlarm ();
+					al.setNumber (-1);
+					al.setOneTimeAlarm (true);
+					alString = al.getAlarmString ();
+					al.setNumber (num);
+					al.setOneTimeAlarm (oneTime);
+				}
+				send (("AT+CALA=" + alString + "\r").getBytes ());	// NOI18N
+
+				recvdB = recv (null);
+				rcvd = new String (recvdB);
+
+				if ( rcvd.trim ().equals ("") )	// NOI18N
+				{
+					reopen ();
+					trials++;
+				}
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || trials >= MAX_TRIALS )		// NOI18N
+				return -2;
+			if ( rcvd.contains ("OK") ) return 0;		// NOI18N
+			return -3;
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.addAlarm:" + al.getAlarmString () );	// NOI18N
+			return -1;
+		}
+	}
+
+	/**
+	 * Gets the list of current alarms from the phone.
+	 * @return the list of current alarms from the phone or null in case of error.
+	 */
+	public Vector<PhoneAlarm> getAlarms ()
+	{
+		Vector<PhoneAlarm> res = new Vector<PhoneAlarm> (1);
+		if ( res == null ) return null;
+		try
+		{
+			byte[] rcvdB;
+			String rcvd = "";	// NOI18N
+			int trials = 0;
+			do
+			{
+				try
+				{
+					Thread.sleep (DT_TIMEOUT);
+				} catch (Exception ex) {}
+				// send "get alarms" command
+				send (("AT+CALA?\r").getBytes ());	// NOI18N
+				/*
+				* Receiving format:
+				* +CALA: "08/08/02,06:30:00"
+				* +CALA: "08/08/02,06:30:00"
+				* OK
+				*/
+				rcvdB = recv (null);
+				rcvd += new String(rcvdB);
+
+				if ( rcvd.trim ().equals ("") )	// NOI18N
+				{
+					reopen ();
+					trials++;
+				}
+			} while (rcvd.trim ().equals ("") && trials < MAX_TRIALS);	// NOI18N
+			if ( rcvd.trim ().equals ("") || ! rcvd.contains ("OK") ) return null;	// NOI18N
+
+			// split into lines
+			String[] lines = rcvd.split ("[\\r\\n]{1,2}");	// NOI18N
+			for ( int i=0; i < lines.length; i++ )
+			{
+				PhoneAlarm pa = PhoneAlarm.parseReponse (lines[i]);
+				if ( pa != null ) res.add (pa);
+			}
+		}
+		catch ( Exception ex )
+		{
+			Utils.handleException (ex, "DataTransporter.getAlarms");	// NOI18N
+			return null;
+		}
+		return res;
+	}
+
+	/**
 	 * This function joins 2 arrays of bytes together.
 	 * @param orig The first array.
 	 * @param toAdd The array to add.
@@ -1248,6 +2007,41 @@ public class DataTransporter
 					}
 					break;
 			}
+		}
+	}
+
+	/**
+	 * The Enumeration of the states for PIN entering.
+	 */
+	public static enum PIN_STATUS
+	{
+		READY,
+		SIM_PIN,
+		SIM_PUK,
+		SIM_PIN2,
+		SIM_PUK2,
+		PH_NET_PIN;
+
+		/**
+		 * Gets the PIN_STATUS that's name looks like the given String
+		 * (except maybe for whitespace, dashes etc.).
+		 */
+		public static PIN_STATUS looseValueOf (String name)
+		{
+			if ( name == null ) return null;
+			PIN_STATUS[] values = values ();
+			if ( values != null )
+			{
+				for ( int i = 0; i < values.length; i++ )
+				{
+					if ( values[i].toString ().replaceAll ("\\s", "_")
+						.replaceAll ("-", "_").trim ().equals (name.trim ()) )
+					{
+						return values[i];
+					}
+				}
+			}
+			return null;
 		}
 	}
 }

@@ -10,6 +10,9 @@ License: GPLv3+
 Requirements:
 - RxTx Java Transmission package from www.rxtx.org
 - JRE, the Java Runtime Environment >= (1.)6.0
+- permissions to use the serial ports
+- port locking permissions may be required by RxTx. Adding the user running
+  JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
 
 Using NetBeans: open the JYMAG folder as a NetBeans Project
  and click "Run" (or press F6).
@@ -32,6 +35,9 @@ Read the "INSTALL" file.
 Requirements:
 - RxTx Java Transmission package from www.rxtx.org
 - JRE, the Java Runtime Environment >= (1.)6.0
+- permissions to use the serial ports
+- port locking permissions may be required by RxTx. Adding the user running
+  JYMAG to the "uucp" and "lock" user groups should be enough (on Un*x)
 
 Using NetBeans: open the JYMAG folder as a NetBeans Project,
  right-click the project's root element in the project's tree on the
@@ -100,20 +106,21 @@ The following command-line (case-insensitive) options are supported:
 	    --databits <5,6,7,8>	- sets the number of data bits
 	    --delete-after-download     - delete the downloaded elements if
 					  downloaded succesfully
+	    --delete-alarm <N>          - delete the alarm number N
 	    --download-all-animations	- downloads all animations/videos
-					  from the phone and exits the program
+					  from the phone and exits
 	    --download-all-events	- downloads all events from the phone
-					  and exits the program
+					  and exits
 	    --download-all-photos	- downloads all photos from the phone
-					  and exits the program
+					  and exits
 	    --download-all-ringtones	- downloads all ringtones from the
-	    				  phone and exits the program
+	    				  phone and exits
 	    --download-all-todo		- downloads all to-do tasks from the
-					  phone and exits the program
+					  phone and exits
 	    --download-all-vcards	- downloads all addressbook entries
-					  from the phone and exits the program
+					  from the phone and exits
 	    --download-all		- combines all "download" options
-					  and exits the program
+					  and exits
 	    --download-dir <dir>	- sets the default directory
 	    --flow <none,soft,hard,soft+hard>	- sets the flow control mode
 	    --help			- display help
@@ -132,14 +139,18 @@ The following command-line (case-insensitive) options are supported:
 		1500000, 2000000, 2500000, 3000000, 3500000, 4000000>
 					- sets the port speed
 	    --stopbits <1,1.5,2>	- sets the number of stop bits
+	    --update-alarm "DD/MM/YY,HH:MM:SS",N,"days"	- updates the given
+					  alarm in the phone. N is the alarm
+					  number. Days are comma-separated
+					  numbers (1-Monday) or 0 for all days
 	    --upload <filename>		- uploads the given file to the phone
-					  and exits the program
+					  and exits
 	    --version, -v		- display program version
 
 ========================= Currently supported operations:
 
 1) Getting lists of: pictures, ringtones, addressbook entries,
-   to-do tasks, events and animations/videos
+   to-do tasks, events, animations/videos and alarms
 2) Downloading:
    a) pictures: JPG (both Sagem and non-Sagem), GIF, BMP, PNG, WBMP,
       unverified: TIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP, WMF, CGM, PMB
@@ -148,7 +159,7 @@ The following command-line (case-insensitive) options are supported:
    d) to-do tasks
    e) events (reminders, ...)
    f) animation/videos: MNG, GIF, unverified: WMV, MP4, MPEG
-3) Uploading:
+3) Uploading/updating:
    a) pictures: JPG, GIF, BMP, PNG, WBMP, unverified: EMS_GR, TIFF, PICT, AI,
       EPS, PS
    b) ringtones: MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?), AMR,
@@ -159,8 +170,9 @@ The following command-line (case-insensitive) options are supported:
    f) animation/videos: MNG, GIF, unverified: EMS_AN, MJPG, AVI, MP4, MPEG,
       3GP, 3GP2, SG1, SG2, SSA
    g) Java files: unverified: JAR, JAD, JAM
+   h) alarms
 4) Deleting pictures, ringtones, addressbook entries,
-   to-do tasks, events and animations/videos
+   to-do tasks, events, animations/videos and alarms
 
 ========================= Converting ringtones
 

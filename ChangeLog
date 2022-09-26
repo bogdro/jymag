@@ -1,3 +1,27 @@
+2010-08-01	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.9:
+	  Each window is now in a ScrollPane, so if the contents is too big
+	  to fit, scroll bars are shown. Each window now has a font size
+	  spinner to allow easy changing the font size for the user. Run
+	  jlint on the code and fixed some problems.
+	* MainWindow.java (MainWindow, loadConfButActionPerformed): verifying
+	  window size and position for the window to be visible.
+	* MainWindow.java (downloadButActionPerformed): Better exception
+	  messages on failed transfers.
+	* ConfigFile.java: reading and saving the font size.
+	* DataTransporter.java: added methods for powering off the phone,
+	  telling which PIN number is the phone waiting for (if any) and for
+	  sending that PIN number. These methods are unverified. Moved
+	  transport-realted code from MainWindow and CapabilityWindow to this
+	  class. Added methods for getting the number of supported alarms,
+	  getting the list of currently-enabled alarms, adding new alarms and
+	  deleting alarms.
+	* PhoneAlarm.java: a new class represning alarm clocks/times.
+	* MainWindow.java: support for getting list of, updating and deleting
+	  phone alarms.
+	* Starter.java: fixed the startup error message displaying.
+
 2009-11-08	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 0.8:

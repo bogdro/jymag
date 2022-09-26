@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -39,6 +39,8 @@ import java.util.regex.Pattern;
 public class ConfigFile
 {
 	private File cfgFile;
+	private String newLine;
+
 	// communication parameters:
 	private String port;
 	private int speed;
@@ -52,18 +54,34 @@ public class ConfigFile
 	private int width;
 	private int height;
 	private boolean isMax;
+	private int fontSize;
+
 	// patterns for matching:
-	private static final Pattern portPat = Pattern.compile ("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern speedPat = Pattern.compile ("speed\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern dBitsPat = Pattern.compile ("databits\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
-	private static final Pattern parityPat = Pattern.compile ("parity\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern sBitsPat = Pattern.compile ("stopbits\\s*=\\s*([\\d\\.]+)", Pattern.CASE_INSENSITIVE);	// NOI18N
-	private static final Pattern flowCtlPat = Pattern.compile ("flowcontrol\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);	// NOI18N
-	private static final Pattern xPat = Pattern.compile ("x\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
-	private static final Pattern yPat = Pattern.compile ("y\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
-	private static final Pattern widthPat = Pattern.compile ("width\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern heightPat = Pattern.compile ("height\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
-	private static final Pattern isMaxPat = Pattern.compile ("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern portPat = Pattern.compile
+			("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern speedPat = Pattern.compile
+			("speed\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern dBitsPat = Pattern.compile
+			("databits\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
+	private static final Pattern parityPat = Pattern.compile
+			("parity\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern sBitsPat = Pattern.compile
+			("stopbits\\s*=\\s*([\\d\\.]+)", Pattern.CASE_INSENSITIVE);	// NOI18N
+	private static final Pattern flowCtlPat = Pattern.compile
+			("flowcontrol\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);	// NOI18N
+	private static final Pattern xPat = Pattern.compile
+			("x\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
+	private static final Pattern yPat = Pattern.compile
+			("y\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);					// NOI18N
+	private static final Pattern widthPat = Pattern.compile
+			("width\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern heightPat = Pattern.compile
+			("height\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern isMaxPat = Pattern.compile
+			("ismax\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);			// NOI18N
+	private static final Pattern fontSizePat = Pattern.compile
+			("font_size\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);				// NOI18N
+
 	private Matcher portM;
 	private Matcher speedM;
 	private Matcher dBitsM;
@@ -75,6 +93,7 @@ public class ConfigFile
 	private Matcher widthM;
 	private Matcher heightM;
 	private Matcher isMaxM;
+	private Matcher fontSizeM;
 
 	/**
 	 * Creates a new instance of ConfigFile.
@@ -84,6 +103,20 @@ public class ConfigFile
 	{
 		if ( f == null ) throw new NullPointerException ("ConfigFile:f==null");	// NOI18N
 		cfgFile = f;
+		newLine = null;
+		try
+		{
+			newLine = System.getProperty ("line.separator"); // NOI18N
+		}
+		catch (Exception ex) {}
+		if ( newLine == null )
+		{
+			newLine = "\n";	// NOI18N
+		}
+		else if ( newLine.length () == 0 )
+		{
+			newLine = "\n";	// NOI18N
+		}
 	}
 
 	/**
@@ -104,6 +137,8 @@ public class ConfigFile
 		width = 800;
 		height = 600;
 		isMax = true;
+		fontSize = 12;
+
 		BufferedReader br = new BufferedReader (new FileReader (cfgFile));
 		String line;
 		do
@@ -131,6 +166,8 @@ public class ConfigFile
 			widthM = widthPat.matcher (line);
 			heightM = heightPat.matcher (line);
 			isMaxM = isMaxPat.matcher (line);
+			fontSizeM = fontSizePat.matcher (line);
+
 			if ( line.matches ("^#.*") ) continue;	// NOI18N
 			else if ( portM.matches () )
 			{
@@ -253,6 +290,17 @@ public class ConfigFile
 					Utils.handleException (ex, "ConfigFile.read.parseInt (maximized)");	// NOI18N
 				}
 			}
+			else if ( fontSizeM.matches () )
+			{
+				try
+				{
+					fontSize = Integer.parseInt (fontSizeM.group (1));
+				}
+				catch (Exception ex)
+				{
+					Utils.handleException (ex, "ConfigFile.read.parseInt (font_size)");	// NOI18N
+				}
+			}
 		} while (line != null);
 		br.close ();
 
@@ -266,6 +314,7 @@ public class ConfigFile
 		if ( y < 0 ) y = 0;
 		if ( width < 0 ) width = 0;
 		if ( height < 0 ) height = 0;
+		if ( fontSize < 0 ) fontSize = 12;
 	}
 
 	/**
@@ -274,20 +323,6 @@ public class ConfigFile
 	 */
 	public void write () throws Exception
 	{
-		String newLine = null;
-		try
-		{
-			newLine = System.getProperty ("line.separator"); // NOI18N
-		}
-		catch (Exception ex) {}
-		if ( newLine == null )
-		{
-			newLine = "\n";	// NOI18N
-		}
-		else if ( newLine.length () == 0 )
-		{
-			newLine = "\n";	// NOI18N
-		}
 		PrintWriter pw = new PrintWriter (cfgFile);
 		pw.println (
 			  "port = " + port + newLine	// NOI18N
@@ -305,6 +340,7 @@ public class ConfigFile
 			+ "width = " + width + newLine	// NOI18N
 			+ "height = " + height + newLine	// NOI18N
 			+ "ismax = " + ((isMax)? 1 : 0) + newLine	// NOI18N
+			+ "font_size = " + fontSize + newLine						// NOI18N
 		);
 		pw.close ();
 	}
@@ -410,6 +446,15 @@ public class ConfigFile
 		isMax = v;
 	}
 
+	/**
+	 * Sets the font size variable.
+	 * @param v the new value.
+	 */
+	public void setFontSizeValue (int v)
+	{
+		fontSize = v;
+	}
+
 	// ================ getters:
 
 
@@ -510,5 +555,14 @@ public class ConfigFile
 	public boolean getIsMax ()
 	{
 		return isMax;
+	}
+
+	/**
+	 * Gets the font size variable.
+	 * @return the variable's value.
+	 */
+	public int getFontSizeValue ()
+	{
+		return fontSize;
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,11 @@ package BogDroSoft.jymag;
 
 import gnu.io.CommPortIdentifier;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -39,15 +44,16 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * This class represents the main window of the JYMAG program.
@@ -60,7 +66,7 @@ public class MainWindow extends javax.swing.JFrame
 	private final KL kl = new KL ();
 
 	/** Current version number as a String. */
-	public static final String verString = "0.8";	// NOI18N
+	public static final String verString = "0.9";	// NOI18N
 	private Vector<PhoneElement> currentRingElements;
 	private Vector<PhoneElement> currentPhotoElements;
 	private Vector<PhoneElement> currentAddrElements;
@@ -68,15 +74,16 @@ public class MainWindow extends javax.swing.JFrame
 	private Vector<PhoneElement> currentEventElements;
 	private Vector<PhoneElement> currentAnimElements;
 	private Vector<PhoneElement> currentJavaElements;
+	private Vector<PhoneAlarm>   currentAlarmElements;
 
 	private String lastSelDir;
 	// synchronization variable:
 	private final Object sync = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
-	private Hashtable<String, String> firmwares;
-	private Hashtable<String, String> phoneTypes;
-	private Hashtable<String, String> phoneIMEIs;
-	private Hashtable<String, String> phoneSubsNums;
+	private volatile Hashtable<String, String> firmwares;
+	private volatile Hashtable<String, String> phoneTypes;
+	private volatile Hashtable<String, String> phoneIMEIs;
+	private volatile Hashtable<String, String> phoneSubsNums;
 	private static Pattern verPattern;
 
 	private static String logFile = "jymag.log";	// NOI18N
@@ -92,14 +99,14 @@ public class MainWindow extends javax.swing.JFrame
 	private JFileChooser cfgFC;
 
 	// ------------ i18n stuff
-	private static String noAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
-	/*private*/ static String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
-	private static String multiAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Multiple_answers");
-	private static String whichString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Which_one");
-	private static String exOverString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("_exists._Overwrite");
-	private static String overwriteStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Overwrite?");
+	private static final String noAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
+	private static final String errString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static final String multiAnsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Multiple_answers");
+	private static final String whichString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Which_one");
+	private static final String exOverString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("_exists._Overwrite");
+	private static final String overwriteStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Overwrite?");
 	/** List of supported operations. */
-	private static String suppOperThank = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_opertations:")+
+	private static final String suppOperThank = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_opertations:")+
 		": \n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_lists")+
 		"\n" +	// NOI18N
@@ -112,7 +119,7 @@ public class MainWindow extends javax.swing.JFrame
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified") +
 		":\n\tTIFF, PICT, EPS, PS, SVG, SVG+GZIP, SVG+ZIP\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___b)_ringtones")+
-		": MIDI, AMR, WAV, "+	// NOI18N
+		": MIDI, AMR, WAV, " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
 		": AIFF, IMY, AAC, MP3\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___c)_addressbook_entries_(vCards)")+
@@ -122,19 +129,19 @@ public class MainWindow extends javax.swing.JFrame
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___e)_events_(reminders,_)")+
 		"\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___f)_animation/videos:")+
-		": MNG, GIF, "+	// NOI18N
+		": MNG, GIF, " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
 		": WMV, MP4, MPEG\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Uploading:")+
 		": \n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___a)_pictures:")+
-		": JPG, GIF, BMP, PNG, WBMP, "+	// NOI18N
+		": JPG, GIF, BMP, PNG, WBMP, " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
 		": EMS_GR, TIFF, PICT, AI, EPS, PS\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___b)_ringtones")+
-		": MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?), AMR, "+ 	// NOI18N
+		": MIDI, WAV (IMA ADPCM, 8000Hz 16bit Mono?), AMR, " + 	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
-		": IMY, ASG1,\n\tASG2, SSA, MP3, MFI, AAC, AWB, SG1, SG2\n"+	// NOI18N
+		": IMY, ASG1,\n\tASG2, SSA, MP3, MFI, AAC, AWB, SG1, SG2\n" +	// NOI18N
 		"\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___c)_addressbook_entries_(vCards)")+
 		"\n" +	// NOI18N
@@ -143,13 +150,15 @@ public class MainWindow extends javax.swing.JFrame
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___e)_events_(reminders,_)")+
 		"\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___f)_animation/videos")+
-		": MNG, GIF, "+	// NOI18N
+		": MNG, GIF, " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
 		": EMS_AN, MJPG, AVI, MP4, MPEG, 3GP, 3GP2\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___g)_Java_files")+
 		": "+          	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("unverified")+
-		": JAR, JAD, JAM\n"+	// NOI18N
+		": JAR, JAD, JAM\n" +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("___h)_alarms") +
+		"\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Deleting")
 		+"\n" +	// NOI18N
 		"\n" +	// NOI18N
@@ -158,33 +167,35 @@ public class MainWindow extends javax.swing.JFrame
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Thanks_to:");
 	//private static String aboutStr = "About";
 	/** A String that says "a Free 'My Pictures and Sounds' replacement." */
-	private static String freeMPASStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Free_My_Pictures_and_Sounds");
+	private static final String freeMPASStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Free_My_Pictures_and_Sounds");
 	/** The "version" word. */
-	private static String verWord = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Version");
-	private static String picsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_pictures");
-	private static String soundsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_sounds");
-	private static String addrString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_addressbook_files");
-	private static String todoString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_to-do_files");
-	private static String eventString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_event_and_task_files");
-	private static String animString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_animation/video_files");
-	private static String javaString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_Java_files");
-	private static String getListStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_list_of_");
-	private static String getFileStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_file");
-	private static String unsuppType = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Unsupported_file_type:");
-	private static String tryPortStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Trying_port_");
-	private static String gotAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Got_answer!");
-	private static String noAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
-	private static String progIntroStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("is_a_program_") +
+	private static final String verWord = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Version");
+	private static final String picsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_pictures");
+	private static final String soundsString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_sounds");
+	private static final String addrString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_addressbook_files");
+	private static final String todoString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_to-do_files");
+	private static final String eventString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_event_and_task_files");
+	private static final String animString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_animation/video_files");
+	private static final String javaString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Supported_Java_files");
+	private static final String getListStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_list_of_");
+	private static final String getFileStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Getting_file");
+	private static final String unsuppType = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Unsupported_file_type:");
+	private static final String tryPortStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Trying_port_");
+	private static final String gotAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Got_answer!");
+	private static final String noAnsStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_answers_received");
+	private static final String progIntroStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("is_a_program_") +
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("rxtx_multimedia_Sagem");
-	private static String rxtxReqStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("need_rxtx");
-	private static String cmdLineStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Command-line_options:")+
+	private static final String rxtxReqStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("need_rxtx");
+	private static final String cmdLineStr = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Command-line_options:")+
 		":" +	// NOI18N
-		"\n--conf <file>\t\t- "+	// NOI18N
+		"\n--conf <file>\t\t- " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("read_configuration_from_<file>") +
-		"\n--databits <5,6,7,8>\t- "+	// NOI18N
+		"\n--databits <5,6,7,8>\t- " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_the_number_of_data_bits")+
-		"\n--delete-after-download\t- "+	// NOI18N
+		"\n--delete-after-download\t- " +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("delete_downloaded")+
+		"\n--delete-alarm <N>\t- " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("delete_alarm") +
 		"\n--download-dir <dir>\t- "+	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_default_download_dir")+
 		"\n--download-all-animations\t- "+	// NOI18N
@@ -230,47 +241,55 @@ public class MainWindow extends javax.swing.JFrame
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("set_stop_bits")+
 		"\n--upload <filename>\t- "+	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("upload_file")+
+		"\n--update-alarm \"DD/MM/YY,HH:MM:SS\",N,\"days\"\t- "+	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("update_alarm")+
+		"\n\t\t\t  " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("N_IS_THE_NUMBER")+
+		"\n\t\t\t  " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("COMMA_SEPARATED_DAYS")+
+		"\n\t\t\t  " +	// NOI18N
+		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("ZERO_MEANS_ALL")+
 		"\n--version, -v\t\t- "+	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("display_version")+
 		"\n" +	// NOI18N
 		"\n" +	// NOI18N
 		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("exit_zero_code");
-	private static String deleteQuestion = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("want_to_delete");
-	private static String questionString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Question");
-	private static String fileNotWriteMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Cant_write_to_file");
+	private static final String deleteQuestion = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("want_to_delete");
+	private static final String questionString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Question");
+	private static final String fileNotWriteMsg = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Cant_write_to_file");
 
 	// error messages for file upload:
-	private static String uploadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_upload_init_failed");
-	private static String uploadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_names_length_failed");
-	private static String uploadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_name_failed");
-	private static String uploadMsg4  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_phone");
-	private static String uploadMsg5  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_not_accepted");
-	private static String uploadMsg6  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Closing_transmission_failed");
-	private static String uploadMsg7  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
-	private static String uploadMsg8  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
-	private static String uploadMsg9  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_JYMAG");
-	private static String uploadMsg10 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Number_of_attempts_exceeded");
-	private static String uploadMsg11 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
+	private static final String uploadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_upload_init_failed");
+	private static final String uploadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_names_length_failed");
+	private static final String uploadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Sending_file_name_failed");
+	private static final String uploadMsg4  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_phone");
+	private static final String uploadMsg5  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("File_not_accepted");
+	private static final String uploadMsg6  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Closing_transmission_failed");
+	private static final String uploadMsg7  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
+	private static final String uploadMsg8  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
+	private static final String uploadMsg9  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Format_not_suported_by_JYMAG");
+	private static final String uploadMsg10 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Number_of_attempts_exceeded");
+	private static final String uploadMsg11 = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
 
-	private static String downloadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
-	private static String downloadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_data");
-	private static String downloadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
+	private static final String downloadMsg1  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Exception_occurred");
+	private static final String downloadMsg2  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("No_data");
+	private static final String downloadMsg3  = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Incorrect_parameter");
 
-	private static String pressScanMsg = "(" + java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("(press_Scan)") + ")";	// NOI18N
+	private static final String pressScanMsg = "(" + java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("(press_Scan)") + ")";	// NOI18N
 
 	// ------------ static variables for command-line
 
 	// read from the command-line:
 	private static String destDirName;
 	private static int dBits = 8;
-	private static float sBits = 1;
-	private static int speed = 115200;
-	private static int flow = 0;
-	private static int parity = 0;
-	private static String portName = null;
-	private static boolean isMax = false;
-	private static int x = 0;
-	private static int y = 0;
+	private static volatile float sBits = 1;
+	private static volatile int speed = 115200;
+	private static volatile int flow = 0;
+	private static volatile int parity = 0;
+	private static volatile String portName = null;
+	private static volatile boolean isMax = false;
+	private static volatile int x = 0;
+	private static volatile int y = 0;
 	private static boolean deleteAfterDownload = false;
 
 	/**
@@ -303,11 +322,13 @@ public class MainWindow extends javax.swing.JFrame
 		initComponents ();
 
 		setTitle (getTitle () + " " + verString);	// NOI18N
+		fontSizeSpin.setValue (fontSizeSpin.getValue ());	// refresh the font in the window
 		firmware.setText (pressScanMsg);
 		phone.setText (pressScanMsg);
 		IMEI.setText (pressScanMsg);
 		subsNum.setText (pressScanMsg);
 		updateStatusLabel (STATUS.READY);
+		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 		while (portList.hasMoreElements ())
@@ -320,7 +341,7 @@ public class MainWindow extends javax.swing.JFrame
 			}
 		}
 		if ( portName != null ) portCombo.setSelectedItem (portName);
-		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
+// 		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
 		if ( Math.abs (sBits-2.0f) < 0.0001 )
 			stopBitsCombo.setSelectedIndex (2);
 		else if ( Math.abs (sBits-1.5f) < 0.0001 )
@@ -348,8 +369,64 @@ public class MainWindow extends javax.swing.JFrame
 		}
 		parityCombo.setSelectedIndex (parity);
 		if ( isMax ) setExtendedState (JFrame.MAXIMIZED_BOTH);
-		else setExtendedState ( getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
+		else setExtendedState (getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
 		setLocation (x, y);
+		if ( (getExtendedState () & JFrame.MAXIMIZED_BOTH) == 0 )
+		{
+			// if not maximized, verify position and size
+			GraphicsConfiguration gc = null;
+			Insets is = null;
+			try
+			{
+				gc = getGraphicsConfiguration ();
+				Toolkit tk = Toolkit.getDefaultToolkit ();
+				if ( tk != null ) is = tk.getScreenInsets (gc);
+			} catch (Exception ex) {}
+			int maxX = 800;
+			int maxY = 600;
+			if ( gc != null )
+			{
+				Rectangle bounds = gc.getBounds ();
+				if ( bounds != null )
+				{
+					if ( is != null )
+					{
+						maxX = bounds.width - is.left - is.right;
+						maxY = bounds.height - is.top - is.bottom;
+					}
+					else
+					{
+						maxX = bounds.width;
+						maxY = bounds.height;
+					}
+				}
+			}
+			if ( getWidth () <= 0 )
+			{
+				setSize (maxX, getHeight ());
+			}
+			if ( getHeight () <= 0 )
+			{
+				setSize (getWidth (), maxY);
+			}
+			if ( getX () + getWidth () < 0
+				|| getX () > maxX )
+			{
+				setLocation (0, getY ());
+			}
+			if ( getY () + getHeight () < 0
+				|| getY () > maxY )
+			{
+				setLocation (getX (), 0);
+			}
+			Dimension size = getSize ();
+			if ( size != null )
+			{
+				size.height += 50;
+				size.width += 50;
+				setSize (size);
+			}
+		}
 		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
 
 		/* Make clicking on the table header select all rows */
@@ -442,6 +519,8 @@ public class MainWindow extends javax.swing.JFrame
 		animTable.addKeyListener (kl);
 		javaPane.addKeyListener (kl);
 		javaTable.addKeyListener (kl);
+		alarmPane.addKeyListener (kl);
+		alarmTable.addKeyListener (kl);
 
 		jScrollPane1.addKeyListener (kl);
 		jScrollPane2.addKeyListener (kl);
@@ -457,6 +536,10 @@ public class MainWindow extends javax.swing.JFrame
 		jScrollPane12.addKeyListener (kl);
 		jScrollPane13.addKeyListener (kl);
 		jScrollPane14.addKeyListener (kl);
+		jScrollPane15.addKeyListener (kl);
+		jScrollPane16.addKeyListener (kl);
+		jScrollPane17.addKeyListener (kl);
+		jPanel1.addKeyListener (kl);
 
 		deleteAddrBut.addKeyListener (kl);
 		deleteEventBut.addKeyListener (kl);
@@ -465,6 +548,7 @@ public class MainWindow extends javax.swing.JFrame
 		deleteTodoBut.addKeyListener (kl);
 		deleteAnimBut.addKeyListener (kl);
 		deleteJavaBut.addKeyListener (kl);
+		deleteAlarmBut.addKeyListener (kl);
 
 		downloadAddrBut.addKeyListener (kl);
 		downloadEventBut.addKeyListener (kl);
@@ -473,6 +557,7 @@ public class MainWindow extends javax.swing.JFrame
 		downloadTodoBut.addKeyListener (kl);
 		downloadAnimBut.addKeyListener (kl);
 		downloadJavaBut.addKeyListener (kl);
+		downloadAlarmBut.addKeyListener (kl);
 
 		getAddrListBut.addKeyListener (kl);
 		getEventListBut.addKeyListener (kl);
@@ -481,6 +566,7 @@ public class MainWindow extends javax.swing.JFrame
 		getTodoListBut.addKeyListener (kl);
 		getAnimListBut.addKeyListener (kl);
 		getJavaListBut.addKeyListener (kl);
+		getAlarmListBut.addKeyListener (kl);
 
 		uploadAddrBut.addKeyListener (kl);
 		uploadEventBut.addKeyListener (kl);
@@ -489,6 +575,9 @@ public class MainWindow extends javax.swing.JFrame
 		uploadTodoBut.addKeyListener (kl);
 		uploadAnimBut.addKeyListener (kl);
 		uploadJavaBut.addKeyListener (kl);
+		uploadAlarmBut.addKeyListener (kl);
+
+		fontSizeSpin.addKeyListener (kl);
 	}
 
 	/**
@@ -497,1148 +586,1298 @@ public class MainWindow extends javax.swing.JFrame
 	 * WARNING: Do NOT modify this code. The content of this method is
 	 * always regenerated by the Form Editor.
 	 */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
+        // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+        private void initComponents() {
+                bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        portCombo = new javax.swing.JComboBox();
-        speedCombo = new javax.swing.JComboBox();
-        dataBitsCombo = new javax.swing.JComboBox();
-        parityCombo = new javax.swing.JComboBox();
-        stopBitsCombo = new javax.swing.JComboBox();
-        scanButton = new javax.swing.JButton();
-        tabPane = new javax.swing.JTabbedPane();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        photoPane = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        photoTable = new javax.swing.JTable();
-        getPhotoListBut = new javax.swing.JButton();
-        downloadPhotoBut = new javax.swing.JButton();
-        uploadPhotoBut = new javax.swing.JButton();
-        deletePhotoBut = new javax.swing.JButton();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        ringPane = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        ringTable = new javax.swing.JTable();
-        getRingListBut = new javax.swing.JButton();
-        downloadRingBut = new javax.swing.JButton();
-        uploadRingBut = new javax.swing.JButton();
-        deleteRingBut = new javax.swing.JButton();
-        jScrollPane9 = new javax.swing.JScrollPane();
-        addrBookPane = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        addrTable = new javax.swing.JTable();
-        getAddrListBut = new javax.swing.JButton();
-        downloadAddrBut = new javax.swing.JButton();
-        uploadAddrBut = new javax.swing.JButton();
-        deleteAddrBut = new javax.swing.JButton();
-        jScrollPane10 = new javax.swing.JScrollPane();
-        todoPane = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        todoTable = new javax.swing.JTable();
-        getTodoListBut = new javax.swing.JButton();
-        downloadTodoBut = new javax.swing.JButton();
-        uploadTodoBut = new javax.swing.JButton();
-        deleteTodoBut = new javax.swing.JButton();
-        jScrollPane11 = new javax.swing.JScrollPane();
-        eventPane = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        eventTable = new javax.swing.JTable();
-        getEventListBut = new javax.swing.JButton();
-        downloadEventBut = new javax.swing.JButton();
-        uploadEventBut = new javax.swing.JButton();
-        deleteEventBut = new javax.swing.JButton();
-        jScrollPane12 = new javax.swing.JScrollPane();
-        animPane = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        animTable = new javax.swing.JTable();
-        getAnimListBut = new javax.swing.JButton();
-        downloadAnimBut = new javax.swing.JButton();
-        uploadAnimBut = new javax.swing.JButton();
-        deleteAnimBut = new javax.swing.JButton();
-        jScrollPane13 = new javax.swing.JScrollPane();
-        javaPane = new javax.swing.JPanel();
-        jScrollPane14 = new javax.swing.JScrollPane();
-        javaTable = new javax.swing.JTable();
-        getJavaListBut = new javax.swing.JButton();
-        downloadJavaBut = new javax.swing.JButton();
-        uploadJavaBut = new javax.swing.JButton();
-        deleteJavaBut = new javax.swing.JButton();
-        portLabel = new javax.swing.JLabel();
-        speedLabel = new javax.swing.JLabel();
-        databitsLabel = new javax.swing.JLabel();
-        parityLabel = new javax.swing.JLabel();
-        stopbitsLabel = new javax.swing.JLabel();
-        flowLabel = new javax.swing.JLabel();
-        aboutBut = new javax.swing.JButton();
-        rawBut = new javax.swing.JButton();
-        bpsLabel = new javax.swing.JLabel();
-        statusLabel = new javax.swing.JLabel();
-        status = new javax.swing.JLabel();
-        firmwareLabel = new javax.swing.JLabel();
-        firmware = new javax.swing.JLabel();
-        progressLabel = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
-        phoneTypeLabel = new javax.swing.JLabel();
-        phone = new javax.swing.JLabel();
-        exitBut = new javax.swing.JButton();
-        getCapBut = new javax.swing.JButton();
-        loadConfBut = new javax.swing.JButton();
-        saveConfBut = new javax.swing.JButton();
-        flowSoft = new javax.swing.JCheckBox();
-        flowHard = new javax.swing.JCheckBox();
-        IMEILabel = new javax.swing.JLabel();
-        IMEI = new javax.swing.JLabel();
-        subsNumLabel = new javax.swing.JLabel();
-        subsNum = new javax.swing.JLabel();
+                jScrollPane15 = new javax.swing.JScrollPane();
+                jPanel1 = new javax.swing.JPanel();
+                loadConfBut = new javax.swing.JButton();
+                phone = new javax.swing.JLabel();
+                speedCombo = new javax.swing.JComboBox();
+                speedLabel = new javax.swing.JLabel();
+                parityLabel = new javax.swing.JLabel();
+                aboutBut = new javax.swing.JButton();
+                flowSoft = new javax.swing.JCheckBox();
+                progressLabel = new javax.swing.JLabel();
+                rawBut = new javax.swing.JButton();
+                status = new javax.swing.JLabel();
+                firmwareLabel = new javax.swing.JLabel();
+                statusLabel = new javax.swing.JLabel();
+                scanButton = new javax.swing.JButton();
+                flowLabel = new javax.swing.JLabel();
+                databitsLabel = new javax.swing.JLabel();
+                portLabel = new javax.swing.JLabel();
+                progressBar = new javax.swing.JProgressBar();
+                getCapBut = new javax.swing.JButton();
+                bpsLabel = new javax.swing.JLabel();
+                IMEI = new javax.swing.JLabel();
+                exitBut = new javax.swing.JButton();
+                tabPane = new javax.swing.JTabbedPane();
+                jScrollPane7 = new javax.swing.JScrollPane();
+                photoPane = new javax.swing.JPanel();
+                jScrollPane1 = new javax.swing.JScrollPane();
+                photoTable = new javax.swing.JTable();
+                getPhotoListBut = new javax.swing.JButton();
+                downloadPhotoBut = new javax.swing.JButton();
+                uploadPhotoBut = new javax.swing.JButton();
+                deletePhotoBut = new javax.swing.JButton();
+                jScrollPane8 = new javax.swing.JScrollPane();
+                ringPane = new javax.swing.JPanel();
+                jScrollPane2 = new javax.swing.JScrollPane();
+                ringTable = new javax.swing.JTable();
+                getRingListBut = new javax.swing.JButton();
+                downloadRingBut = new javax.swing.JButton();
+                uploadRingBut = new javax.swing.JButton();
+                deleteRingBut = new javax.swing.JButton();
+                jScrollPane9 = new javax.swing.JScrollPane();
+                addrBookPane = new javax.swing.JPanel();
+                jScrollPane3 = new javax.swing.JScrollPane();
+                addrTable = new javax.swing.JTable();
+                getAddrListBut = new javax.swing.JButton();
+                downloadAddrBut = new javax.swing.JButton();
+                uploadAddrBut = new javax.swing.JButton();
+                deleteAddrBut = new javax.swing.JButton();
+                jScrollPane10 = new javax.swing.JScrollPane();
+                todoPane = new javax.swing.JPanel();
+                jScrollPane4 = new javax.swing.JScrollPane();
+                todoTable = new javax.swing.JTable();
+                getTodoListBut = new javax.swing.JButton();
+                downloadTodoBut = new javax.swing.JButton();
+                uploadTodoBut = new javax.swing.JButton();
+                deleteTodoBut = new javax.swing.JButton();
+                jScrollPane11 = new javax.swing.JScrollPane();
+                eventPane = new javax.swing.JPanel();
+                jScrollPane5 = new javax.swing.JScrollPane();
+                eventTable = new javax.swing.JTable();
+                getEventListBut = new javax.swing.JButton();
+                downloadEventBut = new javax.swing.JButton();
+                uploadEventBut = new javax.swing.JButton();
+                deleteEventBut = new javax.swing.JButton();
+                jScrollPane12 = new javax.swing.JScrollPane();
+                animPane = new javax.swing.JPanel();
+                jScrollPane6 = new javax.swing.JScrollPane();
+                animTable = new javax.swing.JTable();
+                getAnimListBut = new javax.swing.JButton();
+                downloadAnimBut = new javax.swing.JButton();
+                uploadAnimBut = new javax.swing.JButton();
+                deleteAnimBut = new javax.swing.JButton();
+                jScrollPane13 = new javax.swing.JScrollPane();
+                javaPane = new javax.swing.JPanel();
+                jScrollPane14 = new javax.swing.JScrollPane();
+                javaTable = new javax.swing.JTable();
+                getJavaListBut = new javax.swing.JButton();
+                downloadJavaBut = new javax.swing.JButton();
+                uploadJavaBut = new javax.swing.JButton();
+                deleteJavaBut = new javax.swing.JButton();
+                jScrollPane16 = new javax.swing.JScrollPane();
+                alarmPane = new javax.swing.JPanel();
+                jScrollPane17 = new javax.swing.JScrollPane();
+                alarmTable = new javax.swing.JTable();
+                getAlarmListBut = new javax.swing.JButton();
+                downloadAlarmBut = new javax.swing.JButton();
+                uploadAlarmBut = new javax.swing.JButton();
+                deleteAlarmBut = new javax.swing.JButton();
+                phoneTypeLabel = new javax.swing.JLabel();
+                flowHard = new javax.swing.JCheckBox();
+                dataBitsCombo = new javax.swing.JComboBox();
+                stopbitsLabel = new javax.swing.JLabel();
+                IMEILabel = new javax.swing.JLabel();
+                saveConfBut = new javax.swing.JButton();
+                portCombo = new javax.swing.JComboBox();
+                subsNumLabel = new javax.swing.JLabel();
+                firmware = new javax.swing.JLabel();
+                stopBitsCombo = new javax.swing.JComboBox();
+                parityCombo = new javax.swing.JComboBox();
+                subsNum = new javax.swing.JLabel();
+                fontSizeSpin = new javax.swing.JSpinner();
+                fontSizeLab = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Your Music and Graphics"); // NOI18N
-        setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag.png"))).getImage ());
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+                setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+                setTitle("Your Music and Graphics"); // NOI18N
+                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag.png"))).getImage ());
+                addWindowListener(new java.awt.event.WindowAdapter() {
+                        public void windowClosing(java.awt.event.WindowEvent evt) {
+                                formWindowClosing(evt);
+                        }
+                });
 
-        portCombo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                portComboItemStateChanged(evt);
-            }
-        });
+                loadConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/loadconf.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                loadConfBut.setText(bundle.getString("Load_configuration")); // NOI18N
+                loadConfBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                loadConfButActionPerformed(evt);
+                        }
+                });
 
-        speedCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000" }));
-        speedCombo.setSelectedIndex(7);
+                phone.setText("-"); // NOI18N
 
-        dataBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8", "7", "6", "5" }));
+                speedCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000" }));
+                speedCombo.setSelectedIndex(7);
 
-        parityCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Even", "Odd", "Space", "Mark" }));
+                speedLabel.setText(bundle.getString("Speed:")); // NOI18N
 
-        stopBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "1.5", "2" }));
+                parityLabel.setText(bundle.getString("Parity:")); // NOI18N
 
-        scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/SCAN5.png"))); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
-        scanButton.setText(bundle.getString("Scan_ports")); // NOI18N
-        scanButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                scanButtonActionPerformed(evt);
-            }
-        });
+                aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
+                aboutBut.setText(bundle.getString("About_JYMAG...")); // NOI18N
+                aboutBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                aboutButActionPerformed(evt);
+                        }
+                });
 
-        tabPane.setPreferredSize(new java.awt.Dimension(800, 600));
+                flowSoft.setText(bundle.getString("Software_(XON/XOFF)")); // NOI18N
 
-        photoPane.setBackground(new java.awt.Color(184, 242, 255));
+                progressLabel.setText(bundle.getString("Progress:")); // NOI18N
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
+                rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/tools1.png"))); // NOI18N
+                rawBut.setText(bundle.getString("Manual_commands")); // NOI18N
+                rawBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                rawButActionPerformed(evt);
+                        }
+                });
 
-        photoTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+                status.setForeground(new java.awt.Color(0, 204, 0));
+                status.setText("READY"); // NOI18N
 
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 66L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
+                firmwareLabel.setText(bundle.getString("Firmware:")); // NOI18N
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
+                statusLabel.setText(bundle.getString("Program_status:")); // NOI18N
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(photoTable);
+                scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/SCAN5.png"))); // NOI18N
+                scanButton.setText(bundle.getString("Scan_ports")); // NOI18N
+                scanButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                scanButtonActionPerformed(evt);
+                        }
+                });
 
-        getPhotoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getPhotoListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getPhotoListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getPhotoListButActionPerformed(evt);
-            }
-        });
+                flowLabel.setText(bundle.getString("Flow_control:")); // NOI18N
 
-        downloadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadPhotoBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
+                databitsLabel.setText(bundle.getString("Data_bits:")); // NOI18N
 
-        uploadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadPhotoBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadPhotoButActionPerformed(evt);
-            }
-        });
+                portLabel.setText(bundle.getString("Port:")); // NOI18N
 
-        deletePhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deletePhotoBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deletePhotoBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
+                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capab.png"))); // NOI18N
+                getCapBut.setText(bundle.getString("Get_capabilities")); // NOI18N
+                getCapBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getCapButActionPerformed(evt);
+                        }
+                });
 
-        javax.swing.GroupLayout photoPaneLayout = new javax.swing.GroupLayout(photoPane);
-        photoPane.setLayout(photoPaneLayout);
-        photoPaneLayout.setHorizontalGroup(
-            photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(photoPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(photoPaneLayout.createSequentialGroup()
-                        .addComponent(getPhotoListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadPhotoBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadPhotoBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deletePhotoBut)))
-                .addContainerGap())
+                bpsLabel.setText("bps"); // NOI18N
+
+                IMEI.setText("-"); // NOI18N
+
+                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+                exitBut.setText(bundle.getString("Exit")); // NOI18N
+                exitBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                exitButActionPerformed(evt);
+                        }
+                });
+
+                tabPane.setPreferredSize(new java.awt.Dimension(800, 600));
+
+                photoPane.setBackground(new java.awt.Color(184, 242, 255));
+
+                jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                photoTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 66L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane1.setViewportView(photoTable);
+
+                getPhotoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getPhotoListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getPhotoListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getPhotoListButActionPerformed(evt);
+                        }
+                });
+
+                downloadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadPhotoBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadPhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadPhotoBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadPhotoBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadPhotoButActionPerformed(evt);
+                        }
+                });
+
+                deletePhotoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deletePhotoBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deletePhotoBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout photoPaneLayout = new javax.swing.GroupLayout(photoPane);
+                photoPane.setLayout(photoPaneLayout);
+                photoPaneLayout.setHorizontalGroup(
+                        photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(photoPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(photoPaneLayout.createSequentialGroup()
+                                                .addComponent(getPhotoListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadPhotoBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadPhotoBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deletePhotoBut)))
+                                .addContainerGap())
+                );
+                photoPaneLayout.setVerticalGroup(
+                        photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getPhotoListBut)
+                                        .addComponent(downloadPhotoBut)
+                                        .addComponent(uploadPhotoBut)
+                                        .addComponent(deletePhotoBut))
+                                .addContainerGap())
+                );
+
+                getPhotoListBut.getAccessibleContext().setAccessibleName("null");
+                downloadPhotoBut.getAccessibleContext().setAccessibleName("null");
+                uploadPhotoBut.getAccessibleContext().setAccessibleName("null");
+                deletePhotoBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane7.setViewportView(photoPane);
+
+                tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pict-1.png")), jScrollPane7); // NOI18N
+
+                ringPane.setBackground(new java.awt.Color(179, 255, 179));
+
+                org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+                bindingGroup.addBinding(binding);
+
+                jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                ringTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 67L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane2.setViewportView(ringTable);
+
+                getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getRingListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getRingListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getRingListButActionPerformed(evt);
+                        }
+                });
+
+                downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadRingBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadRingBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadRingBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadRingBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadRingButActionPerformed(evt);
+                        }
+                });
+
+                deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteRingBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deleteRingBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout ringPaneLayout = new javax.swing.GroupLayout(ringPane);
+                ringPane.setLayout(ringPaneLayout);
+                ringPaneLayout.setHorizontalGroup(
+                        ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(ringPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(ringPaneLayout.createSequentialGroup()
+                                                .addComponent(getRingListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadRingBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadRingBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteRingBut)))
+                                .addContainerGap())
+                );
+                ringPaneLayout.setVerticalGroup(
+                        ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getRingListBut)
+                                        .addComponent(downloadRingBut)
+                                        .addComponent(uploadRingBut)
+                                        .addComponent(deleteRingBut))
+                                .addContainerGap())
+                );
+
+                getRingListBut.getAccessibleContext().setAccessibleName("null");
+                downloadRingBut.getAccessibleContext().setAccessibleName("null");
+                uploadRingBut.getAccessibleContext().setAccessibleName("null");
+                deleteRingBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane8.setViewportView(ringPane);
+
+                tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/ring.png")), jScrollPane8); // NOI18N
+
+                addrBookPane.setBackground(new java.awt.Color(255, 255, 193));
+
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+                bindingGroup.addBinding(binding);
+
+                jScrollPane3.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                addrTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 68L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane3.setViewportView(addrTable);
+
+                getAddrListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getAddrListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getAddrListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getAddrListButActionPerformed(evt);
+                        }
+                });
+
+                downloadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadAddrBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadAddrBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadAddrBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadAddrBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadAddrButActionPerformed(evt);
+                        }
+                });
+
+                deleteAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteAddrBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deleteAddrBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout addrBookPaneLayout = new javax.swing.GroupLayout(addrBookPane);
+                addrBookPane.setLayout(addrBookPaneLayout);
+                addrBookPaneLayout.setHorizontalGroup(
+                        addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(addrBookPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(addrBookPaneLayout.createSequentialGroup()
+                                                .addComponent(getAddrListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadAddrBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadAddrBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteAddrBut)))
+                                .addContainerGap())
+                );
+                addrBookPaneLayout.setVerticalGroup(
+                        addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getAddrListBut)
+                                        .addComponent(downloadAddrBut)
+                                        .addComponent(uploadAddrBut)
+                                        .addComponent(deleteAddrBut))
+                                .addContainerGap())
+                );
+
+                getAddrListBut.getAccessibleContext().setAccessibleName("null");
+                downloadAddrBut.getAccessibleContext().setAccessibleName("null");
+                uploadAddrBut.getAccessibleContext().setAccessibleName("null");
+                deleteAddrBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane9.setViewportView(addrBookPane);
+
+                tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/abook.png")), jScrollPane9); // NOI18N
+
+                todoPane.setBackground(new java.awt.Color(127, 196, 127));
+
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+                bindingGroup.addBinding(binding);
+
+                jScrollPane4.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                todoTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 69L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane4.setViewportView(todoTable);
+
+                getTodoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getTodoListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getTodoListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getTodoListButActionPerformed(evt);
+                        }
+                });
+
+                downloadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadTodoBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadTodoBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadTodoBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadTodoBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadTodoButActionPerformed(evt);
+                        }
+                });
+
+                deleteTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteTodoBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deleteTodoBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout todoPaneLayout = new javax.swing.GroupLayout(todoPane);
+                todoPane.setLayout(todoPaneLayout);
+                todoPaneLayout.setHorizontalGroup(
+                        todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(todoPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(todoPaneLayout.createSequentialGroup()
+                                                .addComponent(getTodoListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadTodoBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadTodoBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteTodoBut)))
+                                .addContainerGap())
+                );
+                todoPaneLayout.setVerticalGroup(
+                        todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getTodoListBut)
+                                        .addComponent(downloadTodoBut)
+                                        .addComponent(uploadTodoBut)
+                                        .addComponent(deleteTodoBut))
+                                .addContainerGap())
+                );
+
+                getTodoListBut.getAccessibleContext().setAccessibleName("null");
+                downloadTodoBut.getAccessibleContext().setAccessibleName("null");
+                uploadTodoBut.getAccessibleContext().setAccessibleName("null");
+                deleteTodoBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane10.setViewportView(todoPane);
+
+                tabPane.addTab(bundle.getString("ToDoTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/todo.png")), jScrollPane10); // NOI18N
+
+                eventPane.setBackground(new java.awt.Color(219, 218, 156));
+
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+                bindingGroup.addBinding(binding);
+
+                jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                eventTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 70L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane5.setViewportView(eventTable);
+
+                getEventListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getEventListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getEventListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getEventListButActionPerformed(evt);
+                        }
+                });
+
+                downloadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadEventBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadEventBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadEventBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadEventBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadEventButActionPerformed(evt);
+                        }
+                });
+
+                deleteEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteEventBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deleteEventBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout eventPaneLayout = new javax.swing.GroupLayout(eventPane);
+                eventPane.setLayout(eventPaneLayout);
+                eventPaneLayout.setHorizontalGroup(
+                        eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(eventPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(eventPaneLayout.createSequentialGroup()
+                                                .addComponent(getEventListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadEventBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadEventBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteEventBut)))
+                                .addContainerGap())
+                );
+                eventPaneLayout.setVerticalGroup(
+                        eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getEventListBut)
+                                        .addComponent(downloadEventBut)
+                                        .addComponent(uploadEventBut)
+                                        .addComponent(deleteEventBut))
+                                .addContainerGap())
+                );
+
+                getEventListBut.getAccessibleContext().setAccessibleName("null");
+                downloadEventBut.getAccessibleContext().setAccessibleName("null");
+                uploadEventBut.getAccessibleContext().setAccessibleName("null");
+                deleteEventBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane11.setViewportView(eventPane);
+
+                tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/event.png")), jScrollPane11); // NOI18N
+
+                animPane.setBackground(new java.awt.Color(171, 171, 255));
+
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+                bindingGroup.addBinding(binding);
+
+                jScrollPane6.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                animTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 73L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane6.setViewportView(animTable);
+
+                getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getAnimListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getAnimListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getAnimListButActionPerformed(evt);
+                        }
+                });
+
+                downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadAnimBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadAnimBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadAnimBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadAnimBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadAnimButActionPerformed(evt);
+                        }
+                });
+
+                deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteAnimBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deleteAnimBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout animPaneLayout = new javax.swing.GroupLayout(animPane);
+                animPane.setLayout(animPaneLayout);
+                animPaneLayout.setHorizontalGroup(
+                        animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(animPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(animPaneLayout.createSequentialGroup()
+                                                .addComponent(getAnimListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadAnimBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadAnimBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteAnimBut)))
+                                .addContainerGap())
+                );
+                animPaneLayout.setVerticalGroup(
+                        animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, animPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getAnimListBut)
+                                        .addComponent(downloadAnimBut)
+                                        .addComponent(uploadAnimBut)
+                                        .addComponent(deleteAnimBut))
+                                .addContainerGap())
+                );
+
+                getAnimListBut.getAccessibleContext().setAccessibleName("null");
+                downloadAnimBut.getAccessibleContext().setAccessibleName("null");
+                uploadAnimBut.getAccessibleContext().setAccessibleName("null");
+                deleteAnimBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane12.setViewportView(animPane);
+
+                tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/video.png")), jScrollPane12); // NOI18N
+
+                javaPane.setBackground(new java.awt.Color(122, 189, 255));
+
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
+                bindingGroup.addBinding(binding);
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+                bindingGroup.addBinding(binding);
+
+                jScrollPane14.setPreferredSize(new java.awt.Dimension(0, 0));
+
+                javaTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                        }
+                ) {
+                        private static final long serialVersionUID = 74L;
+                        Class[] types = new Class [] {
+                                java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                jScrollPane14.setViewportView(javaTable);
+
+                getJavaListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+                getJavaListBut.setText(bundle.getString("Get_list")); // NOI18N
+                getJavaListBut.setEnabled(false);
+                getJavaListBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                getJavaListButActionPerformed(evt);
+                        }
+                });
+
+                downloadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadJavaBut.setText(bundle.getString("Download_selected")); // NOI18N
+                downloadJavaBut.setEnabled(false);
+                downloadJavaBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                downloadButActionPerformed(evt);
+                        }
+                });
+
+                uploadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadJavaBut.setText(bundle.getString("Upload")); // NOI18N
+                uploadJavaBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                uploadJavaButActionPerformed(evt);
+                        }
+                });
+
+                deleteJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteJavaBut.setText(bundle.getString("Delete_selected")); // NOI18N
+                deleteJavaBut.setEnabled(false);
+                deleteJavaBut.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                deleteButActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout javaPaneLayout = new javax.swing.GroupLayout(javaPane);
+                javaPane.setLayout(javaPaneLayout);
+                javaPaneLayout.setHorizontalGroup(
+                        javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javaPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                        .addGroup(javaPaneLayout.createSequentialGroup()
+                                                .addComponent(getJavaListBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(downloadJavaBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(uploadJavaBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteJavaBut)))
+                                .addContainerGap())
+                );
+                javaPaneLayout.setVerticalGroup(
+                        javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, javaPaneLayout.createSequentialGroup()
+                                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(getJavaListBut)
+                                        .addComponent(downloadJavaBut)
+                                        .addComponent(uploadJavaBut)
+                                        .addComponent(deleteJavaBut))
+                                .addContainerGap())
+                );
+
+                getJavaListBut.getAccessibleContext().setAccessibleName("null");
+                downloadJavaBut.getAccessibleContext().setAccessibleName("null");
+                uploadJavaBut.getAccessibleContext().setAccessibleName("null");
+                deleteJavaBut.getAccessibleContext().setAccessibleName("null");
+
+                jScrollPane13.setViewportView(javaPane);
+
+                tabPane.addTab(bundle.getString("JavaTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/java.png")), jScrollPane13); // NOI18N
+
+                alarmPane.setBackground(java.awt.Color.pink);
+
+                alarmTable.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+
+                        },
+                        new String [] {
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_number"),
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_date"),
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_time"),
+                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_days")
+                        }
+                ) {
+                        private static final long serialVersionUID = 76L;
+                        Class[] types = new Class [] {
+                                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                        };
+                        boolean[] canEdit = new boolean [] {
+                                false, true, true, true
+                        };
+
+                        public Class getColumnClass(int columnIndex) {
+                                return types [columnIndex];
+                        }
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                }
         );
-        photoPaneLayout.setVerticalGroup(
-            photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, photoPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(photoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getPhotoListBut)
-                    .addComponent(downloadPhotoBut)
-                    .addComponent(uploadPhotoBut)
-                    .addComponent(deletePhotoBut))
-                .addContainerGap())
+        jScrollPane17.setViewportView(alarmTable);
+
+        getAlarmListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
+        getAlarmListBut.setText(bundle.getString("Get_list")); // NOI18N
+        getAlarmListBut.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        getAlarmListButActionPerformed(evt);
+                }
+        });
+
+        downloadAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+        downloadAlarmBut.setText(bundle.getString("Download_selected")); // NOI18N
+        downloadAlarmBut.setEnabled(false);
+        downloadAlarmBut.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        downloadButActionPerformed(evt);
+                }
+        });
+
+        uploadAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+        uploadAlarmBut.setText(bundle.getString("Update_sel")); // NOI18N
+        uploadAlarmBut.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        uploadAlarmButActionPerformed(evt);
+                }
+        });
+
+        deleteAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+        deleteAlarmBut.setText(bundle.getString("Delete_selected")); // NOI18N
+        deleteAlarmBut.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        deleteButActionPerformed(evt);
+                }
+        });
+
+        javax.swing.GroupLayout alarmPaneLayout = new javax.swing.GroupLayout(alarmPane);
+        alarmPane.setLayout(alarmPaneLayout);
+        alarmPaneLayout.setHorizontalGroup(
+                alarmPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(alarmPaneLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(alarmPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jScrollPane17, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
+                                .addGroup(alarmPaneLayout.createSequentialGroup()
+                                        .addComponent(getAlarmListBut)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(downloadAlarmBut)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(uploadAlarmBut)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(deleteAlarmBut)))
+                        .addContainerGap())
+        );
+        alarmPaneLayout.setVerticalGroup(
+                alarmPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, alarmPaneLayout.createSequentialGroup()
+                        .addComponent(jScrollPane17, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(alarmPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(downloadAlarmBut)
+                                .addComponent(uploadAlarmBut)
+                                .addComponent(deleteAlarmBut)
+                                .addComponent(getAlarmListBut))
+                        .addContainerGap())
         );
 
-        getPhotoListBut.getAccessibleContext().setAccessibleName("null");
-        downloadPhotoBut.getAccessibleContext().setAccessibleName("null");
-        uploadPhotoBut.getAccessibleContext().setAccessibleName("null");
-        deletePhotoBut.getAccessibleContext().setAccessibleName("null");
+        jScrollPane16.setViewportView(alarmPane);
 
-        jScrollPane7.setViewportView(photoPane);
-
-        tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pict-1.png")), jScrollPane7); // NOI18N
-
-        ringPane.setBackground(new java.awt.Color(179, 255, 179));
-
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), ringPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        ringTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 67L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane2.setViewportView(ringTable);
-
-        getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getRingListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getRingListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getRingListButActionPerformed(evt);
-            }
-        });
-
-        downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadRingBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadRingBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
-
-        uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadRingBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadRingBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadRingButActionPerformed(evt);
-            }
-        });
-
-        deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deleteRingBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deleteRingBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout ringPaneLayout = new javax.swing.GroupLayout(ringPane);
-        ringPane.setLayout(ringPaneLayout);
-        ringPaneLayout.setHorizontalGroup(
-            ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ringPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(ringPaneLayout.createSequentialGroup()
-                        .addComponent(getRingListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadRingBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadRingBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteRingBut)))
-                .addContainerGap())
-        );
-        ringPaneLayout.setVerticalGroup(
-            ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ringPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(ringPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getRingListBut)
-                    .addComponent(downloadRingBut)
-                    .addComponent(uploadRingBut)
-                    .addComponent(deleteRingBut))
-                .addContainerGap())
-        );
-
-        getRingListBut.getAccessibleContext().setAccessibleName("null");
-        downloadRingBut.getAccessibleContext().setAccessibleName("null");
-        uploadRingBut.getAccessibleContext().setAccessibleName("null");
-        deleteRingBut.getAccessibleContext().setAccessibleName("null");
-
-        jScrollPane8.setViewportView(ringPane);
-
-        tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/ring.png")), jScrollPane8); // NOI18N
-
-        addrBookPane.setBackground(new java.awt.Color(255, 255, 193));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), addrBookPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane3.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        addrTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 68L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane3.setViewportView(addrTable);
-
-        getAddrListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getAddrListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getAddrListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getAddrListButActionPerformed(evt);
-            }
-        });
-
-        downloadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadAddrBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadAddrBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
-
-        uploadAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadAddrBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadAddrBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadAddrButActionPerformed(evt);
-            }
-        });
-
-        deleteAddrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deleteAddrBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deleteAddrBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout addrBookPaneLayout = new javax.swing.GroupLayout(addrBookPane);
-        addrBookPane.setLayout(addrBookPaneLayout);
-        addrBookPaneLayout.setHorizontalGroup(
-            addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(addrBookPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(addrBookPaneLayout.createSequentialGroup()
-                        .addComponent(getAddrListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadAddrBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadAddrBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteAddrBut)))
-                .addContainerGap())
-        );
-        addrBookPaneLayout.setVerticalGroup(
-            addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addrBookPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(addrBookPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getAddrListBut)
-                    .addComponent(downloadAddrBut)
-                    .addComponent(uploadAddrBut)
-                    .addComponent(deleteAddrBut))
-                .addContainerGap())
-        );
-
-        getAddrListBut.getAccessibleContext().setAccessibleName("null");
-        downloadAddrBut.getAccessibleContext().setAccessibleName("null");
-        uploadAddrBut.getAccessibleContext().setAccessibleName("null");
-        deleteAddrBut.getAccessibleContext().setAccessibleName("null");
-
-        jScrollPane9.setViewportView(addrBookPane);
-
-        tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/abook.png")), jScrollPane9); // NOI18N
-
-        todoPane.setBackground(new java.awt.Color(127, 196, 127));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), todoPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane4.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        todoTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 69L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane4.setViewportView(todoTable);
-
-        getTodoListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getTodoListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getTodoListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getTodoListButActionPerformed(evt);
-            }
-        });
-
-        downloadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadTodoBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadTodoBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
-
-        uploadTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadTodoBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadTodoBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadTodoButActionPerformed(evt);
-            }
-        });
-
-        deleteTodoBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deleteTodoBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deleteTodoBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout todoPaneLayout = new javax.swing.GroupLayout(todoPane);
-        todoPane.setLayout(todoPaneLayout);
-        todoPaneLayout.setHorizontalGroup(
-            todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(todoPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(todoPaneLayout.createSequentialGroup()
-                        .addComponent(getTodoListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadTodoBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadTodoBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteTodoBut)))
-                .addContainerGap())
-        );
-        todoPaneLayout.setVerticalGroup(
-            todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(todoPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getTodoListBut)
-                    .addComponent(downloadTodoBut)
-                    .addComponent(uploadTodoBut)
-                    .addComponent(deleteTodoBut))
-                .addContainerGap())
-        );
-
-        getTodoListBut.getAccessibleContext().setAccessibleName("null");
-        downloadTodoBut.getAccessibleContext().setAccessibleName("null");
-        uploadTodoBut.getAccessibleContext().setAccessibleName("null");
-        deleteTodoBut.getAccessibleContext().setAccessibleName("null");
-
-        jScrollPane10.setViewportView(todoPane);
-
-        tabPane.addTab(bundle.getString("ToDoTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/todo.png")), jScrollPane10); // NOI18N
-
-        eventPane.setBackground(new java.awt.Color(219, 218, 156));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), eventPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        eventTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 70L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane5.setViewportView(eventTable);
-
-        getEventListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getEventListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getEventListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getEventListButActionPerformed(evt);
-            }
-        });
-
-        downloadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadEventBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadEventBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
-
-        uploadEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadEventBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadEventBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadEventButActionPerformed(evt);
-            }
-        });
-
-        deleteEventBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deleteEventBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deleteEventBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout eventPaneLayout = new javax.swing.GroupLayout(eventPane);
-        eventPane.setLayout(eventPaneLayout);
-        eventPaneLayout.setHorizontalGroup(
-            eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(eventPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(eventPaneLayout.createSequentialGroup()
-                        .addComponent(getEventListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadEventBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadEventBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteEventBut)))
-                .addContainerGap())
-        );
-        eventPaneLayout.setVerticalGroup(
-            eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(eventPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getEventListBut)
-                    .addComponent(downloadEventBut)
-                    .addComponent(uploadEventBut)
-                    .addComponent(deleteEventBut))
-                .addContainerGap())
-        );
-
-        getEventListBut.getAccessibleContext().setAccessibleName("null");
-        downloadEventBut.getAccessibleContext().setAccessibleName("null");
-        uploadEventBut.getAccessibleContext().setAccessibleName("null");
-        deleteEventBut.getAccessibleContext().setAccessibleName("null");
-
-        jScrollPane11.setViewportView(eventPane);
-
-        tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/event.png")), jScrollPane11); // NOI18N
-
-        animPane.setBackground(new java.awt.Color(171, 171, 255));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), animPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane6.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        animTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 73L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane6.setViewportView(animTable);
-
-        getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getAnimListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getAnimListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getAnimListButActionPerformed(evt);
-            }
-        });
-
-        downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadAnimBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadAnimBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
-
-        uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadAnimBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadAnimBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadAnimButActionPerformed(evt);
-            }
-        });
-
-        deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deleteAnimBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deleteAnimBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout animPaneLayout = new javax.swing.GroupLayout(animPane);
-        animPane.setLayout(animPaneLayout);
-        animPaneLayout.setHorizontalGroup(
-            animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(animPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(animPaneLayout.createSequentialGroup()
-                        .addComponent(getAnimListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadAnimBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadAnimBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteAnimBut)))
-                .addContainerGap())
-        );
-        animPaneLayout.setVerticalGroup(
-            animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, animPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(animPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getAnimListBut)
-                    .addComponent(downloadAnimBut)
-                    .addComponent(uploadAnimBut)
-                    .addComponent(deleteAnimBut))
-                .addContainerGap())
-        );
-
-        getAnimListBut.getAccessibleContext().setAccessibleName("null");
-        downloadAnimBut.getAccessibleContext().setAccessibleName("null");
-        uploadAnimBut.getAccessibleContext().setAccessibleName("null");
-        deleteAnimBut.getAccessibleContext().setAccessibleName("null");
-
-        jScrollPane12.setViewportView(animPane);
-
-        tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/video.png")), jScrollPane12); // NOI18N
-
-        javaPane.setBackground(new java.awt.Color(122, 189, 255));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${maximumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("maximumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${minimumSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("minimumSize"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, photoPane, org.jdesktop.beansbinding.ELProperty.create("${preferredSize}"), javaPane, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane14.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        javaTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
-            }
-        ) {
-            private static final long serialVersionUID = 74L;
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane14.setViewportView(javaTable);
-
-        getJavaListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/list.png"))); // NOI18N
-        getJavaListBut.setText(bundle.getString("Get_list")); // NOI18N
-        getJavaListBut.setEnabled(false);
-        getJavaListBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getJavaListButActionPerformed(evt);
-            }
-        });
-
-        downloadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
-        downloadJavaBut.setText(bundle.getString("Download_selected")); // NOI18N
-        downloadJavaBut.setEnabled(false);
-        downloadJavaBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downloadButActionPerformed(evt);
-            }
-        });
-
-        uploadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
-        uploadJavaBut.setText(bundle.getString("Upload")); // NOI18N
-        uploadJavaBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadJavaButActionPerformed(evt);
-            }
-        });
-
-        deleteJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-        deleteJavaBut.setText(bundle.getString("Delete_selected")); // NOI18N
-        deleteJavaBut.setEnabled(false);
-        deleteJavaBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout javaPaneLayout = new javax.swing.GroupLayout(javaPane);
-        javaPane.setLayout(javaPaneLayout);
-        javaPaneLayout.setHorizontalGroup(
-            javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javaPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                    .addGroup(javaPaneLayout.createSequentialGroup()
-                        .addComponent(getJavaListBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downloadJavaBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uploadJavaBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteJavaBut)))
-                .addContainerGap())
-        );
-        javaPaneLayout.setVerticalGroup(
-            javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, javaPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(javaPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getJavaListBut)
-                    .addComponent(downloadJavaBut)
-                    .addComponent(uploadJavaBut)
-                    .addComponent(deleteJavaBut))
-                .addContainerGap())
-        );
-
-        getJavaListBut.getAccessibleContext().setAccessibleName("null");
-        downloadJavaBut.getAccessibleContext().setAccessibleName("null");
-        uploadJavaBut.getAccessibleContext().setAccessibleName("null");
-        deleteJavaBut.getAccessibleContext().setAccessibleName("null");
-
-        jScrollPane13.setViewportView(javaPane);
-
-        tabPane.addTab(bundle.getString("JavaTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/java.png")), jScrollPane13); // NOI18N
-
-        portLabel.setText(bundle.getString("Port:")); // NOI18N
-
-        speedLabel.setText(bundle.getString("Speed:")); // NOI18N
-
-        databitsLabel.setText(bundle.getString("Data_bits:")); // NOI18N
-
-        parityLabel.setText(bundle.getString("Parity:")); // NOI18N
-
-        stopbitsLabel.setText(bundle.getString("Stop_bits:")); // NOI18N
-
-        flowLabel.setText(bundle.getString("Flow_control:")); // NOI18N
-
-        aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/QMARK8.png"))); // NOI18N
-        aboutBut.setText(bundle.getString("About_JYMAG...")); // NOI18N
-        aboutBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutButActionPerformed(evt);
-            }
-        });
-
-        rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/tools1.png"))); // NOI18N
-        rawBut.setText(bundle.getString("Manual_commands")); // NOI18N
-        rawBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rawButActionPerformed(evt);
-            }
-        });
-
-        bpsLabel.setText("bps"); // NOI18N
-
-        statusLabel.setText(bundle.getString("Program_status:")); // NOI18N
-
-        status.setForeground(new java.awt.Color(0, 204, 0));
-        status.setText("READY"); // NOI18N
-
-        firmwareLabel.setText(bundle.getString("Firmware:")); // NOI18N
-
-        firmware.setText("-"); // NOI18N
-
-        progressLabel.setText(bundle.getString("Progress:")); // NOI18N
+        tabPane.addTab(bundle.getString("Alarms"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/alarmclk.png")), jScrollPane16); // NOI18N
 
         phoneTypeLabel.setText(bundle.getString("Phone_type:")); // NOI18N
 
-        phone.setText("-"); // NOI18N
+        flowHard.setText(bundle.getString("Hardware_(RTS/CTS)")); // NOI18N
 
-        exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
-        exitBut.setText(bundle.getString("Exit")); // NOI18N
-        exitBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButActionPerformed(evt);
-            }
-        });
+        dataBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8", "7", "6", "5" }));
 
-        getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capab.png"))); // NOI18N
-        getCapBut.setText(bundle.getString("Get_capabilities")); // NOI18N
-        getCapBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getCapButActionPerformed(evt);
-            }
-        });
+        stopbitsLabel.setText(bundle.getString("Stop_bits:")); // NOI18N
 
-        loadConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/loadconf.png"))); // NOI18N
-        loadConfBut.setText(bundle.getString("Load_configuration")); // NOI18N
-        loadConfBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadConfButActionPerformed(evt);
-            }
-        });
+        IMEILabel.setText("IMEI:"); // NOI18N
 
         saveConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/saveconf.png"))); // NOI18N
         saveConfBut.setText(bundle.getString("Save_configuration")); // NOI18N
         saveConfBut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveConfButActionPerformed(evt);
-            }
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        saveConfButActionPerformed(evt);
+                }
         });
 
-        flowSoft.setText(bundle.getString("Software_(XON/XOFF)")); // NOI18N
-
-        flowHard.setText(bundle.getString("Hardware_(RTS/CTS)")); // NOI18N
-
-        IMEILabel.setText("IMEI:"); // NOI18N
-
-        IMEI.setText("-");
+        portCombo.addItemListener(new java.awt.event.ItemListener() {
+                public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                        portComboItemStateChanged(evt);
+                }
+        });
 
         subsNumLabel.setText(bundle.getString("Subscriber_number")); // NOI18N
 
-        subsNum.setText("-");
+        firmware.setText("-"); // NOI18N
+
+        stopBitsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "1.5", "2" }));
+
+        parityCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Even", "Odd", "Space", "Mark" }));
+
+        subsNum.setText("-"); // NOI18N
+
+        fontSizeSpin.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(12), Integer.valueOf(1), null, Integer.valueOf(1)));
+        fontSizeSpin.addChangeListener(new javax.swing.event.ChangeListener() {
+                public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                        fontSizeSpinStateChanged(evt);
+                }
+        });
+
+        fontSizeLab.setText(bundle.getString("Font_size")); // NOI18N
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(470, 470, 470)
+                        .addComponent(fontSizeLab, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fontSizeSpin, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(365, 365, 365))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 978, Short.MAX_VALUE)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGap(6, 6, 6)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                        .addComponent(portLabel)
+                                                                        .addComponent(speedLabel)
+                                                                        .addComponent(databitsLabel))
+                                                                .addGap(12, 12, 12)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                                                .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                                .addComponent(bpsLabel))
+                                                                                        .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                .addGap(36, 36, 36)
+                                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                                        .addComponent(parityLabel)
+                                                                                        .addComponent(stopbitsLabel)))
+                                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                                .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                .addComponent(flowLabel)))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                                .addComponent(flowSoft)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(flowHard))))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                        .addComponent(phoneTypeLabel)
+                                                                        .addComponent(firmwareLabel)
+                                                                        .addComponent(IMEILabel)
+                                                                        .addComponent(subsNumLabel)
+                                                                        .addComponent(loadConfBut)
+                                                                        .addComponent(statusLabel)
+                                                                        .addComponent(progressLabel))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(status)
+                                                                        .addComponent(subsNum)
+                                                                        .addComponent(IMEI)
+                                                                        .addComponent(phone)
+                                                                        .addComponent(firmware)
+                                                                        .addComponent(saveConfBut)
+                                                                        .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
+                                                                .addGap(30, 30, 30)))
+                                                .addGap(46, 46, 46)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(exitBut)
+                                                        .addComponent(getCapBut)
+                                                        .addComponent(rawBut)
+                                                        .addComponent(aboutBut)
+                                                        .addComponent(scanButton))))
+                                .addContainerGap()))
+        );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {aboutBut, exitBut, getCapBut, rawBut, scanButton});
+
+        jPanel1Layout.setVerticalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(fontSizeSpin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(fontSizeLab))
+                        .addContainerGap(655, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(parityLabel)
+                                                                        .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGap(7, 7, 7)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(stopbitsLabel)
+                                                                        .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(portLabel)
+                                                                        .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGap(7, 7, 7)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(speedLabel)
+                                                                        .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(bpsLabel))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(databitsLabel)
+                                                                        .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(flowLabel)
+                                                                        .addComponent(flowSoft)
+                                                                        .addComponent(flowHard))))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(loadConfBut)
+                                                        .addComponent(saveConfBut))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(firmwareLabel)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(IMEILabel)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(subsNumLabel))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addComponent(phone)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(firmware)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(IMEI)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(subsNum)))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(statusLabel)
+                                                        .addComponent(status))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(progressLabel)
+                                                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(scanButton)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(aboutBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(rawBut)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(getCapBut))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(192, 192, 192)
+                                                .addComponent(exitBut)))
+                                .addGap(6, 6, 6)
+                                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                                .addContainerGap()))
+        );
+
+        phone.getAccessibleContext().setAccessibleName("null");
+        speedCombo.getAccessibleContext().setAccessibleName("null");
+        status.getAccessibleContext().setAccessibleName("null");
+        progressBar.getAccessibleContext().setAccessibleName("null");
+        tabPane.getAccessibleContext().setAccessibleName("null");
+        dataBitsCombo.getAccessibleContext().setAccessibleName("null");
+        portCombo.getAccessibleContext().setAccessibleName("null");
+        firmware.getAccessibleContext().setAccessibleName("null");
+        stopBitsCombo.getAccessibleContext().setAccessibleName("null");
+        parityCombo.getAccessibleContext().setAccessibleName("null");
+        fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spinner")); // NOI18N
+        fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
+
+        jScrollPane15.setViewportView(jPanel1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 882, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(portLabel)
-                                    .addComponent(speedLabel)
-                                    .addComponent(databitsLabel))
-                                .addGap(12, 12, 12)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(bpsLabel))
-                                            .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(36, 36, 36)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(parityLabel)
-                                            .addComponent(stopbitsLabel)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(flowLabel)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(flowSoft)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(flowHard))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(phoneTypeLabel)
-                                    .addComponent(firmwareLabel)
-                                    .addComponent(IMEILabel)
-                                    .addComponent(subsNumLabel)
-                                    .addComponent(loadConfBut)
-                                    .addComponent(statusLabel)
-                                    .addComponent(progressLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(status)
-                                    .addComponent(subsNum)
-                                    .addComponent(IMEI)
-                                    .addComponent(phone)
-                                    .addComponent(firmware)
-                                    .addComponent(saveConfBut)
-                                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
-                                .addGap(30, 30, 30)))
-                        .addGap(46, 46, 46)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(exitBut)
-                            .addComponent(getCapBut)
-                            .addComponent(rawBut)
-                            .addComponent(aboutBut)
-                            .addComponent(scanButton))))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane15, javax.swing.GroupLayout.DEFAULT_SIZE, 1001, Short.MAX_VALUE)
         );
-
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {aboutBut, exitBut, getCapBut, rawBut, scanButton});
-
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(parityLabel)
-                                    .addComponent(parityCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(7, 7, 7)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(stopbitsLabel)
-                                    .addComponent(stopBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(portLabel)
-                                    .addComponent(portCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(7, 7, 7)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(speedLabel)
-                                    .addComponent(speedCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(bpsLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(databitsLabel)
-                                    .addComponent(dataBitsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(flowLabel)
-                                    .addComponent(flowSoft)
-                                    .addComponent(flowHard))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(loadConfBut)
-                            .addComponent(saveConfBut))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(phoneTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(firmwareLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(IMEILabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(subsNumLabel))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(phone)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(firmware)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(IMEI)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(subsNum)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(statusLabel)
-                            .addComponent(status))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(progressLabel)
-                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(scanButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(aboutBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(rawBut)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(getCapBut))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(192, 192, 192)
-                        .addComponent(exitBut)))
-                .addGap(6, 6, 6)
-                .addComponent(tabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane15, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
         );
-
-        portCombo.getAccessibleContext().setAccessibleName("null");
-        speedCombo.getAccessibleContext().setAccessibleName("null");
-        dataBitsCombo.getAccessibleContext().setAccessibleName("null");
-        parityCombo.getAccessibleContext().setAccessibleName("null");
-        stopBitsCombo.getAccessibleContext().setAccessibleName("null");
-        tabPane.getAccessibleContext().setAccessibleName("null");
-        status.getAccessibleContext().setAccessibleName("null");
-        firmware.getAccessibleContext().setAccessibleName("null");
-        progressBar.getAccessibleContext().setAccessibleName("null");
-        phone.getAccessibleContext().setAccessibleName("null");
 
         bindingGroup.bind();
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+        }// </editor-fold>//GEN-END:initComponents
 
 	private void scanButtonActionPerformed (java.awt.event.ActionEvent evt)	{//GEN-FIRST:event_scanButtonActionPerformed
 
@@ -1680,7 +1919,7 @@ public class MainWindow extends javax.swing.JFrame
 			{
 				Vector<CommPortIdentifier> active = new Vector<CommPortIdentifier> (1);
 
-                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+				Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
 				while (portList.hasMoreElements ())
 				{
 					CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
@@ -1701,270 +1940,40 @@ public class MainWindow extends javax.swing.JFrame
 								{
 									active.add (id);
 									// get firmware version
-									String rcvd = "";	// NOI18N
-									int trials = 0;
-									do
-									{
-										dt.send ( ("AT+KPSV\r")	// NOI18N
-											.getBytes ());
-										byte[] recvdB = dt.recv (null);	// NOI18N
-										rcvd = new String (recvdB);
-
-										if ( rcvd.trim ().equals ("") )	// NOI18N
-										{
-											dt.reopen ();
-											trials++;
-										}
-									} while (rcvd.trim ().equals ("")	// NOI18N
-										&& trials <= DataTransporter.MAX_TRIALS);
-									if ( trials <= DataTransporter.MAX_TRIALS )
-									{
-										// sample: "+KPSV: 2.04"
-										try
-										{
-											// have to split to make it work
-											String[] lines = rcvd.split ("\r");	// NOI18N
-											if ( lines != null )
-											{
-												for ( int i=0; i < lines.length; i++ )
-												{
-													if ( lines[i] == null ) continue;
-													Matcher m = verPattern
-														.matcher (lines[i]);
-													if ( m.matches () )
-													{
-														firmwares.put (
-															id.getName (),
-															m.group (1));
-														break;
-													}
-												}
-											}
-										}
-										catch (Exception ex)
-										{
-											Utils.handleException (ex,
-												"pattern/matcher");	// NOI18N
-										}
-									}
+									firmwares.put (
+										id.getName (),
+										dt.getFirmwareVersion ());
 									// get phone type
-									rcvd = "";	// NOI18N
-									trials = 0;
-									do
-									{
-										dt.send ( ("ATIMEI\r")	// NOI18N
-											.getBytes ());
-										byte[] recvdB = dt.recv (null);	// NOI18N
-										rcvd = new String (recvdB);
-
-										if ( rcvd.trim ().equals ("") )	// NOI18N
-										{
-											dt.reopen ();
-											trials++;
-										}
-									} while ( //(
-											rcvd.trim ().equals ("")	// NOI18N
-											//|| rcvd.contains ("ATIMEI"))
-										&& trials <= DataTransporter.MAX_TRIALS);
-									if ( trials <= DataTransporter.MAX_TRIALS )
-									{
-										// sample: "myX5-2 GPRS"
-										try
-										{
-											// have to split to make it work
-											String[] lines = rcvd.split ("\r");	// NOI18N
-											if ( lines != null )
-											{
-												for ( int i=0; i < lines.length; i++ )
-												{
-													if ( lines[i] == null ) continue;
-													if ( lines[i].trim ().length () > 0
-															&& ! lines[i].contains ("ATIMEI") )	// NOI18N
-													{
-														phoneTypes.put (
-															id.getName (),
-															lines[i].trim ());
-														break;
-													}
-												}
-											}
-										}
-										catch (Exception ex)
-										{
-											Utils.handleException (ex,
-												"phone type");	// NOI18N
-										}
-									}
+									phoneTypes.put (
+										id.getName (),
+										dt.getDeviceType ());
 									// get additional phone type
-									rcvd = "";	// NOI18N
-									trials = 0;
-									do
+									String addType = dt.getExtraDeviceType ();
+									if ( addType != null )
 									{
-										dt.send ( ("AT+CGMR\r")	// NOI18N
-											.getBytes ());
-										byte[] recvdB = dt.recv (null);	// NOI18N
-										rcvd = new String (recvdB);
-
-										if ( rcvd.trim ().equals ("") )	// NOI18N
-										{
-											dt.reopen ();
-											trials++;
-										}
-									} while ( //(
-											rcvd.trim ().equals ("")	// NOI18N
-											//|| rcvd.contains ("CGMR"))
-										&& trials <= DataTransporter.MAX_TRIALS);
-									if ( trials <= DataTransporter.MAX_TRIALS )
-									{
-										// sample: "+CGMR: SAGEM KB3,ME"
+										String type = null;
 										try
 										{
-											// have to split to make it work
-											String[] lines = rcvd.split ("\r");	// NOI18N
-											if ( lines != null )
-											{
-												for ( int i=0; i < lines.length; i++ )
-												{
-													if ( lines[i] == null ) continue;
-													lines[i] = lines[i].replaceAll ("\\+CGMR: ", "");	// NOI18N
-													if ( lines[i].trim ().length () > 0 )
-													{
-														String type = null;
-														try
-														{
-															type = phoneTypes.get (id.getName ());
-														} catch (Exception ex) {}
-														if ( type == null ) type = "";	// NOI18N
-														if ( type.length () != 0 ) type += ", ";	// NOI18N
-														type += lines[i].trim ();
-														phoneTypes.put (
-															id.getName (),
-															type);
-														break;
-													}
-												}
-											}
-										}
-										catch (Exception ex)
-										{
-											Utils.handleException (ex,
-												"phone type");	// NOI18N
-										}
+											type = phoneTypes.get
+												(id.getName ());
+										} catch (Exception ex) {}
+										if ( type == null )
+											type = "";	// NOI18N
+										if ( type.length () != 0 )
+											type += ", ";	// NOI18N
+										type += addType;
+										phoneTypes.put (
+											id.getName (),
+											type);
 									}
 									// get phone IMEI
-									rcvd = "";	// NOI18N
-									trials = 0;
-									do
-									{
-										dt.send ( ("AT+CGSN\r")	// NOI18N
-											.getBytes ());
-										byte[] recvdB = dt.recv (null);	// NOI18N
-										rcvd = new String (recvdB);
-
-										if ( rcvd.trim ().equals ("") )	// NOI18N
-										{
-											dt.reopen ();
-											trials++;
-										}
-									} while ( //(
-											rcvd.trim ().equals ("")	// NOI18N
-											//|| rcvd.contains ("CGSN"))
-										&& trials <= DataTransporter.MAX_TRIALS);
-									if ( trials <= DataTransporter.MAX_TRIALS )
-									{
-										// sample: "AT+CGSN
-										// 353056005020024
-										// OK"
-										try
-										{
-											// have to split to make it work
-											String[] lines = rcvd.split ("\r");	// NOI18N
-											if ( lines != null )
-											{
-												for ( int i=0; i < lines.length; i++ )
-												{
-													if ( lines[i] == null ) continue;
-													if ( lines[i].trim ().length () > 0
-															&& ! lines[i].contains ("CGSN") )	// NOI18N
-													{
-														phoneIMEIs.put (
-															id.getName (),
-															lines[i].trim ());
-														break;
-													}
-												}
-											}
-										}
-										catch (Exception ex)
-										{
-											Utils.handleException (ex,
-												"phone IMEI");	// NOI18N
-										}
-									}
+									phoneIMEIs.put (
+										id.getName (),
+										dt.getIMEI ());
 									// get subscriber phone numbers:
-									rcvd = "";	// NOI18N
-									trials = 0;
-									do
-									{
-										dt.send ( ("AT+CNUM\r")	// NOI18N
-											.getBytes ());
-										byte[] recvdB = dt.recv (null);	// NOI18N
-										rcvd = new String (recvdB);
-
-										if ( rcvd.trim ().equals ("") )	// NOI18N
-										{
-											dt.reopen ();
-											trials++;
-										}
-									} while ( //(
-											rcvd.trim ().equals ("")	// NOI18N
-											//|| rcvd.contains ("CNUM"))
-										&& trials <= DataTransporter.MAX_TRIALS);
-									if ( trials <= DataTransporter.MAX_TRIALS )
-									{
-										// sample: "+CNUM: "","+48788317087",145"
-										try
-										{
-											// have to split to make it work
-											String[] lines = rcvd.split ("\r");	// NOI18N
-											if ( lines != null )
-											{
-												for ( int i=0; i < lines.length; i++ )
-												{
-													if ( lines[i] == null ) continue;
-													lines[i] = lines[i].replaceAll ("\\+CNUM: ", "");	// NOI18N
-													if ( lines[i].trim ().length () > 0 )
-													{
-														String type = null;
-														try
-														{
-															type = phoneSubsNums.get (id.getName ());
-														} catch (Exception ex) {}
-														String[] elems = lines[i].trim ().split (",");
-														String newElem = "";
-														if ( elems != null )
-															if ( elems.length > 1 )
-																newElem = elems[1].trim().replaceAll ("\"", "");
-														if ( newElem.length () > 0 )
-														{
-															if ( type == null ) type = "";	// NOI18N
-															if ( type.length () != 0 ) type += ", ";	// NOI18N
-															type += newElem;
-															phoneSubsNums.put (
-																id.getName (),
-																type);
-															//break;
-														}
-													}
-												}
-											}
-										}
-										catch (Exception ex)
-										{
-											Utils.handleException (ex,
-												"phone subscriber numbers");	// NOI18N
-										}
-									}
+									phoneSubsNums.put (
+										id.getName (),
+										dt.getSubscriberNumbers ());
 								} // test res = 0
 								dt.close ();
 							}
@@ -1977,7 +1986,7 @@ public class MainWindow extends javax.swing.JFrame
 						Utils.changeGUI (new Runnable ()
 						{
 							@Override
-							public void run ()
+							public synchronized void run ()
 							{
 								progressBar.setValue (progressBar.getValue ()+1);
 								if ( progressBar.getValue () == progressBar.getMaximum () )
@@ -2347,6 +2356,7 @@ public class MainWindow extends javax.swing.JFrame
 			selectedRows = javaTable.getSelectedRows ();
 			temp = currentJavaElements;
 		}
+		else return;
 		final Vector<PhoneElement> currentElements = temp;
 		if ( selectedRows == null || currentElements == null ) return;
 		if ( selectedRows.length == 0 ) return;
@@ -2379,6 +2389,7 @@ public class MainWindow extends javax.swing.JFrame
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )
 		{
+			String dstFileName = null;
 			try
 			{
 				File destDir = downloadFC.getSelectedFile ();
@@ -2397,11 +2408,11 @@ public class MainWindow extends javax.swing.JFrame
 				for ( int i=0; i < selectedRows.length; i++ )
 				{
 					final int toGet = selectedRows[i];
-					final File received = new File (
-						destDir.getAbsolutePath () + File.separator
+					dstFileName = destDir.getAbsolutePath () + File.separator
 						+ currentElements.get (toGet).getFilename ()
 						+ "." 	// NOI18N
-						+ currentElements.get (toGet).getExt ());
+						+ currentElements.get (toGet).getExt ();
+					final File received = new File (dstFileName);
 					if ( received.exists () )
 					{
 						int res = JOptionPane.showConfirmDialog (this,
@@ -2443,7 +2454,8 @@ public class MainWindow extends javax.swing.JFrame
 								catch (Exception e)
 								{
 									Utils.handleException (e,
-										"downloadButActionPerformed.SW.doInBackground");	// NOI18N
+										"downloadButActionPerformed.SW.doInBackground:"	// NOI18N
+										+ received.getName ());
 								}
 								return -1;
 							}
@@ -2470,7 +2482,8 @@ public class MainWindow extends javax.swing.JFrame
 
 									JOptionPane.showMessageDialog
 										(mw,
-										errString + ": " + msg,	// NOI18N
+										errString + ": " + msg	// NOI18N
+										+ received.getName (),
 										errString,
 										JOptionPane.ERROR_MESSAGE );
 								}
@@ -2499,7 +2512,8 @@ public class MainWindow extends javax.swing.JFrame
 			catch (Exception ex)
 			{
 				updateStatusLabel (STATUS.READY);
-				Utils.handleException (ex, "download");	// NOI18N
+				Utils.handleException (ex, "Download"	// NOI18N
+					+ ((dstFileName != null)? ": " + dstFileName : ""));	// NOI18N
 			}
 		}
 
@@ -2509,7 +2523,11 @@ public class MainWindow extends javax.swing.JFrame
 
 		try
 		{
-			new AboutBox (this, true).setVisible (true);
+			float fontSize = 12;
+			Object val = fontSizeSpin.getValue ();
+			if ( val != null && val instanceof Number )
+				fontSize = ((Number)val).intValue ();
+			new AboutBox (this, true, fontSize).setVisible (true);
 		}
 		catch (Throwable ex)
 		{
@@ -3073,6 +3091,7 @@ public class MainWindow extends javax.swing.JFrame
 
 		int[] selectedRows = null;
 		Vector<PhoneElement> temp = null;
+		Vector<PhoneAlarm> tempAlarms = null;
 		if ( tabPane.getSelectedIndex () == 0 )
 		{
 			selectedRows = photoTable.getSelectedRows ();
@@ -3108,10 +3127,17 @@ public class MainWindow extends javax.swing.JFrame
 			selectedRows = javaTable.getSelectedRows ();
 			temp = currentJavaElements;
 		}
-		if ( selectedRows == null || temp == null ) return;
+		else if ( tabPane.getSelectedIndex () == 7 )
+		{
+			selectedRows = alarmTable.getSelectedRows ();
+			tempAlarms = currentAlarmElements;
+		}
+		else return;
+		if ( selectedRows == null || (temp == null && tempAlarms == null) ) return;
 		if ( selectedRows.length == 0 ) return;
 
 		final Vector<PhoneElement> currentElements = temp;
+		final Vector<PhoneAlarm> currentAlarms = tempAlarms;
 
 		int dialogRes = JOptionPane.showConfirmDialog (this,
 			deleteQuestion,
@@ -3153,8 +3179,15 @@ public class MainWindow extends javax.swing.JFrame
 									final DataTransporter dt = new DataTransporter (id);
 									dt.open (cSpeed, cDataBits, cStopBits,
 										cParity, cFlow);
-									dt.deleteFile
-										(currentElements.get (toGet));
+									if ( currentElements != null )
+									{
+										dt.deleteFile
+											(currentElements.get (toGet));
+									}
+									else if ( currentAlarms != null )
+									{
+										dt.deleteAlarm (toGet+1);
+									}
 									dt.close ();
 								}
 								catch (Exception e)
@@ -3201,7 +3234,11 @@ public class MainWindow extends javax.swing.JFrame
 				parityCombo.getSelectedIndex (),
 				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
 				);
-			new RawCommunicator (dt, this, sync).setVisible (true);
+			float fontSize = 12;
+			Object val = fontSizeSpin.getValue ();
+			if ( val != null && val instanceof Number )
+				fontSize = ((Number)val).intValue ();
+			new RawCommunicator (dt, this, sync, fontSize).setVisible (true);
 			dt.close ();
 		}
 		catch (Throwable ex)
@@ -3228,7 +3265,11 @@ public class MainWindow extends javax.swing.JFrame
 				parityCombo.getSelectedIndex (),
 				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
 				);
-			new CapabilityWindow (dt, this, sync).setVisible (true);
+			float fontSize = 12;
+			Object val = fontSizeSpin.getValue ();
+			if ( val != null && val instanceof Number )
+				fontSize = ((Number)val).intValue ();
+			new CapabilityWindow (dt, this, sync, fontSize).setVisible (true);
 			dt.close ();
 		}
 		catch (Throwable ex)
@@ -3399,6 +3440,56 @@ public class MainWindow extends javax.swing.JFrame
 				else setExtendedState ( getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
 				setLocation (cfg.getX (), cfg.getY ());
 				setSize (cfg.getWidth (), cfg.getHeight ());
+				if ( (getExtendedState () & JFrame.MAXIMIZED_BOTH) == 0 )
+				{
+					// if not maximized, verify position and size
+					GraphicsConfiguration gc = null;
+					Insets is = null;
+					try
+					{
+						gc = getGraphicsConfiguration ();
+						Toolkit tk = Toolkit.getDefaultToolkit ();
+						if ( tk != null ) is = tk.getScreenInsets (gc);
+					} catch (Exception ex) {}
+					int maxX = 800;
+					int maxY = 600;
+					if ( gc != null )
+					{
+						Rectangle bounds = gc.getBounds ();
+						if ( bounds != null )
+						{
+							if ( is != null )
+							{
+								maxX = bounds.width - is.left - is.right;
+								maxY = bounds.height - is.top - is.bottom;
+							}
+							else
+							{
+								maxX = bounds.width;
+								maxY = bounds.height;
+							}
+						}
+					}
+					if ( getWidth () <= 0 )
+					{
+						setSize (maxX, getHeight ());
+					}
+					if ( getHeight () <= 0 )
+					{
+						setSize (getWidth (), maxY);
+					}
+					if ( getX () + getWidth () < 0
+						|| getX () > maxX )
+					{
+						setLocation (0, getY ());
+					}
+					if ( getY () + getHeight () < 0
+						|| getY () > maxY )
+					{
+						setLocation (getX (), 0);
+					}
+				}
+				fontSizeSpin.setValue (new Integer (cfg.getFontSizeValue ()).floatValue ());
 			}
 			catch (Exception ex)
 			{
@@ -3459,6 +3550,9 @@ public class MainWindow extends javax.swing.JFrame
 				cfg.setWidth (getWidth ());
 				cfg.setHeight (getHeight ());
 				cfg.setIsMaximized ((getExtendedState () & JFrame.MAXIMIZED_BOTH) != 0);
+				Object val = fontSizeSpin.getValue ();
+				if ( val != null && val instanceof Number )
+					cfg.setFontSizeValue (((Number)val).intValue ());
 				cfg.write ();
 			}
 			catch (Exception ex)
@@ -3467,6 +3561,271 @@ public class MainWindow extends javax.swing.JFrame
 			}
 		}
 	}//GEN-LAST:event_saveConfButActionPerformed
+
+	private void fontSizeSpinStateChanged (javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fontSizeSpinStateChanged
+
+		Object val = fontSizeSpin.getValue ();
+		if ( val != null && val instanceof Number )
+			Utils.setFontSize (this, ((Number)val).floatValue ());
+	}//GEN-LAST:event_fontSizeSpinStateChanged
+
+	private void getAlarmListButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getAlarmListButActionPerformed
+
+		try
+		{
+			final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+				(portCombo.getSelectedItem ().toString ());
+			updateStatusLabel (STATUS.RECEIVING);
+			progressBar.setValue (0);
+			progressBar.setMinimum (0);
+			progressBar.setMaximum (1);
+			final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+			final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+			final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+			final int cParity = parityCombo.getSelectedIndex ();
+			final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
+			final AtomicInteger alarmNumber = new AtomicInteger (0);
+			SwingWorker<Vector<PhoneAlarm>, Void> sw =
+				new SwingWorker<Vector<PhoneAlarm>, Void> ()
+			{
+				@Override
+				protected Vector<PhoneAlarm> doInBackground ()
+				{
+					Vector<PhoneAlarm> ret;
+					synchronized (sync)
+					{
+						try
+						{
+							final DataTransporter dt = new DataTransporter (id);
+							dt.open (cSpeed, cDataBits, cStopBits,
+								cParity, cFlow);
+							alarmNumber.set (dt.getNumberOfAlarms ());
+							ret = dt.getAlarms ();
+							dt.close ();
+							return ret;
+						}
+						catch (Exception e)
+						{
+							Utils.handleException (e, "getAlarmList.SW.doInBackground");	// NOI18N
+						}
+						return null;
+					}
+				}
+
+				@Override
+				protected void done ()
+				{
+					progressBar.setValue (progressBar.getValue () + 1);
+					updateStatusLabel (STATUS.READY);
+					Vector<PhoneAlarm> ret = null;
+					try
+					{
+						ret = get ();
+						if ( ret != null )
+						{
+							int alNumber = alarmNumber.get ();
+							DefaultTableModel dtm = new DefaultTableModel
+								((alNumber > 0)? alNumber : 1, 4);
+							if ( currentAlarmElements != null )
+							{
+								currentAlarmElements.removeAllElements ();
+								currentAlarmElements.addAll (ret);
+							}
+							else
+							{
+								currentAlarmElements =
+									new Vector<PhoneAlarm> (ret.size ());
+								currentAlarmElements.addAll (ret);
+							}
+							TableModel model = alarmTable.getModel ();
+							if ( model != null )
+							{
+								int cols = model.getColumnCount ();
+								Vector<String> colNames =
+									new Vector<String> (cols);
+								for ( int i = 0; i < cols; i++ )
+								{
+									String colName = model.getColumnName (i);
+									if ( colName == null ) colName = "";	// NOI18N
+									colNames.add (colName);
+								}
+								dtm.setColumnIdentifiers (colNames);
+							}
+							else
+							{
+								dtm.setColumnIdentifiers (new String[]
+								{
+									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_number"),
+									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_date"),
+									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_time"),
+									java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_days")
+								});
+							}
+							dtm.setRowCount (0);
+							for ( int i=0; i < ret.size (); i++ )
+							{
+								PhoneAlarm al = ret.get (i);
+								if ( al == null ) continue;
+								String date = null;
+								if ( al.isOneTimeAlarm () )
+								{
+									date = al.getDateString ();
+								}
+								if ( date == null ) date = "";	// NOI18N
+								String time = al.getTimeString ();
+								if ( time == null ) time = "?";	// NOI18N
+								String days = al.getDaysString ();
+								if ( days == null ) days = "0";	// NOI18N
+								if ( days.length () == 0 ) days = "0";	// NOI18N
+								int num = al.getNumber ();
+								if ( num <= 0 ) num = 1;
+								dtm.insertRow (num-1, new Object[]
+									{
+										Integer.valueOf (num),
+										date, time, days
+									}
+								);
+							}
+							for ( int i = ret.size (); i < alNumber; i++ )
+							{
+								dtm.addRow (new String[]
+									{
+										String.valueOf (i),
+										"", "", ""	// NOI18N
+									}
+								);
+							}
+							alarmTable.setModel (dtm);
+						}
+						progressBar.setValue (0);
+					}
+					catch (Exception ex)
+					{
+						progressBar.setValue (0);
+						Utils.handleException (ex,
+							"getAlarmList.SW.done: ret.size="	// NOI18N
+							+ ((ret != null)? ret.size () : "0") );	// NOI18N
+					}
+				}
+			};
+			sw.execute ();
+		}
+		catch (Exception ex)
+		{
+			updateStatusLabel (STATUS.READY);
+			Utils.handleException (ex, "getAlarmList");	// NOI18N
+		}
+	}//GEN-LAST:event_getAlarmListButActionPerformed
+
+	private void uploadAlarmButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadAlarmButActionPerformed
+
+		try
+		{
+			int[] rows = alarmTable.getSelectedRows ();
+			TableModel model = alarmTable.getModel ();
+			if ( rows == null || model == null ) return;
+			if ( rows.length == 0 ) return;
+			final Vector<PhoneAlarm> toUpload = new Vector<PhoneAlarm> (rows.length);
+			if ( toUpload == null ) return;
+			for ( int i = 0; i < rows.length; i++ )
+			{
+				Object date = model.getValueAt (rows[i], 1);
+				Object time = model.getValueAt (rows[i], 2);
+				Object days = model.getValueAt (rows[i], 3);
+				toUpload.add (new PhoneAlarm (rows[i]+1,
+					// column 0 has the alarm number, which is the row number+1
+					(date != null)? date.toString (): "",	// NOI18N
+					(time != null)? time.toString (): "",	// NOI18N
+					(days != null)? days.toString (): ""	// NOI18N
+					));
+			}
+			final CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+				(portCombo.getSelectedItem ().toString ());
+			updateStatusLabel (STATUS.SENDING);
+			progressBar.setValue (0);
+			progressBar.setMinimum (0);
+			progressBar.setMaximum (1);
+			final int cSpeed = Integer.valueOf (speedCombo.getSelectedItem ().toString ());
+			final int cDataBits = Integer.valueOf (dataBitsCombo.getSelectedItem ().toString ());
+			final float cStopBits = Float.valueOf (stopBitsCombo.getSelectedItem ().toString ());
+			final int cParity = parityCombo.getSelectedIndex ();
+			final int cFlow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
+			SwingWorker<Integer, Void> sw =
+				new SwingWorker<Integer, Void> ()
+			{
+				@Override
+				protected Integer doInBackground ()
+				{
+					synchronized (sync)
+					{
+						try
+						{
+							int status = 0;
+							final DataTransporter dt = new DataTransporter (id);
+							dt.open (cSpeed, cDataBits, cStopBits,
+								cParity, cFlow);
+							for ( int i = 0; i < toUpload.size (); i++ )
+							{
+								try
+								{
+									int ret = dt.addAlarm (toUpload.get (i));
+									if ( ret != 0 && status == 0 ) status = ret;
+								}
+								catch (Exception e)
+								{
+									Utils.handleException (e,
+										"uploadAlarm.SW.doInBackground");	// NOI18N
+								}
+							}
+							dt.close ();
+							return status;
+						}
+						catch (Exception e)
+						{
+							Utils.handleException (e,
+								"uploadAlarm.SW.doInBackground");	// NOI18N
+							return -1;
+						}
+					}
+				}
+
+				@Override
+				protected void done ()
+				{
+					try
+					{
+						progressBar.setValue (progressBar.getValue () + 1);
+						updateStatusLabel (STATUS.READY);
+						int put = 0;
+						Integer res = get ();
+						if ( res != null )
+						{
+							if ( res.intValue () != 0 )
+							{
+								JOptionPane.showMessageDialog (mw,
+									errString + ": " + uploadMsg11,	// NOI18N
+									errString, JOptionPane.ERROR_MESSAGE );
+							}
+						}
+						progressBar.setValue (0);
+					}
+					catch (Exception ex)
+					{
+						updateStatusLabel (STATUS.READY);
+						progressBar.setValue (0);
+						Utils.handleException (ex,
+							"uploadAlarm.SW.done");	// NOI18N
+					}
+				}
+			};
+			sw.execute ();
+		}
+		catch (Exception ex)
+		{
+			updateStatusLabel (STATUS.READY);
+			Utils.handleException (ex, "uploadAlarm");	// NOI18N
+		}
+	}//GEN-LAST:event_uploadAlarmButActionPerformed
 
 	private void putListInTable (final String ofWhat,
 		final DefaultTableModel dtm,
@@ -3600,7 +3959,7 @@ public class MainWindow extends javax.swing.JFrame
 		Utils.changeGUI (new Runnable ()
 		{
 			@Override
-			public void run ()
+			public synchronized void run ()
 			{
 				if ( status == null || s == null ) return;
 				status.setText (s.toString ());
@@ -3790,6 +4149,72 @@ public class MainWindow extends javax.swing.JFrame
 		return put;
 	}
 
+	private static int staticUpload (PhoneAlarm al, String whichPort) throws Exception
+	{
+		if ( al == null ) return -7;
+		if ( whichPort == null )
+		{
+	                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+
+			while (portList.hasMoreElements ())
+			{
+				CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
+
+				if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+				{
+					whichPort = id.getName ();
+					break;
+				}
+			}
+		}
+		CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+			(whichPort);
+		DataTransporter dt = new DataTransporter (id);
+		dt.open (speed, dBits, sBits, parity, flow);
+
+		int put = dt.addAlarm (al);
+
+		dt.close ();
+		if ( put != 0 )
+		{
+			System.out.println ( errString + ": " + uploadMsg11 );	// NOI18N
+		}
+		return put;
+	}
+
+	private static int staticDelete (int alarmNumber, String whichPort) throws Exception
+	{
+		if ( alarmNumber <= 0 ) return -7;
+		if ( whichPort == null )
+		{
+	                Enumeration portList = CommPortIdentifier.getPortIdentifiers ();
+
+			while (portList.hasMoreElements ())
+			{
+				CommPortIdentifier id = (CommPortIdentifier) portList.nextElement ();
+
+				if (id.getPortType () == CommPortIdentifier.PORT_SERIAL)
+				{
+					whichPort = id.getName ();
+					break;
+				}
+			}
+		}
+		CommPortIdentifier id = CommPortIdentifier.getPortIdentifier
+			(whichPort);
+		DataTransporter dt = new DataTransporter (id);
+		dt.open (speed, dBits, sBits, parity, flow);
+
+		int put = dt.deleteAlarm (alarmNumber);
+
+		dt.close ();
+		if ( put != 0 )
+		{
+			System.out.println ( errString + ": " + uploadMsg11 );	// NOI18N
+		}
+		return put;
+	}
+
 	private static int scanPorts ()
 	{
 		int active = 0;
@@ -3910,6 +4335,7 @@ public class MainWindow extends javax.swing.JFrame
 			for ( i = 0; i < dirs.length; i++ )
 			{
 				if ( dirs[i] == null ) continue;
+				if ( dirs[i].length () == 0 ) continue;
 				try
 				{
 					System.setErr (new PrintStream (new File (
@@ -4104,6 +4530,42 @@ public class MainWindow extends javax.swing.JFrame
 				{
 					closeProgram (scanPorts ());
 				}
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--update-alarm") )	// NOI18N
+				{
+					if ( i < args.length-1 )
+					{
+						try
+						{
+							int res = staticUpload ( PhoneAlarm.parseReponse
+								(args[i+1]), portName );
+							closeProgram (res);
+						}
+						catch ( Exception ex )
+						{
+							Utils.handleException (ex,
+								"main.staticUpload(" + args[i+1] + ")");	// NOI18N
+						}
+						i++;
+					}
+				}
+				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--delete-alarm") )	// NOI18N
+				{
+					if ( i < args.length-1 )
+					{
+						try
+						{
+							int res = staticDelete ( Integer.parseInt (args[i+1]),
+								portName );
+							closeProgram (res);
+						}
+						catch ( Exception ex )
+						{
+							Utils.handleException (ex,
+								"main.staticDelete(" + args[i+1] + ")");	// NOI18N
+						}
+						i++;
+					}
+				}
 				else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--upload") )	// NOI18N
 				{
 					if ( i < args.length-1 )
@@ -4222,7 +4684,7 @@ public class MainWindow extends javax.swing.JFrame
 		SwingUtilities.invokeLater (new Runnable ()
 		{
 			@Override
-			public void run ()
+			public synchronized void run ()
 			{
 				new MainWindow ().setVisible (true);
 			}
@@ -4238,6 +4700,7 @@ public class MainWindow extends javax.swing.JFrame
 		@Override
 		public void keyTyped (KeyEvent ke)
 		{
+			if ( ke == null ) return;
 			if ( ke.getKeyChar () == KeyEvent.VK_ESCAPE )
 			{
 				dispose ();
@@ -4246,98 +4709,110 @@ public class MainWindow extends javax.swing.JFrame
 	}
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel IMEI;
-    private javax.swing.JLabel IMEILabel;
-    private javax.swing.JButton aboutBut;
-    private javax.swing.JPanel addrBookPane;
-    private javax.swing.JTable addrTable;
-    private javax.swing.JPanel animPane;
-    private javax.swing.JTable animTable;
-    private javax.swing.JLabel bpsLabel;
-    private javax.swing.JComboBox dataBitsCombo;
-    private javax.swing.JLabel databitsLabel;
-    private javax.swing.JButton deleteAddrBut;
-    private javax.swing.JButton deleteAnimBut;
-    private javax.swing.JButton deleteEventBut;
-    private javax.swing.JButton deleteJavaBut;
-    private javax.swing.JButton deletePhotoBut;
-    private javax.swing.JButton deleteRingBut;
-    private javax.swing.JButton deleteTodoBut;
-    private javax.swing.JButton downloadAddrBut;
-    private javax.swing.JButton downloadAnimBut;
-    private javax.swing.JButton downloadEventBut;
-    private javax.swing.JButton downloadJavaBut;
-    private javax.swing.JButton downloadPhotoBut;
-    private javax.swing.JButton downloadRingBut;
-    private javax.swing.JButton downloadTodoBut;
-    private javax.swing.JPanel eventPane;
-    private javax.swing.JTable eventTable;
-    private javax.swing.JButton exitBut;
-    private javax.swing.JLabel firmware;
-    private javax.swing.JLabel firmwareLabel;
-    private javax.swing.JCheckBox flowHard;
-    private javax.swing.JLabel flowLabel;
-    private javax.swing.JCheckBox flowSoft;
-    private javax.swing.JButton getAddrListBut;
-    private javax.swing.JButton getAnimListBut;
-    private javax.swing.JButton getCapBut;
-    private javax.swing.JButton getEventListBut;
-    private javax.swing.JButton getJavaListBut;
-    private javax.swing.JButton getPhotoListBut;
-    private javax.swing.JButton getRingListBut;
-    private javax.swing.JButton getTodoListBut;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane10;
-    private javax.swing.JScrollPane jScrollPane11;
-    private javax.swing.JScrollPane jScrollPane12;
-    private javax.swing.JScrollPane jScrollPane13;
-    private javax.swing.JScrollPane jScrollPane14;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPane8;
-    private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JPanel javaPane;
-    private javax.swing.JTable javaTable;
-    private javax.swing.JButton loadConfBut;
-    private javax.swing.JComboBox parityCombo;
-    private javax.swing.JLabel parityLabel;
-    private javax.swing.JLabel phone;
-    private javax.swing.JLabel phoneTypeLabel;
-    private javax.swing.JPanel photoPane;
-    private javax.swing.JTable photoTable;
-    private javax.swing.JComboBox portCombo;
-    private javax.swing.JLabel portLabel;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JLabel progressLabel;
-    private javax.swing.JButton rawBut;
-    private javax.swing.JPanel ringPane;
-    private javax.swing.JTable ringTable;
-    private javax.swing.JButton saveConfBut;
-    private javax.swing.JButton scanButton;
-    private javax.swing.JComboBox speedCombo;
-    private javax.swing.JLabel speedLabel;
-    private javax.swing.JLabel status;
-    private javax.swing.JLabel statusLabel;
-    private javax.swing.JComboBox stopBitsCombo;
-    private javax.swing.JLabel stopbitsLabel;
-    private javax.swing.JLabel subsNum;
-    private javax.swing.JLabel subsNumLabel;
-    private javax.swing.JTabbedPane tabPane;
-    private javax.swing.JPanel todoPane;
-    private javax.swing.JTable todoTable;
-    private javax.swing.JButton uploadAddrBut;
-    private javax.swing.JButton uploadAnimBut;
-    private javax.swing.JButton uploadEventBut;
-    private javax.swing.JButton uploadJavaBut;
-    private javax.swing.JButton uploadPhotoBut;
-    private javax.swing.JButton uploadRingBut;
-    private javax.swing.JButton uploadTodoBut;
-    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel IMEI;
+        private javax.swing.JLabel IMEILabel;
+        private javax.swing.JButton aboutBut;
+        private javax.swing.JPanel addrBookPane;
+        private javax.swing.JTable addrTable;
+        private javax.swing.JPanel alarmPane;
+        private javax.swing.JTable alarmTable;
+        private javax.swing.JPanel animPane;
+        private javax.swing.JTable animTable;
+        private javax.swing.JLabel bpsLabel;
+        private javax.swing.JComboBox dataBitsCombo;
+        private javax.swing.JLabel databitsLabel;
+        private javax.swing.JButton deleteAddrBut;
+        private javax.swing.JButton deleteAlarmBut;
+        private javax.swing.JButton deleteAnimBut;
+        private javax.swing.JButton deleteEventBut;
+        private javax.swing.JButton deleteJavaBut;
+        private javax.swing.JButton deletePhotoBut;
+        private javax.swing.JButton deleteRingBut;
+        private javax.swing.JButton deleteTodoBut;
+        private javax.swing.JButton downloadAddrBut;
+        private javax.swing.JButton downloadAlarmBut;
+        private javax.swing.JButton downloadAnimBut;
+        private javax.swing.JButton downloadEventBut;
+        private javax.swing.JButton downloadJavaBut;
+        private javax.swing.JButton downloadPhotoBut;
+        private javax.swing.JButton downloadRingBut;
+        private javax.swing.JButton downloadTodoBut;
+        private javax.swing.JPanel eventPane;
+        private javax.swing.JTable eventTable;
+        private javax.swing.JButton exitBut;
+        private javax.swing.JLabel firmware;
+        private javax.swing.JLabel firmwareLabel;
+        private javax.swing.JCheckBox flowHard;
+        private javax.swing.JLabel flowLabel;
+        private javax.swing.JCheckBox flowSoft;
+        private javax.swing.JLabel fontSizeLab;
+        private javax.swing.JSpinner fontSizeSpin;
+        private javax.swing.JButton getAddrListBut;
+        private javax.swing.JButton getAlarmListBut;
+        private javax.swing.JButton getAnimListBut;
+        private javax.swing.JButton getCapBut;
+        private javax.swing.JButton getEventListBut;
+        private javax.swing.JButton getJavaListBut;
+        private javax.swing.JButton getPhotoListBut;
+        private javax.swing.JButton getRingListBut;
+        private javax.swing.JButton getTodoListBut;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JScrollPane jScrollPane1;
+        private javax.swing.JScrollPane jScrollPane10;
+        private javax.swing.JScrollPane jScrollPane11;
+        private javax.swing.JScrollPane jScrollPane12;
+        private javax.swing.JScrollPane jScrollPane13;
+        private javax.swing.JScrollPane jScrollPane14;
+        private javax.swing.JScrollPane jScrollPane15;
+        private javax.swing.JScrollPane jScrollPane16;
+        private javax.swing.JScrollPane jScrollPane17;
+        private javax.swing.JScrollPane jScrollPane2;
+        private javax.swing.JScrollPane jScrollPane3;
+        private javax.swing.JScrollPane jScrollPane4;
+        private javax.swing.JScrollPane jScrollPane5;
+        private javax.swing.JScrollPane jScrollPane6;
+        private javax.swing.JScrollPane jScrollPane7;
+        private javax.swing.JScrollPane jScrollPane8;
+        private javax.swing.JScrollPane jScrollPane9;
+        private javax.swing.JPanel javaPane;
+        private javax.swing.JTable javaTable;
+        private javax.swing.JButton loadConfBut;
+        private javax.swing.JComboBox parityCombo;
+        private javax.swing.JLabel parityLabel;
+        private javax.swing.JLabel phone;
+        private javax.swing.JLabel phoneTypeLabel;
+        private javax.swing.JPanel photoPane;
+        private javax.swing.JTable photoTable;
+        private javax.swing.JComboBox portCombo;
+        private javax.swing.JLabel portLabel;
+        private javax.swing.JProgressBar progressBar;
+        private javax.swing.JLabel progressLabel;
+        private javax.swing.JButton rawBut;
+        private javax.swing.JPanel ringPane;
+        private javax.swing.JTable ringTable;
+        private javax.swing.JButton saveConfBut;
+        private javax.swing.JButton scanButton;
+        private javax.swing.JComboBox speedCombo;
+        private javax.swing.JLabel speedLabel;
+        private javax.swing.JLabel status;
+        private javax.swing.JLabel statusLabel;
+        private javax.swing.JComboBox stopBitsCombo;
+        private javax.swing.JLabel stopbitsLabel;
+        private javax.swing.JLabel subsNum;
+        private javax.swing.JLabel subsNumLabel;
+        private javax.swing.JTabbedPane tabPane;
+        private javax.swing.JPanel todoPane;
+        private javax.swing.JTable todoTable;
+        private javax.swing.JButton uploadAddrBut;
+        private javax.swing.JButton uploadAlarmBut;
+        private javax.swing.JButton uploadAnimBut;
+        private javax.swing.JButton uploadEventBut;
+        private javax.swing.JButton uploadJavaBut;
+        private javax.swing.JButton uploadPhotoBut;
+        private javax.swing.JButton uploadRingBut;
+        private javax.swing.JButton uploadTodoBut;
+        private org.jdesktop.beansbinding.BindingGroup bindingGroup;
+        // End of variables declaration//GEN-END:variables
 
 }

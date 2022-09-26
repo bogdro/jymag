@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2009 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2010 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,8 @@
 
 package BogDroSoft.jymag;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
@@ -201,7 +203,7 @@ public class Utils
 	 * @param ex The exception to display.
 	 * @param data Any additional data to display.
 	 */
-	public static void handleException (Throwable ex, Object data)
+	public synchronized static void handleException (Throwable ex, Object data)
 	{
 		if ( ex == null || (System.out == null && System.err == null) ) return;
 		try
@@ -361,7 +363,7 @@ public class Utils
 	 * EventDispatchThread and waits for it to exit.
 	 * @param r The code to run.
 	 */
-	public static void changeGUI (final Runnable r)
+	public synchronized static void changeGUI (final Runnable r)
 	{
 		if ( r == null ) return;
 		if ( SwingUtilities.isEventDispatchThread () )
@@ -382,7 +384,7 @@ public class Utils
 				SwingUtilities.invokeAndWait (new Runnable ()
 				{
 					@Override
-					public void run ()
+					public synchronized void run ()
 					{
 						try
 						{
@@ -404,6 +406,31 @@ public class Utils
 			catch (Throwable ex)
 			{
 				Utils.handleException (ex, "changeGUI->invokeAndWait");	// NOI18N
+			}
+		}
+	}
+
+	/**
+	 * Set the given font size in all the components in the given
+	 * Component (recursively, if it's a Container).
+	 * @param c The Component with Components that will have their font
+	 *	size changed.
+	 * @param newSize The new font size to set.
+	 */
+	public static void setFontSize (Component c, float newSize)
+	{
+		if ( c == null ) return;
+		c.setFont (c.getFont ().deriveFont (newSize));
+		if ( c instanceof Container )
+		{
+			Component[] subComps = ((Container)c).getComponents ();
+			if ( subComps != null )
+			{
+				for ( int i = 0; i < subComps.length; i++ )
+				{
+					if ( subComps[i] != null )
+						setFontSize (subComps[i], newSize);
+				}
 			}
 		}
 	}
