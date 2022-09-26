@@ -1,7 +1,7 @@
 /*
  * Utils.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -559,6 +558,12 @@ public class Utils
 								"changeGUI->invokeAndWait->r.run");// NOI18N
 						}
 					}
+
+					@Override
+					public String toString ()
+					{
+						return "Utils.changeGUI.Runnable";	// NOI18N
+					}
 				});
 			}
 			catch (InterruptedException ex)
@@ -649,98 +654,6 @@ public class Utils
 	}
 
 	/**
-	 * Redirects the standard error output to a log file.
-	 * @param filename The name of the file to redirect the output to.
-	 * @return The filename the output was actually redirected to.
-	 */
-	public static String redirectStderrToFile (String filename)
-	{
-		if ( filename == null )
-		{
-			System.err.close ();
-			return null;
-		}
-		try
-		{
-			// don't force any encodings, because the translated messages may
-			// be in another encoding
-			System.setErr (new PrintStream (new File (filename)));
-		}
-		catch (Exception ex)
-		{
-			String dirSep = null;
-			try
-			{
-				dirSep = System.getProperty ("file.separator", "/");	// NOI18N
-			} catch (Exception e) {}
-			if ( dirSep == null )
-			{
-				dirSep = File.separator;
-			}
-			if ( dirSep == null )
-			{
-				dirSep = "/";	// NOI18N
-			}
-			String[] dirs = new String[7];
-			try
-			{
-				dirs[0] = System.getProperty ("user.dir");	// NOI18N
-			} catch (Exception e) {}
-			try
-			{
-				dirs[1] = System.getProperty ("user.home");	// NOI18N
-			} catch (Exception e) {}
-			try
-			{
-				dirs[2] = System.getenv ("HOME");	// NOI18N
-			} catch (Exception e) {}
-			try
-			{
-				dirs[3] = System.getenv ("TMP");	// NOI18N
-			} catch (Exception e) {}
-			try
-			{
-				dirs[4] = System.getenv ("TEMP");	// NOI18N
-			} catch (Exception e) {}
-			try
-			{
-				dirs[5] = System.getenv ("TMPDIR");	// NOI18N
-			} catch (Exception e) {}
-			try
-			{
-				dirs[6] = System.getenv ("TEMPDIR");	// NOI18N
-			} catch (Exception e) {}
-			int i;
-			for ( i = 0; i < dirs.length; i++ )
-			{
-				if ( dirs[i] == null )
-				{
-					continue;
-				}
-				if ( dirs[i].isEmpty () )
-				{
-					continue;
-				}
-				try
-				{
-					// don't force any encodings, because the translated messages may
-					// be in another encoding
-					System.setErr (new PrintStream (new File (
-						dirs[i] + dirSep + filename)));
-					filename = dirs[i] + dirSep + filename;
-					break;
-				}
-				catch (Exception e) {}
-			}
-			if ( i == dirs.length )
-			{
-				Utils.handleException (ex, "stderr");	// NOI18N
-			}
-		}
-		return filename;
-	}
-
-	/**
 	 * Crates a file chooser for opening single files of the given type.
 	 * @param description The description to display in the filters list.
 	 * @param filetype The Map with file extensiotns as keys.
@@ -753,88 +666,8 @@ public class Utils
 		fc.setAcceptAllFileFilterUsed (false);
 		fc.setMultiSelectionEnabled (false);
 		fc.setDialogType (JFileChooser.OPEN_DIALOG);
-		fc.setFileFilter (new FileFilter ()
-		{
-			@Override
-			public boolean accept ( File f )
-			{
-				if ( f.isDirectory () )
-				{
-					return true;
-				}
-				String name = f.getName ();
-				if ( name == null )
-				{
-					return false;
-				}
-				if ( name.contains (dot) && filetype != null )
-				{
-					if ( filetype.containsKey (name.substring
-						(name.lastIndexOf (dot)+1)
-						.toLowerCase (Locale.ENGLISH)))
-					{
-						return true;
-					}
-				}
-				return false;
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				StringBuilder desc = new StringBuilder (200);
-				if ( description != null )
-				{
-					desc.append (description);
-				}
-				if ( filetype != null )
-				{
-					Iterator<String> keys = filetype.keySet ().iterator ();
-					if ( keys != null )
-					{
-						desc.append (space + lParen);
-						while ( keys.hasNext () )
-						{
-							desc.append (allFileNames + keys.next ());
-							if ( keys.hasNext () )
-							{
-								desc.append (comma + space);
-							}
-						}
-						desc.append (rParen);
-					}
-				}
-				return desc.toString ();
-			}
-		});
+		fc.setFileFilter (new JYMAGFileFilter (description, filetype));
 		return fc;
-	}
-
-	/**
-	 * Called when the programs needs to close.
-	 * @param filename The name of the log file.
-	 * @param retval Return value passed to System.exit ().
-	 */
-	public static void closeProgram (String filename, int retval)
-	{
-		// close logging
-		if ( System.err != null )
-		{
-			System.err.close ();
-		}
-		if ( filename != null )
-		{
-			// remove the log file if empty
-			File log = new File (filename);
-			if ( log.exists () && log.length() == 0 )
-			{
-				if ( (! log.delete ()) && retval == 0 )
-				{
-					retval = 1;
-				}
-			}
-		}
-		System.exit (retval);
 	}
 
 	private static final Color greenStatusColour = new Color (0, 204, 0)/*Color.GREEN*/;
@@ -866,7 +699,35 @@ public class Utils
 				}
 				status.validate ();
 			}
+
+			@Override
+			public String toString ()
+			{
+				return "Utils.updateStatusLabel.Runnable";	// NOI18N
+			}
 		});
+	}
+
+	/**
+	 * This function joins 2 arrays of bytes together.
+	 * @param orig The first array.
+	 * @param toAdd The array to add.
+	 * @return an array starting with "orig" followed by "toAdd".
+	 */
+	public static byte[] joinArrays (byte[] orig, byte[] toAdd)
+	{
+		if ( orig == null )
+		{
+			return toAdd;
+		}
+		if ( toAdd == null )
+		{
+			return orig;
+		}
+		byte[] ret = new byte[orig.length + toAdd.length];
+		System.arraycopy (orig, 0, ret, 0, orig.length);
+		System.arraycopy (toAdd, 0, ret, orig.length, toAdd.length);
+		return ret;
 	}
 
 	/**
@@ -892,6 +753,12 @@ public class Utils
 				handleException (ex, "Utils.UncaughtExceptionHandler: Thread="	// NOI18N
 					+ ((t != null)? t.getName() : "?"));	// NOI18N
 			} catch (Throwable th) {}
+		}
+
+		@Override
+		public String toString ()
+		{
+			return "Utils.UncExHndlr";	// NOI18N
 		}
 	}
 
@@ -921,6 +788,12 @@ public class Utils
 					table.selectAll ();
 				}
 			}
+		}
+
+		@Override
+		public String toString ()
+		{
+			return "Utils.TableMouseListener";	// NOI18N
 		}
 	}
 
@@ -1043,6 +916,90 @@ public class Utils
 				}
 				frame.dispose ();
 			}
+		}
+
+		@Override
+		public String toString ()
+		{
+			return "Utils.EscKeyListener(" + frame.getName () + ")";	// NOI18N
+		}
+	}
+
+	/**
+	 * A FileFilter implementation for UI file chooser windows.
+	 */
+	public static class JYMAGFileFilter extends FileFilter
+	{
+		private final String filterDescription;
+		private final Map<String, Integer> filterFiletypes;
+
+		/**
+		 * Creates a JYMAGFileFilter instance.
+		 * @param description the description of the filter.
+		 * @param filetype the types of the files to be accepted by the filter.
+		 */
+		public JYMAGFileFilter (String description, Map<String, Integer> filetype)
+		{
+			StringBuilder desc = new StringBuilder (200);
+			if ( description != null )
+			{
+				desc.append (description);
+			}
+			if ( filetype != null )
+			{
+				Iterator<String> keys = filetype.keySet ().iterator ();
+				if ( keys != null )
+				{
+					desc.append (space + lParen);
+					while ( keys.hasNext () )
+					{
+						desc.append (allFileNames + keys.next ());
+						if ( keys.hasNext () )
+						{
+							desc.append (comma + space);
+						}
+					}
+					desc.append (rParen);
+				}
+			}
+			filterDescription = desc.toString ();
+			filterFiletypes = filetype;
+		}
+
+		@Override
+		public boolean accept ( File f )
+		{
+			if ( f.isDirectory () )
+			{
+				return true;
+			}
+			String name = f.getName ();
+			if ( name == null )
+			{
+				return false;
+			}
+			if ( name.contains (dot) && filterFiletypes != null )
+			{
+				if ( filterFiletypes.containsKey (name.substring
+					(name.lastIndexOf (dot)+1)
+					.toLowerCase (Locale.ENGLISH)))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public String getDescription ()
+		{
+			return filterDescription;
+		}
+
+		@Override
+		public String toString ()
+		{
+			return "Utils.JYMAGFileFilter(" + filterDescription + ")";	// NOI18N
 		}
 	}
 

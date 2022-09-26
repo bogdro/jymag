@@ -1,7 +1,7 @@
 /*
  * CapabilityWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ package BogDroSoft.jymag.gui;
 import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.Utils;
 import java.awt.Dimension;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
@@ -41,9 +42,11 @@ public class CapabilityWindow extends javax.swing.JDialog
 	private static final long serialVersionUID = 75L;
 	private final DataTransporter dtr;
 	private final Object sync;
+	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
 	private static final String exString = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow").getString("Exception");
+	private final MainWindow mw;
 
 	/**
 	 * Creates new form CapabilityWindow.
@@ -53,13 +56,14 @@ public class CapabilityWindow extends javax.swing.JDialog
 	 * @param synchro A synchronization variable.
 	 * @param fontSize The font size for this window.
 	 */
-	public CapabilityWindow (DataTransporter dt, java.awt.Frame parent,
+	public CapabilityWindow (DataTransporter dt, MainWindow parent,
 		Object synchro, float fontSize)
 	{
 		// make always modal
 		super (parent, true);
 		dtr = dt;
 		sync = synchro;
+		mw = parent;
 		if ( dt == null || synchro == null )
 		{
 			dispose ();
@@ -111,6 +115,11 @@ public class CapabilityWindow extends javax.swing.JDialog
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow"); // NOI18N
                 setTitle(bundle.getString("JYMAG_-_Capabilities")); // NOI18N
+                addWindowListener(new java.awt.event.WindowAdapter() {
+                        public void windowClosing(java.awt.event.WindowEvent evt) {
+                                formWindowClosing(evt);
+                        }
+                });
 
                 getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capab.png"))); // NOI18N
                 getCapBut.setText(bundle.getString("Get_selected_capabilities")); // NOI18N
@@ -182,7 +191,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addContainerGap()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
                                                 .addComponent(jLabel1)
                                                 .addComponent(animCapRB)
                                                 .addComponent(eventCapRB)
@@ -261,7 +270,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 
 	private void exitButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButActionPerformed
 
-		dispose ();
+		exit ();
 	}//GEN-LAST:event_exitButActionPerformed
 
 	private void getCapButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getCapButActionPerformed
@@ -300,6 +309,14 @@ public class CapabilityWindow extends javax.swing.JDialog
 
 		final String typeToGet = type;
 		getCapBut.setEnabled (false);
+        	exitBut.setEnabled (false);
+        	abookCapRB.setEnabled (false);
+        	animCapRB.setEnabled (false);
+        	eventCapRB.setEnabled (false);
+        	pictCapRB.setEnabled (false);
+        	ringCapRB.setEnabled (false);
+        	todoCapRB.setEnabled (false);
+		mw.setReceivingStatus ();
 
 		SwingWorker<String, Void> sw =
 			new SwingWorker<String, Void> ()
@@ -309,6 +326,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 			{
 				try
 				{
+					isFinished.set (false);
 					String rcvd = null;
 					synchronized (sync)
 					{
@@ -322,6 +340,10 @@ public class CapabilityWindow extends javax.swing.JDialog
 					return "<" 					// NOI18N
 						+ exString
 						+ ": " + ex + ">"; 			// NOI18N
+				}
+				finally
+				{
+					isFinished.set (true);
 				}
 			}
 
@@ -347,6 +369,20 @@ public class CapabilityWindow extends javax.swing.JDialog
 					Utils.handleException (ex, "CapabilityWindow.getCapabilities.SW.done");	// NOI18N
 				}
 				getCapBut.setEnabled (true);
+				exitBut.setEnabled (true);
+				abookCapRB.setEnabled (true);
+				animCapRB.setEnabled (true);
+				eventCapRB.setEnabled (true);
+				pictCapRB.setEnabled (true);
+				ringCapRB.setEnabled (true);
+				todoCapRB.setEnabled (true);
+				mw.setReadyStatus ();
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "CapabilityWindow.getCapButActionPerformed.SwingWorker";	// NOI18N
 			}
 		};
 		sw.execute ();
@@ -361,6 +397,28 @@ public class CapabilityWindow extends javax.swing.JDialog
 			Utils.setFontSize (this, ((Number)val).floatValue ());
 		}
 	}//GEN-LAST:event_fontSizeSpinStateChanged
+
+	private void formWindowClosing (java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+	{//GEN-HEADEREND:event_formWindowClosing
+		exit ();
+	}//GEN-LAST:event_formWindowClosing
+
+	private void exit ()
+	{
+		while ( ! isFinished.get () )
+		{
+			try
+			{
+				Thread.sleep (10);
+			}
+			catch (Exception ex)
+			{
+				// ignore
+			}
+		}
+		mw.setReadyStatus ();
+		dispose ();
+	}
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JRadioButton abookCapRB;

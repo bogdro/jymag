@@ -1,7 +1,7 @@
 /*
  * SignalDisplayer.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -54,17 +54,22 @@ public class SignalDisplayer extends javax.swing.JFrame
 	private static final String dBm = "dBm";	// NOI18N
 	private static final String qMark = "?";	// NOI18N
 
+	private final MainWindow mw;
+
 	/**
 	 * Creates new form SignalDisplayer.
 	 * @param dtr The DataTransporter instance to use for communications.
 	 * Must already be open.
+	 * @param parent The parent MainWindow.
 	 * @param synchro A synchronization variable.
 	 * @param fontSize The font size for this window.
 	 */
-	public SignalDisplayer (DataTransporter dtr, Object synchro, float fontSize)
+	public SignalDisplayer (DataTransporter dtr, MainWindow parent,
+		Object synchro, float fontSize)
 	{
 		dt = dtr;
 		sync = synchro;
+		mw = parent;
 		if ( dtr == null || synchro == null )
 		{
 			dispose ();
@@ -302,6 +307,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 			}
 		}
 		dt.close ();
+		mw.setReadyStatus ();
 		dispose ();
 	}
 
@@ -333,6 +339,12 @@ public class SignalDisplayer extends javax.swing.JFrame
 					powerLevel.setValue (0);
 					powerLabel.setText (qMark);
 				}
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "SignalDisplayer.setLevel.Runnable";	// NOI18N
 			}
 		});
 	}
@@ -376,7 +388,14 @@ public class SignalDisplayer extends javax.swing.JFrame
 					}
 				}
 			}
+
+			@Override
+			public String toString ()
+			{
+				return "SignalDisplayer.start.Runnable";	// NOI18N
+			}
 		});
+		mw.setReceivingStatus ();
 		updater.start ();
 	}
 

@@ -1,7 +1,7 @@
 /*
  * DataTransporter.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -118,7 +118,7 @@ public class DataTransporter
 	private static final String imeiCmd = "ATIMEI\r";				// NOI18N
 	private static final String imeiReply = "ATIMEI";				// NOI18N
 	private static final String typeCmd = "AT+CGMR\r";				// NOI18N
-	private static final String typeReplyRegex = "\\+CGMR: ";			// NOI18N
+	private static final String typeReplyRegex = "\\+CGMR:\\s*";			// NOI18N
 	private static final String serialNumCmd = "AT+CGSN\r";				// NOI18N
 	private static final String serialNumReply = "CGSN";				// NOI18N
 	private static final String subsNumCmd = "AT+CNUM\r";				// NOI18N
@@ -519,7 +519,7 @@ public class DataTransporter
 						// don't force any encodings, because the file data may
 						// be invalid in any given encoding
 						String curr = new String (readBuffer, 0, wasRead);
-						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
+						res = Utils.joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 						if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
 						{
 							break;
@@ -549,7 +549,7 @@ public class DataTransporter
 					// don't force any encodings, because the file data may
 					// be invalid in any given encoding
 					String curr = new String (readBuffer, 0, wasRead);
-					res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
+					res = Utils.joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 					if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
 					{
 						break;
@@ -588,7 +588,7 @@ public class DataTransporter
 						// don't force any encodings, because the file data may
 						// be invalid in any given encoding
 						String curr = new String (readBuffer, 0, wasRead);
-						res = joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
+						res = Utils.joinArrays (res, Arrays.copyOf (readBuffer, wasRead));
 						if ( isTerminatorPresent ( curr.trim (), extraTerminators ) )
 						{
 							break;
@@ -895,10 +895,6 @@ public class DataTransporter
 
 				// close file upload
 				rcvd = tryCommand (transferFileEndCmd, null);
-				if ( trials > MAX_TRIALS )
-				{
-					return -6;
-				}
 				if ( ! rcvd.contains (OKStr) )
 				{
 					System.out.println (ansString + "6=" + rcvd);	// NOI18N
@@ -2485,28 +2481,6 @@ public class DataTransporter
 		}
 	}
 
-	/**
-	 * This function joins 2 arrays of bytes together.
-	 * @param orig The first array.
-	 * @param toAdd The array to add.
-	 * @return an array starting with "orig" followed by "toAdd".
-	 */
-	private byte[] joinArrays (byte[] orig, byte[] toAdd)
-	{
-		if ( orig == null )
-		{
-			return toAdd;
-		}
-		if ( toAdd == null )
-		{
-			return orig;
-		}
-		byte[] ret = new byte[orig.length + toAdd.length];
-		System.arraycopy (orig, 0, ret, 0, orig.length);
-		System.arraycopy (toAdd, 0, ret, orig.length, toAdd.length);
-		return ret;
-	}
-
 	private class SPL implements SerialPortEventListener
 	{
 		public SPL ()
@@ -2535,6 +2509,12 @@ public class DataTransporter
 					}
 					break;
 			}
+		}
+
+		@Override
+		public String toString ()
+		{
+			return "DataTransporter.SPL";	// NOI18N
 		}
 	}
 

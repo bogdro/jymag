@@ -1,7 +1,7 @@
 /*
  * DialPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2012-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2012-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -64,7 +64,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 	private JCheckBox flowSoft;
 	private JCheckBox flowHard;
 
-	private MainWindow mw;
+	private volatile MainWindow mw;
 
 	// synchronization variable:
 	private Object sync;
@@ -502,6 +502,12 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 					protected void done ()
 					{
 						dt.close ();
+					}
+
+					@Override
+					public String toString ()
+					{
+						return "DialPanel.dialButActionPerformed.SwingWorker";	// NOI18N
 					}
 				};
 				sw.execute ();

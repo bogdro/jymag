@@ -1,5 +1,5 @@
 ; JYMAG version included in the installer. Must be all-numeric!
-!define VERSION 1.5
+!define VERSION 1.6
 
 ; The JYMAG publisher
 !define PUBLISHER "Bogdan 'bogdro' Drozdowski"
@@ -61,9 +61,9 @@ CRCCheck force
 
 ; the current year is now provided by 'make'
 ;!searchparse /noerrors "${__DATE__}" "" YEAR "-"
-!define YEAR 2016
+!define YEAR 2018
 !define MONTH 06
-!define DAYOFMONTH 30
+!define DAYOFMONTH 09
 
 VIAddVersionKey "ProductName" "JYMAG"
 VIAddVersionKey "Comments" "Installer created on ${YEAR}-${MONTH}-${DAYOFMONTH}, ${__TIME__} with the free Nullsoft Scriptable Install System, http://nsis.sf.net"

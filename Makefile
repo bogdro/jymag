@@ -1,7 +1,7 @@
 #
 # JYMAG hand-made Makefile for creating distribution packages.
 # Best with GNU make.
-# Copyright (C) 2008-2016 Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl
+# Copyright (C) 2008-2018 Bogdan 'bogdro' Drozdowski, bogdandr @ op . pl
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -84,7 +84,7 @@ OSSLSIGNCODE_O  = -t $(TSAURL) -n JYMAG -i http://jymag.sf.net -h sha1
 
 # Java jar signer
 JARSIGN		= jarsigner
-JARSIGN_ALIAS	= 'bogdan drozdowski (bogdandr@op.pl)'
+JARSIGN_ALIAS	= 'jymag-sign-cert'
 JARSIGN_OPTS	= -digestalg SHA-512 -sigalg SHA512withRSA -tsa $(TSAURL)
 
 # pdfsign.sh is a wrapper around PortableSigner (portablesigner.sf.net)
@@ -95,7 +95,7 @@ PDFSIGNER	= pdfsign.sh
 ###########################################################################
 
 # JYMAG version
-VER		= 1.5
+VER		= 1.6
 
 # The current year, month and day of month used for formatting the dates.
 # Watch out for values < 10.
@@ -153,10 +153,10 @@ all:	jar
 # Distribution packages
 ###########################################################################
 
-# dist-src should be last, because it deletes elements used by other targets
-dist:	dist-javadoc dist-bin installer installer-signed dist-src
+# pack-src should be last, because it deletes elements used by other targets
+pack:	pack-javadoc pack-bin installer installer-signed pack-src
 
-dist-src:	../$(FILE_ARCH_SRC)
+pack-src:	../$(FILE_ARCH_SRC)
 
 # better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
 # some systems don't like it
@@ -169,7 +169,7 @@ dist-src:	../$(FILE_ARCH_SRC)
 	$(DEL) $(DIR_TMP_DIST) && \
 	$(GNUPG) $(GNUPG_OPTS) $(FILE_ARCH_SRC)
 
-dist-bin:	../$(FILE_ARCH_BIN) test
+pack-bin:	../$(FILE_ARCH_BIN) test
 
 # better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
 # some systems don't like it
@@ -195,7 +195,7 @@ dist-bin:	../$(FILE_ARCH_BIN) test
 	$(DEL) $(DIR_TMP_DIST) && \
 	$(GNUPG) $(GNUPG_OPTS) $(FILE_ARCH_BIN)
 
-dist-javadoc:	../$(FILE_ARCH_JAVADOC)
+pack-javadoc:	../$(FILE_ARCH_JAVADOC)
 
 # better not use tar jcf (or zip) ../JYMAG-xxx ../JYMAG, because
 # some systems don't like it
@@ -256,12 +256,15 @@ manual-clean:
 # Application
 ###########################################################################
 
-jar: $(FILE_PROGRAM)
+jar: jar-clean $(FILE_PROGRAM)
 
 $(FILE_PROGRAM):	$(shell find src) build.xml \
 	nbproject/build-impl.xml Makefile
 	$(ANT) jar
 	$(TOUCH) $(FILE_PROGRAM)
+
+jar-clean:
+	$(ANT) clean
 
 ###########################################################################
 # Installer
@@ -378,10 +381,9 @@ check:	test
 test:
 	$(ANT) test
 
-clean:	installer-signed-clean installer-clean manual-clean javadoc-clean
-	$(ANT) clean
+clean:	installer-signed-clean installer-clean manual-clean javadoc-clean jar-clean
 
-.PHONY:	all dist dist-src dist-bin dist-javadoc manual jar clean installer \
+.PHONY:	all pack pack-src pack-bin pack-javadoc manual jar clean installer \
 	jar-signed installer-signed check test installer-signed-clean \
 	installer-clean manual-clean javadoc-clean
 

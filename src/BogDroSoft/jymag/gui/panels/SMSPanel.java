@@ -1,7 +1,7 @@
 /*
  * SMSPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -71,7 +71,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 	// synchronization variable:
 	private Object sync;
 
-	private MainWindow mw;
+	private volatile MainWindow mw;
 
 	private Vector<PhoneMessage> currentMessageElements;
 
@@ -207,7 +207,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_getSmsListButActionPerformed
 		try
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.RECEIVING);
+			mw.setReceivingStatus ();
 			progressBar.setValue (0);
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
@@ -224,14 +224,19 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 				public synchronized void run ()
 				{
 					progressBar.setValue (1);
-					progressBar.setValue (0);
-					Utils.updateStatusLabel (status, Utils.STATUS.READY);
+					mw.setReadyStatus ();
+				}
+
+				@Override
+				public String toString ()
+				{
+					return "SMSPanel.getSmsListButActionPerformed.Runnable";	// NOI18N
 				}
 			}, this, false, false, false, smsTable, currentMessageElements);
 		}
 		catch (Exception ex)
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.READY);
+			mw.setReadyStatus ();
 			Utils.handleException (ex, "getMessageList");	// NOI18N
 		}
 	}//GEN-LAST:event_getSmsListButActionPerformed
@@ -240,20 +245,39 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_downloadSmsButActionPerformed
 
 		int[] selectedRows = smsTable.getSelectedRows ();
-		if ( selectedRows.length == 0 ) return;
-
-		for ( int i = 0; i < selectedRows.length; i++ )
+		if ( selectedRows.length == 0 )
 		{
-			if ( currentMessageElements != null )
+			return;
+		}
+
+		if ( currentMessageElements != null )
+		{
+			for ( int i = 0; i < selectedRows.length; i++ )
 			{
-				float fontSize = 12;
-				Object val = fontSizeSpin.getValue ();
-				if ( val != null && val instanceof Number )
+				try
 				{
-					fontSize = ((Number)val).floatValue ();
+					float fontSize = 12;
+					Object val = fontSizeSpin.getValue ();
+					if ( val != null && val instanceof Number )
+					{
+						fontSize = ((Number)val).floatValue ();
+					}
+					new SMSWindow (null, mw, null, fontSize,
+						currentMessageElements.get (selectedRows[i])).setVisible (true);
 				}
-				new SMSWindow (null, mw, null, fontSize,
-					currentMessageElements.get (selectedRows[i])).setVisible (true);
+				catch (Throwable ex)
+				{
+					Utils.handleException (ex, "SMSPanel.downloadSmsButActionPerformed.SMSWindow.start");	// NOI18N
+					try
+					{
+						JOptionPane.showMessageDialog (null, ex.toString (),
+							MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+					}
+					catch (Exception ex2)
+					{
+						// don't display exceptions about displaying exceptions
+					}
+				}
 			}
 		}
 	}//GEN-LAST:event_downloadSmsButActionPerformed
@@ -262,6 +286,19 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 	{//GEN-HEADEREND:event_uploadSmsButActionPerformed
 		try
 		{
+			if ( portCombo.getSelectedItem () == null )
+			{
+				try
+				{
+					JOptionPane.showMessageDialog (null, MainWindow.noPortMsg,
+						MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+				}
+				catch (Exception ex2)
+				{
+					// don't display exceptions about displaying exceptions
+				}
+				return;
+			}
 			DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
 				(portCombo.getSelectedItem ().toString ()));
 			dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
@@ -281,7 +318,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 		}
 		catch (Throwable ex)
 		{
-			Utils.handleException (ex, "MainWindow.SMSWindow.start");	// NOI18N
+			Utils.handleException (ex, "SMSPanel.uploadSmsButActionPerformed.SMSWindow.start");	// NOI18N
 			try
 			{
 				JOptionPane.showMessageDialog (null, ex.toString (),
@@ -319,7 +356,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 			try
 			{
 				final AtomicInteger threads = new AtomicInteger (0);
-				Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+				mw.setSendingStatus ();
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
@@ -339,17 +376,21 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 							progressBar.setValue (progressBar.getValue () + 1);
 							if ( threads.decrementAndGet () == 0 )
 							{
-								Utils.updateStatusLabel (status,
-									Utils.STATUS.READY);
-								progressBar.setValue (0);
+								mw.setReadyStatus ();
 							}
+						}
+
+						@Override
+						public String toString ()
+						{
+							return "SMSPanel.deleteSmsButdeleteButActionPerformed.Runnable";	// NOI18N
 						}
 					}, this, false, false, false);
 				}
 			}
 			catch (Exception ex)
 			{
-				Utils.updateStatusLabel (status, Utils.STATUS.READY);
+				mw.setReadyStatus ();
 				Utils.handleException (ex, "delete");	// NOI18N
 			}
 		}

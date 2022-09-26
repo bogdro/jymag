@@ -1,7 +1,7 @@
 /*
  * JYMAGTransferHandler.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
 /**
@@ -63,7 +62,7 @@ public class JYMAGTransferHandler extends TransferHandler
 	private final JCheckBox flowSoftBox;
 	private final JCheckBox flowHardBox;
 	private final Object sync;
-	private final JFrame parent;
+	private final MainWindow mw;
 
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
 	private static volatile DataFlavor uriFileListFlavor = null;
@@ -88,11 +87,11 @@ public class JYMAGTransferHandler extends TransferHandler
 	public JYMAGTransferHandler (JComboBox ports, JComboBox speeds,
 		JComboBox dataBits, JComboBox stopBits, JComboBox parities,
 		JCheckBox flowSoft, JCheckBox flowHard, Object synchro,
-		JFrame parentFrame)
+		MainWindow parentFrame)
 	{
 		if ( ports == null || speeds == null || dataBits == null
 			|| stopBits == null || parities == null || flowSoft == null
-			|| flowHard == null || synchro == null )
+			|| flowHard == null || synchro == null || parentFrame == null)
 		{
 			throw new IllegalArgumentException ("JYMAGTransferHandler: null");	// NOI18N
 		}
@@ -104,7 +103,7 @@ public class JYMAGTransferHandler extends TransferHandler
 		flowSoftBox = flowSoft;
 		flowHardBox = flowHard;
 		sync = synchro;
-		parent = parentFrame;
+		mw = parentFrame;
 
 		// Linux:
 		// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
@@ -243,6 +242,12 @@ public class JYMAGTransferHandler extends TransferHandler
 			Utils.handleException (ioex,
 				"JYMAGTransferHandler.importData.Transferable.getTransferData");	// NOI18N
 		}
+		catch (Throwable ioex)
+		{
+			Utils.handleException (ioex,
+				"JYMAGTransferHandler.importData.Transferable.getTransferData");	// NOI18N
+		}
+		mw.setReadyStatus ();
 		return false;
 	}
 
@@ -280,9 +285,10 @@ public class JYMAGTransferHandler extends TransferHandler
 			TransferParameters tp = new TransferParameters (
 				portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
 				parityCombo, flowSoftBox, flowHardBox, sync);
+			mw.setSendingStatus ();
 			TransferUtils.uploadFile (f, tp,
-				null, parent, false, false, true);
+				null, mw, false, false, true);
+			mw.setReadyStatus ();
 		}
 	}
 }
-

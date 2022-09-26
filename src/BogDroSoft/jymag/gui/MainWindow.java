@@ -1,7 +1,7 @@
 /*
  * MainWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -25,13 +25,14 @@
 
 package BogDroSoft.jymag.gui;
 
-import BogDroSoft.jymag.comm.DataTransporter;
-import BogDroSoft.jymag.comm.TransferParameters;
-import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.CommandLineParser;
 import BogDroSoft.jymag.ConfigFile;
 import BogDroSoft.jymag.PhoneElement;
+import BogDroSoft.jymag.Starter;
 import BogDroSoft.jymag.Utils;
+import BogDroSoft.jymag.comm.DataTransporter;
+import BogDroSoft.jymag.comm.TransferParameters;
+import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.panels.JYMAGTab;
 
 import java.awt.Component;
@@ -54,6 +55,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -66,7 +68,7 @@ public class MainWindow extends JFrame
 	private final MainWindow mw = this;
 
 	/** Current version number as a String. */
-	public static final String verString = "1.5";	// NOI18N
+	public static final String verString = "1.6";	// NOI18N
 
 	// synchronization variable:
 	private static final Object sync = new Object ();
@@ -75,8 +77,6 @@ public class MainWindow extends JFrame
 	private volatile Map<String, String> phoneTypes;
 	private volatile Map<String, String> phoneIMEIs;
 	private volatile Map<String, String> phoneSubsNums;
-
-	private static String logFile = "jymag.log";	// NOI18N
 
 	private JFileChooser cfgFC;
 	private final transient Runnable progressBarUpdateRunnable =
@@ -96,16 +96,59 @@ public class MainWindow extends JFrame
 							progressBar.setValue (0);
 						}
 					}
+
+					@Override
+					public String toString ()
+					{
+						return "MainWindow.progressBarUpdateRunnable.Runnable";	// NOI18N
+					}
 				});
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "MainWindow.progressBarUpdateRunnable";	// NOI18N
 			}
 		};
 
+	private static final FileFilter	cfgFileFilter = new FileFilter ()
+		{
+			@Override
+			public boolean accept ( File f )
+			{
+				if ( f == null )
+				{
+					return false;
+				}
+				if ( f.isDirectory () ||
+					f.getName ().endsWith (".cfg"))	// NOI18N
+				{
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription ()
+			{
+				return mwBundle.getString("JYMAG_configuration_files")	// NOI18N
+					+ " (*.cfg)";	// NOI18N
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "MainWindow.cfgFileFilter";	// NOI18N
+			}
+		};
 	// ------------ i18n stuff
 	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
 	private static final String noAnsString = mwBundle.getString("No_answers_received");
-	public static final String errString = mwBundle.getString("Error");
 	private static final String multiAnsString = mwBundle.getString("Multiple_answers");
 	private static final String whichString = mwBundle.getString("Which_one");
+	public static final String errString = mwBundle.getString("Error");
+	public static final String noPortMsg = mwBundle.getString("no_ports_selected");
 
 	private static final String pressScanMsg = "(" + mwBundle.getString("(press_Scan)") + ")";	// NOI18N
 
@@ -173,7 +216,7 @@ public class MainWindow extends JFrame
 		phone.setText (pressScanMsg);
 		IMEI.setText (pressScanMsg);
 		subsNum.setText (pressScanMsg);
-		Utils.updateStatusLabel (status, Utils.STATUS.READY);
+		setReadyStatus ();
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		Vector<String> portList = TransferUtils.getSerialPortNames ();
@@ -673,7 +716,7 @@ public class MainWindow extends JFrame
 			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
 			parityCombo, flowSoft, flowHard, sync);
 
-		Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+		setSendingStatus ();
 		progressBar.setValue (0);
 		progressBar.setMinimum (0);
 		int max = 0;
@@ -705,10 +748,9 @@ public class MainWindow extends JFrame
 			@Override
 			protected void done ()
 			{
+				setReadyStatus ();
 				try
 				{
-					Utils.updateStatusLabel (status, Utils.STATUS.READY);
-					progressBar.setValue (0);
 					Vector<String> active = get ();
 					if ( active == null )
 					{
@@ -761,14 +803,18 @@ public class MainWindow extends JFrame
 				}
 				catch (Exception ex)
 				{
-					Utils.updateStatusLabel (status, Utils.STATUS.READY);
 					Utils.handleException (ex, "scanning.SW.done");	// NOI18N
 				}
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "MainWindow.scanButtonActionPerformed.SwingWorker";	// NOI18N
 			}
 		};
 		sw.execute ();
 	}//GEN-LAST:event_scanButtonActionPerformed
-
 
 	private void aboutButActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButActionPerformed
 
@@ -809,7 +855,7 @@ public class MainWindow extends JFrame
 		}
 		try
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+			setSendingStatus ();
 			progressBar.setValue (0);
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
@@ -821,14 +867,19 @@ public class MainWindow extends JFrame
 					@Override
 					public synchronized void run ()
 					{
-						Utils.updateStatusLabel (status, Utils.STATUS.READY);
-						progressBar.setValue (0);
+						setReadyStatus ();
+					}
+
+					@Override
+					public String toString ()
+					{
+						return "MainWindow.dynamicUpload.Runnable";	// NOI18N
 					}
 				}, this, false, false, false);
 		}
 		catch (Exception ex)
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.READY);
+			setReadyStatus ();
 			Utils.handleException (ex, "dynUpload");	// NOI18N
 		}
 	}
@@ -837,14 +888,11 @@ public class MainWindow extends JFrame
 
 		try
 		{
-			DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()));
-			dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
-				);
+			DataTransporter dt = createAndOpenDataTransporter ();
+			if ( dt == null )
+			{
+				return;
+			}
 			float fontSize = 12;
 			Object val = fontSizeSpin.getValue ();
 			if ( val != null && val instanceof Number )
@@ -873,14 +921,11 @@ public class MainWindow extends JFrame
 
 		try
 		{
-			DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()));
-			dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
-				);
+			DataTransporter dt = createAndOpenDataTransporter ();
+			if ( dt == null )
+			{
+				return;
+			}
 			float fontSize = 12;
 			Object val = fontSizeSpin.getValue ();
 			if ( val != null && val instanceof Number )
@@ -908,7 +953,7 @@ public class MainWindow extends JFrame
 	private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
 		dispose ();
-		Utils.closeProgram (logFile, 0);
+		Starter.closeProgram (0);
 	}//GEN-LAST:event_formWindowClosing
 
 	private void portComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_portComboItemStateChanged
@@ -965,41 +1010,12 @@ public class MainWindow extends JFrame
 	private void exitButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButActionPerformed
 
 		dispose ();
-		Utils.closeProgram (logFile, 0);
+		Starter.closeProgram (0);
 	}//GEN-LAST:event_exitButActionPerformed
 
 	private synchronized void loadConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfButActionPerformed
 
-		if ( cfgFC == null )
-		{
-			cfgFC = new JFileChooser ();
-			cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
-			{
-				@Override
-				public boolean accept ( File f )
-				{
-					if ( f == null )
-					{
-						return false;
-					}
-					if ( f.isDirectory () ||
-						f.getName ().endsWith (".cfg"))	// NOI18N
-					{
-						return true;
-					}
-					return false;
-				}
-
-				@Override
-				public String getDescription ()
-				{
-					return mwBundle.getString("JYMAG_configuration_files")
-						+ " (*.cfg)";	// NOI18N
-				}
-			} );
-			cfgFC.setAcceptAllFileFilterUsed (false);
-			cfgFC.setMultiSelectionEnabled (false);
-		}
+		createConfigFileChooser ();
 		cfgFC.setDialogType (JFileChooser.OPEN_DIALOG);
 		int dialogRes = cfgFC.showOpenDialog (this);
 
@@ -1050,36 +1066,7 @@ public class MainWindow extends JFrame
 
 	private synchronized void saveConfButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfButActionPerformed
 
-		if ( cfgFC == null )
-		{
-			cfgFC = new JFileChooser ();
-			cfgFC.setFileFilter ( new javax.swing.filechooser.FileFilter ()
-			{
-				@Override
-				public boolean accept ( File f )
-				{
-					if ( f == null )
-					{
-						return false;
-					}
-					if ( f.isDirectory () ||
-						f.getName ().endsWith (".cfg"))	// NOI18N
-					{
-						return true;
-					}
-					return false;
-				}
-
-				@Override
-				public String getDescription ()
-				{
-					return mwBundle.getString("JYMAG_configuration_files")
-						+ " (*.cfg)";	// NOI18N
-				}
-			} );
-			cfgFC.setAcceptAllFileFilterUsed (false);
-			cfgFC.setMultiSelectionEnabled (false);
-		}
+		createConfigFileChooser ();
 		cfgFC.setDialogType (JFileChooser.SAVE_DIALOG);
 		int dialogRes = cfgFC.showSaveDialog (this);
 
@@ -1093,7 +1080,14 @@ public class MainWindow extends JFrame
 					return;
 				}
 				ConfigFile cfg = new ConfigFile (res);
-				cfg.setPort (portCombo.getSelectedItem ().toString ());
+				if ( portCombo.getSelectedItem () != null )
+				{
+					cfg.setPort (portCombo.getSelectedItem ().toString ());
+				}
+				else
+				{
+					cfg.setPort ("");	// NOI18N
+				}
 				cfg.setSpeed (Integer.parseInt (speedCombo.getSelectedItem ().toString ()));
 				cfg.setDataBits (Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()));
 				cfg.setParity (parityCombo.getSelectedIndex ());
@@ -1132,21 +1126,18 @@ public class MainWindow extends JFrame
 	{//GEN-HEADEREND:event_signalButtonActionPerformed
 		try
 		{
-			DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
-				(portCombo.getSelectedItem ().toString ()));
-			dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
-				Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
-				Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
-				parityCombo.getSelectedIndex (),
-				((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
-				);
+			DataTransporter dt = createAndOpenDataTransporter ();
+			if ( dt == null )
+			{
+				return;
+			}
 			float fontSize = 12;
 			Object val = fontSizeSpin.getValue ();
 			if ( val != null && val instanceof Number )
 			{
 				fontSize = ((Number)val).floatValue ();
 			}
-			new SignalDisplayer (dt, sync, fontSize).setVisible (true);
+			new SignalDisplayer (dt, this, sync, fontSize).setVisible (true);
 			//dt.close ();	// do NOT close, because the window is NOT modal
 		}
 		catch (Throwable ex)
@@ -1176,7 +1167,7 @@ public class MainWindow extends JFrame
 	{
 		try
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.RECEIVING);
+			setReceivingStatus ();
 			progressBar.setValue (0);
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
@@ -1189,41 +1180,98 @@ public class MainWindow extends JFrame
 					public synchronized void run ()
 					{
 						progressBar.setValue (1);
-						progressBar.setValue (0);
-						Utils.updateStatusLabel (status, Utils.STATUS.READY);
+						setReadyStatus ();
+					}
+
+					@Override
+					public String toString ()
+					{
+						return "MainWindow.putListInTable.Runnable";	// NOI18N
 					}
 				}, this, false, false, false, dtm, placeForData);
 		}
 		catch (Exception ex)
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.READY);
+			setReadyStatus ();
 			Utils.handleException (ex, "putListInTable");	// NOI18N
 		}
 	}
-/*
+
 	private void disablePortControls ()
 	{
 		dataBitsCombo.setEnabled (false);
-		flowCombo.setEnabled (false);
+		flowSoft.setEnabled (false);
+		flowHard.setEnabled (false);
 		parityCombo.setEnabled (false);
 		portCombo.setEnabled (false);
 		speedCombo.setEnabled (false);
 		stopBitsCombo.setEnabled (false);
+		rawBut.setEnabled (false);
+		getCapBut.setEnabled (false);
+		signalButton.setEnabled (false);
+		scanButton.setEnabled (false);
 	}
 
 	private void enablePortControls ()
 	{
 		dataBitsCombo.setEnabled (true);
-		flowCombo.setEnabled (true);
+		flowSoft.setEnabled (true);
+		flowHard.setEnabled (true);
 		parityCombo.setEnabled (true);
 		portCombo.setEnabled (true);
 		speedCombo.setEnabled (true);
 		stopBitsCombo.setEnabled (true);
+		rawBut.setEnabled (true);
+		getCapBut.setEnabled (true);
+		signalButton.setEnabled (true);
+		scanButton.setEnabled (true);
 	}
-*/
+
+	private void createConfigFileChooser ()
+	{
+		if ( cfgFC == null )
+		{
+			cfgFC = new JFileChooser ();
+			cfgFC.setFileFilter ( cfgFileFilter );
+			cfgFC.setAcceptAllFileFilterUsed (false);
+			cfgFC.setMultiSelectionEnabled (false);
+		}
+	}
+
+	/**
+	 * Makes the MainWindow change the status to "sending".
+	 */
+	public void setSendingStatus ()
+	{
+		disablePortControls ();
+		Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+	}
+
+	/**
+	 * Makes the MainWindow change the status to "receiving".
+	 */
+	public void setReceivingStatus ()
+	{
+		disablePortControls ();
+		Utils.updateStatusLabel (status, Utils.STATUS.RECEIVING);
+	}
+
+	/**
+	 * Makes the MainWindow change the status to "ready".
+	 */
+	public void setReadyStatus ()
+	{
+		enablePortControls ();
+		Utils.updateStatusLabel (status, Utils.STATUS.READY);
+		progressBar.setValue (0);
+	}
+
 	private void updateControls ()
 	{
-		if ( portName != null ) portCombo.setSelectedItem (portName);
+		if ( portName != null )
+		{
+			portCombo.setSelectedItem (portName);
+		}
 // 		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
 		if ( Math.abs (sBits-2.0f) < 0.0001 )
 		{
@@ -1385,22 +1433,43 @@ public class MainWindow extends JFrame
 			parityCombo, flowSoft, flowHard, sync);
 	}
 
+	private DataTransporter createAndOpenDataTransporter () throws Exception
+	{
+		if ( portCombo.getSelectedItem () == null )
+		{
+			try
+			{
+				JOptionPane.showMessageDialog (null, noPortMsg,
+					MainWindow.errString, JOptionPane.ERROR_MESSAGE);
+			}
+			catch (Exception ex2)
+			{
+				// don't display exceptions about displaying exceptions
+			}
+			return null;
+		}
+		DataTransporter dt = new DataTransporter (TransferUtils.getIdentifierForPort
+			(portCombo.getSelectedItem ().toString ()));
+		dt.open (Integer.parseInt (speedCombo.getSelectedItem ().toString ()),
+			Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
+			Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
+			parityCombo.getSelectedIndex (),
+			((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
+			);
+		return dt;
+	}
+
 	// =============================== static methods
 
 	/**
 	 * Real program starting point.
 	 * @param args the command line arguments.
+	 * @throws ClassNotFoundException if the communication classes can't be loaded.
 	 */
 	public static void start (String args[]) throws ClassNotFoundException
 	{
-		// redirect stderr (caught and uncaught exceptions) to a file
-		logFile = Utils.redirectStderrToFile (logFile);
-
-		// set default uncaught exception handler:
-		Thread.setDefaultUncaughtExceptionHandler (Utils.handler);
-
 		// parse the command line:
-		CommandLineParser.parse (args, sync, logFile);
+		CommandLineParser.parse (args, sync);
 
 		// If we get here, it means that the command line didn't
 		// cause the program to exit and the GUI should be displayed.
@@ -1410,6 +1479,7 @@ public class MainWindow extends JFrame
 
 		try
 		{
+			//JFrame.setDefaultLookAndFeelDecorated (true);
 			UIManager.setLookAndFeel (
 				UIManager.getSystemLookAndFeelClassName ());
 		}
@@ -1418,14 +1488,18 @@ public class MainWindow extends JFrame
 			Utils.handleException (ex, "UIManager.setLookAndFeel");	// NOI18N
 		}
 
-		//JFrame.setDefaultLookAndFeelDecorated (true);
-
 		SwingUtilities.invokeLater (new Runnable ()
 		{
 			@Override
 			public synchronized void run ()
 			{
 				new MainWindow ().setVisible (true);
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "MainWindow.start.Runnable";	// NOI18N
 			}
 		});
 	}	// start ()

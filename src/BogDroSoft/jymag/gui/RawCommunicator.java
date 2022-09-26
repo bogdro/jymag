@@ -1,7 +1,7 @@
 /*
  * RawCommunicator.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2008-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,9 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -60,6 +62,7 @@ public class RawCommunicator extends javax.swing.JDialog
 		= new ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/green_circle.png")); // NOI18N
 	/** The file chooser for choosing the file to send. */
 	private JFileChooser fc;
+	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
 	private static final ResourceBundle rcBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator");
@@ -67,10 +70,13 @@ public class RawCommunicator extends javax.swing.JDialog
 	private static final String fileNotReadMsg = rcBundle.getString("file_not_readable");
 	private static final String noFileMsg = rcBundle.getString("no_file_sel");
 	private static final String errString = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static final String fileSentOkMsg = rcBundle.getString("file_sent_ok");
 
 	private static final String emptyStr = "";					// NOI18N
 	private static final String CRStr = "\r";					// NOI18N
 	private static final String LFStr = "\n";					// NOI18N
+
+	private final MainWindow mw;
 
 	/**
 	 * Creates new form RawCommunicator.
@@ -80,13 +86,14 @@ public class RawCommunicator extends javax.swing.JDialog
 	 * @param synchro A synchronization variable.
 	 * @param fontSize The font size for this window.
 	 */
-	public RawCommunicator (DataTransporter dt, java.awt.Frame parent,
+	public RawCommunicator (DataTransporter dt, MainWindow parent,
 		Object synchro, float fontSize)
 	{
 		// make modal
 		super (parent, true);
 		dtr = dt;
 		sync = synchro;
+		mw = parent;
 		if ( dt == null || synchro == null )
 		{
 			dispose ();
@@ -356,11 +363,13 @@ public class RawCommunicator extends javax.swing.JDialog
 		{
 			return;
 		}
-		cmdArea.setText (cmdArea.getText ()  + cmd + LFStr);
+		cmdArea.setText (cmdArea.getText () + cmd + LFStr);
 		currCommArea.setEditable (false);
 		currCommArea.setEnabled (false);
 		sendBut.setEnabled (false);
+		sendFileBut.setEnabled (false);
 		currCommArea.setText (emptyStr);
+		mw.setSendingStatus ();
 
 		SwingWorker<String, Void> sw =
 			new SwingWorker<String, Void> ()
@@ -370,6 +379,7 @@ public class RawCommunicator extends javax.swing.JDialog
 			{
 				try
 				{
+					isFinished.set (false);
 					String rcvd = emptyStr;
 					synchronized (sync)
 					{
@@ -399,6 +409,10 @@ public class RawCommunicator extends javax.swing.JDialog
 						+ exString
 						+ ": " + ex + ">"; 			// NOI18N
 				}
+				finally
+				{
+					isFinished.set (true);
+				}
 			}
 
 			@Override
@@ -423,7 +437,15 @@ public class RawCommunicator extends javax.swing.JDialog
 				currCommArea.setEditable (true);
 				currCommArea.setEnabled (true);
 				sendBut.setEnabled (true);
+				sendFileBut.setEnabled (true);
 				currCommArea.requestFocusInWindow ();
+				mw.setReadyStatus ();
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "RawCommunicator.sendButActionPerformed.SwingWorker";	// NOI18N
 			}
 		};
 		sw.execute ();
@@ -450,6 +472,7 @@ public class RawCommunicator extends javax.swing.JDialog
 			{
 				try
 				{
+					isFinished.set (false);
 					synchronized (sync)
 					{
 						dtr.setRTS (isSet);
@@ -459,7 +482,17 @@ public class RawCommunicator extends javax.swing.JDialog
 				{
 					Utils.handleException (ex, "RawCommunicator: setRTS");	// NOI18N
 				}
+				finally
+				{
+					isFinished.set (true);
+				}
 				return null;
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "RawCommunicator.rtsButActionPerformed.SwingWorker";	// NOI18N
 			}
 		};
 		sw.execute ();
@@ -477,6 +510,7 @@ public class RawCommunicator extends javax.swing.JDialog
 			{
 				try
 				{
+					isFinished.set (false);
 					synchronized (sync)
 					{
 						dtr.setDTR (isSet);
@@ -486,7 +520,17 @@ public class RawCommunicator extends javax.swing.JDialog
 				{
 					Utils.handleException (ex, "RawCommunicator: setDTR");	// NOI18N
 				}
+				finally
+				{
+					isFinished.set (true);
+				}
 				return null;
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "RawCommunicator.dtrButActionPerformed.SwingWorker";	// NOI18N
 			}
 		};
 		sw.execute ();
@@ -524,9 +568,12 @@ public class RawCommunicator extends javax.swing.JDialog
 				return;
 			}
 
+			sendBut.setEnabled (false);
+			sendFileBut.setEnabled (false);
 			// allow typing new commands while the file is being sent:
 			//currCommArea.setEditable (false);
 			//currCommArea.setEnabled (false);
+			mw.setSendingStatus ();
 			SwingWorker<Void, Void> sw =
 				new SwingWorker<Void, Void> ()
 			{
@@ -535,6 +582,7 @@ public class RawCommunicator extends javax.swing.JDialog
 				{
 					try
 					{
+						isFinished.set (false);
 						int read = -1;
 						byte[] b = new byte[1024];
 						FileInputStream fis = new FileInputStream (f);
@@ -548,13 +596,17 @@ public class RawCommunicator extends javax.swing.JDialog
 									break;
 								}
 								dtr.send (b, 0, read);
-							} while ( read > 0 );
+							} while ( true );
 						}
 						fis.close ();
 					}
 					catch (Exception ex)
 					{
 						Utils.handleException (ex, "RawCommunicator: send file");	// NOI18N
+					}
+					finally
+					{
+						isFinished.set (true);
 					}
 					return null;
 				}
@@ -564,6 +616,18 @@ public class RawCommunicator extends javax.swing.JDialog
 				{
 					//currCommArea.setEditable (true);
 					//currCommArea.setEnabled (true);
+					sendBut.setEnabled (true);
+					sendFileBut.setEnabled (true);
+					mw.setReadyStatus ();
+					JOptionPane.showMessageDialog (mw,
+						fileSentOkMsg + ": " + f.getName (),		// NOI18N
+						fileSentOkMsg, JOptionPane.INFORMATION_MESSAGE);
+				}
+
+				@Override
+				public String toString ()
+				{
+					return "RawCommunicator.sendFileButActionPerformed.SwingWorker";	// NOI18N
 				}
 			};
 			sw.execute ();
@@ -592,6 +656,18 @@ public class RawCommunicator extends javax.swing.JDialog
 				}
 			}
 		}
+		while ( ! isFinished.get () )
+		{
+			try
+			{
+				Thread.sleep (10);
+			}
+			catch (Exception ex)
+			{
+				// ignore
+			}
+		}
+		mw.setReadyStatus ();
 		dispose ();
 	}
 
@@ -616,6 +692,12 @@ public class RawCommunicator extends javax.swing.JDialog
 				}
 				but.setSelected (on);
 			}
+
+			@Override
+			public String toString ()
+			{
+				return "RawCommunicator.setSignal1.Runnable";	// NOI18N
+			}
 		});
 	}
 
@@ -638,6 +720,12 @@ public class RawCommunicator extends javax.swing.JDialog
 				{
 					l.setIcon (black_icon);
 				}
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "RawCommunicator.setSignal2.Runnable";	// NOI18N
 			}
 		});
 	}
@@ -732,6 +820,12 @@ public class RawCommunicator extends javax.swing.JDialog
 											answerArea.getText ()
 											+ rcvd + LFStr);
 									}
+
+									@Override
+									public String toString ()
+									{
+										return "RawCommunicator.start.Runnable.Runnable";	// NOI18N
+									}
 								});
 							}
 						}
@@ -745,6 +839,12 @@ public class RawCommunicator extends javax.swing.JDialog
 						break;
 					}
 				}
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "RawCommunicator.start.Runnable";	// NOI18N
 			}
 		});
 		updater.start ();

@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -381,9 +381,8 @@ public class CommandLineParser
 	 * Parses the given command line and performs actions based on it.
 	 * @param args The command line to parse.
 	 * @param sync The synchronization variable.
-	 * @param logfile The name of the log file.
 	 */
-	public static void parse (String[] args, Object sync, String logfile)
+	public static void parse (String[] args, Object sync)
 	{
 		if ( args == null )
 		{
@@ -404,7 +403,7 @@ public class CommandLineParser
 					"http://jymag.sf.net\n\n" +	// NOI18N
 					cmdLineStr
 					);
-				Utils.closeProgram (logfile, 0);
+				Starter.closeProgram (0);
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--license")	// NOI18N
 				|| args[i].toLowerCase (Locale.ENGLISH).equals ("--licence") )	// NOI18N
@@ -426,13 +425,13 @@ public class CommandLineParser
 					"               51 Franklin Street, Fifth Floor\n" +	// NOI18N
 					"               Boston, MA 02110-1301\n" +	// NOI18N
 					"               USA\n");	// NOI18N
-				Utils.closeProgram (logfile, 0);
+				Starter.closeProgram (0);
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--version")	// NOI18N
 				|| args[i].toLowerCase (Locale.ENGLISH).equals ("-v") )	// NOI18N
 			{
 				System.out.println ("JYMAG " + verWord + " " + MainWindow.verString);	// NOI18N
-				Utils.closeProgram (logfile, 0);
+				Starter.closeProgram (0);
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--port") )	// NOI18N
 			{
@@ -563,7 +562,7 @@ public class CommandLineParser
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--scan") )	// NOI18N
 			{
 				TransferParameters tp = getTransferParameters (sync);
-				Utils.closeProgram (logfile,
+				Starter.closeProgram (
 					TransferUtils.scanPorts (false, tp,
 						null, null, null, null, null, null));
 			}
@@ -578,7 +577,7 @@ public class CommandLineParser
 							PhoneAlarm.parseReponse (args[i+1]),
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -599,7 +598,7 @@ public class CommandLineParser
 							Integer.parseInt (args[i+1]),
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -626,7 +625,7 @@ public class CommandLineParser
 						}
 						System.out.println (vmsg.get (j));
 					}
-					Utils.closeProgram (logfile, res);
+					Starter.closeProgram (res);
 				}
 				catch ( Exception ex )
 				{
@@ -673,7 +672,7 @@ public class CommandLineParser
 						}
 						System.out.println (total.get (j));
 					}
-					Utils.closeProgram (logfile, res);
+					Starter.closeProgram (res);
 				}
 				catch ( Exception ex )
 				{
@@ -693,7 +692,7 @@ public class CommandLineParser
 						int res = TransferUtils.deleteFile (pe,
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -720,7 +719,7 @@ public class CommandLineParser
 						}
 						System.out.println (vmsg.get (j));
 					}
-					Utils.closeProgram (logfile, res);
+					Starter.closeProgram (res);
 				}
 				catch ( Exception ex )
 				{
@@ -742,7 +741,7 @@ public class CommandLineParser
 						int res = TransferUtils.sendMessage (pmsg,
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -765,7 +764,7 @@ public class CommandLineParser
 						int res = TransferUtils.deleteMessage (pmsg,
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -784,7 +783,7 @@ public class CommandLineParser
 						TransferParameters tp = getTransferParameters (sync);
 						int res = TransferUtils.uploadFile (new File (args[i+1]),
 							tp, null, null, false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -796,31 +795,31 @@ public class CommandLineParser
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-photos") )	// NOI18N
 			{
-				Utils.closeProgram (logfile, getAllPics (sync));
+				Starter.closeProgram (getAllPics (sync));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-ringtones") )	// NOI18N
 			{
-				Utils.closeProgram (logfile, getAllRings (sync));
+				Starter.closeProgram (getAllRings (sync));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-todo") )	// NOI18N
 			{
-				Utils.closeProgram (logfile, getAllTODOs (sync));
+				Starter.closeProgram (getAllTODOs (sync));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-events") )	// NOI18N
 			{
-				Utils.closeProgram (logfile, getAllEvents (sync));
+				Starter.closeProgram (getAllEvents (sync));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-vcards") )	// NOI18N
 			{
-				Utils.closeProgram (logfile, getAllVcards (sync));
+				Starter.closeProgram (getAllVcards (sync));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all-animations") )	// NOI18N
 			{
-				Utils.closeProgram (logfile, getAllAnimations (sync));
+				Starter.closeProgram (getAllAnimations (sync));
 			}
 			else if ( args[i].toLowerCase (Locale.ENGLISH).equals ("--download-all") )	// NOI18N
 			{
-				Utils.closeProgram (logfile,
+				Starter.closeProgram (
 					getAllPics (sync)
 					+ getAllRings (sync)
 					+ getAllTODOs (sync)
@@ -897,7 +896,7 @@ public class CommandLineParser
 							true, DataTransporter.DIAL_MODE.AUTO,
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -918,7 +917,7 @@ public class CommandLineParser
 							false, DataTransporter.DIAL_MODE.AUTO,
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{
@@ -936,7 +935,7 @@ public class CommandLineParser
 					int res = TransferUtils.hangup (
 						tp, null, null,
 						false, true, true);
-					Utils.closeProgram (logfile, res);
+					Starter.closeProgram (res);
 				}
 				catch ( Exception ex )
 				{
@@ -955,7 +954,7 @@ public class CommandLineParser
 							new File (args[i+1]),
 							tp, null, null,
 							false, true, true);
-						Utils.closeProgram (logfile, res);
+						Starter.closeProgram (res);
 					}
 					catch ( Exception ex )
 					{

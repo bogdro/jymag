@@ -1,7 +1,7 @@
 /*
  * PhotoPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -72,7 +72,7 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 	// synchronization variable:
 	private Object sync;
 
-	private MainWindow mw;
+	private volatile MainWindow mw;
 
 	private Vector<PhoneElement> currentPhotoElements;
 	private JFileChooser downloadFC;
@@ -315,7 +315,7 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 							errString, JOptionPane.ERROR_MESSAGE);
 						continue;
 					}
-					Utils.updateStatusLabel (status, Utils.STATUS.RECEIVING);
+					mw.setReceivingStatus ();
 					threads.incrementAndGet ();
 					TransferUtils.downloadFile (received,
 						currentPhotoElements.get (toGet),
@@ -329,17 +329,21 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 							progressBar.setValue (progressBar.getValue () + 1);
 							if ( th == 0 )
 							{
-								Utils.updateStatusLabel (status,
-									Utils.STATUS.READY);
-								progressBar.setValue (0);
+								mw.setReadyStatus ();
 							}
+						}
+
+						@Override
+						public String toString ()
+						{
+							return "PhotoPanel.downloadPhotoButdownloadButActionPerformed.Runnable";	// NOI18N
 						}
 					}, this, false, false, false);
 				} // for
 			}
 			catch (Exception ex)
 			{
-				Utils.updateStatusLabel (status, Utils.STATUS.READY);
+				mw.setReadyStatus ();
 				Utils.handleException (ex, "Download"	// NOI18N
 					+ ((dstFileName != null)? ": " + dstFileName : ""));	// NOI18N
 			}
@@ -393,7 +397,7 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 			try
 			{
 				final AtomicInteger threads = new AtomicInteger (0);
-				Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+				mw.setSendingStatus ();
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
@@ -413,17 +417,21 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 							progressBar.setValue (progressBar.getValue () + 1);
 							if ( threads.decrementAndGet () == 0 )
 							{
-								Utils.updateStatusLabel (status,
-									Utils.STATUS.READY);
-								progressBar.setValue (0);
+								mw.setReadyStatus ();
 							}
+						}
+
+						@Override
+						public String toString ()
+						{
+							return "PhotoPanel.deletePhotoButdeleteButActionPerformed.Runnable";	// NOI18N
 						}
 					}, this, false, false, false);
 				}
 			}
 			catch (Exception ex)
 			{
-				Utils.updateStatusLabel (status, Utils.STATUS.READY);
+				mw.setReadyStatus ();
 				Utils.handleException (ex, "delete");	// NOI18N
 			}
 		}

@@ -1,7 +1,7 @@
 /*
  * SMSWindow.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -28,8 +28,10 @@ package BogDroSoft.jymag.gui;
 import BogDroSoft.jymag.comm.DataTransporter;
 import BogDroSoft.jymag.PhoneMessage;
 import BogDroSoft.jymag.Utils;
+
 import java.awt.Dimension;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -44,6 +46,7 @@ public class SMSWindow extends javax.swing.JDialog
 	private static final long serialVersionUID = 80L;
 	private final DataTransporter dtr;
 	private final Object sync;
+	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
 	private static final ResourceBundle swBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow");
@@ -52,6 +55,7 @@ public class SMSWindow extends javax.swing.JDialog
 	private static final String sendError = swBundle.getString("send_error");
 
 	private static final String space = " ";	// NOI18N
+	private final MainWindow mw;
 
 	/**
 	 * Creates new form SMSWindow.
@@ -60,8 +64,9 @@ public class SMSWindow extends javax.swing.JDialog
 	 * @param parent The parent frame for this window.
 	 * @param synchro A synchronization variable.
 	 * @param fontSize The font size for this window.
+	 * @param msg the message to display, if any.
 	 */
-	public SMSWindow (DataTransporter dt, java.awt.Frame parent,
+	public SMSWindow (DataTransporter dt, MainWindow parent,
 		Object synchro, float fontSize, PhoneMessage msg)
 	{
 		// make modal
@@ -69,6 +74,7 @@ public class SMSWindow extends javax.swing.JDialog
 
 		dtr = dt;
 		sync = synchro;
+		mw = parent;
 		// "msg" is the message to display, if any. If present,
 		// transport parameters are not required
 		if ( msg == null && (dt == null || synchro == null) )
@@ -128,6 +134,11 @@ public class SMSWindow extends javax.swing.JDialog
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow"); // NOI18N
                 setTitle(bundle.getString("smswindow_title")); // NOI18N
+                addWindowListener(new java.awt.event.WindowAdapter() {
+                        public void windowClosing(java.awt.event.WindowEvent evt) {
+                                formWindowClosing(evt);
+                        }
+                });
 
                 closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
                 closeBut.setText(bundle.getString("Exit")); // NOI18N
@@ -225,7 +236,7 @@ public class SMSWindow extends javax.swing.JDialog
 	private void closeButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_closeButActionPerformed
 	{//GEN-HEADEREND:event_closeButActionPerformed
 
-		dispose ();
+		exit ();
 	}//GEN-LAST:event_closeButActionPerformed
 
 	private void sendButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_sendButActionPerformed
@@ -247,6 +258,9 @@ public class SMSWindow extends javax.swing.JDialog
 		}
 		phoneNumField.setEditable (false);
 		msgArea.setEditable (false);
+		closeBut.setEnabled (false);
+		sendBut.setEnabled (false);
+		mw.setSendingStatus ();
 
 		SwingWorker<Integer, Void> sw =
 			new SwingWorker<Integer, Void> ()
@@ -256,6 +270,7 @@ public class SMSWindow extends javax.swing.JDialog
 				{
 					try
 					{
+						isFinished.set (false);
 						int sent = -1;
 						synchronized (sync)
 						{
@@ -270,6 +285,10 @@ public class SMSWindow extends javax.swing.JDialog
 					{
 						Utils.handleException (ex, "SMSWindow: send");	// NOI18N
 						return -1;
+					}
+					finally
+					{
+						isFinished.set (true);
 					}
 				}
 
@@ -329,6 +348,15 @@ public class SMSWindow extends javax.swing.JDialog
 					}
 					phoneNumField.setEditable (true);
 					msgArea.setEditable (true);
+					sendBut.setEnabled (true);
+					closeBut.setEnabled (true);
+					mw.setReadyStatus ();
+				}
+
+				@Override
+				public String toString ()
+				{
+					return "SMSWindow.sendButActionPerformed.SwingWorker";	// NOI18N
 				}
 			};
 		sw.execute ();
@@ -344,6 +372,27 @@ public class SMSWindow extends javax.swing.JDialog
 		}
 	}//GEN-LAST:event_fontSizeSpinStateChanged
 
+	private void formWindowClosing (java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+	{//GEN-HEADEREND:event_formWindowClosing
+		exit ();
+	}//GEN-LAST:event_formWindowClosing
+
+	private void exit ()
+	{
+		while ( ! isFinished.get () )
+		{
+			try
+			{
+				Thread.sleep (10);
+			}
+			catch (Exception ex)
+			{
+				// ignore
+			}
+		}
+		mw.setReadyStatus ();
+		dispose ();
+	}
 
 
         // Variables declaration - do not modify//GEN-BEGIN:variables

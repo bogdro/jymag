@@ -1,7 +1,7 @@
 /*
  * UtilsTest.java, part of the JYMAG package.
  *
- * Copyright (C) 2014-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2014-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -279,20 +278,6 @@ public class UtilsTest
 	}
 
 	/**
-	 * Test of redirectStderrToFile method, of class Utils.
-	 */
-	@Test
-	@Ignore("Don't close the error output while testing.")
-	public void testRedirectStderrToFile ()
-	{
-		System.out.println ("redirectStderrToFile");
-		String filename = "";
-		String expResult = "";
-		String result = Utils.redirectStderrToFile (filename);
-		assertEquals (expResult, result);
-	}
-
-	/**
 	 * Test of createOpenFileChooser method, of class Utils.
 	 */
 	@Test
@@ -308,19 +293,6 @@ public class UtilsTest
 		assertTrue (resultFilter.accept (new File ("test.ext")));
 		assertFalse (resultFilter.accept (new File ("test.png")));
 		assertTrue (resultFilter.accept (new File ("test.png.ext")));
-	}
-
-	/**
-	 * Test of closeProgram method, of class Utils.
-	 */
-	@Test
-	@Ignore("Can't close the VM in a test")
-	public void testCloseProgram ()
-	{
-		System.out.println ("closeProgram");
-		String filename = "";
-		int retval = 0;
-		Utils.closeProgram (filename, retval);
 	}
 
 	/**
@@ -363,6 +335,27 @@ public class UtilsTest
 		cResult = status.getForeground ();
 		cExpResult = Color.BLUE;
 		assertEquals (cResult, cExpResult);
+	}
+
+	/**
+	 * Test of createOpenFileChooser method, of class Utils.
+	 */
+	@Test
+	public void testJoinArrays ()
+	{
+		System.out.println ("joinArrays");
+		byte[] a1 = new byte[] {1, 2};
+		byte[] a2 = new byte[] {3, 4, 5};
+		byte[] res = Utils.joinArrays(a1, a2);
+		assertEquals (res.length, a1.length + a2.length);
+		for (int i = 0; i < a1.length; i++ )
+		{
+			assertEquals (res[i], a1[i]);
+		}
+		for (int i = 0; i < a2.length; i++ )
+		{
+			assertEquals (res[a1.length + i], a2[i]);
+		}
 	}
 
 	/**

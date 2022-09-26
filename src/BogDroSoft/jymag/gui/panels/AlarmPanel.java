@@ -1,7 +1,7 @@
 /*
  * AlarmPanel.java, part of the JYMAG package.
  *
- * Copyright (C) 2013-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2013-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -65,6 +65,8 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 	private JCheckBox flowHard;
         private JProgressBar progressBar;
         private JLabel status;
+
+	private volatile MainWindow mw;
 
 	// synchronization variable:
 	private Object sync;
@@ -214,7 +216,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 
 		try
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.RECEIVING);
+			mw.setReceivingStatus ();
 			progressBar.setValue (0);
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (1);
@@ -231,14 +233,19 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 				public synchronized void run ()
 				{
 					progressBar.setValue (1);
-					progressBar.setValue (0);
-					Utils.updateStatusLabel (status, Utils.STATUS.READY);
+					mw.setReadyStatus ();
+				}
+
+				@Override
+				public String toString ()
+				{
+					return "AlarmPanel.getAlarmListButActionPerformed.Runnable";	// NOI18N
 				}
 			}, this, false, false, false, alarmTable, currentAlarmElements);
 		}
 		catch (Exception ex)
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.READY);
+			mw.setReadyStatus ();
 			Utils.handleException (ex, "getAlarmList");	// NOI18N
 		}
 	}//GEN-LAST:event_getAlarmListButActionPerformed
@@ -277,7 +284,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 					(days != null)? days.toString (): ""	// NOI18N
 					));
 			}
-			Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+			mw.setSendingStatus ();
 			progressBar.setValue (0);
 			progressBar.setMinimum (0);
 			progressBar.setMaximum (toUpload.size ());
@@ -294,17 +301,21 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 						progressBar.setValue (progressBar.getValue () + 1);
 						if ( progressBar.getValue () == toUpload.size () )
 						{
-							progressBar.setValue (0);
-							Utils.updateStatusLabel (status,
-								Utils.STATUS.READY);
+							mw.setReadyStatus ();
 						}
+					}
+
+					@Override
+					public String toString ()
+					{
+						return "AlarmPanel.uploadAlarmButActionPerformed.Runnable";	// NOI18N
 					}
 				}, this, false, false, false);
 			}
 		}
 		catch (Exception ex)
 		{
-			Utils.updateStatusLabel (status, Utils.STATUS.READY);
+			mw.setReadyStatus ();
 			Utils.handleException (ex, "uploadAlarm");	// NOI18N
 		}
 	}//GEN-LAST:event_uploadAlarmButActionPerformed
@@ -334,7 +345,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 			try
 			{
 				final AtomicInteger threads = new AtomicInteger (0);
-				Utils.updateStatusLabel (status, Utils.STATUS.SENDING);
+				mw.setSendingStatus ();
 				progressBar.setValue (0);
 				progressBar.setMinimum (0);
 				progressBar.setMaximum (selectedRows.length);
@@ -353,17 +364,21 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 							progressBar.setValue (progressBar.getValue () + 1);
 							if ( threads.decrementAndGet () == 0 )
 							{
-								Utils.updateStatusLabel (status,
-									Utils.STATUS.READY);
-								progressBar.setValue (0);
+								mw.setReadyStatus ();
 							}
+						}
+
+						@Override
+						public String toString ()
+						{
+							return "AlarmPanel.deleteAlarmButdeleteButActionPerformed.Runnable";	// NOI18N
 						}
 					}, this, false, false, false);
 				}
 			}
 			catch (Exception ex)
 			{
-				Utils.updateStatusLabel (status, Utils.STATUS.READY);
+				mw.setReadyStatus ();
 				Utils.handleException (ex, "delete");	// NOI18N
 			}
 		}
@@ -450,7 +465,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 	@Override
 	public void setMainWindow (MainWindow mainWindow)
 	{
-		// not needed
+		mw = mainWindow;
 	}
 
 	@Override

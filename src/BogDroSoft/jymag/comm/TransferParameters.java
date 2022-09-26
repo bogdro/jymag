@@ -1,7 +1,7 @@
 /*
  * TransferParameters.java, part of the BogDroSoft.jymag.comm package.
  *
- * Copyright (C) 2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2016-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -151,7 +151,6 @@ public class TransferParameters
 		final Object dSync)
         {
 		Object selectedPort = portCombo.getSelectedItem ();
-		String selectedPortName = "";
 		if ( selectedPort != null )
 		{
 			id = TransferUtils.getIdentifierForPort (selectedPort.toString ());

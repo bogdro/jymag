@@ -1,7 +1,7 @@
 /*
  * TransferUtils.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2016 Bogdan Drozdowski, bogdandr (at) op.pl
+ * Copyright (C) 2011-2018 Bogdan Drozdowski, bogdandr (at) op.pl
  * License: GNU General Public License, v3+
  *
  * This program is free software; you can redistribute it and/or
@@ -245,6 +245,12 @@ public class TransferUtils
 		{
 			// empty by default
 		}
+
+		@Override
+		public String toString ()
+		{
+			return "TransferUtils." + getName () + ".TUOperation";	// NOI18N
+		}
 	}
 
 	/**
@@ -322,7 +328,7 @@ public class TransferUtils
 						{
 							System.out.println (
 								errString + colon
-								+ space + msg
+								+ space + msg + colon
 								+ space + op.getErrorParams ());
 						}
 						if ( ! op.isQuietGUI () )
@@ -332,14 +338,14 @@ public class TransferUtils
 								JOptionPane.showMessageDialog (
 									op.getParentFrame (),
 									errString + colon + space + msg
-									+ space + op.getErrorParams (),
+									+ colon + space + op.getErrorParams (),
 									errString,
 									JOptionPane.ERROR_MESSAGE );
 							}
 							catch (Exception ex)
 							{
 								Utils.handleException (ex,
-									"JOptionPane.showMessageDialog:"	// NOI18N
+									"JOptionPane.showMessageDialog: "	// NOI18N
 									+ op.getName ());
 							}
 						}
@@ -349,7 +355,7 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU." + op.getName ()		// NOI18N
-						+ ".SW.done:"			// NOI18N
+						+ ".SW.done: "			// NOI18N
 						+ op.getErrorParams ());
 					result.set (-10);
 				}
@@ -361,10 +367,16 @@ public class TransferUtils
 				{
 					Utils.handleException (ex,
 						"TU." + op.getName ()		// NOI18N
-						+ ".SW.onDone:"			// NOI18N
+						+ ".SW.onDone: "		// NOI18N
 						+ op.getErrorParams ());
 				}
 				isDone.set (true);
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "TransferUtils.performOperation.SwingWorker";	// NOI18N
 			}
 		};
 		sw.execute ();
@@ -913,7 +925,7 @@ public class TransferUtils
 		final AtomicInteger alarmNumber = new AtomicInteger (0);
 
 		return performOperation (new TUOperation<Vector<PhoneAlarm>>
-			("downloadAlarmList", emptyStr,			// NOI18N
+			("downloadAlarmList", "ALARM",			// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1056,7 +1068,7 @@ public class TransferUtils
 		}
 
 		return performOperation (new TUOperation<Vector<PhoneMessage>>
-			("downloadMessageList", emptyStr,	// NOI18N
+			("downloadMessageList", "SMS",	// NOI18N
 			onDone, waitFor, tp.getSync (), quiet, quietGUI, parent)
 			{
 				@Override
@@ -1570,7 +1582,7 @@ public class TransferUtils
 								// be invalid in any given encoding
 								ret.append (new String (dt.recv (null)));
 							}
-						} while ( read > 0 );
+						} while ( true );
 						try
 						{
 							Thread.sleep (1000);

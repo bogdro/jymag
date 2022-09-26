@@ -1,3 +1,96 @@
+2018-06-03	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 1.6:
+	  This is mainly a fixing/improvement release. UI responsiveness
+	  improved (less exceptions should now be left unhandled and more
+	  messages will be displayed instead of freezing the UI). No new
+	  features have been implemented. Many code simplification, quality and
+	  functional improvements. Verified JYMAG with Java 8. Verified that
+	  the JYMAG installer builds correctly with NSIS 3.03. Error logging
+	  improved. Verified with JVisualVM that all threads are cleaned up.
+	* TransferUtils.java (performOperation): better error message look
+	* Starter.java (main), MainWindow.java (start): setting up logging
+	  before calling the main class.
+	* TransferParameters.java (TransferParameters): remove unused variable
+	* Makefile: rename the "dist" target to "pack", because "dist" is an
+	  existing directory. Clean the previous build when building a new JAR
+	  - this should make all classes up-to-date each time. Changed the
+	  signing certificate name.
+	* Starter.java (closeProgram): a single method to close logging and
+	  exit the program.
+	* Utils.java: move closeProgram & logging setup to Starter.java.
+	* MainWindow.java (createAndOpenDataTransporter): one single method to
+	  create a DataTransporter from the current parameters. Display an
+	  error when there are no ports available.
+	* *.java: added toString() methods on anonymous classes for debugging
+	* CapabilityWindow.java (getCapButActionPerformed): disabling all
+	  controls when waiting for the answer to the previous operation. Make
+	  MainWindow display the "receiving" status while the operation is in
+	  progress.
+	* MainWindow.java: disabling controls while performing operations.
+	  Disable also the buttons for port scanning, capabilities, raw
+	  commands and signal power window, because when an operation is in
+	  progress, opening a scan or any ofthose windows will cause a "port
+	  in use" error anyway. Added dedicated methods for changing the status
+	  label.
+	* DataTransporter.java: corrected the regex for "extra phone type"
+	  reply so that any spaces after the reply are optional (should help
+	  with some replies). Moved the joinArrays methods to the Utils class.
+	* *Panel.java: change the status label using MainWindow's new methods
+	* Utils.java (createOpenFileChooser): extract the anonymous class to
+	  inner, calculate the descriptions just once.
+	* SignalDisplayer.java (start): Make MainWindow display the
+	  "receiving" status while the thread is running.
+	* SignalDisplayer.java (exit): Make MainWindow display the "ready"
+	  status when the operation is over.
+	* RawCommunicator.java (sendFileButActionPerformed): disable command
+	  sending when sending a file. Make MainWindow display the "sending"
+	  status while the operation is in progress. Display a message box
+	  when the file has been sent.
+	* RawCommunicator.java (sendButActionPerformed): disable file sending
+	  when sending commands. Make MainWindow display the "sending" status
+	  while the operation is in progress.
+	* RawCommunicator.java (exit): Make MainWindow display the "ready"
+	  status when leaving. Disallow closing the window until sending or
+	  receiving is done.
+	* SMSWindow.java (sendButActionPerformed): Make MainWindow display the
+	  "sending" status and disable the send and close buttons while the
+	  operation is in progress.
+	* SMSWindow.java (closeButActionPerformed): Make MainWindow display
+	  the "ready" status when leaving.
+	* MainWindow.java (getCapButActionPerformed): don't launch the
+	  capability window when no ports are found/selected
+	* MainWindow.java (rawButActionPerformed): don't launch the
+	  raw communication window when no ports are found/selected
+	* MainWindow.java (signalButtonActionPerformed): don't launch the
+	  signal power window when no ports are found/selected
+	* SMSPanel.java: don't launch the SMS window when no ports are
+	  found/selected.
+	* TransferUtils.java (downloadAlarmList): added "ALARM" to the error
+	  messages for better information.
+	* TransferUtils.java (downloadMessageList): added "SMS" to the error
+	  messages for better information.
+	* MainWindow.java (loadConfButActionPerformed): extract the file
+	  filter to a class field and create a new method for building a
+	  FileChooser upon it.
+	* MainWindow.java (saveConfButActionPerformed): save an empty port
+	  name when no ports are found/selected. Use a file filter common
+	  with loading the configuration.
+	* SMSWindow.java: add a window listener for the closing event (when
+	  pressing Esc) and make it do the same as the "Close" button. Disallow
+	  closing the window until sending is done.
+	* CapabilityWindow.java (exitButActionPerformed): Make MainWindow
+	  display the "ready" status when leaving. Disallow closing the window
+	  until the operation is done
+	* CapabilityWindow.java: add a window listener for the closing event
+	  (when pressing Esc) and make it do the same as the "Close" button.
+	  Disallow closing the window until sending is done.
+	* JYMAGTransferHandler.java (importData): catch more exceptions
+	* JYMAGTransferHandler.java (importSingleFile): Make MainWindow display
+	  the "sending" status while the operation is in progress and "ready"
+	  when it's finished. Since the upload is done on the EDT, the change
+	  may not be reflected immediately on the GUI.
+
 2016-06-30	Bogdan Drozdowski <bogdandr@op.pl>
 
 	* JYMAG version 1.5:
