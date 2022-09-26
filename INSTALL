@@ -1,0 +1,9 @@
+Copy JYMAG/dist/JYMAG.jar and run.sh to a suitable location
+ (like in your PATH). Running "run.sh" will be enough.
+
+Under Windows, a duble click on the JAR file should be enough. If not, copy
+ JYMAG/dist/JYMAG.jar and run.bat to a suitable location
+ (like in your PATH). Running "run.bat" will be enough.
+ When using the second approach, the "java.exe" binary must be
+ in your PATH too.
+

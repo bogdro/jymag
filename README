@@ -1,0 +1,79 @@
+This is the README file for JYMAG (Java Your Music and Graphics), a program
+ for retrieving multimedia from a Sagem mobile phone (tested on Linux with
+ "Sagem MY X5-2").
+
+Author: Bogdan Drozdowski, bogdandr @ op . pl
+License: GPLv3+
+
+========================= Running
+
+Using NetBeans: open the JYMAG folder as a NetBeans Project
+ and hit "Run".
+
+By hand:
+	java -jar JYMAG/dist/JYMAG.jar
+
+========================= Compiling (if necessary)
+
+Requirements for compiling:
+
+- JDK, the Java Development Kit >= (1.)6.0
+
+- RxTx Java Transmission package from www.rxtx.org
+
+Compiling using NetBeans: open the JYMAG folder as a NetBeans Project
+ and hit "Build Main Project".
+
+Compiling by hand: try
+	cd JYMAG/src/BogDroSoft/jymag/
+	java *.java
+
+========================= Using
+
+Phone setup: conecct it to the computer using a cable or IrDA or
+ whatever works. Switch the transmission on. If using a cable, select
+ Automatic speed in the configuration.
+
+No need to connect to the phone. Start by selecting the tab you're
+ interested in (photos, ringtones, ...). Click on "Get list" to connect
+ to the phone and get the list of elements. Select the elements you wish
+ to download and click "Download selected". The downloaded files will
+ show up in the JYMAG program's folder.
+
+========================= Currently supported operations:
+
+1) Getting lists of: pictures and ringtones
+2) Downloading:
+   a) pictures: JPG
+   b) ringtones: MIDI, AMR
+3) Uploading:
+   a) pictures: JPG, GIF, BMP, PNG
+   b) ringtones: MIDI
+
+========================= Converting ringtones
+
+Some ringtones received from the phone may be in AMR format. You can
+ convert those to other formats using other software, like the free
+ "Mobile Media Converter". If it doesn't work, use the FFMPEG program
+ attached to the "Mobile Media Converter" like this:
+
+ ffmpeg -i Ring.amr -ar 44100 Ring.wav
+
+========================= If not working
+
+1. If the phone's port doesn't show up on the list.
+   Not JYMAG's fault. Make sure:
+   - you have installed a correct driver for the cable/IrDA/other devices
+   - the phone's port is not already in use
+   - you have the newest RxTx
+
+2. Getting the list(s) fails.
+   Click "Scan ports". If an answer is received, the correct port should be
+   selected in the combo box. If not, an error will show up. Try closing
+   the program and starting it at least 3 more times. If no success, check
+   your drivers and connection. If the program crashes (missing icon),
+   select your port manually.
+
+3. Getting the list(s) or scanning hangs the program.
+   Try a few times. I've tried to limit the waiting time, but my method
+   apparently doesn't work all the time.

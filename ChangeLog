@@ -1,0 +1,14 @@
+2008-03-22	Bogdan Drozdowski <bogdandr@op.pl>
+
+	* JYMAG version 0.1 features:
+	  - port scanning
+	  - setting port parameters
+	  - retrieving the list of photos
+	  - retrieving the list of ringtones
+	  - retrieveing JPG, GIF, BMP and PNG pictures
+	  - retrieveing MIDI and AMR ringtones
+	  - uploading JPG, GIF, BMP and PNG pictures
+	  - uploading MIDI ringtones
+	  - command-line options: --help,-h,-?,/?, --version, -v,
+	    --license, --licence
+
