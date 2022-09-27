@@ -8,6 +8,14 @@ JYMAG can also be used with other phones and devices (modems) and serve as
 
 Program's website is available at https://jymag.sourceforge.io.
 
+Author: Bogdan Drozdowski, bogdro (at) users . sourceforge . net
+License:
+
+- The JYMAG program is under the GNU GPL v3 or later,
+- The EXE programs that start JYMAG (jymag*.exe) are under the MIT license.
+
+See the COPYING file.
+
 ========================= Running
 
 Requirements:
@@ -226,4 +234,3 @@ acquirers or descendants.
 
 All other trademarks, logos and names are properties of their respective
 owners and are given here only as an example.
-
