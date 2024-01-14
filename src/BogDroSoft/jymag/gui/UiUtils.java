@@ -254,7 +254,7 @@ public class UiUtils {
 	{
 		try
 		{
-			JOptionPane.showMessageDialog (null, msg,
+			JOptionPane.showMessageDialog (c, msg,
 				ERR_STRING, JOptionPane.ERROR_MESSAGE);
 		}
 		catch (Exception ex)
