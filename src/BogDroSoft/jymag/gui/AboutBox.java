@@ -314,7 +314,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
 						{
-							Desktop.getDesktop ().browse (URI_WWW1);
+							d.browse (URI_WWW1);
 						}
 					}
 				}
@@ -339,7 +339,7 @@ public class AboutBox extends javax.swing.JDialog
 					{
 						if ( d.isSupported (Desktop.Action.BROWSE) )
 						{
-							Desktop.getDesktop ().browse (URI_WWW2);
+							d.browse (URI_WWW2);
 						}
 					}
 				}
