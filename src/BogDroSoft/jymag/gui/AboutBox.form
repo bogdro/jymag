@@ -265,7 +265,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="thanksTo">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;Sharp (sharpy+at+xox.pl) for GetPic.pl, sebtx452 @ gmail.com for wxPicSound,&lt;br&gt;&#xa;MIKSOFT for &quot;Mobile Media Converter&quot;, &quot;ffmpeg project&quot; for ffmpeg,&lt;br&gt;&#xa;Fizzed, Inc. (http://fizzed.com/) for new RxTx binaries&#xa;&lt;/html&gt;" noResource="true"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;Sharp (sharpy+at+xox.pl) - GetPic.pl, sebtx452 @ gmail.com - wxPicSound,&lt;br&gt;&#xa;MIKSOFT - &quot;Mobile Media Converter&quot;, &quot;ffmpeg project&quot; - ffmpeg,&lt;br&gt;&#xa;Fizzed, Inc. (http://fizzed.com/) - new RxTx binaries&lt;/html&gt;" noResource="true"/>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="thanks" noResource="true"/>

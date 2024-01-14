@@ -144,7 +144,7 @@ public class AboutBox extends javax.swing.JDialog
 
                 thanksLabel.setText(bundle.getString("Thanks_to:")); // NOI18N
 
-                thanksTo.setText("<html>Sharp (sharpy+at+xox.pl) for GetPic.pl, sebtx452 @ gmail.com for wxPicSound,<br>\nMIKSOFT for \"Mobile Media Converter\", \"ffmpeg project\" for ffmpeg,<br>\nFizzed, Inc. (http://fizzed.com/) for new RxTx binaries\n</html>"); // NOI18N
+                thanksTo.setText("<html>Sharp (sharpy+at+xox.pl) - GetPic.pl, sebtx452 @ gmail.com - wxPicSound,<br>\nMIKSOFT - \"Mobile Media Converter\", \"ffmpeg project\" - ffmpeg,<br>\nFizzed, Inc. (http://fizzed.com/) - new RxTx binaries</html>"); // NOI18N
 
                 licenseArea.setEditable(false);
                 licenseArea.setColumns(20);
