@@ -207,14 +207,7 @@ public class TransferUtils
 			{
 				if ( ! isDone.get () )
 				{
-					try
-					{
-						Thread.sleep (10);
-					}
-					catch (InterruptedException ex)
-					{
-						// ignore - just wait again
-					}
+					Utils.sleepIgnoreException(10);
 				}
 			}
 		}
@@ -1412,14 +1405,7 @@ public class TransferUtils
 									ret.append (new String (dt.recv (null)));
 								}
 							} while ( true );
-							try
-							{
-								Thread.sleep (1000);
-							}
-							catch (InterruptedException ex)
-							{
-								// ignore
-							}
+							Utils.sleepIgnoreException(1000);
 							if ( dt.getAvailableBytes () > 0 )
 							{
 								// don't force any encodings,

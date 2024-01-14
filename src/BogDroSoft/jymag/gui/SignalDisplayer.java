@@ -290,14 +290,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 			{
 				// only hurts: when the thread is interrupted, the window won't close
 				//updater.interrupt ();
-				try
-				{
-					Thread.sleep (10);
-				}
-				catch (Exception ex)
-				{
-					// ignore
-				}
+				Utils.sleepIgnoreException(10);
 			}
 		}
 		dt.close ();

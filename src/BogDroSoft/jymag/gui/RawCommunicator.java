@@ -662,26 +662,12 @@ public class RawCommunicator extends javax.swing.JDialog
 			while ( updater.isAlive () )
 			{
 				updater.interrupt ();
-				try
-				{
-					Thread.sleep (10);
-				}
-				catch (Exception ex)
-				{
-					// ignore, just wait again
-				}
+				Utils.sleepIgnoreException(10);
 			}
 		}
 		while ( ! isFinished.get () )
 		{
-			try
-			{
-				Thread.sleep (10);
-			}
-			catch (Exception ex)
-			{
-				// ignore
-			}
+			Utils.sleepIgnoreException(10);
 		}
 		mw.setReadyStatus ();
 		dispose ();

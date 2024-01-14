@@ -817,14 +817,7 @@ public class DataTransporter
 					continue MAIN;
 				}
 
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				}
-				catch (Exception ex)
-				{
-					// ignore
-				}
+				Utils.sleepIgnoreException(DT_TIMEOUT);
 				// send file data here:
 				fis = new FileInputStream (f);
 				byte[] contents = new byte[10240];
@@ -980,14 +973,7 @@ public class DataTransporter
 			int trials = 0;
 			do
 			{
-				try
-				{
-					Thread.sleep (DT_TIMEOUT);
-				}
-				catch (Exception ex)
-				{
-					// ignore
-				}
+				Utils.sleepIgnoreException(DT_TIMEOUT);
 				// send file retrieve command
 				send ((FILE_RETR_CMD_START + el.getID () + DQUOT_CR).getBytes (DEFAULT_ENCODING));
 				/*
@@ -1250,14 +1236,7 @@ public class DataTransporter
 			{
 				break;
 			}
-			try
-			{
-				Thread.sleep (DT_TIMEOUT);
-			}
-			catch (Exception ex)
-			{
-				// ignore
-			}
+			Utils.sleepIgnoreException(DT_TIMEOUT);
 			try
 			{
 				// send the command

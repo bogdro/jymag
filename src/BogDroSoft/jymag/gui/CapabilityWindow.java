@@ -402,14 +402,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 	{
 		while ( ! isFinished.get () )
 		{
-			try
-			{
-				Thread.sleep (10);
-			}
-			catch (Exception ex)
-			{
-				// ignore
-			}
+			Utils.sleepIgnoreException(10);
 		}
 		mw.setReadyStatus ();
 		dispose ();

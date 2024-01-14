@@ -21,6 +21,7 @@
 package BogDroSoft.jymag.gui;
 
 import BogDroSoft.jymag.PhoneMessage;
+import BogDroSoft.jymag.Utils;
 import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -286,14 +287,7 @@ public class SMSWindow extends javax.swing.JDialog
 	{
 		while ( ! isFinished.get () )
 		{
-			try
-			{
-				Thread.sleep (10);
-			}
-			catch (Exception ex)
-			{
-				// ignore
-			}
+			Utils.sleepIgnoreException(10);
 		}
 		mw.setReadyStatus ();
 		dispose ();

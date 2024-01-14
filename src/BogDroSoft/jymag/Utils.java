@@ -568,6 +568,21 @@ public class Utils
 	}
 
 	/**
+	 * Sleep for the given time, ignoring exceptions.
+	 * @param millis the time to sleep for, in milliseconds.
+	 */
+	public static void sleepIgnoreException(long millis)
+	{
+		try
+		{
+			Thread.sleep (millis);
+		}
+		catch (InterruptedException ex)
+		{
+			// ignore
+		}
+	}
+	/**
 	 * A sample uncaught-exception handler instance for threads.
 	 */
 	public static final UncExHndlr handler = new UncExHndlr ();
