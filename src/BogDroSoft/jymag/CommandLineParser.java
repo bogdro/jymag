@@ -1,7 +1,7 @@
 /*
  * CommandLineParser.java, part of the JYMAG package.
  *
- * Copyright (C) 2011-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
+ * Copyright (C) 2011-2024 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
  *

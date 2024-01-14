@@ -1,7 +1,7 @@
 /*
  * TransferParameters.java, part of the BogDroSoft.jymag.comm package.
  *
- * Copyright (C) 2016-2022 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
+ * Copyright (C) 2016-2024 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
  * This program is free software: you can redistribute it and/or modify
