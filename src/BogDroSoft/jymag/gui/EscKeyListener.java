@@ -114,6 +114,8 @@ public class EscKeyListener extends KeyAdapter
 	@Override
 	public String toString ()
 	{
-		return "EscKeyListener(" + frame.getName () + ")";	// NOI18N
+		return "EscKeyListener("	// NOI18N
+                        + ((frame != null)? frame.getName () : "")
+                        + ")";	// NOI18N
 	}
 }
