@@ -177,6 +177,9 @@
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;mailto:&quot; + EMAIL_ADDR + &quot;\&quot;&gt;&quot; + EMAIL_ADDR + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
                 </Property>
+                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                  <Color id="Hand Cursor"/>
+                </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -202,6 +205,9 @@
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + WWW_ADDR1 + &quot;\&quot;&gt;&quot; + WWW_ADDR1 + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
                 </Property>
+                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                  <Color id="Hand Cursor"/>
+                </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -216,6 +222,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="&quot;&lt;html&gt;&lt;a href=\&quot;&quot; + WWW_ADDR2 + &quot;\&quot;&gt;&quot; + WWW_ADDR2 + &quot;&lt;/a&gt;&lt;/html&gt;&quot;" type="code"/>
+                </Property>
+                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                  <Color id="Hand Cursor"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
@@ -323,6 +332,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="fontSizeLab">
               <Properties>
+                <Property name="horizontalAlignment" type="int" value="4"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="BogDroSoft/jymag/i18n/AboutBox.properties" key="font_size" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>

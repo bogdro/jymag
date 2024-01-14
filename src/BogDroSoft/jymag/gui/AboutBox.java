@@ -56,14 +56,10 @@ public class AboutBox extends javax.swing.JDialog
 		super (parent, true);
 		initComponents ();
 		licenseArea.setCaretPosition (0);
-		emailLabel.setCursor (Cursor.getPredefinedCursor (Cursor.HAND_CURSOR));
-		www1Label .setCursor (Cursor.getPredefinedCursor (Cursor.HAND_CURSOR));
-		www2Label .setCursor (Cursor.getPredefinedCursor (Cursor.HAND_CURSOR));
 
 		UiUtils.changeSizeToScreen(this);
 
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
-		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		/* add the Esc key listener to the frame and all components. */
 		new EscKeyListener (this).install();
@@ -110,6 +106,7 @@ public class AboutBox extends javax.swing.JDialog
                 authorLabel.setText(bundle.getString("author")); // NOI18N
 
                 emailLabel.setText("<html><a href=\"mailto:" + EMAIL_ADDR + "\">" + EMAIL_ADDR + "</a></html>");
+                emailLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
                 emailLabel.addMouseListener(new java.awt.event.MouseAdapter()
                 {
                         public void mouseClicked(java.awt.event.MouseEvent evt)
@@ -121,6 +118,7 @@ public class AboutBox extends javax.swing.JDialog
                 wwwLabel.setText("WWW:"); // NOI18N
 
                 www1Label.setText("<html><a href=\"" + WWW_ADDR1 + "\">" + WWW_ADDR1 + "</a></html>");
+                www1Label.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
                 www1Label.addMouseListener(new java.awt.event.MouseAdapter()
                 {
                         public void mouseClicked(java.awt.event.MouseEvent evt)
@@ -130,6 +128,7 @@ public class AboutBox extends javax.swing.JDialog
                 });
 
                 www2Label.setText("<html><a href=\"" + WWW_ADDR2 + "\">" + WWW_ADDR2 + "</a></html>");
+                www2Label.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
                 www2Label.addMouseListener(new java.awt.event.MouseAdapter()
                 {
                         public void mouseClicked(java.awt.event.MouseEvent evt)
@@ -166,6 +165,7 @@ public class AboutBox extends javax.swing.JDialog
                         }
                 });
 
+                fontSizeLab.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 fontSizeLab.setText(bundle.getString("font_size")); // NOI18N
 
                 javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
