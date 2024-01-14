@@ -494,6 +494,7 @@ public class Utils
 				}
 			}
 		}
+		handleException (ex.getCause(), null);
 	}
 
 	/**
