@@ -82,7 +82,7 @@ VIAddVersionKey "ProductName" "JYMAG"
 ; comments seem to appear only in MSI files
 VIAddVersionKey "Comments" "Installer created on ${YEAR}-${MONTH}-${DAYOFMONTH}, ${__TIME__} with the free Nullsoft Scriptable Install System, https://nsis.sourceforge.io"
 VIAddVersionKey "LegalCopyright" "Copyright (c) 2008-${YEAR} ${PUBLISHER}"
-VIAddVersionKey "FileDescription" "The JYMAG installer for Windows"
+VIAddVersionKey "FileDescription" "The JYMAG installer"
 VIAddVersionKey "FileVersion" "${VERSION}"
 VIAddVersionKey "ProductVersion" "${VERSION}"
 
@@ -160,7 +160,7 @@ Function afterInstall
 		; Write the installation path into the registry
 		WriteRegStr   HKLM "${REG_DIR_INSTDIR}" "${REG_KEY_INSTDIR}" "$INSTDIR"
 
-		; write unintallation information for the Control Panel:
+		; write uninstallation information for the Control Panel:
 		WriteRegStr   HKLM "${REG_KEY}" "DisplayIcon" "$INSTDIR\jymag-en.exe"
 		WriteRegStr   HKLM "${REG_KEY}" "DisplayName" "JYMAG ${VERSION} ($INSTDIR)"
 		WriteRegStr   HKLM "${REG_KEY}" "DisplayVersion" "${VERSION}"
