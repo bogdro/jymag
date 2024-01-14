@@ -61,7 +61,8 @@ public class PhoneAlarm
 	private static final String TOSTRING_DATETIME = "";		// NOI18N
 	private static final String TOSTRING_DAYS = "";			// NOI18N
 
-	private static final SimpleDateFormat sdf = new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
+	private static final SimpleDateFormat DATE_FORMAT
+		= new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
 	private static final Integer ALL_DAYS = Integer.valueOf (0);
 
@@ -771,7 +772,7 @@ public class PhoneAlarm
 	public synchronized String toString ()
 	{
 		return TOSTRING_BEGIN + TOSTRING_ID + number + Utils.COMMA
-			+ TOSTRING_DATETIME + sdf.format (time.getTime ())
+			+ TOSTRING_DATETIME + DATE_FORMAT.format (time.getTime ())
 			+ Utils.COMMA + TOSTRING_DAYS + getDaysString ()
 			+ TOSTRING_END;
 	}

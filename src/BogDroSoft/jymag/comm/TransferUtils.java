@@ -51,30 +51,51 @@ import javax.swing.table.TableModel;
 public class TransferUtils
 {
 	// ------------ i18n stuff
-	private static final ResourceBundle rb = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
 
-	private static final String TRY_PORT_STRING   = rb.getString("Trying_port_");				// NOI18N
-	private static final String GOT_REPLY_STRING  = rb.getString("Got_answer!");					// NOI18N
-	private static final String NO_REPLIES_STRING = rb.getString("No_answers_received");				// NOI18N
-	private static final String ERR_STRING        = rb.getString("Error");					// NOI18N
-	private static final String UNSUPPORTED_TYPE  = rb.getString("Unsupported_file_type:");			// NOI18N
-	private static final String GETTING_FILE      = rb.getString("Getting_file");				// NOI18N
+	private static final String TRY_PORT_STRING
+		= MSGS.getString("Trying_port_");		// NOI18N
+	private static final String GOT_REPLY_STRING
+		= MSGS.getString("Got_answer!");		// NOI18N
+	private static final String NO_REPLIES_STRING
+		= MSGS.getString("No_answers_received");	// NOI18N
+	private static final String ERR_STRING
+		= MSGS.getString("Error");			// NOI18N
+	private static final String UNSUPPORTED_TYPE
+		= MSGS.getString("Unsupported_file_type:");	// NOI18N
+	private static final String GETTING_FILE
+		= MSGS.getString("Getting_file");		// NOI18N
 	// error messages for file upload:
-	private static final String UPLOAD_MSG_1   = rb.getString("File_upload_init_failed");			// NOI18N
-	private static final String UPLOAD_MSG_2   = rb.getString("Sending_file_names_length_failed");		// NOI18N
-	private static final String UPLOAD_MSG_3   = rb.getString("Sending_file_name_failed");			// NOI18N
-	private static final String UPLOAD_MSG_4   = rb.getString("Format_not_suported_by_phone");		// NOI18N
-	private static final String UPLOAD_MSG_5   = rb.getString("File_not_accepted");				// NOI18N
-	private static final String UPLOAD_MSG_6   = rb.getString("Closing_transmission_failed");			// NOI18N
-	private static final String UPLOAD_MSG_7   = rb.getString("Exception_occurred");				// NOI18N
-	private static final String UPLOAD_MSG_8   = rb.getString("Incorrect_parameter");				// NOI18N
-	private static final String UPLOAD_MSG_9   = rb.getString("Format_not_suported_by_JYMAG");		// NOI18N
-	private static final String UPLOAD_MSG_10  = rb.getString("Number_of_attempts_exceeded");			// NOI18N
-	private static final String UPLOAD_MSG_11  = rb.getString("Incorrect_parameter");				// NOI18N
+	private static final String UPLOAD_MSG_1
+		= MSGS.getString("File_upload_init_failed");	// NOI18N
+	private static final String UPLOAD_MSG_2
+		= MSGS.getString("Sending_file_names_length_failed");	// NOI18N
+	private static final String UPLOAD_MSG_3
+		= MSGS.getString("Sending_file_name_failed");	// NOI18N
+	private static final String UPLOAD_MSG_4
+		= MSGS.getString("Format_not_suported_by_phone");	// NOI18N
+	private static final String UPLOAD_MSG_5
+		= MSGS.getString("File_not_accepted");		// NOI18N
+	private static final String UPLOAD_MSG_6
+		= MSGS.getString("Closing_transmission_failed");	// NOI18N
+	private static final String UPLOAD_MSG_7
+		= MSGS.getString("Exception_occurred");		// NOI18N
+	private static final String UPLOAD_MSG_8
+		= MSGS.getString("Incorrect_parameter");	// NOI18N
+	private static final String UPLOAD_MSG_9
+		= MSGS.getString("Format_not_suported_by_JYMAG");	// NOI18N
+	private static final String UPLOAD_MSG_10
+		= MSGS.getString("Number_of_attempts_exceeded");	// NOI18N
+	private static final String UPLOAD_MSG_11
+		= MSGS.getString("Incorrect_parameter");	// NOI18N
 	// error messages for file download:
-	private static final String DOWNLOAD_MSG_1 = rb.getString("Exception_occurred");				// NOI18N
-	private static final String DOWNLOAD_MSG_2 = rb.getString("No_data");					// NOI18N
-	private static final String DOWNLOAD_MSG_3 = rb.getString("Incorrect_parameter");				// NOI18N
+	private static final String DOWNLOAD_MSG_1
+		= MSGS.getString("Exception_occurred");		// NOI18N
+	private static final String DOWNLOAD_MSG_2
+		= MSGS.getString("No_data");			// NOI18N
+	private static final String DOWNLOAD_MSG_3
+		= MSGS.getString("Incorrect_parameter");	// NOI18N
 
 	private static final String FILENAME_FORBIDDEN_CHARS_REGEX = "\\s";	// NOI18N
 	private static final String FILENAME_FORBIDDEN_CHARS_REPLACE = "_";	// NOI18N
@@ -797,10 +818,10 @@ public class TransferUtils
 						{
 							dtm.setColumnIdentifiers (new String[]
 							{
-								rb.getString("Alarm_number"),		// NOI18N
-								rb.getString("Alarm_date"),		// NOI18N
-								rb.getString("Alarm_time"),		// NOI18N
-								rb.getString("Alarm_days")		// NOI18N
+								MSGS.getString("Alarm_number"),		// NOI18N
+								MSGS.getString("Alarm_date"),		// NOI18N
+								MSGS.getString("Alarm_time"),		// NOI18N
+								MSGS.getString("Alarm_days")		// NOI18N
 							});
 						}
 						dtm.setRowCount (0);
@@ -943,11 +964,11 @@ public class TransferUtils
 						{
 							dtm.setColumnIdentifiers (new String[]
 							{
-								rb.getString("smsTable_ID"),		// NOI18N
-								rb.getString("smsTable_Status"),	// NOI18N
-								rb.getString("smsTable_PhoneNum"),	// NOI18N
-								rb.getString("smsTable_DateTime"),	// NOI18N
-								rb.getString("smsTable_message")	// NOI18N
+								MSGS.getString("smsTable_ID"),		// NOI18N
+								MSGS.getString("smsTable_Status"),	// NOI18N
+								MSGS.getString("smsTable_PhoneNum"),	// NOI18N
+								MSGS.getString("smsTable_DateTime"),	// NOI18N
+								MSGS.getString("smsTable_message")	// NOI18N
 							});
 						}
 						dtm.setRowCount (0);

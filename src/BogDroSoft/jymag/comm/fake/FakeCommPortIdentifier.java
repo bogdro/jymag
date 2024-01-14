@@ -32,10 +32,11 @@ import java.util.Vector;
 public class FakeCommPortIdentifier //extends CommPortIdentifier // illegal access, even if in the gnu.io package.
 {
 	//private static final Vector<CommPortIdentifier> fakePorts = new Vector<CommPortIdentifier> (1);
-	private static final Vector<FakeCommPortIdentifier> fakePorts = new Vector<FakeCommPortIdentifier> (1);
+	private static final Vector<FakeCommPortIdentifier> FAKE_PORTS
+		= new Vector<FakeCommPortIdentifier> (1);
 	static
 	{
-		fakePorts.add(new FakeCommPortIdentifier());
+		FAKE_PORTS.add(new FakeCommPortIdentifier());
 	}
 	private final SerialPort sp = new FakeSerialPort();
 
@@ -46,7 +47,7 @@ public class FakeCommPortIdentifier //extends CommPortIdentifier // illegal acce
 	
 	public static Enumeration<?> getPortIdentifiers ()
 	{
-		return fakePorts.elements();
+		return FAKE_PORTS.elements();
 	}
 
 	//@Override
@@ -70,6 +71,6 @@ public class FakeCommPortIdentifier //extends CommPortIdentifier // illegal acce
 	//public static CommPortIdentifier getPortIdentifier (String port)
 	public static FakeCommPortIdentifier getPortIdentifier (String port)
 	{
-		return fakePorts.get(0);
+		return FAKE_PORTS.get(0);
 	}
 }

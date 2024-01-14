@@ -47,8 +47,10 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
 	private String destDirName;
 
 	// i18n stuff:
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String ANIM_VIDEO_TYPES_STRING = mwBundle.getString("Supported_animation/video_files");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String ANIM_VIDEO_TYPES_STRING
+		= MSGS.getString("Supported_animation/video_files");
 
 	/** Creates new form MoviePanel */
 	public MoviePanel()

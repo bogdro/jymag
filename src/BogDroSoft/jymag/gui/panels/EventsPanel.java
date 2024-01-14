@@ -47,8 +47,10 @@ public class EventsPanel extends javax.swing.JPanel implements JYMAGTab
 	private String destDirName;
 
 	// i18n stuff:
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String EVENT_TYPES_STRING = mwBundle.getString("Supported_event_and_task_files");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String EVENT_TYPES_STRING
+		= MSGS.getString("Supported_event_and_task_files");
 
 	/** Creates new form EventsPanel. */
 	public EventsPanel()

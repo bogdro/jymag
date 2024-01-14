@@ -46,9 +46,12 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 	private Vector<PhoneAlarm> currentAlarmElements;
 
 	// i18n stuff:
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String DELETE_QUESTION = mwBundle.getString("want_to_delete");
-	private static final String QUESTION_STRING = mwBundle.getString("Question");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String DELETE_QUESTION
+		= MSGS.getString("want_to_delete");
+	private static final String QUESTION_STRING
+		= MSGS.getString("Question");
 
 	/** Creates new form AlarmPanel. */
 	public AlarmPanel()

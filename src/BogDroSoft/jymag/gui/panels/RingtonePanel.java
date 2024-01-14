@@ -47,8 +47,10 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
 	private String destDirName;
 
 	// i18n stuff:
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String SOUND_TYPES_STRING = mwBundle.getString("Supported_sounds");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String SOUND_TYPES_STRING
+		= MSGS.getString("Supported_sounds");
 
 	/** Creates new form RingtonePanel */
 	public RingtonePanel()

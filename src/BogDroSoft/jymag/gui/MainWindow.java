@@ -65,7 +65,7 @@ public class MainWindow extends JFrame
 		.getString("VER");	// NOI18N
 
 	// synchronization variable:
-	private static final Object sync = new Object ();
+	private static final Object SYNC = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
 	private volatile Map<String, String> firmwares;
 	private volatile Map<String, String> phoneTypes;
@@ -736,7 +736,7 @@ public class MainWindow extends JFrame
 		// these MUST be read here, on the EDT
 		final TransferParameters tp = new TransferParameters (
 			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-			parityCombo, flowSoft, flowHard, sync);
+			parityCombo, flowSoft, flowHard, SYNC);
 
 		setSendingStatus ();
 		progressBar.setValue (0);
@@ -854,7 +854,7 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			new RawCommunicator (dt, this, sync, UiUtils.getFontSize (fontSizeSpin))
+			new RawCommunicator (dt, this, SYNC, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 			dt.close ();
 		}
@@ -874,7 +874,7 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			new CapabilityWindow (dt, this, sync, UiUtils.getFontSize (fontSizeSpin))
+			new CapabilityWindow (dt, this, SYNC, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 			dt.close ();
 		}
@@ -1059,7 +1059,7 @@ public class MainWindow extends JFrame
 			{
 				return;
 			}
-			new SignalDisplayer (dt, this, sync, UiUtils.getFontSize (fontSizeSpin))
+			new SignalDisplayer (dt, this, SYNC, UiUtils.getFontSize (fontSizeSpin))
 				.setVisible (true);
 			//dt.close ();	// do NOT close, because the window is NOT modal
 		}
@@ -1350,7 +1350,7 @@ public class MainWindow extends JFrame
 	{
 		return new TransferParameters (
 			portCombo, speedCombo, dataBitsCombo, stopBitsCombo,
-			parityCombo, flowSoft, flowHard, sync);
+			parityCombo, flowSoft, flowHard, SYNC);
 	}
 
 	private DataTransporter createAndOpenDataTransporter () throws Exception
@@ -1381,7 +1381,7 @@ public class MainWindow extends JFrame
 	public static void start (String args[]) throws ClassNotFoundException
 	{
 		// parse the command line:
-		CommandLineParser.parse (args, sync);
+		CommandLineParser.parse (args, SYNC);
 
 		// If we get here, it means that the command line didn't
 		// cause the program to exit and the GUI should be displayed.

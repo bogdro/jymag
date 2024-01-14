@@ -22,6 +22,7 @@ package BogDroSoft.jymag.gui;
 
 import BogDroSoft.jymag.Utils;
 import BogDroSoft.jymag.comm.DataTransporter;
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
@@ -39,7 +40,9 @@ public class CapabilityWindow extends javax.swing.JDialog
 	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
-	private static final String EX_STRING = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow").getString("Exception");
+	private static final String EX_STRING
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow")
+			.getString("Exception");
 	private final MainWindow mw;
 
 	/**

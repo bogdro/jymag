@@ -40,55 +40,55 @@ public class Utils
 	 * A pattern describing the format of lists of elements received from
 	 * the phone.
 	 */
-	public final static Pattern LIST_PATTERN;
+	public static final Pattern LIST_PATTERN;
 
 	/**
 	 * A Map containing all ID numbers connected to the given file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> filetypeIDs;
+	private static final Map<String, Integer> FILE_TYPE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given photo file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> photofileIDs;
+	private static final Map<String, Integer> PHOTO_FILE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given ringtone file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> ringfileIDs;
+	private static final Map<String, Integer> RING_FILE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given addressbook file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> addrfileIDs;
+	private static final Map<String, Integer> ADDR_FILE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given to-do file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> todofileIDs;
+	private static final Map<String, Integer> TODO_FILE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given event file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> eventfileIDs;
+	private static final Map<String, Integer> EVENT_FILE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given animation/video file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> animfileIDs;
+	private static final Map<String, Integer> ANIM_FILE_IDS;
 
 	/**
 	 * A Map containing ID numbers connected to the given Java file
 	 * extensions, used for file uploading.
 	 */
-	private final static Map<String, Integer> javafileIDs;
+	private static final Map<String, Integer> JAVA_FILE_IDS;
 
 	/** An empty String. */
 	public static final String EMPTY_STR = "";	// NOI18N
@@ -155,7 +155,7 @@ public class Utils
 		tempMap.put ("aac" ,  17);		// NOI18N
 		tempMap.put ("m4a" ,  17);		// NOI18N
 		tempMap.put ("awb" ,  18);		// NOI18N
-		ringfileIDs = Collections.unmodifiableMap (tempMap);
+		RING_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
 		tempMap = new HashMap<String, Integer> (16);
 		tempMap.put ("wbmp", 101);		// NOI18N
@@ -175,13 +175,13 @@ public class Utils
 		tempMap.put ("eps" , 108);		// NOI18N
 		tempMap.put ("ps"  , 108);		// NOI18N
 		tempMap.put ("ems_gr", 109 );	// NOI18N
-		photofileIDs = Collections.unmodifiableMap (tempMap);
+		PHOTO_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
 		tempMap = new HashMap<String, Integer> (3);
 		tempMap.put  ("vcf"  , 220);	// NOI18N
 		tempMap.put  ("vcard", 220);	// NOI18N
 		tempMap.put  ("vcrd" , 220);	// NOI18N
-		addrfileIDs = Collections.unmodifiableMap (tempMap);
+		ADDR_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
 		tempMap = new HashMap<String, Integer> (5);
 		tempMap.put  ("ics" , 221);		// NOI18N
@@ -189,11 +189,11 @@ public class Utils
 		tempMap.put  ("ifb" , 221);		// NOI18N
 		tempMap.put  ("icalendar", 221);	// NOI18N
 		tempMap.put  ("vcs" , 221);		// NOI18N
-		todofileIDs = Collections.unmodifiableMap (tempMap);
+		TODO_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
-		tempMap = new HashMap<String, Integer> (todofileIDs.size ());
-		tempMap.putAll (todofileIDs);
-		eventfileIDs = Collections.unmodifiableMap (tempMap);
+		tempMap = new HashMap<String, Integer> (TODO_FILE_IDS.size ());
+		tempMap.putAll (TODO_FILE_IDS);
+		EVENT_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
 		tempMap = new HashMap<String, Integer> (15);
 		tempMap.put  ("gif" , 105);		// NOI18N
@@ -212,27 +212,27 @@ public class Utils
 		tempMap.put  ("3gp" , 233);		// NOI18N
 		tempMap.put  ("3gpp", 233);		// NOI18N
 		tempMap.put  ("3g2" , 233);		// NOI18N
-		animfileIDs = Collections.unmodifiableMap (tempMap);
+		ANIM_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
 		tempMap = new HashMap<String, Integer> (3);
 		// UNCHECKED:
 		tempMap.put  ("jar" , 1001);	// NOI18N
 		tempMap.put  ("jad" , 1002);	// NOI18N
 		tempMap.put  ("jam" , 1003);	// NOI18N
-		javafileIDs = Collections.unmodifiableMap (tempMap);
+		JAVA_FILE_IDS = Collections.unmodifiableMap (tempMap);
 
-		tempMap = new HashMap<String, Integer> (ringfileIDs.size ()
-			+ photofileIDs.size () + addrfileIDs.size ()
-			+ todofileIDs.size () + eventfileIDs.size ()
-			+ animfileIDs.size () + javafileIDs.size ());
-		tempMap.putAll (photofileIDs);
-		tempMap.putAll (ringfileIDs);
-		tempMap.putAll (addrfileIDs);
-		tempMap.putAll (todofileIDs);
-		tempMap.putAll (eventfileIDs);
-		tempMap.putAll (animfileIDs);
-		tempMap.putAll (javafileIDs);
-		filetypeIDs = Collections.unmodifiableMap (tempMap);
+		tempMap = new HashMap<String, Integer> (RING_FILE_IDS.size ()
+			+ PHOTO_FILE_IDS.size () + ADDR_FILE_IDS.size ()
+			+ TODO_FILE_IDS.size () + EVENT_FILE_IDS.size ()
+			+ ANIM_FILE_IDS.size () + JAVA_FILE_IDS.size ());
+		tempMap.putAll (PHOTO_FILE_IDS);
+		tempMap.putAll (RING_FILE_IDS);
+		tempMap.putAll (ADDR_FILE_IDS);
+		tempMap.putAll (TODO_FILE_IDS);
+		tempMap.putAll (EVENT_FILE_IDS);
+		tempMap.putAll (ANIM_FILE_IDS);
+		tempMap.putAll (JAVA_FILE_IDS);
+		FILE_TYPE_IDS = Collections.unmodifiableMap (tempMap);
 	}
 
 	private Utils ()
@@ -722,7 +722,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getFiletypeIDs ()
 	{
-		return filetypeIDs;
+		return FILE_TYPE_IDS;
 	}
 
 	/**
@@ -731,7 +731,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getPhotofileIDs ()
 	{
-		return photofileIDs;
+		return PHOTO_FILE_IDS;
 	}
 
 	/**
@@ -740,7 +740,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getRingfileIDs ()
 	{
-		return ringfileIDs;
+		return RING_FILE_IDS;
 	}
 
 	/**
@@ -749,7 +749,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getAddrfileIDs ()
 	{
-		return addrfileIDs;
+		return ADDR_FILE_IDS;
 	}
 
 	/**
@@ -758,7 +758,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getTodofileIDs ()
 	{
-		return todofileIDs;
+		return TODO_FILE_IDS;
 	}
 
 	/**
@@ -767,7 +767,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getEventfileIDs ()
 	{
-		return eventfileIDs;
+		return EVENT_FILE_IDS;
 	}
 
 	/**
@@ -776,7 +776,7 @@ public class Utils
 	 */
 	public static Map<String, Integer> getAnimfileIDs ()
 	{
-		return animfileIDs;
+		return ANIM_FILE_IDS;
 	}
 
 	/**
@@ -785,6 +785,6 @@ public class Utils
 	 */
 	public static Map<String, Integer> getJavafileIDs ()
 	{
-		return javafileIDs;
+		return JAVA_FILE_IDS;
 	}
 }

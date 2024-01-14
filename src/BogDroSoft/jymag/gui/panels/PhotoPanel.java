@@ -47,8 +47,10 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 	private String destDirName;
 
 	// i18n stuff:
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String PICT_TYPES_STRING = mwBundle.getString("Supported_pictures");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String PICT_TYPES_STRING
+		= MSGS.getString("Supported_pictures");
 
 	/** Creates new form PhotoPanel */
 	public PhotoPanel()

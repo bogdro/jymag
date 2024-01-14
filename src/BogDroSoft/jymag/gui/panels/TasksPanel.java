@@ -47,8 +47,10 @@ public class TasksPanel extends javax.swing.JPanel implements JYMAGTab
 	private String destDirName;
 
 	// i18n stuff:
-	private static final ResourceBundle mwBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String TODO_TYPES_STRING = mwBundle.getString("Supported_to-do_files");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String TODO_TYPES_STRING
+		= MSGS.getString("Supported_to-do_files");
 
 	/** Creates new form TasksPanel */
 	public TasksPanel()

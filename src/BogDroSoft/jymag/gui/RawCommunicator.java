@@ -58,11 +58,14 @@ public class RawCommunicator extends javax.swing.JDialog
 	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
-	private static final ResourceBundle rcBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator");
-	private static final String EX_STRING = rcBundle.getString("Exception");
-	private static final String FILE_NOT_READABLE_MSG = rcBundle.getString("file_not_readable");
-	private static final String NO_FILE_MSG = rcBundle.getString("no_file_sel");
-	private static final String FILE_SENT_OK_MSG = rcBundle.getString("file_sent_ok");
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator");
+	private static final String EX_STRING = MSGS.getString("Exception");
+	private static final String FILE_NOT_READABLE_MSG
+		= MSGS.getString("file_not_readable");
+	private static final String NO_FILE_MSG = MSGS.getString("no_file_sel");
+	private static final String FILE_SENT_OK_MSG
+		= MSGS.getString("file_sent_ok");
 
 	private final MainWindow mw;
 

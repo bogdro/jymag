@@ -50,99 +50,103 @@ public class CommandLineParser
 	public static volatile boolean mock = false;
 
 	// ----------- i18n stuff
-	private static final ResourceBundle b = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
-	private static final String PROG_INTRO_STRING = b.getString("is_a_program_") +
-		b.getString("rxtx_multimedia_Sagem");
-	private static final String RXTX_REQ_STRING = b.getString("need_rxtx");
-	private static final String CMD_LINE_STR = b.getString("Command-line_options:")+
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final String PROG_INTRO_STRING
+		= MSGS.getString("is_a_program_")
+		+ MSGS.getString("rxtx_multimedia_Sagem");
+	private static final String RXTX_REQ_STRING
+		= MSGS.getString("need_rxtx");
+	private static final String CMD_LINE_STR
+		= MSGS.getString("Command-line_options:")+
 		":" +	// NOI18N
 		"\n--conf <file>\t\t- " +	// NOI18N
-		b.getString("read_configuration_from_<file>") +
+		MSGS.getString("read_configuration_from_<file>") +
 		"\n--databits <5,6,7,8>\t- " +	// NOI18N
-		b.getString("set_the_number_of_data_bits")+
+		MSGS.getString("set_the_number_of_data_bits")+
 		"\n--delete-after-download\t- " +	// NOI18N
-		b.getString("delete_downloaded")+
+		MSGS.getString("delete_downloaded")+
 		"\n--delete-alarm <N>\t- " +	// NOI18N
-		b.getString("delete_alarm") +
+		MSGS.getString("delete_alarm") +
 		"\n--delete-element <ID>\t- " +	// NOI18N
-		b.getString("delete_element") +
+		MSGS.getString("delete_element") +
 		"\n--delete-sms <N>\t- "+	// NOI18N
-		b.getString("delete_sms")+
+		MSGS.getString("delete_sms")+
 		"\n--dial-data <number>\t- "+	// NOI18N
-		b.getString("help_dial_data")+
+		MSGS.getString("help_dial_data")+
 		"\n--dial-voice <number>\t- "+	// NOI18N
-		b.getString("help_dial_voice")+
+		MSGS.getString("help_dial_voice")+
 		"\n--download-dir <dir>\t- "+	// NOI18N
-		b.getString("set_default_download_dir")+
+		MSGS.getString("set_default_download_dir")+
 		"\n--download-all-animations\t- "+	// NOI18N
-		b.getString("download_all_videos")+
+		MSGS.getString("download_all_videos")+
 		"\n--download-all-events\t- "+	// NOI18N
-		b.getString("download_all_events")+
+		MSGS.getString("download_all_events")+
 		"\n--download-all-photos\t- "+	// NOI18N
-		b.getString("download_all_photos")+
+		MSGS.getString("download_all_photos")+
 		"\n--download-all-ringtones - "+	// NOI18N
-		b.getString("download_all_ringtones")+
+		MSGS.getString("download_all_ringtones")+
 		"\n--download-all-todo\t- "+	// NOI18N
-		b.getString("download_all_to-do_tasks")+
+		MSGS.getString("download_all_to-do_tasks")+
 		"\n--download-all-vcards\t- "+	// NOI18N
-		b.getString("download_all_addressbook")+
+		MSGS.getString("download_all_addressbook")+
 		"\n--download-all\t\t- "+	// NOI18N
-		b.getString("combine_all_download")+
+		MSGS.getString("combine_all_download")+
 		"\n--flow <none,soft,hard,soft+hard>\t- "+	// NOI18N
-		b.getString("set_the_flow_control_mode")+
+		MSGS.getString("set_the_flow_control_mode")+
 		"\n--hangup\t\t- "+	// NOI18N
-		b.getString("help_hangup")+
+		MSGS.getString("help_hangup")+
 		"\n--help, -h, -?, /?\t- "+	// NOI18N
-		b.getString("display_help")+
+		MSGS.getString("display_help")+
 		"\n--lang LL_CC_VV\t\t- "+	// NOI18N
-		b.getString("select_the_language")+
+		MSGS.getString("select_the_language")+
 		"\n\t\t\t  " +	// NOI18N
-		b.getString("LL_is_the_language_CC")+
+		MSGS.getString("LL_is_the_language_CC")+
 		"\n\t\t\t  " +	// NOI18N
-		b.getString("__country_code,_VV")+
+		MSGS.getString("__country_code,_VV")+
 		"\n\t\t\t  " +	// NOI18N
-		b.getString("__Separate_them_using_underscores._Only_LL_is_required.")+
+		MSGS.getString("__Separate_them_using_underscores._Only_LL_is_required.")+
 		"\n--licence, --license\t- "+	// NOI18N
-		b.getString("display_license_information")+
+		MSGS.getString("display_license_information")+
 		"\n--list-alarms\t\t- "+	// NOI18N
-		b.getString("list_alarms")+
+		MSGS.getString("list_alarms")+
 		"\n--list-elements\t\t- "+	// NOI18N
-		b.getString("list_elements")+
+		MSGS.getString("list_elements")+
 		"\n--list-sms\t\t- "+	// NOI18N
-		b.getString("list_sms")+
+		MSGS.getString("list_sms")+
 		"\n--parity <none,even,odd,space,mark>\t- "+	// NOI18N
-		b.getString("set_the_parity_mode")+
+		MSGS.getString("set_the_parity_mode")+
 		"\n--port <filename>\t- "+	// NOI18N
-		b.getString("set_the_default_port")+
+		MSGS.getString("set_the_default_port")+
 		"\n--scan\t\t\t- "+	// NOI18N
-		b.getString("scan_available_ports")+
+		MSGS.getString("scan_available_ports")+
 		"\n--send-cmd-file <file>\t- "+	// NOI18N
-		b.getString("send_cmd_file")+
+		MSGS.getString("send_cmd_file")+
 		"\n--send-sms <number> <msg>\t- "+	// NOI18N
-		b.getString("send_sms")+
+		MSGS.getString("send_sms")+
 		"\n--speed"+	// NOI18N
 		" <1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200," +	// NOI18N
 		"\n\t230400, 460800, 500000, 576000, 921600, 1000000, 1152000,\n" +	// NOI18N
 		"\t1500000, 2000000, 2500000, 3000000, 3500000, 4000000>\n\t\t\t- " +	// NOI18N
-		b.getString("set_the_port_speed")+
+		MSGS.getString("set_the_port_speed")+
 		"\n--stopbits <1,1.5,2>\t- "+	// NOI18N
-		b.getString("set_stop_bits")+
+		MSGS.getString("set_stop_bits")+
 		"\n--upload <filename>\t- "+	// NOI18N
-		b.getString("upload_file")+
+		MSGS.getString("upload_file")+
 		"\n--update-alarm \"DD/MM/YY,HH:MM:SS\",N,\"days\"\t- "+	// NOI18N
-		b.getString("update_alarm")+
+		MSGS.getString("update_alarm")+
 		"\n\t\t\t  " +	// NOI18N
-		b.getString("N_IS_THE_NUMBER")+
+		MSGS.getString("N_IS_THE_NUMBER")+
 		"\n\t\t\t  " +	// NOI18N
-		b.getString("COMMA_SEPARATED_DAYS")+
+		MSGS.getString("COMMA_SEPARATED_DAYS")+
 		"\n\t\t\t  " +	// NOI18N
-		b.getString("ZERO_MEANS_ALL")+
+		MSGS.getString("ZERO_MEANS_ALL")+
 		"\n--version, -v\t\t- "+	// NOI18N
-		b.getString("display_version")+
+		MSGS.getString("display_version")+
 		"\n" +	// NOI18N
 		"\n" +	// NOI18N
-		b.getString("exit_zero_code");
-	private static final String VER_WORD = b.getString("Version");
+		MSGS.getString("exit_zero_code");
+	private static final String VER_WORD = MSGS.getString("Version");
 	//private static final String getListStr = b.getString("Getting_list_of_");
 	//private static final String getFileStr = b.getString("Getting_file");
 
