@@ -1157,7 +1157,7 @@ public class MainWindow extends JFrame
 		{
 			portCombo.setSelectedItem (portName);
 		}
-// 		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
+		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
 		if ( Math.abs (sBits - 2.0f) < 0.0001 )
 		{
 			stopBitsCombo.setSelectedIndex (2);
