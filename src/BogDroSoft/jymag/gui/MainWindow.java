@@ -1200,70 +1200,7 @@ public class MainWindow extends JFrame
 			setExtendedState (getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
 		}
 		setLocation (x, y);
-		if ( (getExtendedState () & JFrame.MAXIMIZED_BOTH) == 0 )
-		{
-			// if not maximized, verify position and size
-			GraphicsConfiguration gc = null;
-			Insets is = null;
-			try
-			{
-				gc = getGraphicsConfiguration ();
-				Toolkit tk = Toolkit.getDefaultToolkit ();
-				if ( tk != null )
-				{
-					is = tk.getScreenInsets (gc);
-				}
-			}
-			catch (Exception ex)
-			{
-				Utils.handleException (ex,
-					"MainWindow:updateControls:GraphicsConfiguration/Toolkit");	// NOI18N
-			}
-			int maxX = 800;
-			int maxY = 600;
-			if ( gc != null )
-			{
-				Rectangle bounds = gc.getBounds ();
-				if ( bounds != null )
-				{
-					if ( is != null )
-					{
-						maxX = bounds.width - is.left - is.right;
-						maxY = bounds.height - is.top - is.bottom;
-					}
-					else
-					{
-						maxX = bounds.width;
-						maxY = bounds.height;
-					}
-				}
-			}
-			if ( getWidth () <= 0 )
-			{
-				setSize (maxX, getHeight ());
-			}
-			if ( getHeight () <= 0 )
-			{
-				setSize (getWidth (), maxY);
-			}
-			if ( getX () + getWidth () < 0
-				|| getX () > maxX )
-			{
-				setLocation (0, getY ());
-			}
-			if ( getY () + getHeight () < 0
-				|| getY () > maxY )
-			{
-				setLocation (getX (), 0);
-			}
-			Dimension size = getSize ();
-			if ( size != null )
-			{
-				size.height += 50;
-				size.width += 50;
-				setSize (size);
-			}
-		}
+		UiUtils.changeSizeToScreen(this);
 		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
 	}
 

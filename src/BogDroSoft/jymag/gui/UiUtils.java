@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
+import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -34,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -200,7 +202,7 @@ public class UiUtils {
 				is = tk.getScreenInsets (gc);
 			}
 		}
-		catch (Exception ex)
+		catch (HeadlessException ex)
 		{
 			Utils.handleException (ex,
 				"UiUtils:changeSizeToScreen:GraphicsConfiguration/Toolkit");	// NOI18N
@@ -224,6 +226,29 @@ public class UiUtils {
 				}
 			}
 		}
+		if ( (w instanceof JFrame)
+			&& (((JFrame)w).getExtendedState () & JFrame.MAXIMIZED_BOTH) == 0 )
+		{
+			// if not maximized, verify position and size
+			if ( w.getWidth () <= 0 )
+			{
+				w.setSize (maxX, w.getHeight ());
+			}
+			if ( w.getHeight () <= 0 )
+			{
+				w.setSize (w.getWidth (), maxY);
+			}
+			if ( w.getX () + w.getWidth () < 0
+				|| w.getX () > maxX )
+			{
+				w.setLocation (0, w.getY ());
+			}
+			if ( w.getY () + w.getHeight () < 0
+				|| w.getY () > maxY )
+			{
+				w.setLocation (w.getX (), 0);
+			}
+		}
 		Dimension size = w.getSize ();
 		if ( size != null )
 		{
@@ -235,13 +260,13 @@ public class UiUtils {
 			{
 				w.setSize (w.getWidth (), maxY);
 			}
-			if ( size.width <= maxX && size.height <= maxY )
+			/*if ( size.width <= maxX && size.height <= maxY )
 			{
 				// change the size so that the scrollbars fit:
 				size.height += 50;
 				size.width += 50;
 				w.setSize (size);
-			}
+			}*/
 		}
 	}
 
