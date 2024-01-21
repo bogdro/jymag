@@ -205,7 +205,7 @@ public class PhoneAlarmTest
 		Set<Integer> d2 = new HashSet<Integer> (alarmDays.length);
 		for ( int a : alarmDays )
 		{
-			d2.add (Integer.valueOf (a));
+			d2.add (a);
 		}
 		assertEquals (d, d2);
 	}
@@ -366,32 +366,32 @@ public class PhoneAlarmTest
 		assertEquals (expResult, result);
 
 		Set<Integer> d = new HashSet<Integer> (1);
-		d.add (Integer.valueOf (1));
+		d.add (1);
 		instance.setDays (d);
 		expResult = "1";
 		result = instance.getDaysString ();
 		assertEquals (expResult, result);
 
 		d.clear ();
-		d.add (Integer.valueOf (0));
+		d.add (0);
 		instance.setDays (d);
 		expResult = "0";
 		result = instance.getDaysString ();
 		assertEquals (expResult, result);
 
 		d.clear ();
-		d.add (Integer.valueOf (0));
-		d.add (Integer.valueOf (1));
-		d.add (Integer.valueOf (2));
+		d.add (0);
+		d.add (1);
+		d.add (2);
 		instance.setDays (d);
 		expResult = "0";
 		result = instance.getDaysString ();
 		assertEquals (expResult, result);
 
 		d.clear ();
-		d.add (Integer.valueOf (1));
-		d.add (Integer.valueOf (2));
-		d.add (Integer.valueOf (3));
+		d.add (1);
+		d.add (2);
+		d.add (3);
 		instance.setDays (d);
 		expResult = "1,2,3";
 		result = instance.getDaysString ();
@@ -546,32 +546,32 @@ public class PhoneAlarmTest
 		assertEquals (expResult, result);
 
 		Set<Integer> d = new HashSet<Integer> (1);
-		d.add (Integer.valueOf (1));
+		d.add (1);
 		instance.setDays (d);
 		expResult = "PhoneAlarm[ID=1," + time + ",1]";
 		result = instance.toString ();
 		assertEquals (expResult, result);
 
 		d.clear ();
-		d.add (Integer.valueOf (0));
+		d.add (0);
 		instance.setDays (d);
 		expResult = "PhoneAlarm[ID=1," + time + ",0]";
 		result = instance.toString ();
 		assertEquals (expResult, result);
 
 		d.clear ();
-		d.add (Integer.valueOf (0));
-		d.add (Integer.valueOf (1));
-		d.add (Integer.valueOf (2));
+		d.add (0);
+		d.add (1);
+		d.add (2);
 		instance.setDays (d);
 		expResult = "PhoneAlarm[ID=1," + time + ",0]";
 		result = instance.toString ();
 		assertEquals (expResult, result);
 
 		d.clear ();
-		d.add (Integer.valueOf (1));
-		d.add (Integer.valueOf (2));
-		d.add (Integer.valueOf (3));
+		d.add (1);
+		d.add (2);
+		d.add (3);
 		instance.setDays (d);
 		expResult = "PhoneAlarm[ID=1," + time + ",1,2,3]";
 		result = instance.toString ();

@@ -282,7 +282,7 @@ public class UtilsTest
 		System.out.println ("createOpenFileChooser");
 		String description = "";
 		Map<String, Integer> filetype = new HashMap<String, Integer> (1);
-		filetype.put ("ext", Integer.valueOf (0));
+		filetype.put ("ext", 0);
 		JFileChooser result = UiUtils.createOpenFileChooser (description, filetype);
 		assertNotNull (result);
 		FileFilter resultFilter = result.getFileFilter ();
@@ -473,7 +473,7 @@ public class UtilsTest
 		int fontSize = 25;
 		System.out.println ("getFontSize");
 		JSpinner spin = new JSpinner();
-		spin.setValue(Integer.valueOf(fontSize));
+		spin.setValue(fontSize);
 		assertTrue(Math.abs(fontSize - UiUtils.getFontSize(spin)) < 0.001);
 	}
 
