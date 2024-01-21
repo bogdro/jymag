@@ -23,6 +23,7 @@ package BogDroSoft.jymag;
 import BogDroSoft.jymag.gui.MainWindow;
 import BogDroSoft.jymag.gui.UiUtils;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ResourceBundle;
 
@@ -59,7 +60,7 @@ public class Starter
 		{
 			MainWindow.start (args);
 		}
-		catch (Throwable ex)
+		catch (ClassNotFoundException ex)
 		{
 			Utils.handleException (ex, "*** " + START_ERROR + " ***"); // NOI18N
 			UiUtils.showErrorMessage(null, START_ERROR);
@@ -114,7 +115,7 @@ public class Starter
 			// be in another encoding
 			System.setErr (new PrintStream (new File (filename)));
 		}
-		catch (Exception ex)
+		catch (FileNotFoundException ex)
 		{
 			String dirSep = null;
 			try
@@ -178,7 +179,7 @@ public class Starter
 					filename = dirs[i] + dirSep + filename;
 					break;
 				}
-				catch (Exception e) {}
+				catch (FileNotFoundException e) {}
 			}
 			if ( i == dirs.length )
 			{

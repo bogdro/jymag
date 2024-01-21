@@ -64,7 +64,7 @@ public class PhoneAlarm
 	private static final SimpleDateFormat DATE_FORMAT
 		= new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
-	private static final Integer ALL_DAYS = Integer.valueOf (0);
+	private static final Integer ALL_DAYS = 0;
 
 	/**
 	 * Creates a new instance of PhoneAlarm.
@@ -510,7 +510,7 @@ public class PhoneAlarm
 			ret = new HashSet<Integer> (arr.length);
 			for ( int i = 0 ; i < arr.length; i++ )
 			{
-				ret.add (Integer.valueOf (arr[i]));
+				ret.add (arr[i]);
 			}
 		}
 		return ret;
@@ -570,7 +570,7 @@ public class PhoneAlarm
 			{
 				day = Integer.parseInt (m.group (3));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (day)");	// NOI18N
 				return null;
@@ -579,7 +579,7 @@ public class PhoneAlarm
 			{
 				month = Integer.parseInt (m.group (4));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (month)");	// NOI18N
 				return null;
@@ -588,7 +588,7 @@ public class PhoneAlarm
 			{
 				year = Integer.parseInt (m.group (5));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (year)");	// NOI18N
 				return null;
@@ -597,7 +597,7 @@ public class PhoneAlarm
 			{
 				hour = Integer.parseInt (m.group (6));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (hour)");	// NOI18N
 				return null;
@@ -606,7 +606,7 @@ public class PhoneAlarm
 			{
 				minute = Integer.parseInt (m.group (7));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (minute)");	// NOI18N
 				return null;
@@ -615,7 +615,7 @@ public class PhoneAlarm
 			{
 				second = Integer.parseInt (m.group (8));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (second)");	// NOI18N
 				return null;
@@ -628,7 +628,7 @@ public class PhoneAlarm
 					alNumber = Integer.parseInt (g10);
 				}
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (number)");	// NOI18N
 				return null;
@@ -665,7 +665,7 @@ public class PhoneAlarm
 			{
 				hour = Integer.parseInt (m.group (3));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (hour) (2)");	// NOI18N
 				return null;
@@ -674,7 +674,7 @@ public class PhoneAlarm
 			{
 				minute = Integer.parseInt (m.group (4));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (minute) (2)");	// NOI18N
 				return null;
@@ -683,7 +683,7 @@ public class PhoneAlarm
 			{
 				second = Integer.parseInt (m.group (5));
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (second) (2)");	// NOI18N
 				return null;
@@ -696,7 +696,7 @@ public class PhoneAlarm
 					alNumber = Integer.parseInt (g7);
 				}
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (number) (2)");	// NOI18N
 				return null;
@@ -710,7 +710,7 @@ public class PhoneAlarm
 					firstrec = Integer.parseInt (g9);
 				}
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (recurr1)");	// NOI18N
 				return null;
@@ -726,7 +726,7 @@ public class PhoneAlarm
 						tmpDays = makeSetFromArray (recurrs);
 						if ( tmpDays != null && firstrec != -1 )
 						{
-							tmpDays.add (Integer.valueOf (firstrec));
+							tmpDays.add (firstrec);
 						}
 					}
 				}

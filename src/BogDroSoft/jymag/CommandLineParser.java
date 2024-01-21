@@ -477,7 +477,7 @@ public class CommandLineParser
 					{
 						dBits = Integer.parseInt (args[i+1]);
 					}
-					catch (Exception ex)
+					catch (NumberFormatException ex)
 					{
 						dBits = -1;
 						Utils.handleException (ex,
@@ -498,7 +498,7 @@ public class CommandLineParser
 					{
 						speed = Integer.parseInt (args[i+1]);
 					}
-					catch (Exception ex)
+					catch (NumberFormatException ex)
 					{
 						speed = -1;
 						Utils.handleException (ex,
@@ -599,7 +599,7 @@ public class CommandLineParser
 							null, null, false, true, true);
 						Starter.closeProgram (res);
 					}
-					catch ( Exception ex )
+					catch ( NumberFormatException ex )
 					{
 						Utils.handleException (ex,
 							"cmdline.staticDelete(" + args[i+1] + ")");	// NOI18N

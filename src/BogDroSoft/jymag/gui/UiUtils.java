@@ -32,6 +32,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.swing.JFileChooser;
@@ -128,7 +129,7 @@ public class UiUtils {
 				// can be called when closing the program, so ignore
 				//Utils.handleException (ex, "changeGUI->invokeAndWait->Interrupt");// NOI18N
 			}
-			catch (Throwable ex)
+			catch (InvocationTargetException ex)
 			{
 				Utils.handleException(ex, "changeGUI->invokeAndWait"); // NOI18N
 			}
@@ -282,7 +283,7 @@ public class UiUtils {
 			JOptionPane.showMessageDialog (c, msg,
 				ERR_STRING, JOptionPane.ERROR_MESSAGE);
 		}
-		catch (Exception ex)
+		catch (HeadlessException ex)
 		{
 			// don't display exceptions about displaying exceptions
 			Utils.handleException(ex, "UiUtils.showErrorMessage");
