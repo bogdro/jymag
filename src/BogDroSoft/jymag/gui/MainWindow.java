@@ -175,31 +175,7 @@ public class MainWindow extends JFrame
 	private MainWindow ()
 	{
 		// set uncaught exception handler for GUI threads, just in case:
-		try
-		{
-			Thread[] ths = new Thread[Thread.activeCount () * 5];
-			final int nThreads = Thread.enumerate (ths);
-			for ( int i=0; i < nThreads; i++ )
-			{
-				String name = ths[i].getName ();
-				if ( name == null )
-				{
-					continue;
-				}
-				if ( name.contains ("AWT") // NOI18N
-					|| name.contains ("Swing") // NOI18N
-					|| name.contains ("Image") // NOI18N
-					)
-				{
-					ths[i].setUncaughtExceptionHandler (
-						new Utils.UncExHndlr (this));
-				}
-			}
-		}
-		catch (Throwable th)
-		{
-			// don't care for exceptions, this is optional
-		}
+		Utils.UncExHndlr.setHandlerForGuiThreads(this);
 
 		destDirName = CommandLineParser.getDstDirName ();
 		dBits = CommandLineParser.getDBits ();
