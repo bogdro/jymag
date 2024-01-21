@@ -25,6 +25,7 @@ import BogDroSoft.jymag.comm.TransferParameters;
 import BogDroSoft.jymag.comm.TransferUtils;
 import BogDroSoft.jymag.gui.MainWindow;
 import BogDroSoft.jymag.gui.UiUtils;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.util.List;
 import java.util.Vector;
@@ -210,7 +211,7 @@ public class PanelUtils
 					}, mw, false, false, false);
 				} // for
 			}
-			catch (Exception ex)
+			catch (HeadlessException ex)
 			{
 				mw.setReadyStatus ();
 				Utils.handleException (ex, "Download"	// NOI18N

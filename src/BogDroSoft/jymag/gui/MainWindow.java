@@ -67,10 +67,10 @@ public class MainWindow extends JFrame
 	// synchronization variable:
 	private static final Object SYNC = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
-	private volatile Map<String, String> firmwares;
-	private volatile Map<String, String> phoneTypes;
-	private volatile Map<String, String> phoneIMEIs;
-	private volatile Map<String, String> phoneSubsNums;
+	private transient volatile Map<String, String> firmwares;
+	private transient volatile Map<String, String> phoneTypes;
+	private transient volatile Map<String, String> phoneIMEIs;
+	private transient volatile Map<String, String> phoneSubsNums;
 
 	private JFileChooser cfgFC;
 	private final transient Runnable progressBarUpdateRunnable =
@@ -115,12 +115,8 @@ public class MainWindow extends JFrame
 				{
 					return false;
 				}
-				if ( f.isDirectory () ||
-					f.getName ().endsWith (".cfg"))	// NOI18N
-				{
-					return true;
-				}
-				return false;
+				return f.isDirectory () ||
+					f.getName ().endsWith (".cfg");	// NOI18N
 			}
 
 			@Override
