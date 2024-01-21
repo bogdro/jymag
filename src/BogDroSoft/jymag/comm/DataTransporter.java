@@ -327,10 +327,6 @@ public class DataTransporter
 		(byte) 0x45, (byte) 0x52
 		};
 
-	// i18n stuff:
-	private static final String REPLY_STRING =
-		java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DataTransporter").getString("answer");
-
 	/**
 	 * Creates a new instance of DataTransporter.
 	 * @param id Port identifier for the port which will be used to
@@ -462,7 +458,7 @@ public class DataTransporter
 				return res;
 			}
 		}
-		int avail = 0;
+		int avail;
 		while (true)
 		{
 			try
@@ -491,7 +487,7 @@ public class DataTransporter
 					if ( avail > 0 )
 					{
 						byte[] readBuffer = new byte[avail];
-						int wasRead = -1;
+						int wasRead;
 						synchronized (inputStreamLock)
 						{
 							if ( inputStream == null )
@@ -521,7 +517,7 @@ public class DataTransporter
 				else if ( avail > 0 )
 				{
 					byte[] readBuffer = new byte[avail];
-					int wasRead = -1;
+					int wasRead;
 					synchronized (inputStreamLock)
 					{
 						if ( inputStream == null )
@@ -560,7 +556,7 @@ public class DataTransporter
 					if ( avail > 0 )
 					{
 						byte[] readBuffer = new byte[avail];
-						int wasRead = -1;
+						int wasRead;
 						synchronized (inputStreamLock)
 						{
 							if ( inputStream == null )
@@ -588,7 +584,7 @@ public class DataTransporter
 					// ignore
 				}
 			}
-			catch (Exception ex)
+			catch (IOException ex)
 			{
 				Utils.handleException (ex, "DataTransporter.recv");	// NOI18N
 				break;
@@ -739,16 +735,16 @@ public class DataTransporter
 				{
 					reopen ();
 					trials++;
-					continue MAIN;
+					continue;
 				}
 			}
-			catch ( Exception e )
+			catch ( IOException e )
 			{
 				Utils.handleException (e, "DataTransporter.putFile: init:"	// NOI18N
 					+ f.getName () + ", newName=" + newName);	// NOI18N
 				reopen ();
 				trials++;
-				continue MAIN;
+				continue;
 			}
 			try
 			{
@@ -762,7 +758,7 @@ public class DataTransporter
 					{
 						return -1;
 					}
-					continue MAIN;
+					continue;
 				}
 
 				stage++;
@@ -778,7 +774,7 @@ public class DataTransporter
 					{
 						return -2;
 					}
-					continue MAIN;
+					continue;
 				}
 
 				stage++;
@@ -793,7 +789,7 @@ public class DataTransporter
 					{
 						return -3;
 					}
-					continue MAIN;
+					continue;
 				}
 
 				stage++;
@@ -803,7 +799,8 @@ public class DataTransporter
 						+ Utils.getFiletypeIDs ().get
 							(f.getName ().substring
 								(f.getName ().lastIndexOf (Utils.DOT)+1)
-							.toLowerCase (Locale.ENGLISH)).intValue ()
+								.toLowerCase (Locale.ENGLISH)
+							)
 						+ Utils.COMMA + f.length () + Utils.CR,
 						new String[] { CONN_STRING });
 				if ( rcvd.contains (ERROR_STRING) || ! rcvd.contains (CONN_STRING) )
@@ -814,14 +811,14 @@ public class DataTransporter
 					{
 						return -4;
 					}
-					continue MAIN;
+					continue;
 				}
 
 				Utils.sleepIgnoreException(DT_TIMEOUT);
 				// send file data here:
 				fis = new FileInputStream (f);
 				byte[] contents = new byte[10240];
-				int read = -1;
+				int read;
 				stage++;
 				do
 				{
@@ -862,7 +859,7 @@ public class DataTransporter
 					{
 						return -5;
 					}
-					continue MAIN;
+					continue;
 				}
 
 				stage++;
@@ -877,11 +874,11 @@ public class DataTransporter
 					{
 						return -6;
 					}
-					continue MAIN;
+					continue;
 				}
 				return 0;
 			}
-			catch ( Exception ex )
+			catch ( IOException ex )
 			{
 				/*
 				if ( stage > 0 )
@@ -902,7 +899,7 @@ public class DataTransporter
 					{
 						fis.close();
 					}
-					catch (Throwable t2)
+					catch (IOException t2)
 					{
 						Utils.handleException(t2,
 							"DataTransporter.putFile->close->exception");
@@ -914,7 +911,6 @@ public class DataTransporter
 				{
 					return -7;
 				}
-				continue MAIN;
 			}
 		} // MAIN while // MAIN while // MAIN while // MAIN while
 		return -10;	// number of trials exceeded
@@ -1206,7 +1202,7 @@ public class DataTransporter
 					fos.close ();
 				}
 			}
-			catch (Exception exc)
+			catch (IOException exc)
 			{
 				Utils.handleException (ex, "DataTransporter.getFile:fos.close");
 			}
@@ -1436,7 +1432,7 @@ public class DataTransporter
 			}
 			return -1;
 		}
-		catch ( Exception ex )
+		catch ( IOException ex )
 		{
 			Utils.handleException (ex, "DataTransporter.test:"	// NOI18N
 				+ getPortName());
@@ -1705,7 +1701,7 @@ public class DataTransporter
 		{
 			send (POWEROFF_CMD.getBytes (DEFAULT_ENCODING));
 		}
-		catch (Exception ex)
+		catch (IOException ex)
 		{
 			Utils.handleException (ex, "power off");		// NOI18N
 		}
@@ -1849,7 +1845,7 @@ public class DataTransporter
 				}
 				return -1;
 			}
-			catch (Exception ex)
+			catch (NumberFormatException ex)
 			{
 				Utils.handleException (ex, "alarm number recv");	// NOI18N
 				return -2;
@@ -2288,7 +2284,7 @@ public class DataTransporter
 				{
 					return Integer.parseInt (sigMatcher.group (1));
 				}
-				catch (Exception ex)
+				catch (NumberFormatException ex)
 				{
 					Utils.handleException (ex,
 						"DataTransporter.getSignalPower: '"		// NOI18N
@@ -2346,7 +2342,7 @@ public class DataTransporter
 			}
 			return 0;
 		}
-		catch ( Exception e )
+		catch ( IOException e )
 		{
 			Utils.handleException (e, "DataTransporter.dialNumber");	// NOI18N
 			return -2;
@@ -2417,7 +2413,7 @@ public class DataTransporter
 				{
 					return Integer.parseInt (volMatcher.group (1));
 				}
-				catch (Exception ex)
+				catch (NumberFormatException ex)
 				{
 					Utils.handleException (ex,
 						"DataTransporter.getVolume: '"		// NOI18N

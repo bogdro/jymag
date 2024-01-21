@@ -32,6 +32,7 @@ import gnu.io.NoSuchPortException;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
@@ -298,7 +299,7 @@ public class TransferUtils
 							FILENAME_FORBIDDEN_CHARS_REPLACE)
 						);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -400,7 +401,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.getFile (f, element);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -460,7 +461,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.deleteFile (element);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -507,7 +508,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.addAlarm (alarm);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -554,7 +555,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.deleteAlarm (alarmNo);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -651,7 +652,7 @@ public class TransferUtils
 						}
 					}
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -862,8 +863,7 @@ public class TransferUtils
 							}
 							dtm.insertRow (num-1, new Object[]
 								{
-									Integer.valueOf (num),
-									date, time, days
+									num, date, time, days
 								}
 							);
 						}
@@ -1054,7 +1054,7 @@ public class TransferUtils
 					int ret = dt.deleteMessage (
 						Integer.parseInt (element.getID ()));
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1101,7 +1101,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.sendMessage (element);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1153,7 +1153,7 @@ public class TransferUtils
 					int ret = dt.dialNumber (number,
 						isVoice, dialMode);
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1198,7 +1198,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.hangup ();
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1243,7 +1243,7 @@ public class TransferUtils
 						tp.getParity (), tp.getFlow ());
 					int ret = dt.answer ();
 					dt.close ();
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1295,9 +1295,9 @@ public class TransferUtils
 					dt.close ();
 					if ( volume < 0 )
 					{
-						return Integer.valueOf (volume);
+						return volume;
 					}
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1349,9 +1349,9 @@ public class TransferUtils
 					dt.close ();
 					if ( volume < 0 )
 					{
-						return Integer.valueOf (volume);
+						return volume;
 					}
-					return Integer.valueOf (ret);
+					return ret;
 				}
 
 				@Override
@@ -1401,7 +1401,7 @@ public class TransferUtils
 					dt.open (tp.getSpeed (), tp.getDataBits (),
 						tp.getStopBits (),
 						tp.getParity (), tp.getFlow ());
-					int read = -1;
+					int read;
 					byte[] b = new byte[1024];
 					StringBuilder ret = new StringBuilder(1000);
 					FileInputStream fis = null;
@@ -1438,7 +1438,7 @@ public class TransferUtils
 						fis.close ();
 						dt.close ();
 					}
-					catch (Throwable t)
+					catch (IOException t)
 					{
 						Utils.handleException(t, "TransferUtils.sendFileAsCommands");
 						if (fis != null)
@@ -1447,7 +1447,7 @@ public class TransferUtils
 							{
 								fis.close();
 							}
-							catch (Throwable t2)
+							catch (IOException t2)
 							{
 								Utils.handleException(t2,
 									"TransferUtils.sendFileAsCommands->exception");
@@ -1613,7 +1613,6 @@ public class TransferUtils
 				dt.open (tp.getSpeed (), tp.getDataBits (),
 					tp.getStopBits (),
 					tp.getParity (), tp.getFlow ());
-				int scanRes = dt.test ();
 				if ( dt.test () != 0 )
 				{
 					dt.close ();
