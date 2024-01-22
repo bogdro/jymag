@@ -20,6 +20,8 @@
 # General variables
 ###########################################################################
 
+NAME = JYMAG
+
 # core system utilities
 COPY		= /bin/cp -fr
 DEL		= /bin/rm -fr
@@ -79,7 +81,7 @@ OSSLSIGNCODE	= osslsigncode-bogdro.sh
 # hashing algorithm.
 # Even though osslsigncode supports other hashes, only MD5 and SHA-1 seem to
 # be compatible with WinXP (as far as I know).
-OSSLSIGNCODE_O  = -ts $(TSAURL) -n JYMAG -i https://jymag.sourceforge.io/ -h sha1
+OSSLSIGNCODE_O  = -ts $(TSAURL) -n $(NAME) -i https://jymag.sourceforge.io/ -h sha1
 
 # Java jar signer
 JARSIGN		= jarsigner
@@ -131,25 +133,25 @@ FILE_L4J_EXE_EN = setup/jymag-en.exe
 FILE_L4J_EXE_SIGNED = setup/jymag-signed.exe
 FILE_L4J_EXE_SIGNED_EN = setup/jymag-en-signed.exe
 
-FILE_ARCH_SRC = JYMAG-$(VER)-src.$(PACK_EXT)
-FILE_ARCH_BIN = JYMAG-$(VER)-bin.$(PACK_EXT)
-FILE_ARCH_JAVADOC = JYMAG-$(VER)-javadoc.$(PACK_EXT)
+FILE_ARCH_SRC = $(NAME)-$(VER)-src.$(PACK_EXT)
+FILE_ARCH_BIN = $(NAME)-$(VER)-bin.$(PACK_EXT)
+FILE_ARCH_JAVADOC = $(NAME)-$(VER)-javadoc.$(PACK_EXT)
 
-FILE_MANUAL_EN = JYMAG-manual-EN.pdf
-FILE_MANUAL_EN_SIGNED = JYMAG-manual-EN-signed.pdf
-FILE_MANUAL_PL = JYMAG-manual-PL.pdf
-FILE_MANUAL_PL_SIGNED = JYMAG-manual-PL-signed.pdf
+FILE_MANUAL_EN = $(NAME)-manual-EN.pdf
+FILE_MANUAL_EN_SIGNED = $(NAME)-manual-EN-signed.pdf
+FILE_MANUAL_PL = $(NAME)-manual-PL.pdf
+FILE_MANUAL_PL_SIGNED = $(NAME)-manual-PL-signed.pdf
 
-FILE_INSTALLER = JYMAG-$(VER)-setup.exe
-FILE_INSTALLER_SIGNED = JYMAG-$(VER)-setup-signed.exe
+FILE_INSTALLER = $(NAME)-$(VER)-setup.exe
+FILE_INSTALLER_SIGNED = $(NAME)-$(VER)-setup-signed.exe
 FILE_INSTALLER_CFG = setup/jymag.nsi
 
-FILE_PROGRAM = dist/JYMAG.jar
-FILE_PROGRAM_SIGNED = dist/JYMAG-signed.jar
+FILE_PROGRAM = dist/$(NAME).jar
+FILE_PROGRAM_SIGNED = dist/$(NAME)-signed.jar
 
 FILE_ANY_SOURCE_FILE = src/BogDroSoft/jymag/Starter.java
 
-DIR_TMP_DIST = JYMAG-$(VER)
+DIR_TMP_DIST = $(NAME)-$(VER)
 
 ###########################################################################
 # Targets
@@ -198,7 +200,7 @@ $(FILE_ARCH_BIN):	manual jar Makefile
 		$(DIR_TMP_DIST)/run*.bat		\
 		$(DIR_TMP_DIST)/manual			\
 		$(DIR_TMP_DIST)/pom.xml			\
-		$(DIR_TMP_DIST)/JYMAG-manual-*.pdf	\
+		$(DIR_TMP_DIST)/$(NAME)-manual-*.pdf	\
 		$(DIR_TMP_DIST)/THANKS			\
 		$(DIR_TMP_DIST)/jymag.desktop
 	$(DEL) $(DIR_TMP_DIST)
