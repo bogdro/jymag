@@ -122,6 +122,7 @@ SED_FIX_TXTFILEVERSION = 's/<txtFileVersion>[^<]*<\/txtFileVersion>/<txtFileVers
 SED_FIX_PRODUCTVERSION = 's/<productVersion>[^<]*<\/productVersion>/<productVersion>$(VER).0.0<\/productVersion>/'
 SED_FIX_TXTPRODUCTVERSION = 's/<txtProductVersion>[^<]*<\/txtProductVersion>/<txtProductVersion>$(VER)<\/txtProductVersion>/'
 SED_FIX_COPYRIGHT = 's/<copyright>[^<]*<\/copyright>/<copyright>Bogdan \&apos;bogdro\&apos; Drozdowski 2008-$(YEAR)<\/copyright>/'
+SED_FIX_POM_VERSION = 's|<version>[^<]*</version>\s*<!--\s*JYMAG_VERSION\s*-->|<version>$(VER)</version> <!-- JYMAG_VERSION -->|'
 
 FILE_L4J_CONFIG = setup/launch4j-jymag.xml
 FILE_L4J_CONFIG_EN = setup/launch4j-jymag-en.xml
@@ -167,6 +168,7 @@ pack-src:	$(FILE_ARCH_SRC)
 
 $(FILE_ARCH_SRC): clean Makefile
 	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_SRC) $(FILE_ARCH_SRC).asc
+	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
 	$(MOVE) ../$(DIR_TMP_DIST) .
@@ -180,6 +182,7 @@ pack-bin:	$(FILE_ARCH_BIN) test
 $(FILE_ARCH_BIN):	manual jar Makefile
 	$(DEL) dist/javadoc
 	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_BIN) $(FILE_ARCH_BIN).asc
+	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
 	$(MOVE) ../$(DIR_TMP_DIST) .
@@ -194,6 +197,7 @@ $(FILE_ARCH_BIN):	manual jar Makefile
 		$(DIR_TMP_DIST)/run*.sh			\
 		$(DIR_TMP_DIST)/run*.bat		\
 		$(DIR_TMP_DIST)/manual			\
+		$(DIR_TMP_DIST)/pom.xml			\
 		$(DIR_TMP_DIST)/JYMAG-manual-*.pdf	\
 		$(DIR_TMP_DIST)/THANKS			\
 		$(DIR_TMP_DIST)/jymag.desktop
@@ -204,6 +208,7 @@ pack-javadoc:	$(FILE_ARCH_JAVADOC)
 
 $(FILE_ARCH_JAVADOC):	dist/javadoc Makefile
 	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_JAVADOC) $(FILE_ARCH_JAVADOC).asc
+	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
 	$(MOVE) ../$(DIR_TMP_DIST) .
