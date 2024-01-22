@@ -27,6 +27,11 @@ COPY		= /bin/cp -fr
 DEL		= /bin/rm -fr
 MOVE		= /bin/mv -f
 MKDIR		= /bin/mkdir
+# Use the GNU tar format
+# ifneq ($(shell tar --version | grep -i bsd),)
+# PACK_GNUOPTS	= --format gnutar
+# endif
+PACK		= /bin/tar $(PACK_GNUOPTS) -jcf
 PACK		= tar jcf
 PACK_EXT	= tar.bz2
 PACK_EXCL_SRC	= ../jymag.exclude
