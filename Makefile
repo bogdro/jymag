@@ -27,6 +27,7 @@ COPY		= /bin/cp -fr
 DEL		= /bin/rm -fr
 MOVE		= /bin/mv -f
 MKDIR		= /bin/mkdir
+LS		= /bin/ls
 # Use the GNU tar format
 # ifneq ($(shell tar --version | grep -i bsd),)
 # PACK_GNUOPTS	= --format gnutar
@@ -391,12 +392,18 @@ installer-signed-clean:
 # Icons
 ###########################################################################
 
-icons: src/BogDroSoft/jymag/rsrc/*.png setup/jymag.ico
+#icons: src/BogDroSoft/jymag/rsrc/*.png setup/jymag.ico
+# Generate the icons for each SVG file found. This way we generate also the
+# missing PNG files and not just the ones that exist but are older.
+SVG_ICONS = $(shell $(LS) src/BogDroSoft/jymag/rsrc/*.svg)
+PNG_ICONS = $(SVG_ICONS:%.svg=%.png)
 
-%.png: %.svg
+icons:	$(PNG_ICONS)
+
+%.png: %.svg Makefile
 	$(SVG2PNG) --export-filename=$@ $<
 
-setup/jymag.ico: src/BogDroSoft/jymag/rsrc/jymag-icon-phone.png
+setup/jymag.ico: src/BogDroSoft/jymag/rsrc/jymag-icon-phone.png Makefile
 	$(PNG2ICO) $< $@
 
 ###########################################################################
