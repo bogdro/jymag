@@ -309,8 +309,8 @@ $(FILE_L4J_EXE_EN):	$(FILE_L4J_CONFIG_EN) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_TXTPRODUCTVERSION) $(FILE_L4J_CONFIG_EN)
 	$(SED) $(SED_OPTS) $(SED_FIX_COPYRIGHT) $(FILE_L4J_CONFIG_EN)
 	$(LAUNCH4J) $(PWD)/$(FILE_L4J_CONFIG_EN)
-	$(DEL) ../jymag-en-$(VER).exe
-	$(COPY) $@ ../jymag-en-$(VER).exe
+	$(DEL) ../jymag-$(VER)-en.exe
+	$(COPY) $@ ../jymag-$(VER)-en.exe
 
 setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog \
 		INSTALL COPYING README THANKS jar Makefile
