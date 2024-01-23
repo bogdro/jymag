@@ -125,11 +125,11 @@ endif
 NSIS_OPT = -DVERSION=$(VER) -DYEAR=$(YEAR) -DMONTH=$(MONTH) -DDAYOFMONTH=$(DAYOFMONTH) $(OLD_SETUP)
 # -V4
 
-SED_FIX_FILEVERSION = 's/<fileVersion>[^<]*<\/fileVersion>/<fileVersion>$(VER).0.0<\/fileVersion>/'
-SED_FIX_TXTFILEVERSION = 's/<txtFileVersion>[^<]*<\/txtFileVersion>/<txtFileVersion>$(VER)<\/txtFileVersion>/'
-SED_FIX_PRODUCTVERSION = 's/<productVersion>[^<]*<\/productVersion>/<productVersion>$(VER).0.0<\/productVersion>/'
-SED_FIX_TXTPRODUCTVERSION = 's/<txtProductVersion>[^<]*<\/txtProductVersion>/<txtProductVersion>$(VER)<\/txtProductVersion>/'
-SED_FIX_COPYRIGHT = 's/<copyright>[^<]*<\/copyright>/<copyright>Bogdan \&apos;bogdro\&apos; Drozdowski 2008-$(YEAR)<\/copyright>/'
+SED_FIX_FILEVERSION = 's|<fileVersion>[^<]*</fileVersion>|<fileVersion>$(VER).0.0</fileVersion>|'
+SED_FIX_TXTFILEVERSION = 's|<txtFileVersion>[^<]*</txtFileVersion>|<txtFileVersion>$(VER)</txtFileVersion>|'
+SED_FIX_PRODUCTVERSION = 's|<productVersion>[^<]*</productVersion>|<productVersion>$(VER).0.0</productVersion>|'
+SED_FIX_TXTPRODUCTVERSION = 's|<txtProductVersion>[^<]*</txtProductVersion>|<txtProductVersion>$(VER)</txtProductVersion>|'
+SED_FIX_COPYRIGHT = 's|<copyright>[^<]*</copyright>|<copyright>Bogdan \&apos;bogdro\&apos; Drozdowski 2008-$(YEAR)</copyright>|'
 SED_FIX_POM_VERSION = 's|<version>[^<]*</version>\s*<!--\s*JYMAG_VERSION\s*-->|<version>$(VER)</version> <!-- JYMAG_VERSION -->|'
 
 FILE_L4J_CONFIG = setup/launch4j-jymag.xml
