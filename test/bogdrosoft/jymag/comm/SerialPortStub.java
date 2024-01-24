@@ -1,5 +1,5 @@
 /*
- * SerialPortStub.java, part of the BogDroSoft.jymag.comm package.
+ * SerialPortStub.java, part of the JYMAG package.
  *
  * Copyright (C) 2014-2024 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
