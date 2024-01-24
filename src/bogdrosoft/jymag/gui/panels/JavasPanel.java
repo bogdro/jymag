@@ -47,7 +47,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 
 	// i18n stuff:
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String JAVA_TYPES_STRING
 		= MSGS.getString("Supported_Java_files");
 
@@ -83,8 +83,8 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 
                 setBackground(new java.awt.Color(122, 189, 255));
 
-                deleteJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                deleteJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/delete.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
                 deleteJavaBut.setText(bundle.getString("Delete_selected")); // NOI18N
                 deleteJavaBut.setEnabled(false);
                 deleteJavaBut.addActionListener(new java.awt.event.ActionListener()
@@ -95,7 +95,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                uploadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 uploadJavaBut.setText(bundle.getString("Upload")); // NOI18N
                 uploadJavaBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -105,7 +105,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                downloadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadJavaBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/download.png"))); // NOI18N
                 downloadJavaBut.setText(bundle.getString("Download_selected")); // NOI18N
                 downloadJavaBut.setEnabled(false);
                 downloadJavaBut.addActionListener(new java.awt.event.ActionListener()
@@ -116,7 +116,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                getJavaListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/get-list.png"))); // NOI18N
+                getJavaListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/get-list.png"))); // NOI18N
                 getJavaListBut.setText(bundle.getString("Get_list")); // NOI18N
                 getJavaListBut.setEnabled(false);
                 getJavaListBut.addActionListener(new java.awt.event.ActionListener()
@@ -136,7 +136,7 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
                         },
                         new String []
                         {
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Name")
                         }
                 )
                 {

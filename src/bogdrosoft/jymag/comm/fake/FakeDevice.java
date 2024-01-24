@@ -114,7 +114,7 @@ class FakeDevice
 	{
 		if (DEBUG)
 		{
-			System.out.println("BogDroSoft.jymag.comm.fake.FakeDevice.checkForCommandInBuffer(): "
+			System.out.println("bogdrosoft.jymag.comm.fake.FakeDevice.checkForCommandInBuffer(): "
 				+ new String(currInput, 0, currInputPosition));
 		}
 		if (currInputPosition <= 0 || currInput == null)
@@ -149,13 +149,10 @@ class FakeDevice
 			else if (ANSWER_CALL_CMD.equals(buffer))
 			{
 				sendReply(OK_STRING);
-				if (l != null)
+				if (l != null && isNotifyOnRingIndicator)
 				{
-					if (isNotifyOnRingIndicator)
-					{
-						l.serialEvent(new SerialPortEvent(
-							port, SerialPortEvent.RI, true, false));
-					}
+					l.serialEvent(new SerialPortEvent(
+						port, SerialPortEvent.RI, true, false));
 				}
 			}
 			else if (VERSION_CMD.equals(buffer))
@@ -335,7 +332,7 @@ class FakeDevice
 	{
 		if (DEBUG)
 		{
-			System.out.println("BogDroSoft.jymag.comm.fake.FakeDevice.sendReply(): "
+			System.out.println("bogdrosoft.jymag.comm.fake.FakeDevice.sendReply(): "
 				+ reply);
 		}
 		try
@@ -499,13 +496,10 @@ class FakeDevice
 		{
 			currOutput = null;
 			currOutputPosition = -1;
-			if (l != null)
+			if (l != null && isNotifyOnOutputEmpty)
 			{
-				if (isNotifyOnOutputEmpty)
-				{
-					l.serialEvent(new SerialPortEvent(
-						port, SerialPortEvent.OUTPUT_BUFFER_EMPTY, false, true));
-				}
+				l.serialEvent(new SerialPortEvent(
+					port, SerialPortEvent.OUTPUT_BUFFER_EMPTY, false, true));
 			}
 		}
 

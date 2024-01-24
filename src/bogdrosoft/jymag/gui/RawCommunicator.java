@@ -42,24 +42,24 @@ public class RawCommunicator extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 71L;
 	private final transient DataTransporter dtr;
-	private final Object sync;
+	private final transient Object sync;
 	/** The Thread that updates the control line signal display. */
 	private transient Thread updater = null;
 	/** The refresh interval, in milliseconds. */
 	private static final int REFRESH_TIME = 1000;
 	/** The "line disabled" icon. */
 	private final ImageIcon line_disabled_icon
-		= new ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/line_off.png")); // NOI18N
+		= new ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/line_off.png")); // NOI18N
 	/** The "line enabled" icon. */
 	private final ImageIcon line_enabled_icon
-		= new ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/line_on.png")); // NOI18N
+		= new ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/line_on.png")); // NOI18N
 	/** The file chooser for choosing the file to send. */
 	private JFileChooser fc;
 	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/RawCommunicator");
 	private static final String EX_STRING = MSGS.getString("Exception");
 	private static final String FILE_NOT_READABLE_MSG
 		= MSGS.getString("file_not_readable");
@@ -132,7 +132,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 clearBut = new javax.swing.JButton();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/RawCommunicator"); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/RawCommunicator"); // NOI18N
                 setTitle(bundle.getString("Manual_communication")); // NOI18N
                 addWindowListener(new java.awt.event.WindowAdapter()
                 {
@@ -165,7 +165,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 jScrollPane3.setViewportView(currCommArea);
                 currCommArea.getAccessibleContext().setAccessibleName(bundle.getString("command")); // NOI18N
 
-                sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 sendBut.setText(bundle.getString("Send")); // NOI18N
                 sendBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -175,7 +175,7 @@ public class RawCommunicator extends javax.swing.JDialog
                         }
                 });
 
-                closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+                closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
                 closeBut.setText(bundle.getString("Exit")); // NOI18N
                 closeBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -196,7 +196,7 @@ public class RawCommunicator extends javax.swing.JDialog
 
                 fontSizeLab.setText(bundle.getString("font_size")); // NOI18N
 
-                rtsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/line_off.png"))); // NOI18N
+                rtsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N
                 rtsBut.setText("RTS"); // NOI18N
                 rtsBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -206,7 +206,7 @@ public class RawCommunicator extends javax.swing.JDialog
                         }
                 });
 
-                dtrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/line_off.png"))); // NOI18N
+                dtrBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N
                 dtrBut.setText("DTR"); // NOI18N
                 dtrBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -216,19 +216,19 @@ public class RawCommunicator extends javax.swing.JDialog
                         }
                 });
 
-                dcdLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/line_off.png"))); // NOI18N
+                dcdLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N
                 dcdLabel.setText("DCD"); // NOI18N
 
-                ctsLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/line_off.png"))); // NOI18N
+                ctsLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N
                 ctsLabel.setText("CTS"); // NOI18N
 
-                dsrLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/line_off.png"))); // NOI18N
+                dsrLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N
                 dsrLabel.setText("DSR"); // NOI18N
 
-                riLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/line_off.png"))); // NOI18N
+                riLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N
                 riLabel.setText("RI"); // NOI18N
 
-                sendFileBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/send-cmd-file.png"))); // NOI18N
+                sendFileBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/send-cmd-file.png"))); // NOI18N
                 sendFileBut.setText(bundle.getString("send_file")); // NOI18N
                 sendFileBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -238,7 +238,7 @@ public class RawCommunicator extends javax.swing.JDialog
                         }
                 });
 
-                clearBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/clear.png"))); // NOI18N
+                clearBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/clear.png"))); // NOI18N
                 clearBut.setText(bundle.getString("clear_but_text")); // NOI18N
                 clearBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -424,13 +424,11 @@ public class RawCommunicator extends javax.swing.JDialog
 				try
 				{
 					String rcvd = get ();
-					if ( rcvd != null )
+					if ( rcvd != null
+						&& ! rcvd.trim ().isEmpty () )
 					{
-						if ( ! rcvd.trim ().isEmpty () )
-						{
-							answerArea.setText (answerArea.getText ()
-								+ rcvd + Utils.LF);
-						}
+						answerArea.setText (answerArea.getText ()
+							+ rcvd + Utils.LF);
 					}
 				}
 				catch (Exception ex)

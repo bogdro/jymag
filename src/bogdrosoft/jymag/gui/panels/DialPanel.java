@@ -101,7 +101,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 
                 dialTypeGroup.add(dialNumRadio);
                 dialNumRadio.setSelected(true);
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/DialPanel"); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/DialPanel"); // NOI18N
                 dialNumRadio.setText(bundle.getString("dial_the_number")); // NOI18N
                 dialNumRadio.addChangeListener(new javax.swing.event.ChangeListener()
                 {
@@ -259,7 +259,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                 voiceDataDialGroup.add(dataRadio);
                 dataRadio.setText(bundle.getString("call_type_data")); // NOI18N
 
-                dialBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/dialnum.png"))); // NOI18N
+                dialBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/dialnum.png"))); // NOI18N
                 dialBut.setText(bundle.getString("dial_button_text")); // NOI18N
                 dialBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -269,7 +269,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                hangUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/hangup.png"))); // NOI18N
+                hangUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/hangup.png"))); // NOI18N
                 hangUpBut.setText(bundle.getString("hangup_button_text")); // NOI18N
                 hangUpBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -289,7 +289,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                 autoDialRadio.setSelected(true);
                 autoDialRadio.setText(bundle.getString("dial_method_auto")); // NOI18N
 
-                answerBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pickup.png"))); // NOI18N
+                answerBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/pickup.png"))); // NOI18N
                 answerBut.setText(bundle.getString("answer_call")); // NOI18N
                 answerBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -299,7 +299,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                volumeUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/volup.png"))); // NOI18N
+                volumeUpBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/volup.png"))); // NOI18N
                 volumeUpBut.setText(bundle.getString("volume_up")); // NOI18N
                 volumeUpBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -309,7 +309,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                volumeDownBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/voldown.png"))); // NOI18N
+                volumeDownBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/voldown.png"))); // NOI18N
                 volumeDownBut.setText(bundle.getString("volume_down")); // NOI18N
                 volumeDownBut.addActionListener(new java.awt.event.ActionListener()
                 {

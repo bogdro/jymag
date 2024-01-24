@@ -41,7 +41,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 
 	// ------------ i18n stuff
 	private static final String EX_STRING
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow")
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/CapabilityWindow")
 			.getString("Exception");
 	private final MainWindow mw;
 
@@ -106,7 +106,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                 fontSizeLab = new javax.swing.JLabel();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/CapabilityWindow"); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/CapabilityWindow"); // NOI18N
                 setTitle(bundle.getString("JYMAG_-_Capabilities")); // NOI18N
                 addWindowListener(new java.awt.event.WindowAdapter()
                 {
@@ -116,7 +116,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                         }
                 });
 
-                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capability.png"))); // NOI18N
+                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/capability.png"))); // NOI18N
                 getCapBut.setText(bundle.getString("Get_selected_capabilities")); // NOI18N
                 getCapBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -126,7 +126,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                         }
                 });
 
-                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
                 exitBut.setText(bundle.getString("Exit")); // NOI18N
                 exitBut.addActionListener(new java.awt.event.ActionListener()
                 {

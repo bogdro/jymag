@@ -47,7 +47,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 
 	// i18n stuff:
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String DELETE_QUESTION
 		= MSGS.getString("want_to_delete");
 	private static final String QUESTION_STRING
@@ -83,8 +83,8 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 
                 setBackground(new java.awt.Color(255, 175, 175));
 
-                deleteAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                deleteAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/delete.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
                 deleteAlarmBut.setText(bundle.getString("Delete_selected")); // NOI18N
                 deleteAlarmBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -94,7 +94,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                uploadAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 uploadAlarmBut.setText(bundle.getString("Update_sel")); // NOI18N
                 uploadAlarmBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -104,7 +104,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                downloadAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadAlarmBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/download.png"))); // NOI18N
                 downloadAlarmBut.setText(bundle.getString("Download_selected")); // NOI18N
                 downloadAlarmBut.setEnabled(false);
                 downloadAlarmBut.addActionListener(new java.awt.event.ActionListener()
@@ -115,7 +115,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                getAlarmListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/get-list.png"))); // NOI18N
+                getAlarmListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/get-list.png"))); // NOI18N
                 getAlarmListBut.setText(bundle.getString("Get_list")); // NOI18N
                 getAlarmListBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -132,10 +132,10 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
                         },
                         new String []
                         {
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_number"),
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_date"),
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_time"),
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Alarm_days")
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Alarm_number"),
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Alarm_date"),
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Alarm_time"),
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Alarm_days")
                         }
                 )
                 {

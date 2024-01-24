@@ -125,14 +125,11 @@ public class PanelUtils
 		downloadFC.setMultiSelectionEnabled (false);
 		downloadFC.setDialogType (JFileChooser.SAVE_DIALOG);
 		downloadFC.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
-		if ( destDirName != null )
+		if ( destDirName != null && ! destDirName.isEmpty () )
 		{
-			if ( ! destDirName.isEmpty () )
-			{
-				File d = new File (destDirName);
-				downloadFC.setSelectedFile (d);
-				downloadFC.setCurrentDirectory (d);
-			}
+			File d = new File (destDirName);
+			downloadFC.setSelectedFile (d);
+			downloadFC.setCurrentDirectory (d);
 		}
 		int dialogRes = downloadFC.showSaveDialog (mw);
 

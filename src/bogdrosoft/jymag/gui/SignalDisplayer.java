@@ -102,9 +102,9 @@ public class SignalDisplayer extends javax.swing.JFrame
                 onTopCB = new javax.swing.JCheckBox();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SignalDisplayer"); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/SignalDisplayer"); // NOI18N
                 setTitle(bundle.getString("title_signal")); // NOI18N
-                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag-icon-phone.png"))).getImage ());
+                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/jymag-icon-phone.png"))).getImage ());
                 addWindowListener(new java.awt.event.WindowAdapter()
                 {
                         public void windowClosing(java.awt.event.WindowEvent evt)
@@ -121,7 +121,7 @@ public class SignalDisplayer extends javax.swing.JFrame
                 powerLevel.setMaximum(31);
                 powerLevel.setOrientation(javax.swing.JProgressBar.VERTICAL);
 
-                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
                 exitBut.setText(bundle.getString("exit")); // NOI18N
                 exitBut.addActionListener(new java.awt.event.ActionListener()
                 {

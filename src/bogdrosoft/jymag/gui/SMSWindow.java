@@ -40,8 +40,8 @@ public class SMSWindow extends javax.swing.JDialog
 
 	// ------------ i18n stuff
 	/*
-	private static final ResourceBundle swBundle = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow");
-	private static final String ERR_STRING = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Error");
+	private static final ResourceBundle swBundle = ResourceBundle.getBundle("bogdrosoft/jymag/i18n/SMSWindow");
+	private static final String ERR_STRING = ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Error");
 	private static final String OK_STRING = swBundle.getString("message_sent");
 	private static final String SEND_ERROR = swBundle.getString("send_error");
 
@@ -115,7 +115,7 @@ public class SMSWindow extends javax.swing.JDialog
                 msgArea = new javax.swing.JTextArea();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/SMSWindow"); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/SMSWindow"); // NOI18N
                 setTitle(bundle.getString("smswindow_title")); // NOI18N
                 addWindowListener(new java.awt.event.WindowAdapter()
                 {
@@ -125,7 +125,7 @@ public class SMSWindow extends javax.swing.JDialog
                         }
                 });
 
-                closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+                closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
                 closeBut.setText(bundle.getString("Exit")); // NOI18N
                 closeBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -135,7 +135,7 @@ public class SMSWindow extends javax.swing.JDialog
                         }
                 });
 
-                sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 sendBut.setText(bundle.getString("Send")); // NOI18N
                 sendBut.addActionListener(new java.awt.event.ActionListener()
                 {

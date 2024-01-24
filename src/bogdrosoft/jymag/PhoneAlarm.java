@@ -98,12 +98,9 @@ public class PhoneAlarm
 		else
 		{
 			days = makeSetFromArray (alarmDays);
-			if ( days != null )
+			if ( days != null && days.contains (ALL_DAYS) )
 			{
-				if ( days.contains (ALL_DAYS) )
-				{
-					forAllDays = true;
-				}
+				forAllDays = true;
 			}
 		}
 		number = alarmNumber;

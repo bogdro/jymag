@@ -53,7 +53,7 @@ public class TransferUtils
 {
 	// ------------ i18n stuff
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");	// NOI18N
 
 	private static final String TRY_PORT_STRING
 		= MSGS.getString("Trying_port_");		// NOI18N

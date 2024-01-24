@@ -30,11 +30,6 @@ import bogdrosoft.jymag.comm.TransferUtils;
 import bogdrosoft.jymag.gui.panels.JYMAGTab;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.util.HashMap;
@@ -61,7 +56,7 @@ public class MainWindow extends JFrame
 
 	/** Current version number as a String. */
 	public static final String JYMAG_VERSION =
-		ResourceBundle.getBundle("BogDroSoft/jymag/rsrc/version")	// NOI18N
+		ResourceBundle.getBundle("bogdrosoft/jymag/rsrc/version")	// NOI18N
 		.getString("VER");	// NOI18N
 
 	// synchronization variable:
@@ -136,7 +131,7 @@ public class MainWindow extends JFrame
 	private final transient Utils.StatusChangeRunnable setSendingStatus;
 	private final transient Utils.StatusChangeRunnable setReceivingStatus;
 	// ------------ i18n stuff
-	private static final ResourceBundle MW_BUNDLE = ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+	private static final ResourceBundle MW_BUNDLE = ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String NO_REPLY_STRING = MW_BUNDLE.getString("No_answers_received");
 	private static final String MULTI_REPLIES_STRING = MW_BUNDLE.getString("Multiple_answers");
 	private static final String WHICH_STRING = MW_BUNDLE.getString("Which_one");
@@ -279,7 +274,7 @@ public class MainWindow extends JFrame
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
                 setTitle("Jig Your Music and Graphics"); // NOI18N
-                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/BogDroSoft/jymag/rsrc/jymag-icon-phone.png"))).getImage ());
+                setIconImage((new javax.swing.ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/jymag-icon-phone.png"))).getImage ());
                 addWindowListener(new java.awt.event.WindowAdapter()
                 {
                         public void windowClosing(java.awt.event.WindowEvent evt)
@@ -288,8 +283,8 @@ public class MainWindow extends JFrame
                         }
                 });
 
-                loadConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/loadconf.png"))); // NOI18N
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                loadConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/loadconf.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
                 loadConfBut.setText(bundle.getString("Load_configuration")); // NOI18N
                 loadConfBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -308,7 +303,7 @@ public class MainWindow extends JFrame
 
                 parityLabel.setText(bundle.getString("Parity:")); // NOI18N
 
-                aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/about.png"))); // NOI18N
+                aboutBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/about.png"))); // NOI18N
                 aboutBut.setText(bundle.getString("About_JYMAG...")); // NOI18N
                 aboutBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -322,7 +317,7 @@ public class MainWindow extends JFrame
 
                 progressLabel.setText(bundle.getString("Progress:")); // NOI18N
 
-                rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/manual-cmd.png"))); // NOI18N
+                rawBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/manual-cmd.png"))); // NOI18N
                 rawBut.setText(bundle.getString("Manual_commands")); // NOI18N
                 rawBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -339,7 +334,7 @@ public class MainWindow extends JFrame
 
                 statusLabel.setText(bundle.getString("Program_status:")); // NOI18N
 
-                scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/scan.png"))); // NOI18N
+                scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/scan.png"))); // NOI18N
                 scanButton.setText(bundle.getString("Scan_ports")); // NOI18N
                 scanButton.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -355,7 +350,7 @@ public class MainWindow extends JFrame
 
                 portLabel.setText(bundle.getString("Port:")); // NOI18N
 
-                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/capability.png"))); // NOI18N
+                getCapBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/capability.png"))); // NOI18N
                 getCapBut.setText(bundle.getString("Get_capabilities")); // NOI18N
                 getCapBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -369,7 +364,7 @@ public class MainWindow extends JFrame
 
                 IMEI.setText("-"); // NOI18N
 
-                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/exit.png"))); // NOI18N
+                exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
                 exitBut.setText(bundle.getString("Exit")); // NOI18N
                 exitBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -383,43 +378,43 @@ public class MainWindow extends JFrame
 
                 jScrollPane7.setViewportView(photoPanel);
 
-                tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/pictures.png")), jScrollPane7); // NOI18N
+                tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/pictures.png")), jScrollPane7); // NOI18N
 
                 jScrollPane8.setViewportView(ringtonePanel);
 
-                tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/ringtones.png")), jScrollPane8); // NOI18N
+                tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/ringtones.png")), jScrollPane8); // NOI18N
 
                 jScrollPane9.setViewportView(addrBookPanel);
 
-                tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/addrbook.png")), jScrollPane9); // NOI18N
+                tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/addrbook.png")), jScrollPane9); // NOI18N
 
                 jScrollPane10.setViewportView(tasksPanel);
 
-                tabPane.addTab(bundle.getString("ToDoTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/todo.png")), jScrollPane10); // NOI18N
+                tabPane.addTab(bundle.getString("ToDoTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/todo.png")), jScrollPane10); // NOI18N
 
                 jScrollPane11.setViewportView(eventsPanel);
 
-                tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/events.png")), jScrollPane11); // NOI18N
+                tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/events.png")), jScrollPane11); // NOI18N
 
                 jScrollPane12.setViewportView(moviePanel);
 
-                tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/videos.png")), jScrollPane12); // NOI18N
+                tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/videos.png")), jScrollPane12); // NOI18N
 
                 jScrollPane13.setViewportView(javasPanel);
 
-                tabPane.addTab(bundle.getString("JavaTab"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/java.png")), jScrollPane13); // NOI18N
+                tabPane.addTab(bundle.getString("JavaTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/java.png")), jScrollPane13); // NOI18N
 
                 jScrollPane16.setViewportView(alarmPanel);
 
-                tabPane.addTab(bundle.getString("Alarms"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/alarm.png")), jScrollPane16); // NOI18N
+                tabPane.addTab(bundle.getString("Alarms"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/alarm.png")), jScrollPane16); // NOI18N
 
                 jScrollPane18.setViewportView(sMSPanel);
 
-                tabPane.addTab(bundle.getString("SMS"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/sms.png")), jScrollPane18); // NOI18N
+                tabPane.addTab(bundle.getString("SMS"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/sms.png")), jScrollPane18); // NOI18N
 
                 jScrollPane20.setViewportView(dialPanel);
 
-                tabPane.addTab(bundle.getString("tab_dial"), new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/dialtab.png")), jScrollPane20); // NOI18N
+                tabPane.addTab(bundle.getString("tab_dial"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/dialtab.png")), jScrollPane20); // NOI18N
 
                 phoneTypeLabel.setText(bundle.getString("Phone_type:")); // NOI18N
 
@@ -431,7 +426,7 @@ public class MainWindow extends JFrame
 
                 IMEILabel.setText("IMEI:"); // NOI18N
 
-                saveConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/saveconf.png"))); // NOI18N
+                saveConfBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/saveconf.png"))); // NOI18N
                 saveConfBut.setText(bundle.getString("Save_configuration")); // NOI18N
                 saveConfBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -470,7 +465,7 @@ public class MainWindow extends JFrame
 
                 fontSizeLab.setText(bundle.getString("Font_size")); // NOI18N
 
-                signalButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/signal.png"))); // NOI18N
+                signalButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/signal.png"))); // NOI18N
                 signalButton.setText(bundle.getString("signal_power")); // NOI18N
                 signalButton.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -872,42 +867,34 @@ public class MainWindow extends JFrame
 			{
 				String itemName = item.toString ();
 				String fw = PRESS_SCAN_MSG;
-				if ( firmwares != null )
+				if ( firmwares != null
+					&& firmwares.containsKey (itemName) )
 				{
-					if ( firmwares.containsKey (itemName) )
-					{
-						fw = firmwares.get (itemName);
-					}
+					fw = firmwares.get (itemName);
 				}
 				firmware.setText (fw);
 
 				String pType = PRESS_SCAN_MSG;
-				if ( phoneTypes != null )
+				if ( phoneTypes != null
+					&& phoneTypes.containsKey (itemName) )
 				{
-					if ( phoneTypes.containsKey (itemName) )
-					{
-						pType = phoneTypes.get (itemName);
-					}
+					pType = phoneTypes.get (itemName);
 				}
 				phone.setText (pType);
 
 				String pIMEI = PRESS_SCAN_MSG;
-				if ( phoneIMEIs != null )
+				if ( phoneIMEIs != null
+					&& phoneIMEIs.containsKey (itemName) )
 				{
-					if ( phoneIMEIs.containsKey (itemName) )
-					{
-						pIMEI = phoneIMEIs.get (itemName);
-					}
+					pIMEI = phoneIMEIs.get (itemName);
 				}
 				IMEI.setText (pIMEI);
 
 				String pNumber = PRESS_SCAN_MSG;
-				if ( phoneSubsNums != null )
+				if ( phoneSubsNums != null
+					&& phoneSubsNums.containsKey (itemName) )
 				{
-					if ( phoneSubsNums.containsKey (itemName) )
-					{
-						pNumber = phoneSubsNums.get (itemName);
-					}
+					pNumber = phoneSubsNums.get (itemName);
 				}
 				subsNum.setText (pNumber);
 			} // item != null

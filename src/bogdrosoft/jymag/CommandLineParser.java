@@ -51,7 +51,7 @@ public class CommandLineParser
 
 	// ----------- i18n stuff
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String PROG_INTRO_STRING
 		= MSGS.getString("is_a_program_")
 		+ MSGS.getString("rxtx_multimedia_Sagem");

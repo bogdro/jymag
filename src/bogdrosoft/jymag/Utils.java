@@ -674,7 +674,7 @@ public class Utils
 		RECEIVING;
 
 		private static final ResourceBundle rcBundle =
-			ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");	// NOI18N
+			ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");	// NOI18N
 
 		private static final String readyString =
 			rcBundle.getString("READY");		// NOI18N

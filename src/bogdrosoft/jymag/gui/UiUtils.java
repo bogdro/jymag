@@ -50,7 +50,7 @@ public class UiUtils {
 
 	/* use our own in case MainWindow doesn't load */
 	private static final String ERR_STRING
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow")
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow")
 		.getString("Error");
 
 	private UiUtils ()
@@ -309,12 +309,10 @@ public class UiUtils {
 		@Override
 		public void mouseClicked (MouseEvent me)
 		{
-			if ( me.getButton () == MouseEvent.BUTTON1 )
+			if ( me.getButton () == MouseEvent.BUTTON1
+				&& table != null )
 			{
-				if ( table != null )
-				{
-					table.selectAll ();
-				}
+				table.selectAll ();
 			}
 		}
 

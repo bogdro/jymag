@@ -1,5 +1,5 @@
 /*
- * TransferParameters.java, part of the BogDroSoft.jymag.comm package.
+ * TransferParameters.java, part of the JYMAG package.
  *
  * Copyright (C) 2016-2024 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+

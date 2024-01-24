@@ -49,7 +49,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 
 	// i18n stuff:
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String DELETE_QUESTION
 		= MSGS.getString("want_to_delete");
 	private static final String QUESTION_STRING
@@ -80,8 +80,8 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 
                 setBackground(new java.awt.Color(234, 187, 0));
 
-                deleteSmsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                deleteSmsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/delete.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
                 deleteSmsBut.setText(bundle.getString("Delete_selected")); // NOI18N
                 deleteSmsBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -91,7 +91,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                uploadSmsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadSmsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 uploadSmsBut.setText(bundle.getString("Upload")); // NOI18N
                 uploadSmsBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -101,7 +101,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                downloadSmsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadSmsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/download.png"))); // NOI18N
                 downloadSmsBut.setText(bundle.getString("Download_selected")); // NOI18N
                 downloadSmsBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -111,7 +111,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                getSmsListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/get-list.png"))); // NOI18N
+                getSmsListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/get-list.png"))); // NOI18N
                 getSmsListBut.setText(bundle.getString("Get_list")); // NOI18N
                 getSmsListBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -128,7 +128,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
                         },
                         new String []
                         {
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("smsTable_ID"), java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("smsTable_Status"), java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("smsTable_PhoneNum"), java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("smsTable_DateTime"), java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("smsTable_message")
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("smsTable_ID"), java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("smsTable_Status"), java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("smsTable_PhoneNum"), java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("smsTable_DateTime"), java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("smsTable_message")
                         }
                 )
                 {

@@ -48,7 +48,7 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
 
 	// i18n stuff:
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String ANIM_VIDEO_TYPES_STRING
 		= MSGS.getString("Supported_animation/video_files");
 
@@ -84,8 +84,8 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
 
                 setBackground(new java.awt.Color(171, 171, 255));
 
-                deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                deleteAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/delete.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
                 deleteAnimBut.setText(bundle.getString("Delete_selected")); // NOI18N
                 deleteAnimBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -95,7 +95,7 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 uploadAnimBut.setText(bundle.getString("Upload")); // NOI18N
                 uploadAnimBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -105,7 +105,7 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadAnimBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/download.png"))); // NOI18N
                 downloadAnimBut.setText(bundle.getString("Download_selected")); // NOI18N
                 downloadAnimBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -115,7 +115,7 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/get-list.png"))); // NOI18N
+                getAnimListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/get-list.png"))); // NOI18N
                 getAnimListBut.setText(bundle.getString("Get_list")); // NOI18N
                 getAnimListBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -134,7 +134,7 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
                         },
                         new String []
                         {
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Name")
                         }
                 )
                 {

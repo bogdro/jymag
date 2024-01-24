@@ -21,12 +21,12 @@
 package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.Utils;
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import javax.swing.JLabel;
+import java.net.URISyntaxException;
 
 /**
  * The "About..." window box, containing the program name, its version number,
@@ -95,11 +95,11 @@ public class AboutBox extends javax.swing.JDialog
                 fontSizeLab = new javax.swing.JLabel();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/AboutBox"); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/AboutBox"); // NOI18N
                 setTitle(bundle.getString("About_JYMAG")); // NOI18N
                 setModal(true);
 
-                jymagLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/about.png"))); // NOI18N
+                jymagLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/about.png"))); // NOI18N
                 jymagLabel.setText("JYMAG - Jig Your Music And Graphics " /* NOI18N */ + MainWindow.JYMAG_VERSION);
                 jymagLabel.setIconTextGap(40);
 
@@ -148,7 +148,7 @@ public class AboutBox extends javax.swing.JDialog
                 licenseArea.setEditable(false);
                 licenseArea.setColumns(20);
                 licenseArea.setRows(3);
-                licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("BogDroSoft/jymag/rsrc/GNU-GPLv3.txt" /* NOI18N */)));
+                licenseArea.setText(getFileContents (getClass ().getClassLoader ().getResourceAsStream ("bogdrosoft/jymag/rsrc/GNU-GPLv3.txt" /* NOI18N */)));
                 jScrollPane1.setViewportView(licenseArea);
                 licenseArea.getAccessibleContext().setAccessibleName("license text"); // NOI18N
 
@@ -285,15 +285,13 @@ public class AboutBox extends javax.swing.JDialog
 				try
 				{
 					Desktop d = Desktop.getDesktop ();
-					if ( d != null )
+					if ( d != null
+						&& d.isSupported (Desktop.Action.MAIL) )
 					{
-						if ( d.isSupported (Desktop.Action.MAIL) )
-						{
-							d.mail (URI_MAILTO);	// NOI18N
-						}
+						d.mail (URI_MAILTO);	// NOI18N
 					}
 				}
-				catch (Exception ex)
+				catch (IOException ex)
 				{
 					Utils.handleException (ex, "Desktop.mail");	// NOI18N
 				}
@@ -310,15 +308,13 @@ public class AboutBox extends javax.swing.JDialog
 				try
 				{
 					Desktop d = Desktop.getDesktop ();
-					if ( d != null )
+					if ( d != null
+						&& d.isSupported (Desktop.Action.BROWSE) )
 					{
-						if ( d.isSupported (Desktop.Action.BROWSE) )
-						{
-							d.browse (URI_WWW1);
-						}
+						d.browse (URI_WWW1);
 					}
 				}
-				catch (Exception ex)
+				catch (IOException ex)
 				{
 					Utils.handleException (ex, "Desktop.browse1");	// NOI18N
 				}
@@ -335,15 +331,13 @@ public class AboutBox extends javax.swing.JDialog
 				try
 				{
 					Desktop d = Desktop.getDesktop ();
-					if ( d != null )
+					if ( d != null
+						&& d.isSupported (Desktop.Action.BROWSE) )
 					{
-						if ( d.isSupported (Desktop.Action.BROWSE) )
-						{
-							d.browse (URI_WWW2);
-						}
+						d.browse (URI_WWW2);
 					}
 				}
-				catch (Exception ex)
+				catch (IOException ex)
 				{
 					Utils.handleException (ex, "Desktop.browse2");	// NOI18N
 				}
@@ -407,7 +401,7 @@ public class AboutBox extends javax.swing.JDialog
 				wasRead = is.read (read);
 				ret.append (new String (read, 0, wasRead, "UTF-8"));	// NOI18N
 			}
-			catch (Exception ex)
+			catch (IOException ex)
 			{
 				Utils.handleException (ex, "InputStream.read");	// NOI18N
 				wasRead = 0;
@@ -417,7 +411,7 @@ public class AboutBox extends javax.swing.JDialog
 		{
 			is.close ();
 		}
-		catch (Exception ex)
+		catch (IOException ex)
 		{
 			Utils.handleException (ex, "InputStream.close");	// NOI18N
 		}
@@ -430,7 +424,7 @@ public class AboutBox extends javax.swing.JDialog
 		{
 			return new URI (uriType, uri, null);
 		}
-		catch (Exception ex)
+		catch (URISyntaxException ex)
 		{
 			Utils.handleException (ex, "AboutBox.createURI: '" + uri + "'");	// NOI18N
 			UiUtils.showErrorMessage(null, ex.toString());
@@ -444,7 +438,7 @@ public class AboutBox extends javax.swing.JDialog
 		{
 			return new URI (webAddr);
 		}
-		catch (Exception ex)
+		catch (URISyntaxException ex)
 		{
 			Utils.handleException (ex, "AboutBox.createWebURI: '" + webAddr + "'");	// NOI18N
 			UiUtils.showErrorMessage(null, ex.toString());

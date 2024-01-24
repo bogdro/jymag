@@ -44,10 +44,26 @@ public class JYMAGTransferHandler extends TransferHandler
 	private final MainWindow mw;
 
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
-	private static volatile DataFlavor uriFileListFlavor = null;
+	private static volatile DataFlavor uriFileListFlavor;
 	private static final String URI_FILE_LIST_FLAVOR_TYPE = "text/uri-list;class=java.lang.String";	// NOI18N
 
 	private static final String NEWLINES = "\r\n";	// NOI18N
+
+	static
+	{
+		// Linux:
+		// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
+		try
+		{
+			uriFileListFlavor = new DataFlavor (URI_FILE_LIST_FLAVOR_TYPE);
+		}
+		catch (ClassNotFoundException ex)
+		{
+			Utils.handleException (ex,
+				"JYMAGTransferHandler.uriFileListFlavor");	// NOI18N
+			uriFileListFlavor = null;
+		}
+	}
 
 	/**
 	 * Creates a new TransferHandler that takes its transfer
@@ -61,21 +77,6 @@ public class JYMAGTransferHandler extends TransferHandler
 			throw new IllegalArgumentException ("JYMAGTransferHandler: null");	// NOI18N
 		}
 		mw = parentFrame;
-
-		// Linux:
-		// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
-		if ( uriFileListFlavor == null )
-		{
-			try
-			{
-				uriFileListFlavor = new DataFlavor (URI_FILE_LIST_FLAVOR_TYPE);
-			}
-			catch (ClassNotFoundException ex)
-			{
-				Utils.handleException (ex,
-					"JYMAGTransferHandler.uriFileListFlavor");	// NOI18N
-			}
-		}
 	}
 
 	/**
@@ -105,14 +106,8 @@ public class JYMAGTransferHandler extends TransferHandler
 		}
 		// Linux:
 		// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
-		if ( uriFileListFlavor != null )
-		{
-			if ( support.isDataFlavorSupported (uriFileListFlavor) )
-			{
-				return true;
-			}
-		}
-		return false;
+		return uriFileListFlavor != null
+			&& support.isDataFlavorSupported (uriFileListFlavor);
 	}
 
 	/**
@@ -151,41 +146,39 @@ public class JYMAGTransferHandler extends TransferHandler
 				}
 			}
 			// Linux:
-			else if ( uriFileListFlavor != null )
+			else if ( uriFileListFlavor != null
+				&& t.isDataFlavorSupported (uriFileListFlavor) )
 			{
-				if ( t.isDataFlavorSupported (uriFileListFlavor) )
+				Object data = t.getTransferData (uriFileListFlavor);
+				if ( data != null )
 				{
-					Object data = t.getTransferData (uriFileListFlavor);
-					if ( data != null )
+					String[] fileURIs = data.toString ().split (NEWLINES);
+					if ( fileURIs != null )
 					{
-						String[] fileURIs = data.toString ().split (NEWLINES);
-						if ( fileURIs != null )
+						for ( int i = 0; i < fileURIs.length; i++ )
 						{
-							for ( int i = 0; i < fileURIs.length; i++ )
+							String s = fileURIs[i];
+							if ( s == null )
 							{
-								String s = fileURIs[i];
-								if ( s == null )
-								{
-									continue;
-								}
-								// comment:
-								if ( s.charAt (0) == '#' )
-								{
-									continue;
-								}
-								try
-								{
-									importSingleFile (new File (new URI (s)));
-								}
-								catch (URISyntaxException uriex)
-								{
-									Utils.handleException (uriex,
-										"JYMAGTransferHandler.importData.Transferable.URI");	// NOI18N
-								}
+								continue;
+							}
+							// comment:
+							if ( s.charAt (0) == '#' )
+							{
+								continue;
+							}
+							try
+							{
+								importSingleFile (new File (new URI (s)));
+							}
+							catch (URISyntaxException uriex)
+							{
+								Utils.handleException (uriex,
+									"JYMAGTransferHandler.importData.Transferable.URI");	// NOI18N
 							}
 						}
-						return true;
 					}
+					return true;
 				}
 			}
 		}

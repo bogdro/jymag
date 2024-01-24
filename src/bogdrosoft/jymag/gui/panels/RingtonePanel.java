@@ -48,7 +48,7 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
 
 	// i18n stuff:
 	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow");
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String SOUND_TYPES_STRING
 		= MSGS.getString("Supported_sounds");
 
@@ -93,7 +93,7 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
                         },
                         new String []
                         {
-                                java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow").getString("Name")
+                                java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow").getString("Name")
                         }
                 )
                 {
@@ -119,8 +119,8 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
                 });
                 jScrollPane2.setViewportView(ringTable);
 
-                getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/get-list.png"))); // NOI18N
-                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("BogDroSoft/jymag/i18n/MainWindow"); // NOI18N
+                getRingListBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/get-list.png"))); // NOI18N
+                java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
                 getRingListBut.setText(bundle.getString("Get_list")); // NOI18N
                 getRingListBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -130,7 +130,7 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/download.png"))); // NOI18N
+                downloadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/download.png"))); // NOI18N
                 downloadRingBut.setText(bundle.getString("Download_selected")); // NOI18N
                 downloadRingBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -140,7 +140,7 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/upload.png"))); // NOI18N
+                uploadRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 uploadRingBut.setText(bundle.getString("Upload")); // NOI18N
                 uploadRingBut.addActionListener(new java.awt.event.ActionListener()
                 {
@@ -150,7 +150,7 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
                         }
                 });
 
-                deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BogDroSoft/jymag/rsrc/delete.png"))); // NOI18N
+                deleteRingBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/delete.png"))); // NOI18N
                 deleteRingBut.setText(bundle.getString("Delete_selected")); // NOI18N
                 deleteRingBut.addActionListener(new java.awt.event.ActionListener()
                 {

@@ -4,12 +4,12 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-      <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="Manual_communication" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+      <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="Manual_communication" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
     </Property>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-      <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="access_title_rawcomm" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+      <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="access_title_rawcomm" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
     </Property>
   </AccessibilityProperties>
   <SyntheticProperties>
@@ -167,7 +167,7 @@
                       </Properties>
                       <AccessibilityProperties>
                         <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="sent_commands" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="sent_commands" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </AccessibilityProperties>
                     </Component>
@@ -193,7 +193,7 @@
                       </Properties>
                       <AccessibilityProperties>
                         <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="received_answers" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="received_answers" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </AccessibilityProperties>
                     </Component>
@@ -215,7 +215,7 @@
                   </Properties>
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="command" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="command" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </AccessibilityProperties>
                 </Component>
@@ -224,15 +224,15 @@
             <Component class="javax.swing.JButton" name="sendBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/upload.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/upload.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="Send" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="Send" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="access_send" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="access_send" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
               <Events>
@@ -242,15 +242,15 @@
             <Component class="javax.swing.JButton" name="closeBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/exit.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/exit.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="Exit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="Exit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="access_exit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="access_exit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
               <Events>
@@ -265,10 +265,10 @@
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="font_size_spinner" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="font_size_spinner" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="change_font_size" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="change_font_size" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
               <Events>
@@ -278,19 +278,19 @@
             <Component class="javax.swing.JLabel" name="fontSizeLab">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="font_size" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="font_size" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="font_label" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="font_label" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
             </Component>
             <Component class="javax.swing.JToggleButton" name="rtsBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/line_off.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/line_off.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="RTS" noResource="true"/>
               </Properties>
@@ -304,7 +304,7 @@
             <Component class="javax.swing.JToggleButton" name="dtrBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/line_off.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/line_off.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="DTR" noResource="true"/>
               </Properties>
@@ -318,7 +318,7 @@
             <Component class="javax.swing.JLabel" name="dcdLabel">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/line_off.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/line_off.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="DCD" noResource="true"/>
               </Properties>
@@ -329,7 +329,7 @@
             <Component class="javax.swing.JLabel" name="ctsLabel">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/line_off.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/line_off.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="CTS" noResource="true"/>
               </Properties>
@@ -340,7 +340,7 @@
             <Component class="javax.swing.JLabel" name="dsrLabel">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/line_off.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/line_off.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="DSR" noResource="true"/>
               </Properties>
@@ -351,7 +351,7 @@
             <Component class="javax.swing.JLabel" name="riLabel">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/line_off.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/line_off.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="RI" noResource="true"/>
               </Properties>
@@ -362,15 +362,15 @@
             <Component class="javax.swing.JButton" name="sendFileBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/send-cmd-file.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/send-cmd-file.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="send_file" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="send_file" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="access_send_file" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="access_send_file" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
               <Events>
@@ -380,15 +380,15 @@
             <Component class="javax.swing.JButton" name="clearBut">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/BogDroSoft/jymag/rsrc/clear.png"/>
+                  <Image iconType="3" name="/bogdrosoft/jymag/rsrc/clear.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="clear_but_text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="clear_but_text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <AccessibilityProperties>
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="BogDroSoft/jymag/i18n/RawCommunicator.properties" key="access_clear_but_text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="bogdrosoft/jymag/i18n/RawCommunicator.properties" key="access_clear_but_text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </AccessibilityProperties>
               <Events>

@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 public class Starter
 {
 	private static final String START_ERROR
-		= ResourceBundle.getBundle("BogDroSoft/jymag/i18n/Starter")
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/Starter")
 		.getString("JYMAG_Start_Error");
 
 	private static String logFile = "jymag.log";	// NOI18N
