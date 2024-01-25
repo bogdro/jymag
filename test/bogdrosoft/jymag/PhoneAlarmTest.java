@@ -20,15 +20,9 @@
 
 package bogdrosoft.jymag;
 
-import bogdrosoft.jymag.PhoneAlarm;
 import java.util.Calendar;
 import java.util.Set;
 import java.util.HashSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -38,35 +32,10 @@ import static org.junit.Assert.*;
  */
 public class PhoneAlarmTest
 {
-	public PhoneAlarmTest ()
-	{
-	}
-
-	@BeforeClass
-	public static void setUpClass () throws Exception
-	{
-	}
-
-	@AfterClass
-	public static void tearDownClass () throws Exception
-	{
-	}
-
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
-	}
-
 	/**
 	 * Test of getTime method, of class PhoneAlarm.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetTime ()
 	{
 		System.out.println ("getTime");
@@ -75,15 +44,12 @@ public class PhoneAlarmTest
 		Calendar expResult = null;
 		Calendar result = instance.getTime ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of isOneTimeAlarm method, of class PhoneAlarm.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testIsOneTimeAlarm ()
 	{
 		System.out.println ("isOneTimeAlarm");
@@ -92,15 +58,12 @@ public class PhoneAlarmTest
 		boolean expResult = false;
 		boolean result = instance.isOneTimeAlarm ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of isForAllDays method, of class PhoneAlarm.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testIsForAllDays ()
 	{
 		System.out.println ("isForAllDays");
@@ -109,15 +72,12 @@ public class PhoneAlarmTest
 		boolean expResult = false;
 		boolean result = instance.isForAllDays ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getDays method, of class PhoneAlarm.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetDays ()
 	{
 		System.out.println ("getDays");
@@ -126,15 +86,12 @@ public class PhoneAlarmTest
 		Set<Integer> expResult = null;
 		Set<Integer> result = instance.getDays ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getNumber method, of class PhoneAlarm.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetNumber ()
 	{
 		System.out.println ("getNumber");
@@ -143,8 +100,6 @@ public class PhoneAlarmTest
 		int expResult = 0;
 		int result = instance.getNumber ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -195,7 +150,7 @@ public class PhoneAlarmTest
 	 * Test of setDays method, of class PhoneAlarm.
 	 */
 	@Test
-	public void testSetDays_intArr ()
+	public void testSetDaysWithIntArray ()
 	{
 		System.out.println ("setDays");
 		Calendar c = Calendar.getInstance ();
@@ -215,7 +170,7 @@ public class PhoneAlarmTest
 	 * Test of setDays method, of class PhoneAlarm.
 	 */
 	@Test
-	public void testSetDays_Set ()
+	public void testSetDaysWithSet ()
 	{
 		System.out.println ("setDays");
 		Calendar c = Calendar.getInstance ();

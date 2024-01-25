@@ -476,7 +476,7 @@ class FakeDevice
 		{
 			if (currOutput != null)
 			{
-				currOutputPosition += n;
+				currOutputPosition += (int)n;
 			}
 			return signalEnd();
 		}
@@ -604,9 +604,9 @@ class FakeDevice
 		}
 		
 		@Override
-		public void flush() throws IOException {}
+		public void flush() throws IOException { /* do nothing */ }
 		
 		@Override
-		public void close() throws IOException {}
+		public void close() throws IOException { /* do nothing */ }
 	}
 }

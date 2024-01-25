@@ -170,7 +170,7 @@ public class FakeSerialPort extends SerialPort
 	}
 
 	@Override
-	public void sendBreak( int duration ) {}
+	public void sendBreak( int duration ) { /* do nothing */ }
 
 	@Override
 	public void addEventListener( SerialPortEventListener lsnr )
@@ -471,7 +471,7 @@ public class FakeSerialPort extends SerialPort
 	}
 
 	@Override
-	public void close() {}
+	public void close() { /* do nothing */ }
 
 	@Override
 	public InputStream getInputStream() throws IOException

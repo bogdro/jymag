@@ -20,11 +20,6 @@
 
 package bogdrosoft.jymag;
 
-import bogdrosoft.jymag.PhoneElement;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,30 +29,6 @@ import static org.junit.Assert.*;
  */
 public class PhoneElementTest
 {
-	public PhoneElementTest ()
-	{
-	}
-
-	@BeforeClass
-	public static void setUpClass () throws Exception
-	{
-	}
-
-	@AfterClass
-	public static void tearDownClass () throws Exception
-	{
-	}
-
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
-	}
-
 	/**
 	 * Test of getID method, of class PhoneElement.
 	 */
@@ -229,7 +200,6 @@ public class PhoneElementTest
 		expResult = "v_w_x_y__z___";
 		result = instance.getFilename ();
 		assertEquals (expResult, result);
-
 	}
 
 	/**

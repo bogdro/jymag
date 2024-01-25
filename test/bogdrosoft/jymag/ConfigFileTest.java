@@ -20,13 +20,8 @@
 
 package bogdrosoft.jymag;
 
-import bogdrosoft.jymag.ConfigFile;
 import java.io.File;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -38,29 +33,10 @@ public class ConfigFileTest
 {
 	private static File f;
 
-	public ConfigFileTest ()
-	{
-	}
-
 	@BeforeClass
 	public static void setUpClass () throws Exception
 	{
 		f = File.createTempFile ("jym", null);
-	}
-
-	@AfterClass
-	public static void tearDownClass () throws Exception
-	{
-	}
-
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
 	}
 
 	/**
@@ -111,14 +87,11 @@ public class ConfigFileTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore("Will be tested in the testRead() test")
 	public void testWrite () throws Exception
 	{
 		System.out.println ("write");
 		ConfigFile instance = new ConfigFile (f);
 		instance.write ();
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -294,7 +267,6 @@ public class ConfigFileTest
 	 * Test of getPort method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetPort ()
 	{
 		System.out.println ("getPort");
@@ -302,15 +274,12 @@ public class ConfigFileTest
 		String expResult = "";
 		String result = instance.getPort ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getSpeed method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetSpeed ()
 	{
 		System.out.println ("getSpeed");
@@ -318,15 +287,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getSpeed ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getDBits method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetDBits ()
 	{
 		System.out.println ("getDBits");
@@ -334,15 +300,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getDBits ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getParity method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetParity ()
 	{
 		System.out.println ("getParity");
@@ -350,15 +313,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getParity ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getSBits method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetSBits ()
 	{
 		System.out.println ("getSBits");
@@ -366,15 +326,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getSBits ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getFlowCtl method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetFlowCtl ()
 	{
 		System.out.println ("getFlowCtl");
@@ -382,15 +339,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getFlowCtl ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getX method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetX ()
 	{
 		System.out.println ("getX");
@@ -398,15 +352,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getX ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getY method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetY ()
 	{
 		System.out.println ("getY");
@@ -414,15 +365,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getY ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getWidth method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetWidth ()
 	{
 		System.out.println ("getWidth");
@@ -430,15 +378,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getWidth ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getHeight method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetHeight ()
 	{
 		System.out.println ("getHeight");
@@ -446,15 +391,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getHeight ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getIsMax method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetIsMax ()
 	{
 		System.out.println ("getIsMax");
@@ -462,15 +404,12 @@ public class ConfigFileTest
 		boolean expResult = false;
 		boolean result = instance.getIsMax ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getFontSizeValue method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetFontSizeValue ()
 	{
 		System.out.println ("getFontSizeValue");
@@ -478,15 +417,12 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getFontSizeValue ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getSelectedTab method, of class ConfigFile.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetSelectedTab ()
 	{
 		System.out.println ("getSelectedTab");
@@ -494,7 +430,5 @@ public class ConfigFileTest
 		int expResult = 0;
 		int result = instance.getSelectedTab ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 }

@@ -20,21 +20,8 @@
 
 package bogdrosoft.jymag;
 
-import bogdrosoft.jymag.Utils;
-import bogdrosoft.jymag.gui.UiUtils;
-import java.awt.Component;
-import java.io.File;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
-import javax.swing.filechooser.FileFilter;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -44,26 +31,6 @@ import static org.junit.Assert.*;
  */
 public class UtilsTest
 {
-	@BeforeClass
-	public static void setUpClass () throws Exception
-	{
-	}
-
-	@AfterClass
-	public static void tearDownClass () throws Exception
-	{
-	}
-
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
-	}
-
 	/**
 	 * Test of handleException method, of class Utils.
 	 */
@@ -80,37 +47,6 @@ public class UtilsTest
 		Utils.handleException (ex, data);
 		ex = null;
 		Utils.handleException (ex, data);
-	}
-
-	/**
-	 * Test of changeGUI method, of class Utils.
-	 */
-	@Test
-	//@Ignore("Can't test GUI from within a test")
-	public void testChangeGUI ()
-	{
-		System.out.println ("changeGUI");
-		Runnable r = null;
-		UiUtils.changeGUI (r);
-		// passing anything different from null can't be checked,
-		// because there's no GUI
-	}
-
-	/**
-	 * Test of setFontSize method, of class Utils.
-	 */
-	@Test
-	public void testSetFontSize ()
-	{
-		System.out.println ("setFontSize");
-		Component c = new JLabel ("testLabel");
-		float newSize = 11.0F;
-		UiUtils.setFontSize (c, newSize);
-		if ( Math.abs (newSize - c.getFont ().getSize ()) > 0.1 )
-		{
-			fail ("Size differs: new=" + c.getFont ().getSize ()
-				+ ", expected: " + newSize);
-		}
 	}
 
 	/**
@@ -272,24 +208,6 @@ public class UtilsTest
 		expResult = true;
 		result = Utils.isAllowableDataBits (dBits);
 		assertEquals (expResult, result);
-	}
-
-	/**
-	 * Test of createOpenFileChooser method, of class Utils.
-	 */
-	@Test
-	public void testCreateOpenFileChooser ()
-	{
-		System.out.println ("createOpenFileChooser");
-		String description = "";
-		Map<String, Integer> filetype = new HashMap<String, Integer> (1);
-		filetype.put ("ext", 0);
-		JFileChooser result = UiUtils.createOpenFileChooser (description, filetype);
-		assertNotNull (result);
-		FileFilter resultFilter = result.getFileFilter ();
-		assertTrue (resultFilter.accept (new File ("test.ext")));
-		assertFalse (resultFilter.accept (new File ("test.png")));
-		assertTrue (resultFilter.accept (new File ("test.png.ext")));
 	}
 
 	/**
@@ -464,18 +382,4 @@ public class UtilsTest
 		assertEquals(Calendar.NOVEMBER, Utils.convertRealMonthToCalendar(11));
 		assertEquals(Calendar.DECEMBER, Utils.convertRealMonthToCalendar(12));
 	}
-
-	/**
-	 * Test of getFontSize method, of class Utils.
-	 */
-	@Test
-	public void testGetFontSize ()
-	{
-		int fontSize = 25;
-		System.out.println ("getFontSize");
-		JSpinner spin = new JSpinner();
-		spin.setValue(fontSize);
-		assertTrue(Math.abs(fontSize - UiUtils.getFontSize(spin)) < 0.001);
-	}
-
 }

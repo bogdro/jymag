@@ -20,7 +20,6 @@
 
 package bogdrosoft.jymag.comm;
 
-import bogdrosoft.jymag.comm.DataTransporter;
 import bogdrosoft.jymag.PhoneAlarm;
 import bogdrosoft.jymag.PhoneElement;
 import bogdrosoft.jymag.PhoneMessage;
@@ -31,9 +30,7 @@ import gnu.io.CommPortIdentifier;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -72,16 +69,6 @@ public class DataTransporterTest
 		 */
 	}
 
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
-	}
-
 	private DataTransporter prepareDT() throws Exception
 	{
 		CommPortIdentifier id = mock (CommPortIdentifier.class);
@@ -116,7 +103,7 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test(expected=IOException.class)
-	public void testOpen_fail () throws Exception
+	public void testOpenFail () throws Exception
 	{
 		System.out.println ("open");
 		CommPortIdentifier id = mock (CommPortIdentifier.class);
@@ -158,7 +145,7 @@ public class DataTransporterTest
 	 */
 	@Test
 	@Ignore
-	public void testSend_byteArr () throws Exception
+	public void testSendByteArray () throws Exception
 	{
 		System.out.println ("send");
 		DataTransporter dt = prepareDT();
@@ -175,7 +162,7 @@ public class DataTransporterTest
 	 */
 	@Test
 	@Ignore
-	public void testSend_3args () throws Exception
+	public void testSend3args () throws Exception
 	{
 		System.out.println ("send");
 		DataTransporter dt = prepareDT();
@@ -465,7 +452,7 @@ public class DataTransporterTest
 	 */
 	@Test
 	@Ignore
-	public void testSendPIN_String_String () throws Exception
+	public void testSendPINWithStringString () throws Exception
 	{
 		System.out.println ("sendPIN");
 		DataTransporter dt = prepareDT();
@@ -485,7 +472,7 @@ public class DataTransporterTest
 	 */
 	@Test
 	@Ignore
-	public void testSendPIN_int_int () throws Exception
+	public void testSendPINWithIntInt () throws Exception
 	{
 		System.out.println ("sendPIN");
 		DataTransporter dt = prepareDT();

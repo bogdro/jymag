@@ -1,9 +1,8 @@
 /* A winter-blue theme */
 
 /* CSS 1 (most) */
-
 body		{
-			/*font-family: sans-serif, serif, arial;*/
+			/* font-family: sans-serif, serif, arial; */
 			background-color: #87CEEB;
 			color: black;
 			text-align: justify;
@@ -25,7 +24,7 @@ a:visited	{
 			font-weight: bold;
 		}
 
-A:active	{
+a:active	{
 			background-color: inherit;
 			color: yellow;
 		}
@@ -72,7 +71,7 @@ acronym, abbr	{
 
 /* Important information */
 .important	{
-			/*text-transform: uppercase;*/
+			/* text-transform: uppercase; */
 			text-decoration: underline;
 			font-weight: bold;
 			font-style: normal;
@@ -137,9 +136,9 @@ td hr		{	display: none;			}
 
 
 /* =============================================================== */
+
 /* CSS 2 */
 @media print {
-
 /* Print only in black & white, just in case */
   body		{
 			text-align: justify;
@@ -183,7 +182,6 @@ td hr		{	display: none;			}
 			color: black;
 			background-color: white;
 		}
-
 }
 
 @media aural {
@@ -218,7 +216,4 @@ td hr		{	display: none;			}
   		}
 
   pre,code,kbd	{	speak-punctuation: code;	}
-
-
 }
-

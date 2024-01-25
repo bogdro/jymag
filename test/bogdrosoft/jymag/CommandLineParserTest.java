@@ -20,11 +20,6 @@
 
 package bogdrosoft.jymag;
 
-import bogdrosoft.jymag.CommandLineParser;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,30 +30,6 @@ import static org.junit.Assert.*;
 public class CommandLineParserTest
 {
 	private static final Object SYNC = new Object();
-
-	public CommandLineParserTest ()
-	{
-	}
-
-	@BeforeClass
-	public static void setUpClass () throws Exception
-	{
-	}
-
-	@AfterClass
-	public static void tearDownClass () throws Exception
-	{
-	}
-
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
-	}
 
 	/**
 	 * Test of getDstDirName method, of class CommandLineParser.
@@ -167,5 +138,11 @@ public class CommandLineParserTest
 		System.out.println ("parse");
 		String[] args = null;
 		CommandLineParser.parse (args, SYNC);
+		assertEquals (0, CommandLineParser.getX());
+		assertEquals (0, CommandLineParser.getY());
+		assertEquals (115200, CommandLineParser.getSpeed());
+		assertEquals (8, CommandLineParser.getDBits());
+		assertNull(CommandLineParser.getDstDirName());
+		assertNull(CommandLineParser.getPortName());
 	}
 }

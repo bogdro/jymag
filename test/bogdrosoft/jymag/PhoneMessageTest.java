@@ -20,12 +20,6 @@
 
 package bogdrosoft.jymag;
 
-import bogdrosoft.jymag.PhoneMessage;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,35 +29,10 @@ import static org.junit.Assert.*;
  */
 public class PhoneMessageTest
 {
-	public PhoneMessageTest ()
-	{
-	}
-
-	@BeforeClass
-	public static void setUpClass () throws Exception
-	{
-	}
-
-	@AfterClass
-	public static void tearDownClass () throws Exception
-	{
-	}
-
-	@Before
-	public void setUp ()
-	{
-	}
-
-	@After
-	public void tearDown ()
-	{
-	}
-
 	/**
 	 * Test of getMessage method, of class PhoneMessage.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetMessage ()
 	{
 		System.out.println ("getMessage");
@@ -71,15 +40,12 @@ public class PhoneMessageTest
 		String expResult = "";
 		String result = instance.getMessage ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getRecipientNum method, of class PhoneMessage.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetRecipientNum ()
 	{
 		System.out.println ("getRecipientNum");
@@ -87,15 +53,12 @@ public class PhoneMessageTest
 		String expResult = "";
 		String result = instance.getRecipientNum ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getID method, of class PhoneMessage.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetID ()
 	{
 		System.out.println ("getID");
@@ -103,15 +66,12 @@ public class PhoneMessageTest
 		String expResult = "";
 		String result = instance.getID ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getDateTime method, of class PhoneMessage.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetDateTime ()
 	{
 		System.out.println ("getDateTime");
@@ -119,15 +79,12 @@ public class PhoneMessageTest
 		String expResult = "";
 		String result = instance.getDateTime ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of getStatus method, of class PhoneMessage.
 	 */
 	@Test
-	@Ignore("Will be tested in the setter test")
 	public void testGetStatus ()
 	{
 		System.out.println ("getStatus");
@@ -135,8 +92,6 @@ public class PhoneMessageTest
 		String expResult = "";
 		String result = instance.getStatus ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**

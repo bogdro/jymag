@@ -46,11 +46,6 @@ public class SerialPortStub extends SerialPort
 	private int stopBits = SerialPort.STOPBITS_1;
 	private int parity = SerialPort.PARITY_NONE;
 
-        /** Creates a new instance of SerialPortStub, using defaults. */
-        public SerialPortStub ()
-        {
-        }
-
 	@Override
 	public void setSerialPortParams (int speed, int dBits, int sBits, int par)
 		throws UnsupportedCommOperationException
@@ -146,9 +141,7 @@ public class SerialPortStub extends SerialPort
 	}
 
 	@Override
-	public void sendBreak (int i)
-	{
-	}
+	public void sendBreak (int i) { /* not needed */ }
 
 	@Override
 	public void addEventListener (SerialPortEventListener sl) throws TooManyListenersException
