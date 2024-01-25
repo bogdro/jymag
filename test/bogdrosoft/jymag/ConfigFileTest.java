@@ -21,9 +21,9 @@
 package bogdrosoft.jymag;
 
 import java.io.File;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  * ConfigFileTest - a test for the ConfigFile class.
@@ -33,8 +33,8 @@ public class ConfigFileTest
 {
 	private static File f;
 
-	@BeforeClass
-	public static void setUpClass () throws Exception
+	@Before
+	public void setUp () throws Exception
 	{
 		f = File.createTempFile ("jym", null);
 	}
@@ -265,51 +265,58 @@ public class ConfigFileTest
 
 	/**
 	 * Test of getPort method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetPort ()
+	public void testGetDefaultPort () throws Exception
 	{
-		System.out.println ("getPort");
+		System.out.println ("getDefaultPort");
 		ConfigFile instance = new ConfigFile (f);
-		String expResult = "";
-		String result = instance.getPort ();
-		assertEquals (expResult, result);
+		instance.read();
+		String result = instance.getPort();
+		assertEquals ("", result);
 	}
 
 	/**
 	 * Test of getSpeed method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetSpeed ()
+	public void testGetDefaultSpeed () throws Exception
 	{
-		System.out.println ("getSpeed");
+		System.out.println ("getDefaultSpeed");
 		ConfigFile instance = new ConfigFile (f);
-		int expResult = 0;
+		instance.read();
+		int expResult = 115200;
 		int result = instance.getSpeed ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getDBits method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetDBits ()
+	public void testGetDefaultDBits () throws Exception
 	{
-		System.out.println ("getDBits");
+		System.out.println ("getDefaultDBits");
 		ConfigFile instance = new ConfigFile (f);
-		int expResult = 0;
+		instance.read();
+		int expResult = 8;
 		int result = instance.getDBits ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getParity method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetParity ()
+	public void testGetDefaultParity () throws Exception
 	{
-		System.out.println ("getParity");
+		System.out.println ("getDefaultParity");
 		ConfigFile instance = new ConfigFile (f);
+		instance.read();
 		int expResult = 0;
 		int result = instance.getParity ();
 		assertEquals (expResult, result);
@@ -317,25 +324,29 @@ public class ConfigFileTest
 
 	/**
 	 * Test of getSBits method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetSBits ()
+	public void testGetDefaultSBits () throws Exception
 	{
-		System.out.println ("getSBits");
+		System.out.println ("getDefaultSBits");
 		ConfigFile instance = new ConfigFile (f);
-		int expResult = 0;
+		instance.read();
+		int expResult = 1;
 		int result = instance.getSBits ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getFlowCtl method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetFlowCtl ()
+	public void testGetDefaultFlowCtl () throws Exception
 	{
-		System.out.println ("getFlowCtl");
+		System.out.println ("getDefaultFlowCtl");
 		ConfigFile instance = new ConfigFile (f);
+		instance.read();
 		int expResult = 0;
 		int result = instance.getFlowCtl ();
 		assertEquals (expResult, result);
@@ -343,12 +354,14 @@ public class ConfigFileTest
 
 	/**
 	 * Test of getX method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetX ()
+	public void testGetDefaultX () throws Exception
 	{
-		System.out.println ("getX");
+		System.out.println ("getDefaultX");
 		ConfigFile instance = new ConfigFile (f);
+		instance.read();
 		int expResult = 0;
 		int result = instance.getX ();
 		assertEquals (expResult, result);
@@ -356,12 +369,14 @@ public class ConfigFileTest
 
 	/**
 	 * Test of getY method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetY ()
+	public void testGetDefaultY () throws Exception
 	{
-		System.out.println ("getY");
+		System.out.println ("getDefaultY");
 		ConfigFile instance = new ConfigFile (f);
+		instance.read();
 		int expResult = 0;
 		int result = instance.getY ();
 		assertEquals (expResult, result);
@@ -369,64 +384,74 @@ public class ConfigFileTest
 
 	/**
 	 * Test of getWidth method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetWidth ()
+	public void testGetDefaultWidth () throws Exception
 	{
-		System.out.println ("getWidth");
+		System.out.println ("getDefaultWidth");
 		ConfigFile instance = new ConfigFile (f);
-		int expResult = 0;
+		instance.read();
+		int expResult = 800;
 		int result = instance.getWidth ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getHeight method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetHeight ()
+	public void testGetDefaultHeight () throws Exception
 	{
-		System.out.println ("getHeight");
+		System.out.println ("getDefaultHeight");
 		ConfigFile instance = new ConfigFile (f);
-		int expResult = 0;
+		instance.read();
+		int expResult = 600;
 		int result = instance.getHeight ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getIsMax method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetIsMax ()
+	public void testGetDefaultIsMax () throws Exception
 	{
-		System.out.println ("getIsMax");
+		System.out.println ("getDefaultIsMax");
 		ConfigFile instance = new ConfigFile (f);
-		boolean expResult = false;
+		instance.read();
+		boolean expResult = true;
 		boolean result = instance.getIsMax ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getFontSizeValue method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetFontSizeValue ()
+	public void testGetDefaultFontSizeValue () throws Exception
 	{
-		System.out.println ("getFontSizeValue");
+		System.out.println ("getDefaultFontSizeValue");
 		ConfigFile instance = new ConfigFile (f);
-		int expResult = 0;
+		instance.read();
+		int expResult = 12;
 		int result = instance.getFontSizeValue ();
 		assertEquals (expResult, result);
 	}
 
 	/**
 	 * Test of getSelectedTab method, of class ConfigFile.
+	 * @throws Exception
 	 */
 	@Test
-	public void testGetSelectedTab ()
+	public void testGetDefaultSelectedTab () throws Exception
 	{
-		System.out.println ("getSelectedTab");
+		System.out.println ("getDefaultSelectedTab");
 		ConfigFile instance = new ConfigFile (f);
+		instance.read();
 		int expResult = 0;
 		int result = instance.getSelectedTab ();
 		assertEquals (expResult, result);

@@ -133,11 +133,15 @@ public class CommandLineParserTest
 	 * Test of parse method, of class CommandLineParser.
 	 */
 	@Test
-	public void testParse ()
+	public void testParseInvalidCommandLine ()
 	{
 		System.out.println ("parse");
-		String[] args = null;
-		CommandLineParser.parse (args, SYNC);
+		String[] params = {
+			"--speed", "fail",
+			"--databits", "fail",
+			"--stopbits", "fail"
+		};
+		CommandLineParser.parse (params, SYNC);
 		assertEquals (0, CommandLineParser.getX());
 		assertEquals (0, CommandLineParser.getY());
 		assertEquals (115200, CommandLineParser.getSpeed());

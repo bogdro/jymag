@@ -41,9 +41,8 @@ public class PhoneAlarmTest
 		System.out.println ("getTime");
 		Calendar c = Calendar.getInstance ();
 		PhoneAlarm instance = new PhoneAlarm (c, false, true, (int[]) null, 1);
-		Calendar expResult = null;
 		Calendar result = instance.getTime ();
-		assertEquals (expResult, result);
+		assertEquals (c, result);
 	}
 
 	/**
@@ -68,8 +67,8 @@ public class PhoneAlarmTest
 	{
 		System.out.println ("isForAllDays");
 		Calendar c = Calendar.getInstance ();
-		PhoneAlarm instance = new PhoneAlarm (c, false, true, (int[]) null, 1);
-		boolean expResult = false;
+		boolean expResult = true;
+		PhoneAlarm instance = new PhoneAlarm (c, false, expResult, (int[]) null, 1);
 		boolean result = instance.isForAllDays ();
 		assertEquals (expResult, result);
 	}
@@ -96,8 +95,8 @@ public class PhoneAlarmTest
 	{
 		System.out.println ("getNumber");
 		Calendar c = Calendar.getInstance ();
-		PhoneAlarm instance = new PhoneAlarm (c, false, true, (int[]) null, 1);
-		int expResult = 0;
+		int expResult = 1;
+		PhoneAlarm instance = new PhoneAlarm (c, false, true, (int[]) null, expResult);
 		int result = instance.getNumber ();
 		assertEquals (expResult, result);
 	}

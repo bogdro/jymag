@@ -33,65 +33,55 @@ public class PhoneMessageTest
 	 * Test of getMessage method, of class PhoneMessage.
 	 */
 	@Test
-	public void testGetMessage ()
+	public void testGetDefaultMessage ()
 	{
-		System.out.println ("getMessage");
+		System.out.println ("getDefaultMessage");
 		PhoneMessage instance = new PhoneMessage ();
-		String expResult = "";
-		String result = instance.getMessage ();
-		assertEquals (expResult, result);
+		assertNull(instance.getMessage());
 	}
 
 	/**
 	 * Test of getRecipientNum method, of class PhoneMessage.
 	 */
 	@Test
-	public void testGetRecipientNum ()
+	public void testGetDefaultRecipientNum ()
 	{
-		System.out.println ("getRecipientNum");
+		System.out.println ("getDefaultRecipientNum");
 		PhoneMessage instance = new PhoneMessage ();
-		String expResult = "";
-		String result = instance.getRecipientNum ();
-		assertEquals (expResult, result);
+		assertNull(instance.getRecipientNum());
 	}
 
 	/**
 	 * Test of getID method, of class PhoneMessage.
 	 */
 	@Test
-	public void testGetID ()
+	public void testGetDefaultID ()
 	{
-		System.out.println ("getID");
+		System.out.println ("getDefaultID");
 		PhoneMessage instance = new PhoneMessage ();
-		String expResult = "";
-		String result = instance.getID ();
-		assertEquals (expResult, result);
+		assertNull(instance.getID());
 	}
 
 	/**
 	 * Test of getDateTime method, of class PhoneMessage.
 	 */
 	@Test
-	public void testGetDateTime ()
+	public void testGetDefaultDateTime ()
 	{
-		System.out.println ("getDateTime");
+		System.out.println ("getDefaultDateTime");
 		PhoneMessage instance = new PhoneMessage ();
-		String expResult = "";
-		String result = instance.getDateTime ();
-		assertEquals (expResult, result);
+		assertNull(instance.getDateTime());
 	}
 
 	/**
 	 * Test of getStatus method, of class PhoneMessage.
 	 */
 	@Test
-	public void testGetStatus ()
+	public void testGetDefaultStatus ()
 	{
-		System.out.println ("getStatus");
+		System.out.println ("getDefaultStatus");
 		PhoneMessage instance = new PhoneMessage ();
-		String expResult = "";
-		String result = instance.getStatus ();
-		assertEquals (expResult, result);
+		assertNull(instance.getStatus());
 	}
 
 	/**
