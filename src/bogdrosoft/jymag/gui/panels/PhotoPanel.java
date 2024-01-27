@@ -39,7 +39,7 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 87L;
 
-	private volatile MainWindow mw;
+	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentPhotoElements;
 	private JFileChooser downloadFC;

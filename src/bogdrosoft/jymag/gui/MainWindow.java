@@ -62,10 +62,10 @@ public class MainWindow extends JFrame
 	// synchronization variable:
 	private static final Object SYNC = new Object ();
 	// port-firmware pairs and the firmware version pattern, used for displaying:
-	private transient volatile Map<String, String> firmwares;
-	private transient volatile Map<String, String> phoneTypes;
-	private transient volatile Map<String, String> phoneIMEIs;
-	private transient volatile Map<String, String> phoneSubsNums;
+	private transient Map<String, String> firmwares;
+	private transient Map<String, String> phoneTypes;
+	private transient Map<String, String> phoneIMEIs;
+	private transient Map<String, String> phoneSubsNums;
 
 	private JFileChooser cfgFC;
 	private final transient Runnable progressBarUpdateRunnable =
@@ -149,16 +149,16 @@ public class MainWindow extends JFrame
 	// ------------ static variables for command-line
 
 	// read from the command-line:
-	private static volatile String destDirName;
-	private static volatile int dBits = 8;
-	private static volatile float sBits = 1;
-	private static volatile int speed = 115200;
-	private static volatile int flow = 0;
-	private static volatile int parity = 0;
-	private static volatile String portName = null;
-	private static volatile boolean isMax = false;
-	private static volatile int x = 0;
-	private static volatile int y = 0;
+	private static String destDirName;
+	private static int dBits = 8;
+	private static float sBits = 1;
+	private static int speed = 115200;
+	private static int flow = 0;
+	private static int parity = 0;
+	private static String portName = null;
+	private static boolean isMax = false;
+	private static int x = 0;
+	private static int y = 0;
 
 	/**
 	 * Creates new form MainWindow.

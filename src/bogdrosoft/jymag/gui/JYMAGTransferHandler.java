@@ -44,7 +44,7 @@ public class JYMAGTransferHandler extends TransferHandler
 	private final MainWindow mw;
 
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
-	private static volatile DataFlavor uriFileListFlavor;
+	private static transient DataFlavor uriFileListFlavor;
 	private static final String URI_FILE_LIST_FLAVOR_TYPE = "text/uri-list;class=java.lang.String";	// NOI18N
 
 	private static final String NEWLINES = "\r\n";	// NOI18N

@@ -39,7 +39,7 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 86L;
 
-	private volatile MainWindow mw;
+	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentAnimElements;
 	private JFileChooser downloadFC;

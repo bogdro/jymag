@@ -43,7 +43,7 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private JSpinner fontSizeSpin;
 
-	private volatile MainWindow mw;
+	private transient MainWindow mw;
 
 	private Vector<PhoneMessage> currentMessageElements;
 

@@ -39,7 +39,7 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 81L;
 
-	private volatile MainWindow mw;
+	private transient MainWindow mw;
 
 	/** Creates new form DialPanel. */
 	public DialPanel()

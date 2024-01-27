@@ -38,16 +38,16 @@ public class CommandLineParser
 {
 	private static String destDirName;
 	private static int dBits = 8;
-	private static volatile float sBits = 1;
-	private static volatile int speed = 115200;
-	private static volatile int flow = 0;
-	private static volatile int parity = 0;
-	private static volatile String portName = null;
-	private static volatile boolean isMax = false;
-	private static volatile int x = 0;
-	private static volatile int y = 0;
+	private static float sBits = 1;
+	private static int speed = 115200;
+	private static int flow = 0;
+	private static int parity = 0;
+	private static String portName = null;
+	private static boolean isMax = false;
+	private static int x = 0;
+	private static int y = 0;
 	private static boolean deleteAfterDownload = false;
-	public static volatile boolean mock = false;
+	public static boolean mock = false;
 
 	// ----------- i18n stuff
 	private static final ResourceBundle MSGS

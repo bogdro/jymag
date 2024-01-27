@@ -39,7 +39,7 @@ public class EventsPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 84L;
 
-	private volatile MainWindow mw;
+	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentEventElements;
 	private JFileChooser downloadFC;

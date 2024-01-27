@@ -41,7 +41,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 	/** The DataTransporter used for retrieveing the signal power level. */
 	private final transient DataTransporter dt;
 	/** The synchronization field. */
-	private final Object sync;
+	private final transient Object sync;
 	/** The refresh interval, in milliseconds. */
 	private static final int REFRESH_TIME = 1000;
 
