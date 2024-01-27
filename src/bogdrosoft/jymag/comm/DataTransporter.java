@@ -473,7 +473,7 @@ public class DataTransporter
 					{
 						//synchronized (inputStream)
 						{
-							inputStreamLock.wait (5*1000);//inputStream.wait (5*1000);
+							inputStreamLock.wait (5*1000L);//inputStream.wait (5*1000);
 						}
 					}
 					synchronized (inputStreamLock)

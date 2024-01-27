@@ -446,7 +446,7 @@ class FakeDevice
 			if (currOutput != null && currOutputPosition >= 0
 				&& currOutputPosition < currOutput.length)
 			{
-				return currOutput[currOutputPosition++];
+				return currOutput[currOutputPosition++] & 0x0FF;
 			}
 			return signalEnd();
 		}
@@ -504,13 +504,13 @@ class FakeDevice
 		}
 
 		@Override
-		public void mark(int readlimit)
+		public synchronized void mark(int readlimit)
 		{
 			markPos = readlimit;
 		}
 
 		@Override
-		public void reset() throws IOException
+		public synchronized void reset() throws IOException
 		{
 			currOutputPosition = markPos;
 		}

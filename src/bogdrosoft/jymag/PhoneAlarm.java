@@ -42,13 +42,13 @@ public class PhoneAlarm
 
 	// alarm recurrences could also show up here
 	private static final Pattern DATETIME_PATTERN
-		= Pattern.compile ("(\\+CALA:)?(\\s*)?\"?(\\d{2})/(\\d{2})/(\\d{2}),"		// NOI18N
+		= Pattern.compile ("(\\+CALA:)?(\\s+)?\"?(\\d{2})/(\\d{2})/(\\d{2}),"		// NOI18N
 			+ "(\\d{2}):(\\d{2}):(\\d{2})\"?(\\s*,(\\d+))?(\\s*,\""			// NOI18N
 			+ "(\\d)((,\\d))+\")?\\s*.*",						// NOI18N
 			Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern TIME_PATTERN
-		= Pattern.compile ("(\\+CALA:)?(\\s*)?\"?(\\d{2}):(\\d{2}):(\\d{2})\"?"		// NOI18N
+		= Pattern.compile ("(\\+CALA:)?(\\s+)?\"?(\\d{2}):(\\d{2}):(\\d{2})\"?"		// NOI18N
 			+ "(\\s*,(\\d+))?(\\s*,\"(\\d)((,\\d)+)\")?\\s*.*",			// NOI18N
 			Pattern.CASE_INSENSITIVE);
 
@@ -61,7 +61,7 @@ public class PhoneAlarm
 	private static final String TOSTRING_DATETIME = "";		// NOI18N
 	private static final String TOSTRING_DAYS = "";			// NOI18N
 
-	private static final SimpleDateFormat DATE_FORMAT
+	private final SimpleDateFormat DATE_FORMAT
 		= new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
 	private static final Integer ALL_DAYS = 0;
