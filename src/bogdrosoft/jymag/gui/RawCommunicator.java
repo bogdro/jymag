@@ -96,7 +96,6 @@ public class RawCommunicator extends javax.swing.JDialog
 		UiUtils.changeSizeToScreen(this);
 
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
-		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 
 		/* add the Esc key listener to the frame and all components. */
 		new EscKeyListener (this).install();
@@ -194,6 +193,7 @@ public class RawCommunicator extends javax.swing.JDialog
                         }
                 });
 
+                fontSizeLab.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 fontSizeLab.setText(bundle.getString("font_size")); // NOI18N
 
                 rtsBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/line_off.png"))); // NOI18N

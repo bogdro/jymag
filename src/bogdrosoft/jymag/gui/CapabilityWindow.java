@@ -36,7 +36,7 @@ public class CapabilityWindow extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 75L;
 	private final transient DataTransporter dtr;
-	private final Object sync;
+	private final transient Object sync;
 	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
@@ -75,7 +75,6 @@ public class CapabilityWindow extends javax.swing.JDialog
 		UiUtils.changeSizeToScreen(this);
 
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
-		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
 	}
 
 	/**
@@ -172,6 +171,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                         }
                 });
 
+                fontSizeLab.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 fontSizeLab.setText(bundle.getString("font_size")); // NOI18N
 
                 javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
