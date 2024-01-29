@@ -109,7 +109,7 @@ PNG2ICO		= convert
 
 # JYMAG version - now from a "properties" file, also used from Java
 #VER		= X.X
-include src/BogDroSoft/jymag/rsrc/version.properties
+include src/bogdrosoft/jymag/rsrc/version.properties
 
 # The current year, month and day of month used for formatting the dates.
 # Watch out for values < 10.
@@ -155,7 +155,7 @@ FILE_INSTALLER_CFG = setup/jymag.nsi
 FILE_PROGRAM = dist/$(NAME).jar
 FILE_PROGRAM_SIGNED = dist/$(NAME)-signed.jar
 
-FILE_ANY_SOURCE_FILE = src/BogDroSoft/jymag/Starter.java
+FILE_ANY_SOURCE_FILE = src/bogdrosoft/jymag/Starter.java
 
 DIR_TMP_DIST = $(NAME)-$(VER)
 
@@ -392,10 +392,10 @@ installer-signed-clean:
 # Icons
 ###########################################################################
 
-#icons: src/BogDroSoft/jymag/rsrc/*.png setup/jymag.ico
+#icons: src/bogdrosoft/jymag/rsrc/*.png setup/jymag.ico
 # Generate the icons for each SVG file found. This way we generate also the
 # missing PNG files and not just the ones that exist but are older.
-SVG_ICONS = $(shell $(LS) src/BogDroSoft/jymag/rsrc/*.svg)
+SVG_ICONS = $(shell $(LS) src/bogdrosoft/jymag/rsrc/*.svg)
 PNG_ICONS = $(SVG_ICONS:%.svg=%.png)
 
 icons:	$(PNG_ICONS)
@@ -403,7 +403,7 @@ icons:	$(PNG_ICONS)
 %.png: %.svg Makefile
 	$(SVG2PNG) --export-filename=$@ $<
 
-setup/jymag.ico: src/BogDroSoft/jymag/rsrc/jymag-icon-phone.png Makefile
+setup/jymag.ico: src/bogdrosoft/jymag/rsrc/jymag-icon-phone.png Makefile
 	$(PNG2ICO) $< $@
 
 ###########################################################################
