@@ -24,7 +24,6 @@ import bogdrosoft.jymag.Utils;
 import bogdrosoft.jymag.comm.DataTransporter;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
 /**
