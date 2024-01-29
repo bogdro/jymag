@@ -389,7 +389,7 @@ public class AboutBox extends javax.swing.JDialog
 	}
 	*/
 
-	private String getFileContents (InputStream is)
+	static String getFileContents (InputStream is)
 	{
 		StringBuilder ret = new StringBuilder (40000);
 		byte[] read = new byte[1024];
@@ -418,7 +418,7 @@ public class AboutBox extends javax.swing.JDialog
 		return ret.toString ();
 	}
 	
-	private static URI createURI (String uriType, String uri)
+	static URI createURI (String uriType, String uri)
 	{
 		try
 		{
@@ -432,7 +432,7 @@ public class AboutBox extends javax.swing.JDialog
 		}
 	}
 
-	private static URI createWebURI (String webAddr)
+	static URI createWebURI (String webAddr)
 	{
 		try
 		{
