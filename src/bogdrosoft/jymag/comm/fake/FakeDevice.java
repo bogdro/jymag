@@ -57,6 +57,7 @@ class FakeDevice
 	private final SerialPort port;
 	private int volume = 1; // must be static to pass between instances
 	private boolean inFileSending = false; // must be static to pass between instances
+	private int signal = 0;
 	private static final boolean DEBUG = false;
 
 	/** The default encoding for commands. */
@@ -208,11 +209,9 @@ class FakeDevice
 			}
 			else if (SIGNAL_POWER_CMD.equals(buffer))
 			{
-				sendReply("+CSQ:"
-					+ Math.round(Math.floor(Math.random() * 32))
-					+ ","
-					+ Math.round(Math.floor(Math.random() * 32))
-					+ "\r\n" + OK_STRING);
+				sendReply("+CSQ:" + signal + ","
+					+ signal + "\r\n" + OK_STRING);
+				signal = (signal + 1) % 32;
 			}
 			else if (buffer.startsWith(LIST_CMD_START))
 			{
