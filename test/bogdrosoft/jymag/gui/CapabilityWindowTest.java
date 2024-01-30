@@ -20,10 +20,9 @@
 package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.comm.DataTransporter;
-import gnu.io.CommPortIdentifier;
+import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
 /**
  * CapabilityWindowTest - a test for the CapabilityWindow class.
@@ -34,7 +33,7 @@ public class CapabilityWindowTest
 	@Test
 	public void testConstruct()
 	{
-		CommPortIdentifier id = mock (CommPortIdentifier.class);
+		FakeCommPortIdentifier id = new FakeCommPortIdentifier();
 		CapabilityWindow cw = new CapabilityWindow(
 			new DataTransporter (id), null, new Object(), 12
 		);
