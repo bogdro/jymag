@@ -125,5 +125,4 @@ public class UiUtilsTest
 		String msg = "";
 		UiUtils.showErrorMessage(c, msg);
 	}
-	
 }
