@@ -24,9 +24,7 @@ import bogdrosoft.jymag.Utils;
 import bogdrosoft.jymag.comm.TransferUtils;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -181,16 +179,6 @@ public class JYMAGTransferHandler extends TransferHandler
 					return true;
 				}
 			}
-		}
-		catch (UnsupportedFlavorException ufex)
-		{
-			Utils.handleException (ufex,
-				"JYMAGTransferHandler.importData.Transferable.getTransferData");	// NOI18N
-		}
-		catch (IOException ioex)
-		{
-			Utils.handleException (ioex,
-				"JYMAGTransferHandler.importData.Transferable.getTransferData");	// NOI18N
 		}
 		catch (Throwable ioex)
 		{
