@@ -67,7 +67,7 @@ public class MainWindow extends JFrame
 	private transient Map<String, String> phoneIMEIs;
 	private transient Map<String, String> phoneSubsNums;
 
-	private JFileChooser cfgFC;
+	JFileChooser cfgFC;
 	private final transient Runnable progressBarUpdateRunnable =
 		new Runnable ()
 		{
@@ -1029,7 +1029,7 @@ public class MainWindow extends JFrame
 		}
 	}//GEN-LAST:event_signalButtonActionPerformed
 
-	private void disablePortControls ()
+	void disablePortControls ()
 	{
 		dataBitsCombo.setEnabled (false);
 		flowSoft.setEnabled (false);
@@ -1044,7 +1044,7 @@ public class MainWindow extends JFrame
 		scanButton.setEnabled (false);
 	}
 
-	private void enablePortControls ()
+	void enablePortControls ()
 	{
 		dataBitsCombo.setEnabled (true);
 		flowSoft.setEnabled (true);
@@ -1059,7 +1059,7 @@ public class MainWindow extends JFrame
 		scanButton.setEnabled (true);
 	}
 
-	private void createConfigFileChooser ()
+	void createConfigFileChooser ()
 	{
 		if ( cfgFC == null )
 		{
@@ -1134,7 +1134,7 @@ public class MainWindow extends JFrame
 		progressBar.setMaximum(value);
 	}
 
-	private void updateControls ()
+	void updateControls ()
 	{
 		if ( portName != null )
 		{
@@ -1192,7 +1192,7 @@ public class MainWindow extends JFrame
 	 * Component (recursively, if it's a Container).
 	 * @param c The Component with Components that will be connected to the main window.
 	 */
-	private void setPanelConnections (Component c)
+	void setPanelConnections (Component c)
 	{
 		if ( c == null )
 		{
@@ -1222,7 +1222,7 @@ public class MainWindow extends JFrame
 	}
 
 	@SuppressWarnings("unchecked")
-	private int setPorts ()
+	int setPorts ()
 	{
 		Vector<String> portList = TransferUtils.getSerialPortNames ();
 		if ( portList != null )
