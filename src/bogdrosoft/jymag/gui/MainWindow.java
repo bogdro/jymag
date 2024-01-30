@@ -163,7 +163,7 @@ public class MainWindow extends JFrame
 	/**
 	 * Creates new form MainWindow.
 	 */
-	private MainWindow ()
+	MainWindow ()
 	{
 		// set uncaught exception handler for GUI threads, just in case:
 		Utils.UncExHndlr.setHandlerForGuiThreads(this);
