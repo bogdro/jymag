@@ -674,7 +674,7 @@ public class RawCommunicator extends javax.swing.JDialog
 		dispose ();
 	}
 
-	private void setSignal (final JToggleButton but, final boolean on)
+	void setSignal (final JToggleButton but, final boolean on)
 	{
 		if ( but == null )
 		{
@@ -704,7 +704,7 @@ public class RawCommunicator extends javax.swing.JDialog
 		});
 	}
 
-	private void setSignal (final JLabel l, final boolean on)
+	void setSignal (final JLabel l, final boolean on)
 	{
 		if ( l == null )
 		{
