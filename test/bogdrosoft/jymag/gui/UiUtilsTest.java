@@ -38,7 +38,6 @@ import org.junit.Ignore;
  */
 public class UiUtilsTest
 {
-
 	/**
 	 * Test of createOpenFileChooser method, of class UiUtils.
 	 */
@@ -110,14 +109,13 @@ public class UiUtilsTest
 		System.out.println("changeSizeToScreen");
 		Window w = null;
 		UiUtils.changeSizeToScreen(w);
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of showErrorMessage method, of class UiUtils.
 	 */
 	@Test
+	@Ignore("Requires interactive user action")
 	public void testShowErrorMessage()
 	{
 		System.out.println("showErrorMessage");
