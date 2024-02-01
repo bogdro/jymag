@@ -301,7 +301,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 	 * Sets the given signal level on the progress bar and the label.
 	 * @param level The level to set.
 	 */
-	private void setLevel (final int level)
+	void setLevel (final int level)
 	{
 		UiUtils.changeGUI (new Runnable ()
 		{
