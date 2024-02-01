@@ -37,6 +37,6 @@ public class CapabilityWindowTest
 		CapabilityWindow cw = new CapabilityWindow(
 			new DataTransporter (id), null, new Object(), 12
 		);
-		assertNotNull(cw.getKeyListeners());
+		assertTrue(UiTestHelper.isKeyListenerPresent(cw));
 	}
 }

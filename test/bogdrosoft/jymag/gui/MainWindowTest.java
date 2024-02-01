@@ -35,7 +35,7 @@ public class MainWindowTest
 	public void testConstruct()
 	{
 		MainWindow mw = new MainWindow();
-		assertNotNull(mw.getKeyListeners());
+		assertTrue(UiTestHelper.isKeyListenerPresent(mw));
 	}
 
 	/**

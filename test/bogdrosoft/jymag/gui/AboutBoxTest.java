@@ -34,7 +34,7 @@ public class AboutBoxTest
 	public void testConstruct()
 	{
 		AboutBox ab = new AboutBox(null, false, 12);
-		assertNotNull(ab.getKeyListeners());
+		assertTrue(UiTestHelper.isKeyListenerPresent(ab));
 	}
 
 	@Test
