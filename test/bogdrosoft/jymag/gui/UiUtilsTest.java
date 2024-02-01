@@ -33,8 +33,8 @@ import static org.junit.Assert.*;
 import org.junit.Ignore;
 
 /**
- *
- * @author bogdan
+ * UiUtilsTest - a test for the UiUtils class.
+ * @author Bogdan Drozdowski
  */
 public class UiUtilsTest
 {
