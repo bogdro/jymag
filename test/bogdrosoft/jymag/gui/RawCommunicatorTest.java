@@ -23,7 +23,7 @@ import bogdrosoft.jymag.comm.DataTransporter;
 import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -32,6 +32,13 @@ import org.junit.Test;
  */
 public class RawCommunicatorTest
 {
+	@Test
+	public void testConstruct()
+	{
+		RawCommunicator rc = constructRawCommunicator();
+		assertTrue(UiTestHelper.isKeyListenerPresent(rc));
+	}
+
 	@Test
 	public void testConstructNullDt()
 	{

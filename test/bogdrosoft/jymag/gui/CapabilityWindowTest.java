@@ -39,4 +39,27 @@ public class CapabilityWindowTest
 		);
 		assertTrue(UiTestHelper.isKeyListenerPresent(cw));
 	}
+
+	@Test
+	public void testConstructNullDt()
+	{
+		MainWindow mw = new MainWindow();
+		CapabilityWindow cw = new CapabilityWindow(
+			null, mw, new Object(), 12.0f
+		);
+		assertFalse(UiTestHelper.isKeyListenerPresent(cw));
+	}
+
+	@Test
+	public void testConstructNullSynchro()
+	{
+		DataTransporter dt = new DataTransporter(
+			new FakeCommPortIdentifier()
+		);
+		MainWindow mw = new MainWindow();
+		CapabilityWindow cw = new CapabilityWindow(
+			dt, mw,	null, 12.0f
+		);
+		assertFalse(UiTestHelper.isKeyListenerPresent(cw));
+	}
 }
