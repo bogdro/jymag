@@ -21,11 +21,10 @@ package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.comm.DataTransporter;
 import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
-import java.awt.event.KeyListener;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
+import static org.junit.Assert.assertFalse;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * RawCommunicatorTest - a test for the RawCommunicator class.
@@ -40,7 +39,7 @@ public class RawCommunicatorTest
 		RawCommunicator rc = new RawCommunicator (
 			null, mw, new Object(), 12.0f
 		);
-		testForKeyListener(rc);
+		assertFalse(UiTestHelper.isKeyListenerPresent(rc));
 	}
 
 	@Test
@@ -53,7 +52,7 @@ public class RawCommunicatorTest
 		RawCommunicator rc = new RawCommunicator (
 			dt, mw,	null, 12.0f
 		);
-		testForKeyListener(rc);
+		assertFalse(UiTestHelper.isKeyListenerPresent(rc));
 	}
 
 	@Test
@@ -93,17 +92,5 @@ public class RawCommunicatorTest
 		);
 		MainWindow mw = new MainWindow();
 		return new RawCommunicator (dt, mw, new Object(), 12.0f);
-	}
-
-	private void testForKeyListener(RawCommunicator rc)
-	{
-		KeyListener[] listeners = rc.getKeyListeners();
-		for (int i = 0; i < listeners.length; i++)
-		{
-			if (listeners[i] instanceof EscKeyListener)
-			{
-				assertTrue("Found EscKeyListener", false);
-			}
-		}
 	}
 }
