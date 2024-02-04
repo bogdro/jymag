@@ -225,6 +225,10 @@ public class PanelUtils
 	public static void upload(final MainWindow mw,
 		JFileChooser uploadFC)
 	{
+		if ( uploadFC == null )
+		{
+			return;
+		}
 		int dialogRes = uploadFC.showOpenDialog (mw);
 
 		if ( dialogRes == JFileChooser.APPROVE_OPTION )

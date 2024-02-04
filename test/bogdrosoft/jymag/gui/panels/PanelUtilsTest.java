@@ -206,7 +206,7 @@ public class PanelUtilsTest
 		PanelUtils.delete(mw, selectedRows, null);
 		verify(mw, never()).getTransferParameters();
 	}
-	
+
 	private static MainWindow createMainWindow()
 	{
 		MainWindow mw = mock(MainWindow.class);
