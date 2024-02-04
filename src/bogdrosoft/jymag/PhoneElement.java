@@ -202,4 +202,41 @@ public class PhoneElement implements Serializable
 			+ TOSTRING_NAME	+ filename + Utils.DOT + getExt ()
 			+ TOSTRING_END;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 3;
+		hash = 73 * hash + (this.id != null ? this.id.hashCode() : 0);
+		hash = 73 * hash + (this.type != null ? this.type.hashCode() : 0);
+		hash = 73 * hash + (this.filename != null ? this.filename.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final PhoneElement other = (PhoneElement) obj;
+		if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id))
+		{
+			return false;
+		}
+		if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type))
+		{
+			return false;
+		}
+		return (this.filename == null) ? (other.filename == null) : this.filename.equals(other.filename);
+	}
 }
