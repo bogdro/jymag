@@ -28,6 +28,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableModel;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
@@ -122,5 +123,52 @@ public class UiUtilsTest
 		Component c = null;
 		String msg = "";
 		UiUtils.showErrorMessage(c, msg);
+	}
+
+	/**
+	 * Test of createTableModel method, of class UiUtils.
+	 */
+	@Test
+	public void testCreateTableModel ()
+	{
+		int rows = 1;
+		int columns = 2;
+		boolean editable = true;
+		DefaultTableModel original = new DefaultTableModel(rows, columns);
+		DefaultTableModel dtm
+			= UiUtils.createTableModel(original, rows, 10, editable);
+		assertNotNull(dtm);
+		assertEquals(rows, dtm.getRowCount());
+		assertEquals(columns, dtm.getColumnCount());
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < rows; j++)
+			{
+				assertEquals(editable, dtm.isCellEditable(i, j));
+			}
+		}
+	}
+
+	/**
+	 * Test of createTableModel method, of class UiUtils.
+	 */
+	@Test
+	public void testCreateTableModelNullOriginal ()
+	{
+		int rows = 1;
+		int columns = 2;
+		boolean editable = false;
+		DefaultTableModel dtm
+			= UiUtils.createTableModel(null, rows, columns, editable);
+		assertNotNull(dtm);
+		assertEquals(rows, dtm.getRowCount());
+		assertEquals(columns, dtm.getColumnCount());
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < rows; j++)
+			{
+				assertEquals(editable, dtm.isCellEditable(i, j));
+			}
+		}
 	}
 }

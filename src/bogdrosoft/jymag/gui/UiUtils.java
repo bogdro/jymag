@@ -273,6 +273,16 @@ public class UiUtils {
 		}
 	}
 
+	/**
+	 * Creates a table model with the given number of rows and columns
+	 * (taken from the given model or the parameters) and editability.
+	 * @param model The model to base upon.
+	 * @param rowCount The number of rows to create in the model.
+	 * @param columnCount The number of columns to create in the model.
+	 *	Used if <code>model</code> is <code>null</code>.
+	 * @param editable Controls if the table's cells will be editable.
+	 * @return the created table model.
+	 */
 	public static DefaultTableModel createTableModel(
 		TableModel model,
 		int rowCount,
