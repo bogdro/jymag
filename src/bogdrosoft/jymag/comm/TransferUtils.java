@@ -796,26 +796,15 @@ public class TransferUtils
 					}
 					if ( alarms != null )
 					{
-						DefaultTableModel dtm = new DefaultTableModel
-							((alNumber > 0)? alNumber : 1, 4);
 						TableModel model = alarms.getModel ();
-						if ( model != null )
-						{
-							int cols = model.getColumnCount ();
-							Vector<String> colNames =
-								new Vector<String> (cols);
-							for ( int i = 0; i < cols; i++ )
-							{
-								String colName = model.getColumnName (i);
-								if ( colName == null )
-								{
-									colName = Utils.EMPTY_STR;
-								}
-								colNames.add (colName);
-							}
-							dtm.setColumnIdentifiers (colNames);
-						}
-						else
+						DefaultTableModel dtm =
+							UiUtils.createTableModel(
+								alarms.getModel (),
+								(alNumber > 0)? alNumber : 1,
+								4,
+								true
+							);
+						if ( model == null )
 						{
 							dtm.setColumnIdentifiers (new String[]
 							{
@@ -941,26 +930,15 @@ public class TransferUtils
 					}
 					if ( messages != null )
 					{
-						DefaultTableModel dtm = new DefaultTableModel
-							(ret.size (), 4);
 						TableModel model = messages.getModel ();
-						if ( model != null )
-						{
-							int cols = model.getColumnCount ();
-							Vector<String> colNames =
-								new Vector<String> (cols);
-							for ( int i = 0; i < cols; i++ )
-							{
-								String colName = model.getColumnName (i);
-								if ( colName == null )
-								{
-									colName = Utils.EMPTY_STR;
-								}
-								colNames.add (colName);
-							}
-							dtm.setColumnIdentifiers (colNames);
-						}
-						else
+						DefaultTableModel dtm =
+							UiUtils.createTableModel(
+								messages.getModel (),
+								ret.size (),
+								5,
+								false
+							);
+						if ( model == null )
 						{
 							dtm.setColumnIdentifiers (new String[]
 							{

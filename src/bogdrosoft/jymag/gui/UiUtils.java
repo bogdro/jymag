@@ -41,6 +41,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * A utility class for the user interface, containing some useful methods.
@@ -269,6 +271,61 @@ public class UiUtils {
 				w.setSize (size);
 			}*/
 		}
+	}
+
+	public static DefaultTableModel createTableModel(
+		TableModel model,
+		int rowCount,
+		int columnCount,
+		final boolean editable
+	)
+	{
+		DefaultTableModel dtm;
+		if ( model != null )
+		{
+			dtm = new DefaultTableModel
+				(rowCount, model.getColumnCount())
+				{
+		                        private static final long serialVersionUID = 93L;
+
+					@Override
+					public boolean isCellEditable(
+						int rowIndex,
+						int columnIndex)
+					{
+						return editable;
+					}
+				};
+			int cols = model.getColumnCount ();
+			String[] columnNames = new String[cols];
+			for ( int i = 0; i < cols; i++ )
+			{
+				String colName = model.getColumnName (i);
+				if ( colName == null )
+				{
+					colName = Utils.EMPTY_STR;
+				}
+				columnNames[i] = colName;
+			}
+			dtm.setColumnIdentifiers (columnNames);
+		}
+		else
+		{
+			dtm = new DefaultTableModel
+				(rowCount, columnCount)
+				{
+		                        private static final long serialVersionUID = 94L;
+
+					@Override
+					public boolean isCellEditable(
+						int rowIndex,
+						int columnIndex)
+					{
+						return editable;
+					}
+				};
+		}
+		return dtm;
 	}
 
 	/**
