@@ -773,4 +773,51 @@ public class PhoneAlarm
 			+ Utils.COMMA + TOSTRING_DAYS + getDaysString ()
 			+ TOSTRING_END;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 7;
+		hash = 41 * hash + (this.time != null ? this.time.hashCode() : 0);
+		hash = 41 * hash + (this.oneTime ? 1 : 0);
+		hash = 41 * hash + (this.forAllDays ? 1 : 0);
+		hash = 41 * hash + (this.days != null ? this.days.hashCode() : 0);
+		hash = 41 * hash + this.number;
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final PhoneAlarm other = (PhoneAlarm) obj;
+		if (this.oneTime != other.oneTime)
+		{
+			return false;
+		}
+		if (this.forAllDays != other.forAllDays)
+		{
+			return false;
+		}
+		if (this.number != other.number)
+		{
+			return false;
+		}
+		if (this.time != other.time && (this.time == null || !this.time.equals(other.time)))
+		{
+			return false;
+		}
+		return this.days == other.days || (this.days != null && this.days.equals(other.days));
+	}
 }
