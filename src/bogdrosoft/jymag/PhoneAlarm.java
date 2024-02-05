@@ -245,6 +245,7 @@ public class PhoneAlarm
 				}
 			}
 		}
+		time.set (Calendar.MILLISECOND, 0);
 	}
 
 	/**
@@ -636,6 +637,7 @@ public class PhoneAlarm
 			c.set (Calendar.HOUR_OF_DAY, hour);
 			c.set (Calendar.MINUTE, minute);
 			c.set (Calendar.SECOND, second);
+			c.set (Calendar.MILLISECOND, 0);
 			if ( year < 80 )
 			{
 				c.set (Calendar.YEAR, 2000+year);
@@ -737,6 +739,7 @@ public class PhoneAlarm
 			c.set (Calendar.HOUR_OF_DAY, hour);
 			c.set (Calendar.MINUTE, minute);
 			c.set (Calendar.SECOND, second);
+			c.set (Calendar.MILLISECOND, 0);
 
 			boolean isForAllDays = false;
 			if ( tmpDays != null )
