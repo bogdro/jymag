@@ -39,6 +39,9 @@ public class FakeSerialPort extends SerialPort
 	private int parity;
 	private int flowControl;
 	private boolean dtr;
+	private boolean dsr;
+	private boolean cd;
+	private boolean ri;
 	private boolean rts;
 	private SerialPortEventListener lsn;
 	private byte parityErrorChar;
@@ -151,22 +154,37 @@ public class FakeSerialPort extends SerialPort
 		return Math.random() < 0.5;
 	}
 
+	public void setDSR( boolean state )
+	{
+		dsr = state;
+	}
+
 	@Override
 	public boolean isDSR()
 	{
-		return Math.random() < 0.5;
+		return dsr;
+	}
+
+	public void setCD( boolean state )
+	{
+		cd = state;
 	}
 
 	@Override
 	public boolean isCD()
 	{
-		return Math.random() < 0.5;
+		return cd;
+	}
+
+	public void setRI( boolean state )
+	{
+		ri = state;
 	}
 
 	@Override
 	public boolean isRI()
 	{
-		return Math.random() < 0.5;
+		return ri;
 	}
 
 	@Override
