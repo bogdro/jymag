@@ -88,6 +88,7 @@ public class PhoneAlarm
 		}
 
 		time = alarmTime;
+		time.set (Calendar.MILLISECOND, 0);
 		oneTime = isOneTimeAlarm;
 		forAllDays = isForAllDays;
 		days = null;
@@ -128,6 +129,7 @@ public class PhoneAlarm
 		}
 
 		time = alarmTime;
+		time.set (Calendar.MILLISECOND, 0);
 		oneTime = isOneTimeAlarm;
 		forAllDays = isForAllDays;
 		days = null;
