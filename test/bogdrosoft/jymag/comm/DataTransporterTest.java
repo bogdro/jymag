@@ -26,7 +26,10 @@ import bogdrosoft.jymag.PhoneMessage;
 import bogdrosoft.jymag.comm.DataTransporter.DIAL_MODE;
 import bogdrosoft.jymag.comm.DataTransporter.PIN_STATUS;
 import bogdrosoft.jymag.comm.DataTransporter.STORAGE_TYPE;
+import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
+import bogdrosoft.jymag.comm.fake.FakeSerialPort;
 import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
@@ -45,6 +48,12 @@ public class DataTransporterTest
 {
 	//private static CommPortIdentifier cpid;
 	//private static DataTransporter dtr;
+	private static final String FILENAME = "test.jpg";
+
+	private static final PhoneElement PICTURE_ELEMENT =
+		new PhoneElement("5303650005022001FFFF", "FGIF", "TestPicture");
+
+	private static PhoneMessage MESSAGE;
 
 	@BeforeClass
 	public static void setUpClass () throws Exception
@@ -56,6 +65,12 @@ public class DataTransporterTest
 		when(id.open (anyString (), anyInt ())).thenReturn (new SerialPortStub ());
 		dt = new DataTransporter (id);
 		 */
+		MESSAGE = new PhoneMessage();
+		MESSAGE.setDateTime("08/08/02,06:30:00+00");
+		MESSAGE.setID("1");
+		MESSAGE.setMessage("Test");
+		MESSAGE.setRecipientNum("+001123456789");
+		MESSAGE.setStatus("STOR");
 	}
 
 	@AfterClass
@@ -67,19 +82,23 @@ public class DataTransporterTest
 			dt.close ();
 		}
 		 */
+		new File(FILENAME).delete();
 	}
 
-	private DataTransporter prepareDT() throws Exception
+	private static DataTransporter prepareDT() throws Exception
 	{
+		/*
 		CommPortIdentifier id = mock (CommPortIdentifier.class);
 			//new CommPortIdentifierStub ("testPort", null, 0, null);
 		when(id.getName ()).thenReturn ("COMSTUB");
 		when(id.open (anyString (), anyInt ())).thenReturn (new SerialPortStub ());
-		int speed = 0;
-		int dataBits = 0;
-		float stopBits = 0.0F;
-		int parity = 0;
-		int flowControl = 0;
+		*/
+		Object id = new FakeCommPortIdentifier();
+		int speed = 115200;
+		int dataBits = SerialPort.DATABITS_8;
+		float stopBits = SerialPort.STOPBITS_1;
+		int parity = SerialPort.PARITY_NONE;
+		int flowControl = SerialPort.FLOWCONTROL_NONE;
 		DataTransporter dt = new DataTransporter (id);
 		dt.open (speed, dataBits, stopBits, parity, flowControl);
 		return dt;
@@ -109,13 +128,13 @@ public class DataTransporterTest
 		CommPortIdentifier id = mock (CommPortIdentifier.class);
 			//new CommPortIdentifierStub ("testPort", null, 0, null);
 		when(id.getName ()).thenReturn ("fake");
-		when(id.open (anyString (), anyInt ())).thenReturn (new SerialPortStub ());
+		when(id.open (anyString (), anyInt ())).thenReturn (new FakeSerialPort());
 		DataTransporter dt = new DataTransporter (id);
-		int speed = 0;
-		int dataBits = 0;
-		float stopBits = 0.0F;
-		int parity = 0;
-		int flowControl = 0;
+		int speed = 115200;
+		int dataBits = SerialPort.DATABITS_8;
+		float stopBits = SerialPort.STOPBITS_1;
+		int parity = SerialPort.PARITY_NONE;
+		int flowControl = SerialPort.FLOWCONTROL_NONE;
 		dt.open (speed, dataBits, stopBits, parity, flowControl);
 	}
 
@@ -125,17 +144,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testRecv () throws Exception
 	{
 		System.out.println ("recv");
 		DataTransporter dt = prepareDT();
 		Object[] extraTerminators = null;
-		byte[] expResult = null;
+		dt.send("AT\r".getBytes());
+		byte[] expResult = "OK\r".getBytes();
 		byte[] result = dt.recv (extraTerminators);
 		assertArrayEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -144,15 +161,11 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSendByteArray () throws Exception
 	{
 		System.out.println ("send");
 		DataTransporter dt = prepareDT();
-		byte[] b = null;
-		dt.send (b);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
+		dt.send("AT\r".getBytes());
 	}
 
 	/**
@@ -161,17 +174,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSend3args () throws Exception
 	{
 		System.out.println ("send");
 		DataTransporter dt = prepareDT();
-		byte[] b = null;
-		int start = 0;
-		int length = 0;
+		byte[] b = "AAT\r".getBytes();
+		int start = 1;
+		int length = 3;
 		dt.send (b, start, length);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -180,14 +190,11 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testClose () throws Exception
 	{
 		System.out.println ("close");
 		DataTransporter dt = prepareDT();
 		dt.close ();
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -201,13 +208,11 @@ public class DataTransporterTest
 	{
 		System.out.println ("putFile");
 		DataTransporter dt = prepareDT();
-		File f = null;
-		String newName = "";
+		File f = new File(FILENAME);
+		String newName = FILENAME;
 		int expResult = 0;
 		int result = dt.putFile (f, newName);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -216,18 +221,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetFile () throws Exception
 	{
 		System.out.println ("getFile");
 		DataTransporter dt = prepareDT();
-		File f = null;
-		PhoneElement el = null;
+		File f = new File(FILENAME);
+		PhoneElement el = new PhoneElement("1", "jpg", FILENAME);
 		int expResult = 0;
 		int result = dt.getFile (f, el);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -236,17 +238,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetList () throws Exception
 	{
 		System.out.println ("getList");
 		DataTransporter dt = prepareDT();
-		String ofWhat = "";
-		Vector<PhoneElement> expResult = null;
+		String ofWhat = "PICTURES";
+		Vector<PhoneElement> expResult = new Vector<PhoneElement>(1);
+		expResult.add(PICTURE_ELEMENT);
 		Vector<PhoneElement> result = dt.getList (ofWhat);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -255,17 +255,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testDeleteFile () throws Exception
 	{
 		System.out.println ("deleteFile");
 		DataTransporter dt = prepareDT();
-		PhoneElement el = null;
 		int expResult = 0;
-		int result = dt.deleteFile (el);
+		int result = dt.deleteFile (PICTURE_ELEMENT);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -274,14 +270,11 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testReopen () throws Exception
 	{
 		System.out.println ("reopen");
 		DataTransporter dt = prepareDT();
 		dt.reopen ();
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -290,7 +283,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testTest () throws Exception
 	{
 		System.out.println ("test");
@@ -298,8 +290,6 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.test ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -308,16 +298,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetFirmwareVersion () throws Exception
 	{
 		System.out.println ("getFirmwareVersion");
 		DataTransporter dt = prepareDT();
-		String expResult = "";
+		String expResult = "2.04";
 		String result = dt.getFirmwareVersion ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -326,16 +313,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetDeviceType () throws Exception
 	{
 		System.out.println ("getDeviceType");
 		DataTransporter dt = prepareDT();
-		String expResult = "";
+		String expResult = "myX5-2 GPRS";
 		String result = dt.getDeviceType ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -344,16 +328,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetExtraDeviceType () throws Exception
 	{
 		System.out.println ("getExtraDeviceType");
 		DataTransporter dt = prepareDT();
-		String expResult = "";
+		String expResult = "FakeSAGEM KB3,ME";
 		String result = dt.getExtraDeviceType ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -362,16 +343,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetIMEI () throws Exception
 	{
 		System.out.println ("getIMEI");
 		DataTransporter dt = prepareDT();
-		String expResult = "";
+		String expResult = "353512345678901";
 		String result = dt.getIMEI ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -380,16 +358,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetSubscriberNumbers () throws Exception
 	{
 		System.out.println ("getSubscriberNumbers");
 		DataTransporter dt = prepareDT();
-		String expResult = "";
+		String expResult = "+123456789";
 		String result = dt.getSubscriberNumbers ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -398,17 +373,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetCapabilities () throws Exception
 	{
 		System.out.println ("getCapabilities");
 		DataTransporter dt = prepareDT();
-		String type = "";
-		String expResult = "";
+		String type = "PICTURES";
+		String expResult = "CAPABILITY\r\n";
 		String result = dt.getCapabilities (type);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -417,14 +389,11 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testPoweroff () throws Exception
 	{
 		System.out.println ("poweroff");
 		DataTransporter dt = prepareDT();
 		dt.poweroff ();
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -433,7 +402,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetPINStatus () throws Exception
 	{
 		System.out.println ("getPINStatus");
@@ -441,8 +409,6 @@ public class DataTransporterTest
 		PIN_STATUS expResult = null;
 		PIN_STATUS result = dt.getPINStatus ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -451,18 +417,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSendPINWithStringString () throws Exception
 	{
 		System.out.println ("sendPIN");
 		DataTransporter dt = prepareDT();
-		String PIN = "";
-		String newPIN = "";
-		int expResult = 0;
+		String PIN = "1234";
+		String newPIN = "2345";
+		int expResult = -1;
 		int result = dt.sendPIN (PIN, newPIN);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -471,18 +434,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSendPINWithIntInt () throws Exception
 	{
 		System.out.println ("sendPIN");
 		DataTransporter dt = prepareDT();
-		int PIN = 0;
-		int newPIN = 0;
-		int expResult = 0;
+		int PIN = 1234;
+		int newPIN = 2345;
+		int expResult = -1;
 		int result = dt.sendPIN (PIN, newPIN);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -491,16 +451,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetNumberOfAlarms () throws Exception
 	{
 		System.out.println ("getNumberOfAlarms");
 		DataTransporter dt = prepareDT();
-		int expResult = 0;
+		int expResult = 1;
 		int result = dt.getNumberOfAlarms ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -509,17 +466,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testDeleteAlarm () throws Exception
 	{
 		System.out.println ("deleteAlarm");
 		DataTransporter dt = prepareDT();
-		int number = 0;
+		int number = 1;
 		int expResult = 0;
 		int result = dt.deleteAlarm (number);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -528,17 +482,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testAddAlarm () throws Exception
 	{
 		System.out.println ("addAlarm");
 		DataTransporter dt = prepareDT();
-		PhoneAlarm al = null;
+		PhoneAlarm al = new PhoneAlarm(1, "03/04/22", "06:00:00", "0");
 		int expResult = 0;
 		int result = dt.addAlarm (al);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -547,16 +498,17 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetAlarms () throws Exception
 	{
 		System.out.println ("getAlarms");
 		DataTransporter dt = prepareDT();
-		Vector<PhoneAlarm> expResult = null;
+		Vector<PhoneAlarm> expResult = new Vector<PhoneAlarm>(1);
+		PhoneAlarm alarm = new PhoneAlarm(0, "08/08/02", "06:30:00", null);
+		alarm.setOneTimeAlarm(true);
+		alarm.setForAllDays(false);
+		expResult.add(alarm);
 		Vector<PhoneAlarm> result = dt.getAlarms ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -565,17 +517,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testDeleteMessage () throws Exception
 	{
 		System.out.println ("deleteMessage");
 		DataTransporter dt = prepareDT();
-		int number = 0;
+		int number = 1;
 		int expResult = 0;
 		int result = dt.deleteMessage (number);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -584,16 +533,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetMessages () throws Exception
 	{
 		System.out.println ("getMessages");
 		DataTransporter dt = prepareDT();
-		Vector<PhoneMessage> expResult = null;
+		Vector<PhoneMessage> expResult = new Vector<PhoneMessage>(1);
+		expResult.add(MESSAGE);
 		Vector<PhoneMessage> result = dt.getMessages ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -602,17 +549,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetMessage () throws Exception
 	{
 		System.out.println ("getMessage");
 		DataTransporter dt = prepareDT();
-		int number = 0;
-		PhoneMessage expResult = null;
+		int number = 1;
 		PhoneMessage result = dt.getMessage (number);
-		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
+		assertEquals (MESSAGE, result);
 	}
 
 	/**
@@ -621,17 +564,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSendMessage () throws Exception
 	{
 		System.out.println ("sendMessage");
 		DataTransporter dt = prepareDT();
-		PhoneMessage msg = null;
 		int expResult = 0;
-		int result = dt.sendMessage (msg);
+		int result = dt.sendMessage (MESSAGE);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -742,7 +681,7 @@ public class DataTransporterTest
 	{
 		System.out.println ("isDTR");
 		DataTransporter dt = prepareDT();
-		boolean expResult = true;
+		boolean expResult = false;
 		boolean result = dt.isDTR ();
 		assertEquals (expResult, result);
 	}
@@ -783,7 +722,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetSignalPower () throws Exception
 	{
 		System.out.println ("getSignalPower");
@@ -791,8 +729,6 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.getSignalPower ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -801,19 +737,16 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testDialNumber () throws Exception
 	{
 		System.out.println ("dialNumber");
 		DataTransporter dt = prepareDT();
-		String number = "";
+		String number = "+00123456789";
 		boolean isVoice = false;
-		DIAL_MODE dialMode = null;
+		DIAL_MODE dialMode = DIAL_MODE.TONE;
 		int expResult = 0;
 		int result = dt.dialNumber (number, isVoice, dialMode);
-		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
+		assertNotEquals (expResult, result);
 	}
 
 	/**
@@ -822,7 +755,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testHangup () throws Exception
 	{
 		System.out.println ("hangup");
@@ -830,8 +762,6 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.hangup ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -840,7 +770,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testAnswer () throws Exception
 	{
 		System.out.println ("answer");
@@ -848,8 +777,6 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.answer ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -858,16 +785,13 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetVolume () throws Exception
 	{
 		System.out.println ("getVolume");
 		DataTransporter dt = prepareDT();
-		int expResult = 0;
+		int expResult = 1;
 		int result = dt.getVolume ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -876,7 +800,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSetVolume () throws Exception
 	{
 		System.out.println ("setVolume");
@@ -885,8 +808,6 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.setVolume (vol);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
@@ -895,7 +816,6 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testGetAvailableBytes () throws Exception
 	{
 		System.out.println ("getAvailableBytes");
@@ -903,7 +823,5 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.getAvailableBytes ();
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 }
