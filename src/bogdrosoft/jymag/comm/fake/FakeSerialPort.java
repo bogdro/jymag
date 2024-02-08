@@ -43,6 +43,7 @@ public class FakeSerialPort extends SerialPort
 	private boolean cd;
 	private boolean ri;
 	private boolean rts;
+	private boolean cts;
 	private SerialPortEventListener lsn;
 	private byte parityErrorChar;
 	private byte endOfInputChar;
@@ -151,7 +152,7 @@ public class FakeSerialPort extends SerialPort
 	@Override
 	public boolean isCTS()
 	{
-		return Math.random() < 0.5;
+		return cts;
 	}
 
 	public void setDSR( boolean state )
