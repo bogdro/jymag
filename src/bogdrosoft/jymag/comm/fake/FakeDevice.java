@@ -261,17 +261,18 @@ class FakeDevice
 			}
 			else if (MSG_LIST_CMD.equals(buffer))
 			{
-				sendReply("+CMGL:1,\"STOR\",\"+001123456789\",\"08/08/02,06:30:00+00\",,1\r\nTest\r\n"
+				sendReply("+CMGL:1,\"STOR\",\"+001123456789\",\"08/08/02,06:30:00+00\",,1\r\nTest\r"
 					+ OK_STRING);
 			}
 			else if (buffer.startsWith(MSG_GET_CMD))
 			{
-				sendReply("+CMGL:1,\"STOR\",\"+001123456789\",\"08/08/02,06:30:00+00\",,1\r\nTest\r\n"
+				sendReply("+CMGL:1,\"STOR\",\"+001123456789\",\"08/08/02,06:30:00+00\",,1\r\nTest\r"
 					+ OK_STRING);
 			}
 			else if (buffer.startsWith(MSG_SEND_CMD))
 			{
-				sendReply(MSG_PROMPT + OK_STRING);
+				sendReply(MSG_PROMPT);
+				inFileSending = true;
 			}
 			else if (buffer.startsWith(TRANSFER_FILE_LEN_CMD))
 			{
@@ -307,7 +308,7 @@ class FakeDevice
 			else if (buffer.startsWith(CAPABILITY_CMD))
 			{
 				sendReply(CONN_STRING
-					+ "+CAPA\r\n"
+					+ "CAPABILITY\r\n"
 					+ NOCAR_STRING);
 			}
 			else if (inFileSending)
