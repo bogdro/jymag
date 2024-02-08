@@ -252,6 +252,53 @@ public class PhoneMessage implements Serializable
 		return null;
 	}
 
+	@Override
+	public int hashCode()
+	{
+		int hash = 3;
+		hash = 83 * hash + (this.message != null ? this.message.hashCode() : 0);
+		hash = 83 * hash + (this.recipientNum != null ? this.recipientNum.hashCode() : 0);
+		hash = 83 * hash + (this.datetime != null ? this.datetime.hashCode() : 0);
+		hash = 83 * hash + (this.id != null ? this.id.hashCode() : 0);
+		hash = 83 * hash + (this.status != null ? this.status.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final PhoneMessage other = (PhoneMessage) obj;
+		if ((this.message == null) ? (other.message != null) : !this.message.equals(other.message))
+		{
+			return false;
+		}
+		if ((this.recipientNum == null) ? (other.recipientNum != null) : !this.recipientNum.equals(other.recipientNum))
+		{
+			return false;
+		}
+		if ((this.datetime == null) ? (other.datetime != null) : !this.datetime.equals(other.datetime))
+		{
+			return false;
+		}
+		if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id))
+		{
+			return false;
+		}
+		return (this.status == null) ? (other.status == null) : this.status.equals(other.status);
+	}
+
 	/**
 	 * Returns a String representation of this PhoneMessage.
 	 * @return a String representation of this PhoneMessage. The syntax is
