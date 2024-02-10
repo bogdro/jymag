@@ -138,6 +138,7 @@ public class TransferUtils
 							"TU." + op.getName ()		// NOI18N
 							+ ".SW.doInBackground: "	// NOI18N
 							+ op.getErrorParams ());
+						result.set (-101);
 					}
 					return null;
 				}
