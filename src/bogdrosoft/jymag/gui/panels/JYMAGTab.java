@@ -34,17 +34,17 @@ public interface JYMAGTab
 	 * Sets the destination directory for downloads.
 	 * @param destDirName The destination directory.
 	 */
-	public void setDestDir (String destDirName);
+	void setDestDir (String destDirName);
 
 	/**
 	 * Sets the reference to the main window of JYMAG.
 	 * @param mainWindow The reference to the main window of JYMAG.
 	 */
-	public void setMainWindow (MainWindow mainWindow);
+	void setMainWindow (MainWindow mainWindow);
 
 	/**
 	 * Sets the font size spinner.
 	 * @param fontSizeSpinner The font size spinner.
 	 */
-	public void setFontSizeSpin (JSpinner fontSizeSpinner);
+	void setFontSizeSpin (JSpinner fontSizeSpinner);
 }
