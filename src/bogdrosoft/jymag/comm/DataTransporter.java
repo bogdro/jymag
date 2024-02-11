@@ -1290,7 +1290,7 @@ public class DataTransporter
 			rcvd = tryCommand (LIST_CMD_START + ofWhat + LIST_CMD_END, null);
 			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OK_STRING) )
 			{
-				return null;
+				return res;
 			}
 
 			Matcher m;
@@ -1947,7 +1947,7 @@ public class DataTransporter
 			 */
 			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OK_STRING) )
 			{
-				return null;
+				return res;
 			}
 
 			// split into lines
@@ -1964,7 +1964,7 @@ public class DataTransporter
 		catch ( Exception ex )
 		{
 			Utils.handleException (ex, "DataTransporter.getAlarms");	// NOI18N
-			return null;
+			return res;
 		}
 		return res;
 	}
@@ -2017,13 +2017,13 @@ public class DataTransporter
 			String rcvd = tryCommand (MSG_TEXT_MODE_CMD, null);
 			if ( ! rcvd.contains (OK_STRING) )
 			{
-				return null;
+				return res;
 			}
 
 			rcvd = tryCommand (MSG_LIST_CMD, null);
 			if ( rcvd.trim ().isEmpty () || ! rcvd.contains (OK_STRING) )
 			{
-				return null;
+				return res;
 			}
 
 			// remove the final "OK"
@@ -2042,7 +2042,7 @@ public class DataTransporter
 		catch ( Exception ex )
 		{
 			Utils.handleException (ex, "DataTransporter.getMessagess");	// NOI18N
-			return null;
+			return res;
 		}
 		return res;
 	}
