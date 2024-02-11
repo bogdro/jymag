@@ -128,14 +128,14 @@ public class JYMAGTransferHandler extends TransferHandler
 			if ( t.isDataFlavorSupported (DataFlavor.javaFileListFlavor) )
 			{
 				Object data = t.getTransferData (DataFlavor.javaFileListFlavor);
-				if ( data != null && data instanceof List<?> )
+				if ( data instanceof List<?> )
 				{
 					List<?> fileList = (List<?>) data;
 					int fileListSize = fileList.size ();
 					for ( int i = 0; i < fileListSize; i++ )
 					{
 						Object f = fileList.get (i);
-						if ( f != null && f instanceof File )
+						if ( f instanceof File )
 						{
 							importSingleFile ((File)f);
 						}
