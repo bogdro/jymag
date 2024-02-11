@@ -1747,11 +1747,11 @@ public class DataTransporter
 
 	/**
 	 * Sends the given PIN and new PIN to the phone.
-	 * @param PIN The PIN to send.
-	 * @param newPIN The new PIN to send (in case when PIN is a PUK or PUK2 code).
+	 * @param pin The PIN to send.
+	 * @param newPin The new PIN to send (in case when PIN is a PUK or PUK2 code).
 	 * @return 0 in case of no error.
 	 */
-	public int sendPIN (String PIN, String newPIN)
+	public int sendPIN (String pin, String newPin)
 	{
 		DataTransporter.PIN_STATUS status = getPINStatus ();
 		if ( status == null )
@@ -1762,11 +1762,11 @@ public class DataTransporter
 		if ( status.equals (DataTransporter.PIN_STATUS.SIM_PUK)
 			|| status.equals (DataTransporter.PIN_STATUS.SIM_PUK2) )
 		{
-			cmd = SEND_PIN_CMD_START + PIN + Utils.COMMA + newPIN + Utils.CR;
+			cmd = SEND_PIN_CMD_START + pin + Utils.COMMA + newPin + Utils.CR;
 		}
 		else
 		{
-			cmd = SEND_PIN_CMD_START + PIN + Utils.CR;
+			cmd = SEND_PIN_CMD_START + pin + Utils.CR;
 		}
 		String rcvd = tryCommand (cmd + Utils.CR, null);
 		if ( ! rcvd.trim ().isEmpty () )
@@ -1804,13 +1804,13 @@ public class DataTransporter
 
 	/**
 	 * Sends the given PIN and new PIN to the phone.
-	 * @param PIN The PIN to send.
-	 * @param newPIN The new PIN to send (in case when PIN is a PUK or PUK2 code).
+	 * @param pin The PIN to send.
+	 * @param newPin The new PIN to send (in case when PIN is a PUK or PUK2 code).
 	 * @return 0 in case of no error.
 	 */
-	public int sendPIN (int PIN, int newPIN)
+	public int sendPIN (int pin, int newPin)
 	{
-		return sendPIN (String.valueOf (PIN), String.valueOf (newPIN));
+		return sendPIN (String.valueOf (pin), String.valueOf (newPin));
 	}
 
 	/**
