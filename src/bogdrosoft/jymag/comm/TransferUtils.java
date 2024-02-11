@@ -1420,6 +1420,9 @@ public class TransferUtils
 					catch (IOException t)
 					{
 						Utils.handleException(t, "TransferUtils.sendFileAsCommands");
+					}
+					finally
+					{
 						if (fis != null)
 						{
 							try
