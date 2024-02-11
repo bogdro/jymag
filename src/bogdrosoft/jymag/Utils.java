@@ -615,7 +615,11 @@ public class Utils
 			{
 				handleException (ex, "Utils.UncaughtExceptionHandler: Thread="	// NOI18N
 					+ ((t != null)? t.getName() : "?"));	// NOI18N
-			} catch (Throwable th) {}
+			}
+			catch (Throwable th)
+			{
+				/* ignore */
+			}
 			try
 			{
 				if ( target != null )
