@@ -893,6 +893,15 @@ public class DataTransporter
 				}*/
 				Utils.handleException (ex, "DataTransporter.putFile:end"	// NOI18N
 					+ f.getName () + ", newName=" + newName);	// NOI18N
+				reopen ();
+				trials++;
+				if ( trials > MAX_TRIALS )
+				{
+					return -7;
+				}
+			}
+			finally
+			{
 				if (fis != null)
 				{
 					try
@@ -904,12 +913,6 @@ public class DataTransporter
 						Utils.handleException(t2,
 							"DataTransporter.putFile->close->exception");
 					}
-				}
-				reopen ();
-				trials++;
-				if ( trials > MAX_TRIALS )
-				{
-					return -7;
 				}
 			}
 		} // MAIN while // MAIN while // MAIN while // MAIN while
@@ -1195,6 +1198,10 @@ public class DataTransporter
 			Utils.handleException (ex, "DataTransporter.getFile:"	// NOI18N
 				+ f.getName () + ", id="	// NOI18N
 				+ el.getID ());
+			return -1;
+		}
+		finally
+		{
 			try
 			{
 				if ( fos != null )
@@ -1204,9 +1211,9 @@ public class DataTransporter
 			}
 			catch (IOException exc)
 			{
-				Utils.handleException (ex, "DataTransporter.getFile:fos.close");
+				Utils.handleException (exc,
+					"DataTransporter.getFile:fos.close");
 			}
-			return -1;
 		}
 	}
 
