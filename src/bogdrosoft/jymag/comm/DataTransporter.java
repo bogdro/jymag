@@ -2520,6 +2520,9 @@ public class DataTransporter
 						inputStreamLock.notifyAll ();// inputStream.notifyAll ();
 					}
 					break;
+				default:
+					// ignore
+					break;
 			}
 		}
 
