@@ -252,11 +252,11 @@ public class FakeSerialPort extends SerialPort
 	}
 
 	@Override
-	public boolean setBaudBase(int BaudBase)
+	public boolean setBaudBase(int baudBaseParam)
 		throws UnsupportedCommOperationException,
 		IOException
 	{
-		baudBase = BaudBase;
+		baudBase = baudBaseParam;
 		return true;
 	}
 
@@ -269,11 +269,11 @@ public class FakeSerialPort extends SerialPort
 	}
 
 	@Override
-	public boolean setDivisor(int Divisor)
+	public boolean setDivisor(int divisorParam)
 		throws UnsupportedCommOperationException,
 		IOException
 	{
-		divisor = Divisor;
+		divisor = divisorParam;
 		return true;
 	}
 
@@ -301,10 +301,10 @@ public class FakeSerialPort extends SerialPort
 	}
 
 	@Override
-	public boolean setCallOutHangup(boolean NoHup)
+	public boolean setCallOutHangup(boolean noHupParam)
 		throws UnsupportedCommOperationException
 	{
-		callOutHangup = NoHup;
+		callOutHangup = noHupParam;
 		return true;
 	}
 
