@@ -343,6 +343,7 @@ class FakeDevice
 		}
 		catch (UnsupportedEncodingException ex)
 		{
+			/* ignore for now, should not happen */
 		}
 		if (l != null)
 		{
