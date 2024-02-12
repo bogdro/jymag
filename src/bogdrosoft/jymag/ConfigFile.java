@@ -117,107 +117,117 @@ public class ConfigFile
 		fontSize = 12;
 		selectedTab = 0;
 
-		// don't force any encodings, because the file may be in a different encoding
-		BufferedReader br = new BufferedReader (new FileReader (cfgFile));
-		String line;
-		do
+		BufferedReader br = null;
+		try
 		{
-			try
-			{
-				line = br.readLine ();
-			}
-			catch (IOException ex)
-			{
-				break;
-			}
-			if ( line == null )
-			{
-				break;
-			}
-			if ( line.isEmpty () )
-			{
-				continue;
-			}
-			Matcher portM = PORT_PATTERN.matcher (line);
-			Matcher speedM = SPEED_PATTERN.matcher (line);
-			Matcher dBitsM = DATA_BITS_PATTERN.matcher (line);
-			Matcher parityM = PARITY_PATTERN.matcher (line);
-			Matcher sBitsM = STOP_BITS_PATTERN.matcher (line);
-			Matcher flowCtlM = FLOW_CONTROL_PATTERN.matcher (line);
-			Matcher xM = X_COORD_PATTERN.matcher (line);
-			Matcher yM = Y_COORD_PATTERN.matcher (line);
-			Matcher widthM = WIDTH_PATTERN.matcher (line);
-			Matcher heightM = HEIGHT_PATTERN.matcher (line);
-			Matcher isMaxM = IS_MAXIMIZED_PATTERN.matcher (line);
-			Matcher fontSizeM = FONT_SIZE_PATTERN.matcher (line);
-			Matcher selectedTabM = SELECTED_TAB_PATTERN.matcher (line);
-			Matcher commentM = COMMENT_PATTERN.matcher (line);
-
-			if ( commentM.matches () )
-			{
-				continue;
-			}
-			if ( portM.matches () )
+			// don't force any encodings, because the file may be in a different encoding
+			br = new BufferedReader (new FileReader (cfgFile));
+			String line;
+			do
 			{
 				try
 				{
-					port = portM.group (1);
+					line = br.readLine ();
 				}
-				catch (Exception ex)
+				catch (IOException ex)
 				{
-					Utils.handleException (ex, "ConfigFile.read.group");	// NOI18N
+					break;
 				}
-			}
-			else if ( speedM.matches () )
+				if ( line == null )
+				{
+					break;
+				}
+				if ( line.isEmpty () )
+				{
+					continue;
+				}
+				Matcher portM = PORT_PATTERN.matcher (line);
+				Matcher speedM = SPEED_PATTERN.matcher (line);
+				Matcher dBitsM = DATA_BITS_PATTERN.matcher (line);
+				Matcher parityM = PARITY_PATTERN.matcher (line);
+				Matcher sBitsM = STOP_BITS_PATTERN.matcher (line);
+				Matcher flowCtlM = FLOW_CONTROL_PATTERN.matcher (line);
+				Matcher xM = X_COORD_PATTERN.matcher (line);
+				Matcher yM = Y_COORD_PATTERN.matcher (line);
+				Matcher widthM = WIDTH_PATTERN.matcher (line);
+				Matcher heightM = HEIGHT_PATTERN.matcher (line);
+				Matcher isMaxM = IS_MAXIMIZED_PATTERN.matcher (line);
+				Matcher fontSizeM = FONT_SIZE_PATTERN.matcher (line);
+				Matcher selectedTabM = SELECTED_TAB_PATTERN.matcher (line);
+				Matcher commentM = COMMENT_PATTERN.matcher (line);
+
+				if ( commentM.matches () )
+				{
+					continue;
+				}
+				if ( portM.matches () )
+				{
+					try
+					{
+						port = portM.group (1);
+					}
+					catch (Exception ex)
+					{
+						Utils.handleException (ex, "ConfigFile.read.group");	// NOI18N
+					}
+				}
+				else if ( speedM.matches () )
+				{
+					speed = readIntUsingMatcher (speedM, 1, "speed");	// NOI18N
+				}
+				else if ( dBitsM.matches () )
+				{
+					dBits = readIntUsingMatcher (dBitsM, 1, "data bits");	// NOI18N
+				}
+				else if ( parityM.matches () )
+				{
+					parity = readIntUsingMatcher (parityM, 1, "parity");	// NOI18N
+				}
+				else if ( sBitsM.matches () )
+				{
+					sBits = readIntUsingMatcher (sBitsM, 1, "stop bits");	// NOI18N
+				}
+				else if ( flowCtlM.matches () )
+				{
+					flowCtl = readIntUsingMatcher (flowCtlM, 1, "flow control");	// NOI18N
+				}
+				else if ( xM.matches () )
+				{
+					x = readIntUsingMatcher (xM, 1, "x");	// NOI18N
+				}
+				else if ( yM.matches () )
+				{
+					y = readIntUsingMatcher (yM, 1, "y");	// NOI18N
+				}
+				else if ( widthM.matches () )
+				{
+					width = readIntUsingMatcher (widthM, 1, "width");	// NOI18N
+				}
+				else if ( heightM.matches () )
+				{
+					height = readIntUsingMatcher (heightM, 1, "height");	// NOI18N
+				}
+				else if ( isMaxM.matches () )
+				{
+					isMax = readIntUsingMatcher (isMaxM, 1, "maximized") != 0;	// NOI18N
+				}
+				else if ( fontSizeM.matches () )
+				{
+					fontSize = readIntUsingMatcher (fontSizeM, 1, "font_size");	// NOI18N
+				}
+				else if ( selectedTabM.matches () )
+				{
+					selectedTab = readIntUsingMatcher (selectedTabM, 1, "tab");	// NOI18N
+				}
+			} while (true);
+		}
+		finally
+		{
+			if (br != null)
 			{
-				speed = readIntUsingMatcher (speedM, 1, "speed");	// NOI18N
+				br.close ();
 			}
-			else if ( dBitsM.matches () )
-			{
-				dBits = readIntUsingMatcher (dBitsM, 1, "data bits");	// NOI18N
-			}
-			else if ( parityM.matches () )
-			{
-				parity = readIntUsingMatcher (parityM, 1, "parity");	// NOI18N
-			}
-			else if ( sBitsM.matches () )
-			{
-				sBits = readIntUsingMatcher (sBitsM, 1, "stop bits");	// NOI18N
-			}
-			else if ( flowCtlM.matches () )
-			{
-				flowCtl = readIntUsingMatcher (flowCtlM, 1, "flow control");	// NOI18N
-			}
-			else if ( xM.matches () )
-			{
-				x = readIntUsingMatcher (xM, 1, "x");	// NOI18N
-			}
-			else if ( yM.matches () )
-			{
-				y = readIntUsingMatcher (yM, 1, "y");	// NOI18N
-			}
-			else if ( widthM.matches () )
-			{
-				width = readIntUsingMatcher (widthM, 1, "width");	// NOI18N
-			}
-			else if ( heightM.matches () )
-			{
-				height = readIntUsingMatcher (heightM, 1, "height");	// NOI18N
-			}
-			else if ( isMaxM.matches () )
-			{
-				isMax = readIntUsingMatcher (isMaxM, 1, "maximized") != 0;	// NOI18N
-			}
-			else if ( fontSizeM.matches () )
-			{
-				fontSize = readIntUsingMatcher (fontSizeM, 1, "font_size");	// NOI18N
-			}
-			else if ( selectedTabM.matches () )
-			{
-				selectedTab = readIntUsingMatcher (selectedTabM, 1, "tab");	// NOI18N
-			}
-		} while (true);
-		br.close ();
+		}
 
 		// verify here
 		if ( ! Utils.isAllowableSpeed (speed) )
@@ -314,6 +324,9 @@ public class ConfigFile
 		catch (IOException t)
 		{
 			Utils.handleException(t, "ConfigFile.write");
+		}
+		finally
+		{
 			if (w != null)
 			{
 				try
