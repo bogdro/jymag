@@ -31,11 +31,11 @@ import bogdrosoft.jymag.comm.fake.FakeSerialPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -203,12 +203,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testPutFile () throws Exception
 	{
 		System.out.println ("putFile");
 		DataTransporter dt = prepareDT();
 		File f = new File(FILENAME);
+		FileOutputStream fos = new FileOutputStream(f);
+		fos.write(new byte[] {1, 2, 3});
+		fos.close();
 		String newName = FILENAME;
 		int expResult = 0;
 		int result = dt.putFile (f, newName);
@@ -579,17 +581,14 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSetMessageStorage () throws Exception
 	{
 		System.out.println ("setMessageStorage");
 		DataTransporter dt = prepareDT();
-		STORAGE_TYPE stor = null;
+		STORAGE_TYPE stor = STORAGE_TYPE.SM;
 		int expResult = 0;
 		int result = dt.setMessageStorage (stor);
 		assertEquals (expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail ("The test case is a prototype.");
 	}
 
 	/**
