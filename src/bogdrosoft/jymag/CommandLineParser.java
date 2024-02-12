@@ -392,10 +392,10 @@ public class CommandLineParser
 		for ( int i = 0; i < args.length; i++ )
 		{
 			String currentArg = args[i].toLowerCase (Locale.ENGLISH);
-			if ( currentArg.equals ("--help")	// NOI18N
-				|| currentArg.equals ("-h")	// NOI18N
-				|| currentArg.equals ("-?")	// NOI18N
-				|| currentArg.equals ("/?") )	// NOI18N
+			if ( "--help".equals (currentArg)	// NOI18N
+				|| "-h".equals (currentArg)	// NOI18N
+				|| "-?".equals (currentArg)	// NOI18N
+				|| "/?".equals (currentArg) )	// NOI18N
 			{
 				System.out.println ("JYMAG (Jig Your Music and Graphics) " + PROG_INTRO_STRING +	// NOI18N
 					"\n\n*** " + RXTX_REQ_STRING + " ***\n\n" +	// NOI18N
@@ -406,8 +406,8 @@ public class CommandLineParser
 					);
 				Starter.closeProgram (0);
 			}
-			else if ( currentArg.equals ("--license")	// NOI18N
-				|| currentArg.equals ("--licence") )	// NOI18N
+			else if ( "--license".equals (currentArg)	// NOI18N
+				|| "--licence".equals (currentArg) )	// NOI18N
 			{
 				System.out.println ("JYMAG (Jig Your Music and Graphics) "+ PROG_INTRO_STRING +	// NOI18N
 					"\nSee https://jymag.sourceforge.io/\n" +	// NOI18N
@@ -425,13 +425,13 @@ public class CommandLineParser
 					);
 				Starter.closeProgram (0);
 			}
-			else if ( currentArg.equals ("--version")	// NOI18N
-				|| currentArg.equals ("-v") )	// NOI18N
+			else if ( "--version".equals (currentArg)	// NOI18N
+				|| "-v".equals (currentArg) )	// NOI18N
 			{
 				System.out.println ("JYMAG " + VER_WORD + " " + MainWindow.JYMAG_VERSION);	// NOI18N
 				Starter.closeProgram (0);
 			}
-			else if ( currentArg.equals ("--port") )	// NOI18N
+			else if ( "--port".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -439,37 +439,37 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--parity") )	// NOI18N
+			else if ( "--parity".equals (currentArg) )	// NOI18N
 			{
 				parity = 0;
 				if ( i < args.length-1 )
 				{
 					String nextArg = args[i+1].toLowerCase (Locale.ENGLISH);
 					// <none, even, odd, space, mark>
-					if ( nextArg.equals ("none") )	// NOI18N
+					if ( "none".equals (nextArg) )	// NOI18N
 					{
 						parity = 0;
 					}
-					else if ( nextArg.equals ("even") )	// NOI18N
+					else if ( "even".equals (nextArg) )	// NOI18N
 					{
 						parity = 1;
 					}
-					else if ( nextArg.equals ("odd") )	// NOI18N
+					else if ( "odd".equals (nextArg) )	// NOI18N
 					{
 						parity = 2;
 					}
-					else if ( nextArg.equals ("space") )	// NOI18N
+					else if ( "space".equals (nextArg) )	// NOI18N
 					{
 						parity = 3;
 					}
-					else if ( nextArg.equals ("mark") )	// NOI18N
+					else if ( "mark".equals (nextArg) )	// NOI18N
 					{
 						parity = 4;
 					}
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--databits") )	// NOI18N
+			else if ( "--databits".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -490,7 +490,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--speed") )	// NOI18N
+			else if ( "--speed".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -511,18 +511,18 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--stopbits") )	// NOI18N
+			else if ( "--stopbits".equals (currentArg) )	// NOI18N
 			{
 				sBits = 1;
 				if ( i < args.length-1 )
 				{
 					String nextArg = args[i+1].toLowerCase (Locale.ENGLISH);
-					if ( nextArg.equals ("2") )	// NOI18N
+					if ( "2".equals (nextArg) )	// NOI18N
 					{
 						sBits = 2;
 					}
-					else if ( nextArg.equals ("1.5")	// NOI18N
-						|| nextArg.equals ("1,5") )	// NOI18N
+					else if ( "1.5".equals (nextArg)	// NOI18N
+						|| "1,5".equals (nextArg) )	// NOI18N
 					{
 						sBits = 1.5f;
 					}
@@ -533,41 +533,41 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--flow") )	// NOI18N
+			else if ( "--flow".equals (currentArg) )	// NOI18N
 			{
 				flow = 0;
 				if ( i < args.length-1 )
 				{
 					String nextArg = args[i+1].toLowerCase (Locale.ENGLISH);
 					// <none,soft,hard>
-					if ( nextArg.equals ("none") )	// NOI18N
+					if ( "none".equals (nextArg) )	// NOI18N
 					{
 						flow = 0;
 					}
-					else if ( nextArg.equals ("soft") )	// NOI18N
+					else if ( "soft".equals (nextArg) )	// NOI18N
 					{
 						flow = 1;
 					}
-					else if ( nextArg.equals ("hard") )	// NOI18N
+					else if ( "hard".equals (nextArg) )	// NOI18N
 					{
 						flow = 2;
 					}
-					else if ( nextArg.equals ("soft+hard")	// NOI18N
-						|| nextArg.equals ("hard+soft") )	// NOI18N
+					else if ( "soft+hard".equals (nextArg)	// NOI18N
+						|| "hard+soft".equals (nextArg) )	// NOI18N
 					{
 						flow = 3;
 					}
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--scan") )	// NOI18N
+			else if ( "--scan".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (
 					TransferUtils.scanPorts (false,
 						getTransferParameters (sync),
 						null, null, null, null, null, null));
 			}
-			else if ( currentArg.equals ("--update-alarm") )	// NOI18N
+			else if ( "--update-alarm".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -587,7 +587,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--delete-alarm") )	// NOI18N
+			else if ( "--delete-alarm".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -607,7 +607,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--list-alarms") )	// NOI18N
+			else if ( "--list-alarms".equals (currentArg) )	// NOI18N
 			{
 				try
 				{
@@ -631,7 +631,7 @@ public class CommandLineParser
 						"cmdline.downloadAlarmList()");	// NOI18N
 				}
 			}
-			else if ( currentArg.equals ("--list-elements") )	// NOI18N
+			else if ( "--list-elements".equals (currentArg) )	// NOI18N
 			{
 				try
 				{
@@ -678,7 +678,7 @@ public class CommandLineParser
 						"cmdline.downloadList()");	// NOI18N
 				}
 			}
-			else if ( currentArg.equals ("--delete-element") )	// NOI18N
+			else if ( "--delete-element".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -699,7 +699,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--list-sms") )	// NOI18N
+			else if ( "--list-sms".equals (currentArg) )	// NOI18N
 			{
 				try
 				{
@@ -723,7 +723,7 @@ public class CommandLineParser
 						"cmdline.downloadMessageList()");	// NOI18N
 				}
 			}
-			else if ( currentArg.equals ("--send-sms") )	// NOI18N
+			else if ( "--send-sms".equals (currentArg) )	// NOI18N
 			{
 				// we need 2 more elements: the recipient's number and the message body
 				if ( i < args.length-2 )
@@ -747,7 +747,7 @@ public class CommandLineParser
 					i+=2;
 				}
 			}
-			else if ( currentArg.equals ("--delete-sms") )	// NOI18N
+			else if ( "--delete-sms".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -768,7 +768,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--upload") )	// NOI18N
+			else if ( "--upload".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -788,31 +788,31 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--download-all-photos") )	// NOI18N
+			else if ( "--download-all-photos".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (getAllPics (sync));
 			}
-			else if ( currentArg.equals ("--download-all-ringtones") )	// NOI18N
+			else if ( "--download-all-ringtones".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (getAllRings (sync));
 			}
-			else if ( currentArg.equals ("--download-all-todo") )	// NOI18N
+			else if ( "--download-all-todo".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (getAllTODOs (sync));
 			}
-			else if ( currentArg.equals ("--download-all-events") )	// NOI18N
+			else if ( "--download-all-events".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (getAllEvents (sync));
 			}
-			else if ( currentArg.equals ("--download-all-vcards") )	// NOI18N
+			else if ( "--download-all-vcards".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (getAllVcards (sync));
 			}
-			else if ( currentArg.equals ("--download-all-animations") )	// NOI18N
+			else if ( "--download-all-animations".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (getAllAnimations (sync));
 			}
-			else if ( currentArg.equals ("--download-all") )	// NOI18N
+			else if ( "--download-all".equals (currentArg) )	// NOI18N
 			{
 				Starter.closeProgram (
 					getAllPics (sync)
@@ -823,7 +823,7 @@ public class CommandLineParser
 					+ getAllAnimations (sync)
 					);
 			}
-			else if ( currentArg.equals ("--download-dir") )	// NOI18N
+			else if ( "--download-dir".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -831,11 +831,11 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--delete-after-download") )	// NOI18N
+			else if ( "--delete-after-download".equals (currentArg) )	// NOI18N
 			{
 				deleteAfterDownload = true;
 			}
-			else if ( currentArg.equals ("--lang") )	// NOI18N
+			else if ( "--lang".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -873,14 +873,14 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--conf") )	// NOI18N
+			else if ( "--conf".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
 					readConfig (new File (args[i+1]));
 				}
 			}
-			else if ( currentArg.equals ("--dial-voice") )	// NOI18N
+			else if ( "--dial-voice".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -900,7 +900,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--dial-data") )	// NOI18N
+			else if ( "--dial-data".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -920,7 +920,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--hangup") )	// NOI18N
+			else if ( "--hangup".equals (currentArg) )	// NOI18N
 			{
 				try
 				{
@@ -935,7 +935,7 @@ public class CommandLineParser
 						"cmdline.staticHangup()");	// NOI18N
 				}
 			}
-			else if ( currentArg.equals ("--send-cmd-file") )	// NOI18N
+			else if ( "--send-cmd-file".equals (currentArg) )	// NOI18N
 			{
 				if ( i < args.length-1 )
 				{
@@ -955,7 +955,7 @@ public class CommandLineParser
 					i++;
 				}
 			}
-			else if ( currentArg.equals ("--mock") )	// NOI18N
+			else if ( "--mock".equals (currentArg) )	// NOI18N
 			{
 				mock = true;
 			}
