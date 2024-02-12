@@ -73,75 +73,75 @@ public class PhoneElement implements Serializable
 		{
 			return Utils.EMPTY_STR;
 		}
-		if ( type.equals ("FGIF") )
+		if ( "FGIF".equals (type) )
 		{
 			return "gif";				// NOI18N
 		}
-		else if ( type.equals ("JPEG") )		// NOI18N
+		else if ( "JPEG".equals (type) )
 		{
 			return "jpg";				// NOI18N
 		}
-		else if ( type.equals ("MIDI") )		// NOI18N
+		else if ( "MIDI".equals (type) )
 		{
 			return "mid";				// NOI18N
 		}
-		else if ( type.equals ("VCRD") )		// NOI18N
+		else if ( "VCRD".equals (type) )
 		{
 			return "vcf";				// NOI18N
 		}
-		else if ( type.equals ("VCAL") )		// NOI18N
+		else if ( "VCAL".equals (type) )
 		{
 			return "ics";				// NOI18N
 		}
-		else if ( type.equals ("WBMP") )		// NOI18N
+		else if ( "WBMP".equals (type) )
 		{
 			return "wbm";				// NOI18N
 		}
-		else if ( type.equals ("TIFF") )		// NOI18N
+		else if ( "TIFF".equals (type) )
 		{
 			return "tif";				// NOI18N
 		}
-		else if ( type.equals ("PICT") )		// NOI18N
+		else if ( "PICT".equals (type) )
 		{
 			return "pct";				// NOI18N
 		}
-		else if ( type.equals ("SVGZ") )		// NOI18N
+		else if ( "SVGZ".equals (type) )
 		{
 			return "svz";				// NOI18N
 		}
-		else if ( type.equals ("AIFF") )		// NOI18N
+		else if ( "AIFF".equals (type) )
 		{
 			return "aif";				// NOI18N
 		}
-		else if ( type.equals ("MPEG") )		// NOI18N
+		else if ( "MPEG".equals (type) )
 		{
 			return "mpg";				// NOI18N
 		}
-		else if ( type.equals ("EMS_GR") )		// NOI18N
+		else if ( "EMS_GR".equals (type) )
 		{
 			return "emg";				// NOI18N
 		}
-		else if ( type.equals ("ASG1") )		// NOI18N
+		else if ( "ASG1".equals (type) )
 		{
 			return "as1";				// NOI18N
 		}
-		else if ( type.equals ("ASG2") )		// NOI18N
+		else if ( "ASG2".equals (type) )
 		{
 			return "as2";				// NOI18N
 		}
-		else if ( type.equals ("EMS_AN") )		// NOI18N
+		else if ( "EMS_AN".equals (type) )
 		{
 			return "ema";				// NOI18N
 		}
-		else if ( type.equals ("MJPG") )		// NOI18N
+		else if ( "MJPG".equals (type) )
 		{
 			return "mjp";				// NOI18N
 		}
-		else if ( type.equals ("3GP2") )		// NOI18N
+		else if ( "3GP2".equals (type) )
 		{
 			return "3gp";				// NOI18N
 		}
-		else if ( type.equals ("3GPP") )		// NOI18N
+		else if ( "3GPP".equals (type) )
 		{
 			return "3gp";				// NOI18N
 		}
