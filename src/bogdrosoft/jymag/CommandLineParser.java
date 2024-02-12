@@ -266,12 +266,12 @@ public class CommandLineParser
 			speed = cfg.getSpeed ();
 			dBits = cfg.getDBits ();
 			parity = cfg.getParity ();
-			int l_sBits = cfg.getSBits ();
-			if ( l_sBits == 2 )
+			int cfgStopBits = cfg.getSBits ();
+			if ( cfgStopBits == 2 )
 			{
 				sBits = 2.0f;
 			}
-			else if ( l_sBits == 1 )
+			else if ( cfgStopBits == 1 )
 			{
 				sBits = 1.5f;
 			}
