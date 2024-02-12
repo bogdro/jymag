@@ -43,13 +43,13 @@ public class PhoneElement implements Serializable
 
 	/**
 	 * Creates a new instance of PhoneElement.
-	 * @param ID ID number of the element in the phone.
+	 * @param elementId ID number of the element in the phone.
 	 * @param format Element type (format), like FGIF, JPEG, MIDI.
 	 * @param name Element's name.
 	 */
-	public PhoneElement (String ID, String format, String name)
+	public PhoneElement (String elementId, String format, String name)
 	{
-		id = ID;
+		id = elementId;
 		type = format;
 		filename = name;
 	}
