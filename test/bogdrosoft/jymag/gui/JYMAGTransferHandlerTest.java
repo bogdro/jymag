@@ -19,13 +19,15 @@
  */
 package bogdrosoft.jymag.gui;
 
+import bogdrosoft.jymag.Utils;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import javax.activation.DataHandler;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import javax.swing.TransferHandler;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * JYMAGTransferHandlerTest - a test for the JYMAGTransferHandler class.
@@ -41,9 +43,7 @@ public class JYMAGTransferHandlerTest
 	{
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
-		Transferable transferable = new DataHandler(mw,
-			DataFlavor.javaFileListFlavor.getMimeType()
-		);
+		Transferable transferable = new TestTransferable(new Object());
 		TransferHandler.TransferSupport support
 			= new TransferHandler.TransferSupport(mw, transferable);
 		//support.setDropAction(TransferHandler.COPY);
@@ -84,9 +84,7 @@ public class JYMAGTransferHandlerTest
 	{
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
-		Transferable transferable = new DataHandler(mw,
-			DataFlavor.javaFileListFlavor.getMimeType()
-		);
+		Transferable transferable = new TestTransferable(new Object());
 		TransferHandler.TransferSupport support
 			= new TransferHandler.TransferSupport(mw, transferable);
 		//support.setDropAction(TransferHandler.COPY);
@@ -101,9 +99,7 @@ public class JYMAGTransferHandlerTest
 	{
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
-		Transferable transferable = new DataHandler(mw,
-			DataFlavor.javaFileListFlavor.getMimeType()
-		);
+		Transferable transferable = new TestTransferable(new Object());
 		TransferHandler.TransferSupport support
 			= new TransferHandler.TransferSupport(mw, transferable);
 		//support.setDropAction(TransferHandler.MOVE);
@@ -118,12 +114,61 @@ public class JYMAGTransferHandlerTest
 	{
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
-		Transferable transferable = new DataHandler(mw,
-			DataFlavor.javaFileListFlavor.getMimeType()
-		);
+		Transferable transferable = new TestTransferable(new Object());
 		TransferHandler.TransferSupport support
 			= new TransferHandler.TransferSupport(mw, transferable);
 		//support.setDropAction(TransferHandler.COPY);
 		assertFalse(handler.importData(support));
+	}
+
+	private static class TestTransferable implements Transferable
+	{
+		private static final String URI_FILE_LIST_FLAVOR_TYPE
+			= "text/uri-list;class=java.lang.String";	// NOI18N
+		private static transient DataFlavor[] flavors;
+		private final Object transferData;
+
+		static
+		{
+			flavors = new DataFlavor[1];
+			try
+			{
+				flavors[0] = new DataFlavor (
+					URI_FILE_LIST_FLAVOR_TYPE);
+			}
+			catch (ClassNotFoundException ex)
+			{
+				Utils.handleException (ex,
+					"JYMAGTransferHandler.uriFileListFlavor");	// NOI18N
+			}
+		}
+
+		private TestTransferable(Object data)
+		{
+			transferData = data;
+		}
+
+		@Override
+		public DataFlavor[] getTransferDataFlavors()
+		{
+			return flavors;
+		}
+
+		@Override
+		public boolean isDataFlavorSupported(DataFlavor flavor)
+		{
+			return flavor != null && flavor.equals(flavors[0]);
+		}
+
+		@Override
+		public Object getTransferData(DataFlavor flavor)
+			throws UnsupportedFlavorException, IOException
+		{
+			if (flavor != null && flavor.equals(flavors[0]))
+			{
+				return transferData;
+			}
+			return null;
+		}
 	}
 }
