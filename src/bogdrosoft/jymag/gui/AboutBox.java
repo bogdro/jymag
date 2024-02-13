@@ -278,69 +278,63 @@ public class AboutBox extends javax.swing.JDialog
 
 	private void emailLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_emailLabelMouseClicked
 
-		if ( evt.getButton () == MouseEvent.BUTTON1 )
+		if ( evt.getButton () == MouseEvent.BUTTON1
+			&& Desktop.isDesktopSupported () )
 		{
-			if ( Desktop.isDesktopSupported () )
+			try
 			{
-				try
+				Desktop d = Desktop.getDesktop ();
+				if ( d != null
+					&& d.isSupported (Desktop.Action.MAIL) )
 				{
-					Desktop d = Desktop.getDesktop ();
-					if ( d != null
-						&& d.isSupported (Desktop.Action.MAIL) )
-					{
-						d.mail (URI_MAILTO);	// NOI18N
-					}
+					d.mail (URI_MAILTO);	// NOI18N
 				}
-				catch (IOException ex)
-				{
-					Utils.handleException (ex, "Desktop.mail");	// NOI18N
-				}
+			}
+			catch (IOException ex)
+			{
+				Utils.handleException (ex, "Desktop.mail");	// NOI18N
 			}
 		}
 	}//GEN-LAST:event_emailLabelMouseClicked
 
 	private void www1LabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_www1LabelMouseClicked
 
-		if ( evt.getButton () == MouseEvent.BUTTON1 )
+		if ( evt.getButton () == MouseEvent.BUTTON1
+			&& Desktop.isDesktopSupported () )
 		{
-			if ( Desktop.isDesktopSupported () )
+			try
 			{
-				try
+				Desktop d = Desktop.getDesktop ();
+				if ( d != null
+					&& d.isSupported (Desktop.Action.BROWSE) )
 				{
-					Desktop d = Desktop.getDesktop ();
-					if ( d != null
-						&& d.isSupported (Desktop.Action.BROWSE) )
-					{
-						d.browse (URI_WWW1);
-					}
+					d.browse (URI_WWW1);
 				}
-				catch (IOException ex)
-				{
-					Utils.handleException (ex, "Desktop.browse1");	// NOI18N
-				}
+			}
+			catch (IOException ex)
+			{
+				Utils.handleException (ex, "Desktop.browse1");	// NOI18N
 			}
 		}
 	}//GEN-LAST:event_www1LabelMouseClicked
 
 	private void www2LabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_www2LabelMouseClicked
 
-		if ( evt.getButton () == MouseEvent.BUTTON1 )
+		if ( evt.getButton () == MouseEvent.BUTTON1
+			&& Desktop.isDesktopSupported () )
 		{
-			if ( Desktop.isDesktopSupported () )
+			try
 			{
-				try
+				Desktop d = Desktop.getDesktop ();
+				if ( d != null
+					&& d.isSupported (Desktop.Action.BROWSE) )
 				{
-					Desktop d = Desktop.getDesktop ();
-					if ( d != null
-						&& d.isSupported (Desktop.Action.BROWSE) )
-					{
-						d.browse (URI_WWW2);
-					}
+					d.browse (URI_WWW2);
 				}
-				catch (IOException ex)
-				{
-					Utils.handleException (ex, "Desktop.browse2");	// NOI18N
-				}
+			}
+			catch (IOException ex)
+			{
+				Utils.handleException (ex, "Desktop.browse2");	// NOI18N
 			}
 		}
 	}//GEN-LAST:event_www2LabelMouseClicked

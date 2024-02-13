@@ -1634,13 +1634,10 @@ public class DataTransporter
 						{
 							String[] elems = lines[i].trim ().split (Utils.COMMA);
 							String newElem = Utils.EMPTY_STR;
-							if ( elems != null )
+							if ( elems != null && elems.length > 1 )
 							{
-								if ( elems.length > 1 )
-								{
-									newElem = elems[1].trim()
-										.replaceAll (Utils.DQUOT, Utils.EMPTY_STR);
-								}
+								newElem = elems[1].trim()
+									.replaceAll (Utils.DQUOT, Utils.EMPTY_STR);
 							}
 							if ( ! newElem.isEmpty () )
 							{
