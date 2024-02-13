@@ -46,8 +46,6 @@ import static org.mockito.Mockito.*;
  */
 public class DataTransporterTest
 {
-	//private static CommPortIdentifier cpid;
-	//private static DataTransporter dtr;
 	private static final String FILENAME = "test.jpg";
 
 	private static final PhoneElement PICTURE_ELEMENT =
@@ -58,13 +56,6 @@ public class DataTransporterTest
 	@BeforeClass
 	public static void setUpClass () throws Exception
 	{
-		/*
-		id = mock (CommPortIdentifier.class);
-			//new CommPortIdentifierStub ("testPort", null, 0, null);
-		when(id.getName ()).thenReturn ("COMSTUB");
-		when(id.open (anyString (), anyInt ())).thenReturn (new SerialPortStub ());
-		dt = new DataTransporter (id);
-		 */
 		MESSAGE = new PhoneMessage();
 		MESSAGE.setDateTime("08/08/02,06:30:00+00");
 		MESSAGE.setID("1");
@@ -87,12 +78,6 @@ public class DataTransporterTest
 
 	private static DataTransporter prepareDT() throws Exception
 	{
-		/*
-		CommPortIdentifier id = mock (CommPortIdentifier.class);
-			//new CommPortIdentifierStub ("testPort", null, 0, null);
-		when(id.getName ()).thenReturn ("COMSTUB");
-		when(id.open (anyString (), anyInt ())).thenReturn (new SerialPortStub ());
-		*/
 		Object id = new FakeCommPortIdentifier();
 		int speed = 115200;
 		int dataBits = SerialPort.DATABITS_8;
