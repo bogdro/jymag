@@ -1,6 +1,7 @@
 # JYMAG #
 
-JYMAG (Jig Your Music and Graphics) - a program for communicating with mobile phones.
+JYMAG (Jig Your Music and Graphics) - a program for communicating with
+mobile phones.
 
 Its main functionality is retrieving and sending multimedia and other
 objects from and to AT-based phones or devices, like a Sagem mobile phone
@@ -9,7 +10,7 @@ objects from and to AT-based phones or devices, like a Sagem mobile phone
 JYMAG can also be used with other phones and devices (modems) and serve as
 a general-purpose serial port terminal or a Java library for programmers.
 
-Program's website is available at https://jymag.sourceforge.io.
+Program's website is available at <https://jymag.sourceforge.io>.
 
 Author: Bogdan Drozdowski, bogdro (at) users . sourceforge . net
 License:
@@ -19,10 +20,13 @@ License:
 
 See the COPYING file.
 
-# WARNING #
+## WARNING ##
 
-The `dev` branch may contain code which is a work in progress and committed just for tests. The code here may not work properly or even compile.
+The `dev` branch may contain code which is a work in progress and committed
+just for tests. The code here may not work properly or even compile.
 
-The `master` branch may contain code which is committed just for quality tests.
+The `master` branch may contain code which is committed just for
+quality tests.
 
-The tags, matching the official packages on SourceForge, should be the most reliable points.
+The tags, matching the official packages on SourceForge, should be the
+most reliable points.
