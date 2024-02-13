@@ -38,7 +38,7 @@ public class AboutBox extends javax.swing.JDialog
 	private static final long serialVersionUID = 72L;
 	private static final String EMAIL_ADDR = "bogdro@users.sourceforge.net";	// NOI18N
 	private static final String WWW_ADDR1 = "https://jymag.sourceforge.io/";		// NOI18N
-	private static final String WWW_ADDR2 = "http://bogdro.users.sourceforge.net/";	// NOI18N
+	private static final String WWW_ADDR2 = "https://bogdro.users.sourceforge.net/";	// NOI18N
 	private static final URI URI_MAILTO =
 		createURI("mailto", EMAIL_ADDR + "?subject=[SOFT] - JYMAG");		// NOI18N
 	private static final URI URI_WWW1 = createWebURI(WWW_ADDR1);
