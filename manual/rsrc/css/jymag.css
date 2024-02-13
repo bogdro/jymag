@@ -185,7 +185,6 @@ td hr		{	display: none;			}
 }
 
 @media aural {
-
   body		{
   			pitch-range: 50;
   			volume: soft;
