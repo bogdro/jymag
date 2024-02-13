@@ -24,6 +24,7 @@ import bogdrosoft.jymag.Utils;
 import bogdrosoft.jymag.comm.TransferParameters;
 import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
 import bogdrosoft.jymag.gui.MainWindow;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -43,6 +44,9 @@ import static org.mockito.Mockito.when;
  */
 public class PanelUtilsTest
 {
+	private static final String FILENAME = "test.jpg";
+	private static final String FILE_FORMAT = "jpg";
+
 	/**
 	 * Test of putListInTable method, of class PanelUtils.
 	 */
@@ -71,10 +75,11 @@ public class PanelUtilsTest
 		MainWindow mw = createMainWindow();
 		int[] selectedRows = new int[] {0};
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		JFileChooser downloadFC = new JFileChooser();
 		String destDirName = null;
 		PanelUtils.download(mw, selectedRows, elements, downloadFC, destDirName);
+		assertTrue(new File(FILENAME).exists());
 	}
 
 	/**
@@ -83,10 +88,10 @@ public class PanelUtilsTest
 	@Test
 	public void testDownloadNullRows()
 	{
-		System.out.println("delete");
+		System.out.println("testDownloadNullRows");
 		MainWindow mw = createMainWindow();
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		JFileChooser downloadFC = new JFileChooser();
 		String destDirName = null;
 		PanelUtils.download(mw, null, elements, downloadFC, destDirName);
@@ -99,11 +104,11 @@ public class PanelUtilsTest
 	@Test
 	public void testDownloadNullFileChooser()
 	{
-		System.out.println("delete");
+		System.out.println("testDownloadNullFileChooser");
 		MainWindow mw = createMainWindow();
 		int[] selectedRows = new int[] {0};
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		String destDirName = null;
 		PanelUtils.download(mw, selectedRows, elements, null, destDirName);
 		verify(mw, never()).getTransferParameters();
@@ -115,11 +120,11 @@ public class PanelUtilsTest
 	@Test
 	public void testDownloadNoRows()
 	{
-		System.out.println("delete");
+		System.out.println("testDownloadNoRows");
 		MainWindow mw = createMainWindow();
 		int[] selectedRows = new int[0];
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		JFileChooser downloadFC = new JFileChooser();
 		String destDirName = null;
 		PanelUtils.download(mw, selectedRows, elements, downloadFC, destDirName);
@@ -145,7 +150,7 @@ public class PanelUtilsTest
 	@Test
 	public void testUploadNullFileChooser()
 	{
-		System.out.println("upload");
+		System.out.println("testUploadNullFileChooser");
 		MainWindow mw = createMainWindow();
 		PanelUtils.upload(mw, null);
 	}
@@ -161,7 +166,7 @@ public class PanelUtilsTest
 		MainWindow mw = createMainWindow();
 		int[] selectedRows = new int[] {0};
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		PanelUtils.delete(mw, selectedRows, elements);
 	}
 
@@ -171,10 +176,10 @@ public class PanelUtilsTest
 	@Test
 	public void testDeleteNullRows()
 	{
-		System.out.println("delete");
+		System.out.println("testDeleteNullRows");
 		MainWindow mw = createMainWindow();
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		PanelUtils.delete(mw, null, elements);
 		verify(mw, never()).getTransferParameters();
 	}
@@ -185,11 +190,11 @@ public class PanelUtilsTest
 	@Test
 	public void testDeleteNoRows()
 	{
-		System.out.println("delete");
+		System.out.println("testDeleteNoRows");
 		MainWindow mw = createMainWindow();
 		int[] selectedRows = new int[0];
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
-		elements.add(new PhoneElement("1", "jpg", "test.jpg"));
+		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
 		PanelUtils.delete(mw, selectedRows, elements);
 		verify(mw, never()).getTransferParameters();
 	}
@@ -200,7 +205,7 @@ public class PanelUtilsTest
 	@Test
 	public void testDeleteNullElements()
 	{
-		System.out.println("delete");
+		System.out.println("testDeleteNullElements");
 		MainWindow mw = createMainWindow();
 		int[] selectedRows = new int[0];
 		PanelUtils.delete(mw, selectedRows, null);

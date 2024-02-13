@@ -113,7 +113,8 @@ public class DataTransporterTest
 	public void testOpen () throws Exception
 	{
 		System.out.println ("open");
-		prepareDT();
+		DataTransporter dt = prepareDT();
+		assertFalse(dt.isCTS());
 	}
 
 	/**
@@ -277,6 +278,7 @@ public class DataTransporterTest
 		System.out.println ("reopen");
 		DataTransporter dt = prepareDT();
 		dt.reopen ();
+		assertFalse(dt.isCTS());
 	}
 
 	/**

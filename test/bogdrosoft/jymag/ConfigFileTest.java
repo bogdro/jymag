@@ -92,6 +92,7 @@ public class ConfigFileTest
 		System.out.println ("write");
 		ConfigFile instance = new ConfigFile (f);
 		instance.write ();
+		assertTrue(f.length() > 0);
 	}
 
 	/**
