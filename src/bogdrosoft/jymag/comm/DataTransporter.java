@@ -349,7 +349,7 @@ public class DataTransporter
 	 * @throws java.lang.Exception in case port opening or registering an
 	 * event listener failed.
 	 */
-	public void open (int speed, int dataBits, float stopBits, int parity,
+	public void open (int speed, int dataBits, double stopBits, int parity,
 		int flowControl) throws Exception
 	{
 		if ( portID == null )
@@ -388,11 +388,11 @@ public class DataTransporter
 		}
 
 		int sBits = SerialPort.STOPBITS_1;
-		if ( Math.abs (stopBits - 1.5f) < 0.0001 )
+		if ( Math.abs (stopBits - 1.5) < 0.0001 )
 		{
 			sBits = SerialPort.STOPBITS_1_5;
 		}
-		else if ( Math.abs (stopBits - 2.0f) < 0.0001 )
+		else if ( Math.abs (stopBits - 2.0) < 0.0001 )
 		{
 			sBits = SerialPort.STOPBITS_2;
 		}

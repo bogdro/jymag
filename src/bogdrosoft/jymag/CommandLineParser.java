@@ -4,7 +4,6 @@
  * Copyright (C) 2011-2024 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,7 +37,7 @@ public class CommandLineParser
 {
 	private static String destDirName;
 	private static int dBits = 8;
-	private static float sBits = 1;
+	private static double sBits = 1;
 	private static int speed = 115200;
 	private static int flow = 0;
 	private static int parity = 0;
@@ -175,7 +174,7 @@ public class CommandLineParser
 	 * Gets the current number of stop bits.
 	 * @return the current number of stop bits.
 	 */
-	public synchronized static float getSBits ()
+	public synchronized static double getSBits ()
 	{
 		return sBits;
 	}
@@ -269,15 +268,15 @@ public class CommandLineParser
 			int cfgStopBits = cfg.getSBits ();
 			if ( cfgStopBits == 2 )
 			{
-				sBits = 2.0f;
+				sBits = 2.0;
 			}
 			else if ( cfgStopBits == 1 )
 			{
-				sBits = 1.5f;
+				sBits = 1.5;
 			}
 			else
 			{
-				sBits = 1.0f;
+				sBits = 1.0;
 			}
 			flow = cfg.getFlowCtl ();
 			isMax = cfg.getIsMax ();
@@ -524,7 +523,7 @@ public class CommandLineParser
 					else if ( "1.5".equals (nextArg)	// NOI18N
 						|| "1,5".equals (nextArg) )	// NOI18N
 					{
-						sBits = 1.5f;
+						sBits = 1.5;
 					}
 					else
 					{

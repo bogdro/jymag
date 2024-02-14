@@ -33,7 +33,7 @@ public class TransferParameters
 	private final Object id;
 	private final int speed;
 	private final int dataBits;
-	private final float stopBits;
+	private final double stopBits;
 	private final int parity;
 	private final int flow;
 	private final Object sync;
@@ -52,7 +52,7 @@ public class TransferParameters
 		final Object /*CommPortIdentifier*/ cpid,
 		final int pSpeed,
 		final int pDataBits,
-		final float pStopBits,
+		final double pStopBits,
 		final int pParity,
 		final int pFlow,
 		final Object dSync)
@@ -80,7 +80,7 @@ public class TransferParameters
 		final String cpid,
 		final int pSpeed,
 		final int pDataBits,
-		final float pStopBits,
+		final double pStopBits,
 		final int pParity,
 		final int pFlow,
 		final Object dSync)
@@ -116,7 +116,7 @@ public class TransferParameters
 		this (TransferUtils.getIdentifierForPort (cpid),
 			Integer.parseInt (pSpeed),
 			Integer.parseInt (pDataBits),
-			Float.parseFloat (pStopBits),
+			Double.parseDouble(pStopBits),
 			pParity,
 			pFlow,
 			dSync);
@@ -157,7 +157,7 @@ public class TransferParameters
 		}
 		speed = Integer.parseInt (speedCombo.getSelectedItem ().toString ());
 		dataBits = Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ());
-		stopBits = Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ());
+		stopBits = Double.parseDouble(stopBitsCombo.getSelectedItem ().toString ());
 		parity = parityCombo.getSelectedIndex ();
 		flow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
 		sync = dSync;
@@ -189,7 +189,7 @@ public class TransferParameters
 		return speed;
 	}
 
-	public float getStopBits ()
+	public double getStopBits ()
 	{
 		return stopBits;
 	}

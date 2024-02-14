@@ -151,7 +151,7 @@ public class MainWindow extends JFrame
 	// read from the command-line:
 	private static String destDirName;
 	private static int dBits = 8;
-	private static float sBits = 1;
+	private static double sBits = 1;
 	private static int speed = 115200;
 	private static int flow = 0;
 	private static int parity = 0;
@@ -932,15 +932,15 @@ public class MainWindow extends JFrame
 				int stopbits = cfg.getSBits ();
 				if ( stopbits == 1 )
 				{
-					sBits = 1.5f;
+					sBits = 1.5;
 				}
 				else if ( stopbits == 2 )
 				{
-					sBits = 2.0f;
+					sBits = 2.0;
 				}
 				else
 				{
-					sBits = 1.0f;
+					sBits = 1.0;
 				}
 				flow = cfg.getFlowCtl ();
 				isMax = cfg.getIsMax ();
@@ -1141,11 +1141,11 @@ public class MainWindow extends JFrame
 			portCombo.setSelectedItem (portName);
 		}
 		dataBitsCombo.setSelectedItem (String.valueOf (dBits));
-		if ( Math.abs (sBits - 2.0f) < 0.0001 )
+		if ( Math.abs (sBits - 2.0) < 0.0001 )
 		{
 			stopBitsCombo.setSelectedIndex (2);
 		}
-		else if ( Math.abs (sBits - 1.5f) < 0.0001 )
+		else if ( Math.abs (sBits - 1.5) < 0.0001 )
 		{
 			stopBitsCombo.setSelectedIndex (1);
 		}
