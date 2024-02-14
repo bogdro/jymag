@@ -20,7 +20,6 @@
 
 package bogdrosoft.jymag.gui;
 
-import bogdrosoft.jymag.gui.JYMAGFileFilter;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;

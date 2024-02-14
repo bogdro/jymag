@@ -21,6 +21,7 @@ package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.comm.DataTransporter;
 import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
+import java.awt.GraphicsEnvironment;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -33,6 +34,10 @@ public class CapabilityWindowTest
 	@Test
 	public void testConstruct()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		FakeCommPortIdentifier id = new FakeCommPortIdentifier();
 		CapabilityWindow cw = new CapabilityWindow(
 			new DataTransporter (id), null, new Object(), 12
@@ -43,6 +48,10 @@ public class CapabilityWindowTest
 	@Test
 	public void testConstructNullDt()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		CapabilityWindow cw = new CapabilityWindow(
 			null, mw, new Object(), 12.0f
@@ -53,6 +62,10 @@ public class CapabilityWindowTest
 	@Test
 	public void testConstructNullSynchro()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		DataTransporter dt = new DataTransporter(
 			new FakeCommPortIdentifier()
 		);

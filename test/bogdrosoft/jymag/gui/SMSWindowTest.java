@@ -22,6 +22,7 @@ package bogdrosoft.jymag.gui;
 import bogdrosoft.jymag.PhoneMessage;
 import bogdrosoft.jymag.comm.TransferParameters;
 import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
+import java.awt.GraphicsEnvironment;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -35,6 +36,10 @@ public class SMSWindowTest
 	@Test
 	public void testConstructNullTransferParameters()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		PhoneMessage msg = new PhoneMessage();
 		MainWindow mw = new MainWindow();
 		SMSWindow w = new SMSWindow (null, mw, 12.0f, msg);
@@ -44,6 +49,10 @@ public class SMSWindowTest
 	@Test
 	public void testConstructNullMessage()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		TransferParameters tp = new TransferParameters(
 			new FakeCommPortIdentifier(),
 			115200,
@@ -60,9 +69,12 @@ public class SMSWindowTest
 	@Test
 	public void testConstructNullTransferParametersAndMessage()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		SMSWindow w = new SMSWindow (null, mw, 12.0f, null);
 		assertFalse(UiTestHelper.isKeyListenerPresent(w));
 	}
-
 }
