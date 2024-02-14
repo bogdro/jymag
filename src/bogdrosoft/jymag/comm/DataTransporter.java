@@ -1308,7 +1308,7 @@ public class DataTransporter
 				m = Utils.LIST_PATTERN.matcher (lines[i]);
 				if ( m.matches () )
 				{
-					if ( m.group (2).equals ("0") )			// NOI18N
+					if ( "0".equals(m.group (2)) )			// NOI18N
 					{
 						res.add (new PhoneElement (m.group (1),
 							m.group (3), m.group (4) ));

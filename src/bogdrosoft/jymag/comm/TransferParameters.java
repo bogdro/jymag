@@ -159,7 +159,7 @@ public class TransferParameters
 		dataBits = Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ());
 		stopBits = Double.parseDouble(stopBitsCombo.getSelectedItem ().toString ());
 		parity = parityCombo.getSelectedIndex ();
-		flow = ((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0);
+		flow = (flowSoft.isSelected ()? 1 : 0) + (flowHard.isSelected ()? 2 : 0);
 		sync = dSync;
         }
 
