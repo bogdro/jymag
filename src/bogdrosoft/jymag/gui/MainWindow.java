@@ -986,7 +986,7 @@ public class MainWindow extends JFrame
 				cfg.setDataBits (Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()));
 				cfg.setParity (parityCombo.getSelectedIndex ());
 				cfg.setStopBits (stopBitsCombo.getSelectedIndex ());
-				cfg.setFlow (((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0));
+				cfg.setFlow ((flowSoft.isSelected ()? 1 : 0) + (flowHard.isSelected ()? 2 : 0));
 				cfg.setX (getX ());
 				cfg.setY (getY ());
 				cfg.setWidth (getWidth ());
@@ -1262,7 +1262,7 @@ public class MainWindow extends JFrame
 			Integer.parseInt (dataBitsCombo.getSelectedItem ().toString ()),
 			Float.parseFloat (stopBitsCombo.getSelectedItem ().toString ()),
 			parityCombo.getSelectedIndex (),
-			((flowSoft.isSelected ())? 1 : 0) + ((flowHard.isSelected ())? 2 : 0)
+			(flowSoft.isSelected ()? 1 : 0) + (flowHard.isSelected ()? 2 : 0)
 			);
 		return dt;
 	}
