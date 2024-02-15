@@ -457,9 +457,10 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
 			return;
 		}
 		Object source = evt.getSource ();
-		if ( source != null && (source instanceof JButton) )
+		if ( source instanceof JButton )
 		{
-			numberField.setText (numberField.getText () + ((JButton)source).getText ());
+			numberField.setText (numberField.getText ()
+				+ ((JButton)source).getText ());
 		}
 
 	}//GEN-LAST:event_numberButActionPerformed

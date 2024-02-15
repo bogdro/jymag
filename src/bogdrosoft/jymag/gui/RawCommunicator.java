@@ -603,6 +603,9 @@ public class RawCommunicator extends javax.swing.JDialog
 						{
 							Utils.handleException(t,
 								"RawCommunicator.sendFileButActionPerformed");
+						}
+						finally
+						{
 							if (fis != null)
 							{
 								try

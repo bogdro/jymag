@@ -19,6 +19,7 @@
  */
 package bogdrosoft.jymag.gui;
 
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import org.junit.Test;
@@ -33,6 +34,10 @@ public class AboutBoxTest
 	@Test
 	public void testConstruct()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		AboutBox ab = new AboutBox(null, false, 12);
 		assertTrue(UiTestHelper.isKeyListenerPresent(ab));
 	}

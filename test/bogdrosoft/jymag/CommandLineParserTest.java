@@ -66,10 +66,10 @@ public class CommandLineParserTest
 	public void testGetSBits ()
 	{
 		System.out.println ("getSBits");
-		float expResult = 1.5F;
+		double expResult = 1.5;
 		String[] params = {"--stopbits", String.valueOf (expResult)};
 		CommandLineParser.parse (params, SYNC);
-		float result = CommandLineParser.getSBits ();
+		double result = CommandLineParser.getSBits ();
 		assertEquals (expResult, result, 0.0001);
 	}
 

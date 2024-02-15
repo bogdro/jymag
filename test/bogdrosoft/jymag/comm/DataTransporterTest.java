@@ -81,7 +81,7 @@ public class DataTransporterTest
 		Object id = new FakeCommPortIdentifier();
 		int speed = 115200;
 		int dataBits = SerialPort.DATABITS_8;
-		float stopBits = SerialPort.STOPBITS_1;
+		double stopBits = SerialPort.STOPBITS_1;
 		int parity = SerialPort.PARITY_NONE;
 		int flowControl = SerialPort.FLOWCONTROL_NONE;
 		DataTransporter dt = new DataTransporter (id);

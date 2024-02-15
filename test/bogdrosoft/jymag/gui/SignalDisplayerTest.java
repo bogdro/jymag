@@ -21,6 +21,7 @@ package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.comm.DataTransporter;
 import bogdrosoft.jymag.comm.fake.FakeCommPortIdentifier;
+import java.awt.GraphicsEnvironment;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -33,6 +34,10 @@ public class SignalDisplayerTest
 	@Test
 	public void testConstructNullDt()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		SignalDisplayer sd = new SignalDisplayer (
 			null, mw, new Object(), 12.0f
@@ -43,6 +48,10 @@ public class SignalDisplayerTest
 	@Test
 	public void testConstructNullSynchro()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		DataTransporter dt = new DataTransporter(
 			new FakeCommPortIdentifier()
 		);
@@ -56,6 +65,10 @@ public class SignalDisplayerTest
 	@Test
 	public void testConstruct()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		SignalDisplayer sd = constructSignalDisplayer();
 		assertTrue(UiTestHelper.isKeyListenerPresent(sd));
 	}
@@ -63,6 +76,10 @@ public class SignalDisplayerTest
 	@Test
 	public void testSetLevelZero()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		SignalDisplayer sd = constructSignalDisplayer();
 		sd.setLevel(0);
 	}

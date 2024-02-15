@@ -349,7 +349,7 @@ public class DataTransporter
 	 * @throws java.lang.Exception in case port opening or registering an
 	 * event listener failed.
 	 */
-	public void open (int speed, int dataBits, float stopBits, int parity,
+	public void open (int speed, int dataBits, double stopBits, int parity,
 		int flowControl) throws Exception
 	{
 		if ( portID == null )
@@ -388,11 +388,11 @@ public class DataTransporter
 		}
 
 		int sBits = SerialPort.STOPBITS_1;
-		if ( Math.abs (stopBits - 1.5f) < 0.0001 )
+		if ( Math.abs (stopBits - 1.5) < 0.0001 )
 		{
 			sBits = SerialPort.STOPBITS_1_5;
 		}
-		else if ( Math.abs (stopBits - 2.0f) < 0.0001 )
+		else if ( Math.abs (stopBits - 2.0) < 0.0001 )
 		{
 			sBits = SerialPort.STOPBITS_2;
 		}
@@ -1308,7 +1308,7 @@ public class DataTransporter
 				m = Utils.LIST_PATTERN.matcher (lines[i]);
 				if ( m.matches () )
 				{
-					if ( m.group (2).equals ("0") )			// NOI18N
+					if ( "0".equals(m.group (2)) )			// NOI18N
 					{
 						res.add (new PhoneElement (m.group (1),
 							m.group (3), m.group (4) ));

@@ -313,7 +313,7 @@ public class ConfigFile
 			w.newLine ();
 			w.write ("height = " + height);	// NOI18N
 			w.newLine ();
-			w.write ("ismax = " + ((isMax)? 1 : 0));	// NOI18N
+			w.write ("ismax = " + (isMax? 1 : 0));	// NOI18N
 			w.newLine ();
 			w.write ("font_size = " + fontSize);	// NOI18N
 			w.newLine ();

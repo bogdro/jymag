@@ -20,6 +20,7 @@
 package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.Utils;
+import java.awt.GraphicsEnvironment;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -41,6 +42,10 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNoDropJavaFileListFlavor()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());
@@ -56,6 +61,10 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNull()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(
 			new MainWindow()
 		);
@@ -68,6 +77,10 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportWrongType()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new StringSelection("aaa");
@@ -82,6 +95,10 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNonDrop()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());
@@ -97,6 +114,10 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNonCopy()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());
@@ -112,6 +133,10 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testImportData()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());

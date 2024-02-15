@@ -19,6 +19,7 @@
  */
 package bogdrosoft.jymag.gui;
 
+import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JFrame;
@@ -37,6 +38,10 @@ public class EscKeyListenerTest
 	@Test
 	public void testInstall()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		JFrame f = new JFrame();
 		EscKeyListener listener = new EscKeyListener(f);
 		listener.install();
@@ -57,6 +62,10 @@ public class EscKeyListenerTest
 	@Test
 	public void testKeyTyped()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		JFrame f = new JFrame();
 		EscKeyListener listener = new EscKeyListener(f);
 		listener.install();
@@ -71,6 +80,10 @@ public class EscKeyListenerTest
 	@Test
 	public void testKeyTypedNullFrame()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		EscKeyListener listener = new EscKeyListener(null);
 		listener.install();
 		listener.keyTyped(
@@ -84,6 +97,10 @@ public class EscKeyListenerTest
 	@Test
 	public void testKeyTypedNullEvent()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		JFrame f = new JFrame();
 		EscKeyListener listener = new EscKeyListener(f);
 		listener.install();
@@ -96,6 +113,10 @@ public class EscKeyListenerTest
 	@Test
 	public void testToString()
 	{
+		if (GraphicsEnvironment.isHeadless())
+		{
+			return;
+		}
 		String name = "testName";
 		JFrame f = new JFrame();
 		f.setName(name);
