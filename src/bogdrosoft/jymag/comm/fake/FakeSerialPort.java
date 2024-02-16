@@ -149,6 +149,11 @@ public class FakeSerialPort extends SerialPort
 		return rts;
 	}
 
+	public void setCTS( boolean state )
+	{
+		cts = state;
+	}
+
 	@Override
 	public boolean isCTS()
 	{
