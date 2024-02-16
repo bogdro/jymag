@@ -68,7 +68,7 @@ Project homepage: https://jymag.sourceforge.io
 		<!-- Version numbers: -->
 		<rxtx.version>2.1-7r2-6</rxtx.version>
 		<junit.version>4.13.2</junit.version>
-		<mockito.version>5.5.0</mockito.version>
+		<mockito.version>5.10.0</mockito.version>
 	</properties>
 
 	<dependencies>
