@@ -5,3 +5,10 @@ lib
 *.bz2
 *.exe
 /target/
+JYMAG-manual-*.pdf
+setup/AUTHORS
+setup/ChangeLog
+setup/INSTALL
+setup/README
+setup/THANKS
+setup/license.txt
