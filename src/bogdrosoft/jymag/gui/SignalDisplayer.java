@@ -280,7 +280,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 		exit ();
 	}//GEN-LAST:event_formWindowClosing
 
-	private void exit ()
+	void exit ()
 	{
 		runUpdater = false;
 		if ( updater != null )
