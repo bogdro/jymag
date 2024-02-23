@@ -248,7 +248,7 @@ dist/javadoc:	$(shell find src) Makefile
 # Manuals
 ###########################################################################
 
-manual: $(FILE_MANUAL_EN) $(FILE_MANUAL_PL)
+manual: manual/rsrc/jymag-icon.png $(FILE_MANUAL_EN) $(FILE_MANUAL_PL)
 
 $(FILE_MANUAL_EN): manual/en/*.html manual/rsrc/css/* manual/en/rsrc/* \
 	manual/pl/rsrc/* manual/rsrc/license.html Makefile
