@@ -410,7 +410,8 @@ installer-signed-clean:
 #icons: src/bogdrosoft/jymag/rsrc/*.png setup/jymag.ico
 # Generate the icons for each SVG file found. This way we generate also the
 # missing PNG files and not just the ones that exist but are older.
-SVG_ICONS = $(shell $(LS) src/bogdrosoft/jymag/rsrc/*.svg)
+SVG_ICONS = $(shell $(LS) src/bogdrosoft/jymag/rsrc/*.svg) \
+	manual/rsrc/jymag-icon.svg
 PNG_ICONS = $(SVG_ICONS:%.svg=%.png)
 
 icons:	$(PNG_ICONS)
