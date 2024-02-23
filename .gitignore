@@ -3,6 +3,7 @@ build
 dist
 lib
 *.bz2
+*.asc
 *.exe
 /target/
 JYMAG-manual-*.pdf
