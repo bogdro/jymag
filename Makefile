@@ -35,8 +35,6 @@ LS		= /bin/ls
 PACK		= /bin/tar $(PACK_GNUOPTS) -jcf
 PACK		= tar jcf
 PACK_EXT	= tar.bz2
-PACK_EXCL_SRC	= ../jymag.exclude
-PACK_OTPS	= --exclude-from=$(PACK_EXCL_SRC)
 SED		= sed
 SED_OPTS	= -i
 SHELL		= sh
@@ -180,8 +178,27 @@ $(FILE_ARCH_SRC): clean Makefile
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
 	$(MOVE) ../$(DIR_TMP_DIST) .
-	$(TOUCH) $(PACK_EXCL_SRC)
-	$(PACK) $(FILE_ARCH_SRC) $(PACK_OTPS) $(DIR_TMP_DIST)
+	$(PACK) $(FILE_ARCH_SRC)			\
+		$(DIR_TMP_DIST)/AUTHORS			\
+		$(DIR_TMP_DIST)/build.xml		\
+		$(DIR_TMP_DIST)/ChangeLog		\
+		$(DIR_TMP_DIST)/COPYING			\
+		$(DIR_TMP_DIST)/dist			\
+		$(DIR_TMP_DIST)/INSTALL			\
+		$(DIR_TMP_DIST)/jymag.desktop		\
+		$(DIR_TMP_DIST)/Makefile		\
+		$(DIR_TMP_DIST)/manifest.mf		\
+		$(DIR_TMP_DIST)/manual			\
+		$(DIR_TMP_DIST)/nbproject		\
+		$(DIR_TMP_DIST)/NEWS			\
+		$(DIR_TMP_DIST)/pom.xml			\
+		$(DIR_TMP_DIST)/README			\
+		$(DIR_TMP_DIST)/run*.sh			\
+		$(DIR_TMP_DIST)/run*.bat		\
+		$(DIR_TMP_DIST)/setup			\
+		$(DIR_TMP_DIST)/src			\
+		$(DIR_TMP_DIST)/test			\
+		$(DIR_TMP_DIST)/THANKS
 	$(DEL) $(DIR_TMP_DIST)
 	$(GNUPG_SIGNER) $(FILE_ARCH_SRC)
 
@@ -194,21 +211,20 @@ $(FILE_ARCH_BIN):	manual jar Makefile
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
 	$(MOVE) ../$(DIR_TMP_DIST) .
-	$(TOUCH) $(PACK_EXCL_SRC)
-	$(PACK) $(FILE_ARCH_BIN) $(PACK_OTPS)		\
+	$(PACK) $(FILE_ARCH_BIN)			\
 		$(DIR_TMP_DIST)/AUTHORS			\
-		$(DIR_TMP_DIST)/COPYING			\
 		$(DIR_TMP_DIST)/ChangeLog		\
-		$(DIR_TMP_DIST)/INSTALL			\
-		$(DIR_TMP_DIST)/README			\
+		$(DIR_TMP_DIST)/COPYING			\
 		$(DIR_TMP_DIST)/dist			\
-		$(DIR_TMP_DIST)/run*.sh			\
-		$(DIR_TMP_DIST)/run*.bat		\
+		$(DIR_TMP_DIST)/INSTALL			\
+		$(DIR_TMP_DIST)/jymag.desktop		\
 		$(DIR_TMP_DIST)/manual			\
 		$(DIR_TMP_DIST)/pom.xml			\
+		$(DIR_TMP_DIST)/README			\
+		$(DIR_TMP_DIST)/run*.sh			\
+		$(DIR_TMP_DIST)/run*.bat		\
 		$(DIR_TMP_DIST)/$(NAME)-manual-*.pdf	\
-		$(DIR_TMP_DIST)/THANKS			\
-		$(DIR_TMP_DIST)/jymag.desktop
+		$(DIR_TMP_DIST)/THANKS
 	$(DEL) $(DIR_TMP_DIST)
 	$(GNUPG_SIGNER) $(FILE_ARCH_BIN)
 
@@ -220,8 +236,7 @@ $(FILE_ARCH_JAVADOC):	dist/javadoc Makefile
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
 	$(MOVE) ../$(DIR_TMP_DIST) .
-	$(TOUCH) $(PACK_EXCL_SRC)
-	$(PACK) $(FILE_ARCH_JAVADOC) $(PACK_OTPS) $(DIR_TMP_DIST)/dist/javadoc
+	$(PACK) $(FILE_ARCH_JAVADOC) $(DIR_TMP_DIST)/dist/javadoc
 	$(DEL) $(DIR_TMP_DIST)
 	$(GNUPG_SIGNER) $(FILE_ARCH_JAVADOC)
 
