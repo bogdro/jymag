@@ -60,7 +60,7 @@ public class Starter
 		{
 			MainWindow.start (args);
 		}
-		catch (ClassNotFoundException ex)
+		catch (Throwable ex)
 		{
 			Utils.handleException (ex, "*** " + START_ERROR + " ***"); // NOI18N
 			UiUtils.showErrorMessage(null, START_ERROR);
