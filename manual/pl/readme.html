@@ -1,19 +1,23 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <HTML lang="pl">
-<HEAD>
+<HEAD profile="http://www.w3.org/2005/10/profile">
 <META HTTP-EQUIV="Content-Type"       CONTENT="text/html; charset=ISO-8859-2">
 <META HTTP-EQUIV="Content-Language"   CONTENT="pl">
 <META http-equiv="Content-Style-Type" content="text/css">
 <META HTTP-EQUIV="X-Frame-Options"    CONTENT="DENY">
 <LINK rel="stylesheet" href="../rsrc/css/jymag.css" type="text/css">
+<link rel="icon" type="image/svg+xml" href="../rsrc/jymag-icon-phone.svg">
 
 <TITLE> Informacje o programie - JYMAG </TITLE>
+
+<link rel="Start"    hreflang="pl" lang="en" href="index.html">
+<link rel="Contents" hreflang="pl" lang="en" href="index.html">
 
 <META NAME="Author" CONTENT="Bogdan D.">
 <META NAME="Description" CONTENT="JYMAG - Jig Your Music And Graphics">
 <META NAME="Keywords" CONTENT="Free Software, GPL, Linux, JYMAG, Java, RxTx, Sagem, mobile, Linux">
-<META NAME="Language" CONTENT="en">
+<META NAME="Language" CONTENT="pl">
 <META NAME="Generator" CONTENT="KWrite/Kate; www.kate-editor.org">
 </HEAD><BODY>
 
@@ -67,7 +71,11 @@ Licencja MIT na pomocnicze programy uruchamiające (jymag*.exe). Zobacz plik COPY
  	powinno wystarczyć. Jeśli nie, należy dodać mu uprawnienia do zapisu w katalogu <code>/var/lock</code>.</li>
 </ul>
 <p>
-Korzystając z <a href="https://netbeans.apache.org/" hreflang="en">Apache NetBeans</a>: otwórz katalog JYMAG jako projekt NetBeans i kliknij
+Uruchom <code>ant jar</code> w katalogu JYMAG, aby zbudować aplikację.
+</p>
+<p>
+Korzystając z <a href="https://netbeans.apache.org/" hreflang="en" lang="en">Apache NetBeans</a>:
+otwórz katalog JYMAG jako projekt NetBeans i kliknij
  <span lang="en">"Run"</span> (lub wciśnij <kbd>F6</kbd>).
 </p><p>
 Ręcznie (po rozpakowaniu):</p>
@@ -120,7 +128,9 @@ Możesz też zrobić jedną z następujących rzeczy:
  	powinno wystarczyć. Jeśli nie, należy dodać mu uprawnienia do zapisu w katalogu <code>/var/lock</code>.</li>
 </ul>
 <p>
-Korzystając z Apache NetBeans: otwórz katalog JYMAG jako projekt NetBeans, kliknij prawym
+Korzystając z Apache NetBeans: wybierz konfigurację <q>English</q> z listy na górze i kliknij
+przycisk "Run".<br>
+Możesz także otworzyć katalog JYMAG jako projekt NetBeans, kliknij prawym
  przyciskiem na główny element projektu w drzewie projektu po lewej stronie okna
  (podoknie <span lang="en">"Projects"</span>), po czym kliknij <span lang="en">"Properties"</span>.
 W drzewie kliknij <span lang="en">"Run"</span> i wpisz</p>
@@ -177,13 +187,14 @@ Możesz też zrobić jedną z następujących rzeczy:
 </ul>
 
 <p>
-Kompilacja z wykorzystaniem Apache NetBeans: otwórz katalog JYMAG jako projekt NetBeans i kliknij
+Kompilacja z wykorzystaniem <span lang="en">Apache NetBeans</span>:
+otwórz katalog JYMAG jako projekt <span lang="en">NetBeans</span> i kliknij
  <span lang="en">"Build Main Project"</span> (lub wciśnij <kbd>F11</kbd>), jeśli to jest główny projekt
  (wytłuszczona czcionka). Jeśli to nie jest główny projekt, kliknij prawym na ikonę projektu JYMAG
  i kliknij <span lang="en">"Build"</span>.
 </p>
 <p>
-Kompilacja z wykorzystaniem "ant" z NetBeans (może być wymagane podanie pełnej
+Kompilacja z wykorzystaniem "ant" z <span lang="en">NetBeans</span> (może być wymagane podanie pełnej
  ścieżki do programu "ant"):
 </p>
 <pre>
@@ -222,6 +233,10 @@ co działa. Włącz transmisję w telefonie, jeśli trzeba. Jeśli korzystasz z kabla,
 w konfiguracji prędkość automatyczną.
 </p>
 <p>
+Domyślne parametry JYMAG powinny działać w większości przypadków.
+Jeśli trzeba, możesz ustawić parametry portu ręcznie.
+</p>
+<p>
 Nie ma potrzeby łączyć się z telefonem. Zacznij od wybrania karty, która Cię
 interesuje (zdjęcia, dzwonki, ...). Kliknij "Pobierz listę" (<span lang="en">"Get list"</span>), aby
 połączyć się z telefonem i pobrać listę elementów. Zaznacz elementy, które
@@ -234,7 +249,8 @@ Pobieranie listy nie jest wymagane. Możesz też przeciągnąć i upuścić pliki, któr
 na dowolną z tabel (za wyjątkiem budzików i wiadomości SMS).
 </p>
 <p>
-Aby edytować budzik, kliknij dwukrotnie komórkę tabeli. Zachowaj niezmieniony format danych.
+Aby edytować budzik, kliknij dwukrotnie komórkę tabeli. Zmień wartości, ale
+zachowaj niezmieniony format danych.
 </p>
 <p>
 Aby odczytać wiadomość SMS, zaznacz ją w tabeli i wybierz "Pobierz zaznaczone"
@@ -451,8 +467,12 @@ prawym klawiszem na wybrany plik i wybierz <span lang="en">"Open"</span>. Edytuj
 
 
 <p>
-Wszelkie defekty, problemy i propozycje usprawnień mogą być zgłaszane przez e-mail (adres możesz znaleźć na górze tego pliku) lub przez
-<a href="https://sourceforge.net/p/jymag/defects/" hreflang="en">stronę zarządzania defektami na SourceForge</a>.
+Wszelkie defekty i problemy mogą być zgłaszane przez e-mail (adres możesz znaleźć na górze tego pliku) lub przez
+<a href="https://sourceforge.net/p/jymag/defects/" hreflang="en">stronę zarządzania defektami na SourceForge</a> (po angielsku).
+</p>
+<p>
+Wszelkie propozycje usprawnień mogą być zgłaszane przez e-mail (adres możesz znaleźć na górze tego pliku) lub przez
+<a href="https://sourceforge.net/p/jymag/tickets/" hreflang="en">stronę zarządzania zgłoszeniami na SourceForge</a> (po angielsku).
 </p>
 <ol>
  <li> Sprawdź, czy masz najnowszą wersję JYMAG.<br><br></li>

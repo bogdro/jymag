@@ -3,5 +3,14 @@ build
 dist
 lib
 *.bz2
+*.asc
 *.exe
 /target/
+JYMAG-manual-*.pdf
+manual/rsrc/jymag-icon.png
+setup/AUTHORS
+setup/ChangeLog
+setup/INSTALL
+setup/README
+setup/THANKS
+setup/license.txt

@@ -1,3 +1,159 @@
+2024-02-27	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
+
+	* JYMAG version 3.1:
+	  This is mostly a maintenance release. No new features are present.
+	  Fixes in the user interface. Defect fixes. Improvements in error
+	  handling. Many fixes in coding style and quality. Improvements in
+	  the testing area and many new tests added (current coverage: 67% and
+	  33% in headless mode). Updates in the build system. Updates in the
+	  documentation. Verified to start under Java version 21.
+	* src/**/*.java, Makefile, jymag.desktop, setup/launch4j-jymag*.xml,
+	  ChangeLog, test/**/*.java: Updated the copyright.
+	* UiUtils.java (showErrorMessage): Use the provided Component when
+	  displaying the error window.
+	* EscKeyListener.java (toString): Avoid a potential NPE.
+	* Utils.java (handleException): Show also the causing exceptions. Add
+	  a flag to display all exceptions in the stack trace.
+	* Utils.java (sleepIgnoreException): Add a wrapper around Thread.sleep
+	  that ignores exceptions.
+	* AboutBox.{form,java}: Set the UI properties using the designer and
+	  not in the constructor. Deleted the untranslated word "for".
+	* AboutBox.java (www1LabelMouseClicked, www2LabelMouseClicked): Use
+	  the already-obtained Desktop instance.
+	* ConfigFile.java (read, readIntUsingMatcher): Move common code for
+	  parsing integers to a separate method. Change Matchers to local
+	  variables.
+	* Utils.java (UncExHndlr): Add a method to set the uncaught exception
+	  handler for GUI threads.
+	* MainWindow.java (MainWindow): Set the uncaught exception handler
+	  using the new method.
+	* UiUtils.java (changeSizeToScreen): Updated from WipeFreeSpaceGUI2.
+	* MainWindow.java (updateControls): Set the data bits as read from the
+	  configuration file. Use the updated UiUtils.changeSizeToScreen(),
+	  fixing window resizing on configuration load.
+	* CapabilityWindow.java (CapabilityWindow): Set the UI properties
+	  using the designer and not in the constructor.
+	* CapabilityWindow.java, RawCommunicator.java, SignalDisplayer.java:
+	  Layout fixes.
+	* RawCommunicator.java (RawCommunicator): Set the UI properties using
+	  the designer and not in the constructor.
+	* UiUtils.java (createTableModel): A new method for creating UI table
+	  models.
+	* TransferUtils.java (downloadAlarmList, downloadMessageList): Use the
+	  new method for creating UI table models, fixing the editable table
+	  with messages.
+	* PanelUtils.java (upload): Check for null file chooser.
+	* PhoneElement.java (equals, hashCode): Added methods.
+	* PhoneAlarm.java (equals, hashCode): Added methods.
+	* PhoneAlarm.java (PhoneAlarm, parseReponse): Set milliseconds to 0
+	  when parsing.
+	* PhoneMessage.java (equals, hashCode): Added methods.
+	* TransferUtils.java (performOperation): When an exception occurs in
+	  the called operation, return a non-zero code (in some Java versions,
+	  the done() method seems not to be called).
+	* src/bogdrosoft/jymag/gui/panels/*.java: Added missing @Override
+	  annotations.
+	* JYMAGTab.java: Removed redundant "public" qualifiers.
+	* UiUtils.java (getFontSize): Removed unnecessary null check.
+	* JYMAGTransferHandler.java (importData): Removed unnecessary null
+	  check.
+	* FakeSerialPort.java (setBaudBase, setDivisor, setCallOutHangup):
+	  Fixed parameter naming.
+	* FakeDevice.java (sendReply): Document an empty 'catch' block.
+	* TransferUtils.java (sendFileAsCommands): Close the file input stream
+	  in a 'finally' block.
+	* DataTransporter.SPL (serialEvent): Add a 'default' case.
+	* DataTransporter.java (getList, getAlarms, getMessages): Return empty
+	  lists instead of null.
+	* DataTransporter.java (sendPIN): Fixed parameter naming.
+	* DataTransporter.java (putFile, getFile): Close the input streams in
+	  a 'finally' block.
+	* Utils.UncExHndlr (uncaughtException): Document an empty 'catch'
+	  block.
+	* Starter.java (redirectStderrToFile): Log exceptions.
+	* PhoneElement.java (getExt): Compare literals to variables.
+	* PhoneElement.java (PhoneElement): Renamed parameter.
+	* ConfigFile.java (read, write): Close the streams in 'finally' blocks.
+	* CommandLineParser.java (readConfig): Renamed variable.
+	* CommandLineParser.java (parse): Compare literals to variables.
+	* AboutBox.java (emailLabelMouseClicked, www1LabelMouseClicked,
+	  www2LabelMouseClicked): Combined if-statements (code quality).
+	* PhoneAlarm.java (setDays): Combined if-statements (code quality).
+	* DataTransporter.java (getSubscriberNumbers): Combined if-statements
+	  (code quality).
+	* AboutBox.java: Changed SourceForge URL to https.
+	* CommandLineParser.java, TransferParameters.java, MainWindow.java:
+	  Changed "stop bits" to type double.
+	* DataTransporter.java (open): Changed "stop bits" to type double.
+	* DialPanel.java (numberButActionPerformed): Removed unnecessary
+	  null check.
+	* RawCommunicator.java (sendFileButActionPerformed): Close the input
+	  stream in a 'finally' block.
+	* src/**/*.java: Renamed constant private fields to upper-case.
+	* {src,test}/**/*.java: Code quality fixes, as recommended by Apache
+	  NetBeans, Semgrep, Codacy, SonarCloud.
+	* setup/jymag.nsi: Changed the description of the installer. Added a
+	  license block. Removed the area for descriptions of installer
+	  components. Fixed typo.
+	* run*: Added license blocks.
+	* pom.xml: Added Apache Maven project configuration file (for quality
+	  tests in SonarCloud).
+	* Makefile: Added the pom.xml file to the distribution and added
+	  substituting the version number there. Put the JYMAG's name in a
+	  variable. Added commented-out code for GNU tar format using BSD tar.
+	  Updated generating icons from WipeFreeSpaceGUI2. Simplified 'sed'
+	  expressions used to update the launch4j script. Renamed the copies
+	  of the launch4j launchers. Stop using the exclude file when packing
+	  archives - use a file list instead. Generate the manual PNG icon
+	  from the SVG icon and make the 'manual' target depend on it.
+	* src/bogdrosoft/jymag/i18n: Fixed wrong values, keys and typos.
+	* {src,test}/{BogDroSoft => bogdrosoft}: Renamed package.
+	* test/bogdrosoft/jymag/gui/UiUtilsTest.java: Created a new test, for
+	  the UiUtils class, moved some tests from the UtilsTest.java file.
+	* FakeDevice.java (checkForCommandInBuffer): Return incremental signal
+	  power values on each call, modulo 32, instead of random values. Fixed
+	  returning the number of alarms. Fixed sending and returning messages.
+	  Fixed capabilities.
+	* AboutBoxTest.java: Added a test for the AboutBox class.
+	* CapabilityWindowTest.java: Added a test for the CapabilityWindow
+	  class.
+	* EscKeyListenerTest.java: Added a test for the EscKeyListener class.
+	* JYMAGTransferHandlerTest.java: Added a test for the
+	  JYMAGTransferHandler class.
+	* MainWindowTest.java: Added a test for the MainWindow class.
+	* RawCommunicatorTest.java: Added a test for the RawCommunicator class.
+	* SMSWindowTest.java: Added a test for the SMSWindow class.
+	* SignalDisplayerTest.java: Added a test for the SignalDisplayer class.
+	* UiUtilsTest.java: Disabled an interactive test, other cleanup.
+	* PanelUtilsTest.java: Added a test for the PanelUtils class.
+	* UiTestHelper.java: Added a utility class for user interface tests.
+	* FakeSerialPort.java (isCTS, setCTS): Use a variable for the CTS
+	  signal instead of a random value.
+	* DataTransporterTest.java: Use the fake classes and enable more tests.
+	  Remove references to SerialPortStub.
+	* TransferParametersTest.java: Added a test for the TransferParameters
+	  class.
+	* TransferUtilsTest.java: Added a test for the TransferUtils class.
+	* SerialPortStub.java: File deleted (replaced by FakeSerialPort).
+	* CommandLineParserTest.java (testGetSBits): Adapted to "stop bits"
+	  changed to type double.
+	* DataTransporterTest.java (prepareDT): Adapted to "stop bits" changed
+	  to type double.
+	* test: Enabled more existing unit tests.
+	* COPYING,src/BogDroSoft/jymag/rsrc/GNU-GPLv3.txt: Mark the last
+	  license text as being the license for the installers.
+	* README.md: Updated with information from README.
+	* manual/*/readme.html: Added links to the ticket manager. Added build
+	  instructions based on Apache Ant. Added an easier method for running
+	  the program in English, without translations. Added clarifications
+	  in the GUI usage.
+	* manual/en/tables.html: Changed the layout of the tabs' pictures to
+	  fit all better.
+	* manual/en/{index,readme}.html: Grammar fixes.
+	* manual/*/*.html: Added HTML navigation. Added the icon to pages.
+	* manual/*/index.html, manual/rsrc/{jymag-icon.svg,css/jymag.css}:
+	  Added the SourceForge project icon on index pages.
+
 2022-01-27	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 3.0:

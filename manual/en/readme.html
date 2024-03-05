@@ -1,14 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <HTML lang="en">
-<HEAD>
+<HEAD profile="http://www.w3.org/2005/10/profile">
 <META HTTP-EQUIV="Content-Type"       CONTENT="text/html; charset=ISO-8859-1">
 <META HTTP-EQUIV="Content-Language"   CONTENT="en">
 <META http-equiv="Content-Style-Type" content="text/css">
 <META HTTP-EQUIV="X-Frame-Options"    CONTENT="DENY">
 <LINK rel="stylesheet" href="../rsrc/css/jymag.css" type="text/css">
+<link rel="icon" type="image/svg+xml" href="../rsrc/jymag-icon-phone.svg">
 
 <TITLE> Read Me - JYMAG </TITLE>
+
+<link rel="Start"    hreflang="en" lang="en" href="index.html">
+<link rel="Contents" hreflang="en" lang="en" href="index.html">
 
 <META NAME="Author" CONTENT="Bogdan D.">
 <META NAME="Description" CONTENT="JYMAG - Jig Your Music And Graphics">
@@ -67,6 +71,9 @@ MIT License for the launching helper programs (jymag*.exe). See the COPYING file
   add write permissions to the <code>/var/lock</code> directory.</li>
 </ul>
 <p>
+Run <code>ant jar</code> in the JYMAG directory to build the application.
+</p>
+<p>
 Using <a href="https://netbeans.apache.org/" hreflang="en">Apache NetBeans</a>: open the JYMAG directory as a NetBeans Project
  and click "Run" (or press <kbd>F6</kbd>).
 </p><p>
@@ -120,7 +127,9 @@ You can also do one of the following:
   add write permissions to the <code>/var/lock</code> directory.</li>
 </ul>
 <p>
-Using Apache NetBeans: open the JYMAG folder as a NetBeans Project,
+Using Apache NetBeans: choose the <q>English</q> configuration from the dropdown menu at the top
+and click the "Run" button.<br>
+You can also open the JYMAG folder as a NetBeans Project,
  right-click the project's root element in the project's tree on the
  left side of the window (the "Projects" sub-window), then click "Properties".
  Click "Run" in the tree and put</p>
@@ -221,11 +230,15 @@ Phone setup: connect it to the computer using a cable or IrDA or
  If using a cable, select "Automatic speed" in the configuration.
 </p>
 <p>
+The default parameters in JYMAG should work in most cases.
+If needed, you can set the port parameters manually.
+</p>
+<p>
 No need to connect to the phone. Start by selecting the tab you're
  interested in (photos, ringtones, ...). Click on "Get list" to connect
  to the phone and get the list of elements. Select the elements you wish
  to download and click "Download selected". Choose the destination directory.
- The downloaded files will show up in selected location.
+ The downloaded files will show up in the selected location.
 </p>
 <p>
 To upload an element, simply click the "Upload" button. Getting the
@@ -233,8 +246,8 @@ To upload an element, simply click the "Upload" button. Getting the
  on any of the tables (except the alarms and SMS messages).
 </p>
 <p>
-To edit an alarm, double click the cell in the table. Keep the format
- unchanged.
+To edit an alarm, double click the cell in the table. Edit the values, but
+keep the format unchanged.
 </p>
 <p>
 To read an SMS message, select it in the table and choose "Download selected".
@@ -464,8 +477,12 @@ To translate the program to your language, make a copy of each *.properties
 
 
 <p>
-Any defects, issues or improvement suggestions can be reported by e-mail (you can find it at the top of this file) or in the
+Any defects or issues can be reported by e-mail (you can find it at the top of this file) or in the
 <a href="https://sourceforge.net/p/jymag/defects/" hreflang="en">SourceForge project defect manager</a>.
+</p>
+<p>
+Any improvement suggestions can be reported by e-mail (you can find it at the top of this file) or in the
+<a href="https://sourceforge.net/p/jymag/tickets/" hreflang="en">SourceForge project ticket manager</a>.
 </p>
 <ol>
  <li> Check if you have the newest versions of JYMAG.<br><br></li>

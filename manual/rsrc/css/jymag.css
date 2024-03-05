@@ -52,6 +52,10 @@ img		{
 			border-style: none;
 		}
 
+h1 img		{
+			vertical-align: middle;
+		}
+
 img:focus	{
 			border-style: none;
 			outline-width: 0px;

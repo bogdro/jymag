@@ -90,8 +90,10 @@ public class SignalDisplayerTest
 			new FakeCommPortIdentifier()
 		);
 		MainWindow mw = new MainWindow();
-		return new SignalDisplayer (
+		SignalDisplayer sd = new SignalDisplayer (
 			dt, mw,	new Object(), 12.0f
 		);
+		sd.exit();
+		return sd;
 	}
 }
