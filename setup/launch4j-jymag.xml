@@ -24,12 +24,12 @@
     <runtimeBits>32/64</runtimeBits>
   </jre>
   <versionInfo>
-    <fileVersion>3.0.0.0</fileVersion>
-    <txtFileVersion>3.0</txtFileVersion>
+    <fileVersion>3.1.0.0</fileVersion>
+    <txtFileVersion>3.1</txtFileVersion>
     <fileDescription>JYMAG launcher</fileDescription>
     <copyright>Bogdan &apos;bogdro&apos; Drozdowski 2008-2024</copyright>
-    <productVersion>3.0.0.0</productVersion>
-    <txtProductVersion>3.0</txtProductVersion>
+    <productVersion>3.1.0.0</productVersion>
+    <txtProductVersion>3.1</txtProductVersion>
     <productName>JYMAG</productName>
     <companyName></companyName>
     <internalName>JYMAG</internalName>
