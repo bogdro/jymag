@@ -460,7 +460,7 @@ public class Utils
 							// let's display only our files
 							if ( ! DEBUG_EXCEPTIONS
 								&& ! clazz.startsWith
-								("BogDro") )	// NOI18N
+								("bogdro") )	// NOI18N
 							{
 								continue;
 							}
