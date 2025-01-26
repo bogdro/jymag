@@ -20,6 +20,7 @@
 
 package bogdrosoft.jymag.gui;
 
+import bogdrosoft.jymag.Utils;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
@@ -115,7 +116,7 @@ public class EscKeyListener extends KeyAdapter
 	public String toString ()
 	{
 		return "EscKeyListener("	// NOI18N
-                        + ((frame != null)? frame.getName () : "")
+                        + ((frame != null)? frame.getName () : Utils.EMPTY_STR)
                         + ")";	// NOI18N
 	}
 }

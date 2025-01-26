@@ -183,6 +183,7 @@ Project homepage: https://jymag.sourceforge.io
 								</goals>
 								<configuration>
 									<formats>
+										<format>HTML</format>
 										<format>XML</format>
 									</formats>
 								</configuration>
