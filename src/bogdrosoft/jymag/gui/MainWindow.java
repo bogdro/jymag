@@ -182,14 +182,28 @@ public class MainWindow extends JFrame
 		initComponents ();
 
 		//setTitle (getTitle () + " " + JYMAG_VERSION);	// NOI18N
-		fontSizeSpin.setValue (fontSizeSpin.getValue ());	// refresh the font in the window
+		if (CommandLineParser.getFontSize() != 0)
+		{
+			fontSizeSpin.setValue (CommandLineParser.getFontSize());
+		}
+		else
+		{
+			fontSizeSpin.setValue (fontSizeSpin.getValue());	// refresh the font in the window
+		}
 		firmware.setText (PRESS_SCAN_MSG);
 		phone.setText (PRESS_SCAN_MSG);
 		IMEI.setText (PRESS_SCAN_MSG);
 		subsNum.setText (PRESS_SCAN_MSG);
 		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
+		tabPane.setSelectedIndex(CommandLineParser.getSelectedTab());
 
 		setPorts ();
+		int width = CommandLineParser.getWidth();
+		int height = CommandLineParser.getHeight();
+		if (width != 0 && height != 0)
+		{
+			setSize (width, height);
+		}
 		updateControls ();
 		setReadyStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.READY);
 		setSendingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.SENDING);

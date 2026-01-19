@@ -45,6 +45,10 @@ public class CommandLineParser
 	private static boolean isMax = false;
 	private static int x = 0;
 	private static int y = 0;
+	private static int width;
+	private static int height;
+	private static int fontSize;
+	private static int selectedTab;
 	private static boolean deleteAfterDownload = false;
 	public static boolean mock = false;
 
@@ -243,6 +247,42 @@ public class CommandLineParser
 	}
 
 	/**
+	 * Gets the current width for the window.
+	 * @return the current width for the window.
+	 */
+	public synchronized static int getWidth ()
+	{
+		return width;
+	}
+
+	/**
+	 * Gets the current height for the window.
+	 * @return the current height for the window.
+	 */
+	public synchronized static int getHeight ()
+	{
+		return height;
+	}
+
+	/**
+	 * Gets the current font size.
+	 * @return the current font size.
+	 */
+	public synchronized static int getFontSize ()
+	{
+		return fontSize;
+	}
+
+	/**
+	 * Gets the current selected tab.
+	 * @return the current selected tab.
+	 */
+	public synchronized static int getSelectedTab ()
+	{
+		return selectedTab;
+	}
+
+        /**
 	 * Reads the configuration from the given file and sets fields.
 	 * @param f The file to read the config from.
 	 */
@@ -282,6 +322,10 @@ public class CommandLineParser
 			isMax = cfg.getIsMax ();
 			x = cfg.getX ();
 			y = cfg.getY ();
+			width = cfg.getWidth();
+			height = cfg.getHeight();
+			fontSize = cfg.getFontSizeValue();
+			selectedTab = cfg.getSelectedTab();
 		}
 		catch (Exception ex)
 		{
