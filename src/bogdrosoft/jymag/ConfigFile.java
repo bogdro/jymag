@@ -1,7 +1,7 @@
 /*
  * ConfigFile.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2024 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
+ * Copyright (C) 2008-2026 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
  * This program is free software: you can redistribute it and/or modify
