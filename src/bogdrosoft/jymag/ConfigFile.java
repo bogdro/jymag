@@ -323,7 +323,6 @@ public class ConfigFile
 			w.newLine ();
 			w.write ("tab = " + selectedTab);	// NOI18N
 			w.newLine ();
-			w.close ();
 		}
 		catch (IOException t)
 		{
