@@ -221,6 +221,10 @@ public class ConfigFile
 				}
 			} while (true);
 		}
+		catch (IOException ex)
+		{
+			Utils.handleException(ex, "ConfigFile.read");
+		}
 		finally
 		{
 			if (br != null)
