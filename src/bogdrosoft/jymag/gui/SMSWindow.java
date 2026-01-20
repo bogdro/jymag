@@ -78,7 +78,7 @@ public class SMSWindow extends javax.swing.JDialog
 		// Otherwise, disable editing and sending
 		if ( msg != null )
 		{
-			sendBut.setEnabled (false);
+			sendBut.getParent().remove(sendBut);
 			phoneNumField.setEditable (false);
 			msgArea.setEditable (false);
 			phoneNumField.setText (msg.getRecipientNum ());
