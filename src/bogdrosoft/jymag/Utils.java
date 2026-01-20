@@ -20,14 +20,12 @@
 
 package bogdrosoft.jymag;
 
-import java.awt.Color;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
-import javax.swing.JLabel;
 
 /**
  * A utility class, containing some useful methods and fields.
@@ -622,47 +620,6 @@ public class Utils
 				return recvString;
 			}
 			return EMPTY_STR;
-		}
-	}
-
-	private static final Color GREEN_STATUS_COLOR = new Color (0, 204, 0)/*Color.GREEN*/;
-
-	public static class StatusChangeRunnable implements Runnable
-	{
-		private final JLabel statusLabel;
-		private final STATUS statusValue;
-		private final Color c;
-
-		public StatusChangeRunnable(JLabel status, STATUS s)
-		{
-			if ( status == null || s == null )
-			{
-				throw new IllegalArgumentException("StatusChangeRunnable:StatusChangeRunnable():null");	// NOI18N
-			}
-			statusLabel = status;
-			statusValue = s;
-			if ( STATUS.READY.equals(s) )
-			{
-				c = GREEN_STATUS_COLOR;
-			}
-			else
-			{
-				c = Color.BLUE;
-			}
-		}
-
-		@Override
-		public synchronized void run ()
-		{
-			statusLabel.setText (statusValue.toString ());
-			statusLabel.setForeground (c);
-			statusLabel.validate ();
-		}
-
-		@Override
-		public String toString ()
-		{
-			return "Utils.StatusChangeRunnable." + statusValue;	// NOI18N
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  * UncExceptionHandler.java, part of the JYMAG package.
  *
- * Copyright (C) 2008-2026 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
+ * Copyright (C) 2026 Bogdan Drozdowski, bogdro (at) users . sourceforge . net
  * License: GNU General Public License, v3+
  *
  * This program is free software: you can redistribute it and/or modify
@@ -67,10 +67,7 @@ public class UncExceptionHandler implements Thread.UncaughtExceptionHandler
 			{
 				target.paintAll(target.getGraphics());
 			}
-		}
-		catch (Throwable th)
-		{
-		}
+		} catch (Throwable th) {}
 	}
 
 	public static void setHandlerForGuiThreads(Component c)

@@ -23,6 +23,7 @@ package bogdrosoft.jymag.gui;
 import bogdrosoft.jymag.CommandLineParser;
 import bogdrosoft.jymag.ConfigFile;
 import bogdrosoft.jymag.Starter;
+import bogdrosoft.jymag.StatusChangeRunnable;
 import bogdrosoft.jymag.UncExceptionHandler;
 import bogdrosoft.jymag.Utils;
 import bogdrosoft.jymag.comm.DataTransporter;
@@ -128,9 +129,9 @@ public class MainWindow extends JFrame
 				return "MainWindow.cfgFileFilter";	// NOI18N
 			}
 		};
-	private final transient Utils.StatusChangeRunnable setReadyStatus;
-	private final transient Utils.StatusChangeRunnable setSendingStatus;
-	private final transient Utils.StatusChangeRunnable setReceivingStatus;
+	private final transient StatusChangeRunnable setReadyStatus;
+	private final transient StatusChangeRunnable setSendingStatus;
+	private final transient StatusChangeRunnable setReceivingStatus;
 	// ------------ i18n stuff
 	private static final ResourceBundle MW_BUNDLE = ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
 	private static final String NO_REPLY_STRING = MW_BUNDLE.getString("No_answers_received");
@@ -206,9 +207,9 @@ public class MainWindow extends JFrame
 			setSize (width, height);
 		}
 		updateControls ();
-		setReadyStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.READY);
-		setSendingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.SENDING);
-		setReceivingStatus = new Utils.StatusChangeRunnable(status, Utils.STATUS.RECEIVING);
+		setReadyStatus = new StatusChangeRunnable(status, Utils.STATUS.READY);
+		setSendingStatus = new StatusChangeRunnable(status, Utils.STATUS.SENDING);
+		setReceivingStatus = new StatusChangeRunnable(status, Utils.STATUS.RECEIVING);
 		setReadyStatus ();
 
 		UiUtils.changeSizeToScreen(this);
