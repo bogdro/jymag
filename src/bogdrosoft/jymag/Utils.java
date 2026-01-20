@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 /**
@@ -577,49 +576,6 @@ public class Utils
 		catch (InterruptedException ex)
 		{
 			// ignore
-		}
-	}
-
-	/**
-	 * The enumeration of possible program states.
-	 */
-	public static enum STATUS
-	{
-		/** The READY state. */
-		READY,
-		/** The SENDING state. */
-		SENDING,
-		/** The RECEIVING state. */
-		RECEIVING;
-
-		private static final ResourceBundle rcBundle =
-			ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");	// NOI18N
-
-		private static final String readyString =
-			rcBundle.getString("READY");		// NOI18N
-
-		private static final String sendingString =
-			rcBundle.getString("SENDING");		// NOI18N
-
-		private static final String recvString =
-			rcBundle.getString("RECEIVING");	// NOI18N
-
-		@Override
-		public String toString ()
-		{
-			if ( this.equals (STATUS.READY) )
-			{
-				return readyString;
-			}
-			else if ( this.equals (STATUS.SENDING) )
-			{
-				return sendingString;
-			}
-			else if ( this.equals (STATUS.RECEIVING) )
-			{
-				return recvString;
-			}
-			return EMPTY_STR;
 		}
 	}
 

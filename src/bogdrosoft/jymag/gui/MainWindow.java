@@ -22,6 +22,7 @@ package bogdrosoft.jymag.gui;
 
 import bogdrosoft.jymag.CommandLineParser;
 import bogdrosoft.jymag.ConfigFile;
+import bogdrosoft.jymag.ProgramStatus;
 import bogdrosoft.jymag.Starter;
 import bogdrosoft.jymag.StatusChangeRunnable;
 import bogdrosoft.jymag.UncExceptionHandler;
@@ -207,9 +208,9 @@ public class MainWindow extends JFrame
 			setSize (width, height);
 		}
 		updateControls ();
-		setReadyStatus = new StatusChangeRunnable(status, Utils.STATUS.READY);
-		setSendingStatus = new StatusChangeRunnable(status, Utils.STATUS.SENDING);
-		setReceivingStatus = new StatusChangeRunnable(status, Utils.STATUS.RECEIVING);
+		setReadyStatus = new StatusChangeRunnable(status, ProgramStatus.READY);
+		setSendingStatus = new StatusChangeRunnable(status, ProgramStatus.SENDING);
+		setReceivingStatus = new StatusChangeRunnable(status, ProgramStatus.RECEIVING);
 		setReadyStatus ();
 
 		UiUtils.changeSizeToScreen(this);

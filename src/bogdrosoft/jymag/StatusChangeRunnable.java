@@ -31,10 +31,10 @@ public class StatusChangeRunnable implements Runnable
 	private static final Color GREEN_STATUS_COLOR = new Color(0, 204, 0) /*Color.GREEN*/ ;
 
 	private final JLabel statusLabel;
-	private final Utils.STATUS statusValue;
+	private final ProgramStatus statusValue;
 	private final Color c;
 
-	public StatusChangeRunnable(JLabel status, Utils.STATUS s)
+	public StatusChangeRunnable(JLabel status, ProgramStatus s)
 	{
 		if (status == null || s == null)
 		{
@@ -42,7 +42,7 @@ public class StatusChangeRunnable implements Runnable
 		}
 		statusLabel = status;
 		statusValue = s;
-		if (Utils.STATUS.READY.equals(s))
+		if (ProgramStatus.READY.equals(s))
 		{
 			c = GREEN_STATUS_COLOR;
 		}
