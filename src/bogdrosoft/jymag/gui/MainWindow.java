@@ -23,6 +23,7 @@ package bogdrosoft.jymag.gui;
 import bogdrosoft.jymag.CommandLineParser;
 import bogdrosoft.jymag.ConfigFile;
 import bogdrosoft.jymag.Starter;
+import bogdrosoft.jymag.UncExceptionHandler;
 import bogdrosoft.jymag.Utils;
 import bogdrosoft.jymag.comm.DataTransporter;
 import bogdrosoft.jymag.comm.TransferParameters;
@@ -166,7 +167,7 @@ public class MainWindow extends JFrame
 	MainWindow ()
 	{
 		// set uncaught exception handler for GUI threads, just in case:
-		Utils.UncExHndlr.setHandlerForGuiThreads(this);
+		UncExceptionHandler.setHandlerForGuiThreads(this);
 
 		destDirName = CommandLineParser.getDstDirName ();
 		dBits = CommandLineParser.getDBits ();
