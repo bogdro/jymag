@@ -160,8 +160,8 @@ public class MainWindow extends JFrame
 	private static int parity = 0;
 	private static String portName = null;
 	private static boolean isMax = false;
-	private static int x = 0;
-	private static int y = 0;
+	private static int xPos = 0;
+	private static int yPos = 0;
 
 	/**
 	 * Creates new form MainWindow.
@@ -179,8 +179,8 @@ public class MainWindow extends JFrame
 		parity = CommandLineParser.getParityMode ();
 		portName = CommandLineParser.getPortName ();
 		isMax = CommandLineParser.isMax ();
-		x = CommandLineParser.getX ();
-		y = CommandLineParser.getY ();
+		xPos = CommandLineParser.getX ();
+		yPos = CommandLineParser.getY ();
 
 		initComponents ();
 
@@ -961,8 +961,8 @@ public class MainWindow extends JFrame
 				}
 				flow = cfg.getFlowCtl ();
 				isMax = cfg.getIsMax ();
-				x = cfg.getX ();
-				y = cfg.getY ();
+				xPos = cfg.getX ();
+				yPos = cfg.getY ();
 
 				updateControls ();
 				fontSizeSpin.setValue ((float)cfg.getFontSizeValue ());
@@ -1199,7 +1199,7 @@ public class MainWindow extends JFrame
 		{
 			setExtendedState (getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
 		}
-		setLocation (x, y);
+		setLocation (xPos, yPos);
 		UiUtils.changeSizeToScreen(this);
 		speedCombo.setMaximumRowCount (speedCombo.getItemCount ());
 	}
