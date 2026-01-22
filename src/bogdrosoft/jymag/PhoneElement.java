@@ -159,35 +159,7 @@ public class PhoneElement implements Serializable
 		{
 			return Utils.EMPTY_STR;
 		}
-		return filename
-			.replaceAll ("\\s", "_")		// NOI18N
-			.replaceAll ("\\.", "_")		// NOI18N
-			.replaceAll (",", "_")			// NOI18N
-			.replaceAll ("\\(", "_")		// NOI18N
-			.replaceAll ("\\)", "_")		// NOI18N
-			.replaceAll ("\\[", "_")		// NOI18N
-			.replaceAll ("\\]", "_")		// NOI18N
-			.replaceAll ("\\{", "_")		// NOI18N
-			.replaceAll ("\\}", "_")		// NOI18N
-			.replaceAll ("~", "_")			// NOI18N
-			.replaceAll ("!", "_")			// NOI18N
-			.replaceAll ("%", "_")			// NOI18N
-			.replaceAll ("\\^", "_")		// NOI18N
-			.replaceAll ("&", "_")			// NOI18N
-			.replaceAll ("\\*", "_")		// NOI18N
-			.replaceAll ("\\+", "_")		// NOI18N
-			.replaceAll ("=", "_")			// NOI18N
-			.replaceAll ("\\|", "_")		// NOI18N
-			.replaceAll ("\\\\", "_")		// NOI18N
-			.replaceAll (":", "_")			// NOI18N
-			.replaceAll (";", "_")			// NOI18N
-			.replaceAll ("\"", "_")			// NOI18N
-			.replaceAll ("'", "_")			// NOI18N
-			.replaceAll ("<", "_")			// NOI18N
-			.replaceAll (">", "_")			// NOI18N
-			.replaceAll ("\\?", "_")		// NOI18N
-			.replaceAll ("/", "_")			// NOI18N
-			;
+		return filename.replaceAll("[^a-zA-Z0-9_-]", "_");	// NOI18N
 	}
 
 	/**
