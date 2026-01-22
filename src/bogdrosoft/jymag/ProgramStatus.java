@@ -36,11 +36,11 @@ public enum ProgramStatus
 
 	private static final ResourceBundle rcBundle =
 		ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow"); // NOI18N
-	private static final String readyString =
+	private static final String READY_STRING =
 		rcBundle.getString("READY"); // NOI18N
-	private static final String sendingString =
+	private static final String SENDING_STRING =
 		rcBundle.getString("SENDING"); // NOI18N
-	private static final String recvString =
+	private static final String RECEIVING_STRING =
 		rcBundle.getString("RECEIVING"); // NOI18N
 
 	@Override
@@ -49,11 +49,11 @@ public enum ProgramStatus
 		switch (this)
 		{
 			case READY:
-				return readyString;
+				return READY_STRING;
 			case SENDING:
-				return sendingString;
+				return SENDING_STRING;
 			case RECEIVING:
-				return recvString;
+				return RECEIVING_STRING;
 			default:
 				break;
 		}
