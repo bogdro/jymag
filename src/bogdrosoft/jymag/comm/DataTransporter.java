@@ -2567,8 +2567,7 @@ public class DataTransporter
 				for ( int i = 0; i < values.length; i++ )
 				{
 					if ( values[i].toString ()
-						.replaceAll ("\\s", "_")		// NOI18N
-						.replaceAll ("-", "_")			// NOI18N
+						.replaceAll ("[\\s-]", "_")		// NOI18N
 						.trim ().equals (name.trim ()) )
 					{
 						return values[i];
