@@ -761,7 +761,7 @@ public class RawCommunicator extends javax.swing.JDialog
 			private int availBytes = 0;
 
 			@Override
-			public synchronized void run ()
+			public void run ()
 			{
 				while (! Thread.interrupted ())
 				{
