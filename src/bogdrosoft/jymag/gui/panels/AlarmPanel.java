@@ -43,7 +43,7 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 
 	private transient MainWindow mw;
 
-	private Vector<PhoneAlarm> currentAlarmElements;
+	private transient Vector<PhoneAlarm> currentAlarmElements;
 
 	// i18n stuff:
 	private static final ResourceBundle MSGS
