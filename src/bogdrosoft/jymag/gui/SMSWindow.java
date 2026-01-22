@@ -25,7 +25,7 @@ import bogdrosoft.jymag.Utils;
 import bogdrosoft.jymag.comm.TransferParameters;
 import bogdrosoft.jymag.comm.TransferUtils;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 
 /**
@@ -88,7 +88,7 @@ public class SMSWindow extends javax.swing.JDialog
 		UiUtils.changeSizeToScreen(this);
 
 		fontSizeSpin.setValue (fontSize);	// refresh the font in the window
-		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
+		fontSizeLab.setHorizontalAlignment(SwingConstants.RIGHT);
 
 		/* add the Esc key listener to the frame and all components. */
 		new EscKeyListener (this).install();

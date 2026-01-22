@@ -33,6 +33,7 @@ import bogdrosoft.jymag.comm.TransferUtils;
 import bogdrosoft.jymag.gui.panels.JYMAGTab;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.util.HashMap;
@@ -41,8 +42,8 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -197,7 +198,7 @@ public class MainWindow extends JFrame
 		phone.setText (PRESS_SCAN_MSG);
 		IMEI.setText (PRESS_SCAN_MSG);
 		subsNum.setText (PRESS_SCAN_MSG);
-		fontSizeLab.setHorizontalAlignment (JLabel.RIGHT);
+		fontSizeLab.setHorizontalAlignment(SwingConstants.RIGHT);
 		tabPane.setSelectedIndex(CommandLineParser.getSelectedTab());
 
 		setPorts ();
@@ -1008,7 +1009,7 @@ public class MainWindow extends JFrame
 				cfg.setY (getY ());
 				cfg.setWidth (getWidth ());
 				cfg.setHeight (getHeight ());
-				cfg.setIsMaximized ((getExtendedState () & JFrame.MAXIMIZED_BOTH) != 0);
+				cfg.setIsMaximized((getExtendedState() & Frame.MAXIMIZED_BOTH) != 0);
 				cfg.setFontSizeValue ((int)UiUtils.getFontSize(fontSizeSpin));
 				cfg.setSelectedTab (tabPane.getSelectedIndex());
 				cfg.write ();
@@ -1193,11 +1194,11 @@ public class MainWindow extends JFrame
 		parityCombo.setSelectedIndex (parity);
 		if ( isMax )
 		{
-			setExtendedState (JFrame.MAXIMIZED_BOTH);
+			setExtendedState(Frame.MAXIMIZED_BOTH);
 		}
 		else
 		{
-			setExtendedState (getExtendedState () & ~JFrame.MAXIMIZED_BOTH);
+			setExtendedState(getExtendedState () & ~Frame.MAXIMIZED_BOTH);
 		}
 		setLocation (xPos, yPos);
 		UiUtils.changeSizeToScreen(this);
