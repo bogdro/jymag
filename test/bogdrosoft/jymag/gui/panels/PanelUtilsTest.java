@@ -141,7 +141,14 @@ public class PanelUtilsTest
 		System.out.println("upload");
 		MainWindow mw = createMainWindow();
 		JFileChooser uploadFC = new JFileChooser();
-		PanelUtils.upload(mw, uploadFC);
+		try
+		{
+			PanelUtils.upload(mw, uploadFC);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during upload: " + ex);
+		}
 	}
 
 	/**
@@ -152,7 +159,14 @@ public class PanelUtilsTest
 	{
 		System.out.println("testUploadNullFileChooser");
 		MainWindow mw = createMainWindow();
-		PanelUtils.upload(mw, null);
+		try
+		{
+			PanelUtils.upload(mw, null);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during upload: " + ex);
+		}
 	}
 
 	/**
@@ -167,7 +181,14 @@ public class PanelUtilsTest
 		int[] selectedRows = new int[] {0};
 		List<PhoneElement> elements = new ArrayList<PhoneElement>(1);
 		elements.add(new PhoneElement("1", FILE_FORMAT, FILENAME));
-		PanelUtils.delete(mw, selectedRows, elements);
+		try
+		{
+			PanelUtils.delete(mw, selectedRows, elements);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during delete: " + ex);
+		}
 	}
 
 	/**

@@ -65,9 +65,16 @@ public class UiUtilsTest
 	{
 		System.out.println ("changeGUI");
 		Runnable r = null;
-		UiUtils.changeGUI (r);
-		// passing anything different from null can't be checked,
-		// because there's no GUI
+		try
+		{
+			UiUtils.changeGUI (r);
+			// passing anything different from null can't be checked,
+			// because there's no GUI
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during changeGUI: " + ex);
+		}
 	}
 
 	/**
@@ -109,7 +116,14 @@ public class UiUtilsTest
 	{
 		System.out.println("changeSizeToScreen");
 		Window w = null;
-		UiUtils.changeSizeToScreen(w);
+		try
+		{
+			UiUtils.changeSizeToScreen(w);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during changeSizeToScreen: " + ex);
+		}
 	}
 
 	/**
@@ -122,7 +136,14 @@ public class UiUtilsTest
 		System.out.println("showErrorMessage");
 		Component c = null;
 		String msg = "";
-		UiUtils.showErrorMessage(c, msg);
+		try
+		{
+			UiUtils.showErrorMessage(c, msg);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during showErrorMessage: " + ex);
+		}
 	}
 
 	/**

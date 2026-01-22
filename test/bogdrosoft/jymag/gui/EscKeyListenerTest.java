@@ -66,12 +66,19 @@ public class EscKeyListenerTest
 		{
 			return;
 		}
-		JFrame f = new JFrame();
-		EscKeyListener listener = new EscKeyListener(f);
-		listener.install();
-		listener.keyTyped(
-			new KeyEvent(f, 1, 0, 0, 0, (char)KeyEvent.VK_ESCAPE)
-		);
+		try
+		{
+			JFrame f = new JFrame();
+			EscKeyListener listener = new EscKeyListener(f);
+			listener.install();
+			listener.keyTyped(
+				new KeyEvent(f, 1, 0, 0, 0, (char)KeyEvent.VK_ESCAPE)
+			);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during keyTyped: " + ex);
+		}
 	}
 
 	/**
@@ -84,11 +91,18 @@ public class EscKeyListenerTest
 		{
 			return;
 		}
-		EscKeyListener listener = new EscKeyListener(null);
-		listener.install();
-		listener.keyTyped(
-			new KeyEvent(new JFrame(), 1, 0, 0, 0, (char)KeyEvent.VK_ESCAPE)
-		);
+		try
+		{
+			EscKeyListener listener = new EscKeyListener(null);
+			listener.install();
+			listener.keyTyped(
+				new KeyEvent(new JFrame(), 1, 0, 0, 0, (char)KeyEvent.VK_ESCAPE)
+			);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during keyTyped: " + ex);
+		}
 	}
 
 	/**
@@ -101,10 +115,17 @@ public class EscKeyListenerTest
 		{
 			return;
 		}
-		JFrame f = new JFrame();
-		EscKeyListener listener = new EscKeyListener(f);
-		listener.install();
-		listener.keyTyped(null);
+		try
+		{
+			JFrame f = new JFrame();
+			EscKeyListener listener = new EscKeyListener(f);
+			listener.install();
+			listener.keyTyped(null);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during keyTyped: " + ex);
+		}
 	}
 
 	/**

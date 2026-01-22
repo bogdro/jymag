@@ -38,15 +38,22 @@ public class UtilsTest
 	public void testHandleException ()
 	{
 		System.out.println ("handleException");
-		Throwable ex = null;
-		Object data = null;
-		Utils.handleException (ex, data);
-		ex = new Exception ("test1");
-		Utils.handleException (ex, data);
-		data = "test1msg";
-		Utils.handleException (ex, data);
-		ex = null;
-		Utils.handleException (ex, data);
+		try
+		{
+			Throwable ex = null;
+			Object data = null;
+			Utils.handleException (ex, data);
+			ex = new Exception ("test1");
+			Utils.handleException (ex, data);
+			data = "test1msg";
+			Utils.handleException (ex, data);
+			ex = null;
+			Utils.handleException (ex, data);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception in exception handling: " + ex);
+		}
 	}
 
 	/**

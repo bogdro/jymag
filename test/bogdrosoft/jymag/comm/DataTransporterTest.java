@@ -150,8 +150,15 @@ public class DataTransporterTest
 	public void testSendByteArray () throws Exception
 	{
 		System.out.println ("send");
-		DataTransporter dt = prepareDT();
-		dt.send("AT\r".getBytes());
+		try
+		{
+			DataTransporter dt = prepareDT();
+			dt.send("AT\r".getBytes());
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during sending: " + ex);
+		}
 	}
 
 	/**
@@ -163,11 +170,18 @@ public class DataTransporterTest
 	public void testSend3args () throws Exception
 	{
 		System.out.println ("send");
-		DataTransporter dt = prepareDT();
-		byte[] b = "AAT\r".getBytes();
-		int start = 1;
-		int length = 3;
-		dt.send (b, start, length);
+		try
+		{
+			DataTransporter dt = prepareDT();
+			byte[] b = "AAT\r".getBytes();
+			int start = 1;
+			int length = 3;
+			dt.send (b, start, length);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during sending (3args): " + ex);
+		}
 	}
 
 	/**
@@ -179,8 +193,15 @@ public class DataTransporterTest
 	public void testClose () throws Exception
 	{
 		System.out.println ("close");
-		DataTransporter dt = prepareDT();
-		dt.close ();
+		try
+		{
+			DataTransporter dt = prepareDT();
+			dt.close ();
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during closing: " + ex);
+		}
 	}
 
 	/**
@@ -381,8 +402,15 @@ public class DataTransporterTest
 	public void testPoweroff () throws Exception
 	{
 		System.out.println ("poweroff");
-		DataTransporter dt = prepareDT();
-		dt.poweroff ();
+		try
+		{
+			DataTransporter dt = prepareDT();
+			dt.poweroff ();
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during poweroff: " + ex);
+		}
 	}
 
 	/**

@@ -82,9 +82,16 @@ public class RawCommunicatorTest
 		{
 			return;
 		}
-		RawCommunicator rc = constructRawCommunicator();
-		JToggleButton but = new JToggleButton();
-		rc.setSignal(but, true);
+		try
+		{
+			RawCommunicator rc = constructRawCommunicator();
+			JToggleButton but = new JToggleButton();
+			rc.setSignal(but, true);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during setSignal: " + ex);
+		}
 	}
 
 	@Test
@@ -94,8 +101,15 @@ public class RawCommunicatorTest
 		{
 			return;
 		}
-		RawCommunicator rc = constructRawCommunicator();
-		rc.setSignal((JToggleButton)null, true);
+		try
+		{
+			RawCommunicator rc = constructRawCommunicator();
+			rc.setSignal((JToggleButton)null, true);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during setSignal: " + ex);
+		}
 	}
 
 	@Test
@@ -105,9 +119,16 @@ public class RawCommunicatorTest
 		{
 			return;
 		}
-		RawCommunicator rc = constructRawCommunicator();
-		JLabel label = new JLabel();
-		rc.setSignal(label, true);
+		try
+		{
+			RawCommunicator rc = constructRawCommunicator();
+			JLabel label = new JLabel();
+			rc.setSignal(label, true);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during setSignal: " + ex);
+		}
 	}
 
 	@Test
@@ -117,8 +138,15 @@ public class RawCommunicatorTest
 		{
 			return;
 		}
-		RawCommunicator rc = constructRawCommunicator();
-		rc.setSignal((JLabel)null, true);
+		try
+		{
+			RawCommunicator rc = constructRawCommunicator();
+			rc.setSignal((JLabel)null, true);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during setSignal: " + ex);
+		}
 	}
 
 	private static RawCommunicator constructRawCommunicator()

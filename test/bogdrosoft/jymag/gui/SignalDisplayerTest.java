@@ -80,8 +80,15 @@ public class SignalDisplayerTest
 		{
 			return;
 		}
-		SignalDisplayer sd = constructSignalDisplayer();
-		sd.setLevel(0);
+		try
+		{
+			SignalDisplayer sd = constructSignalDisplayer();
+			sd.setLevel(0);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during setLevel: " + ex);
+		}
 	}
 
 	private static SignalDisplayer constructSignalDisplayer()
