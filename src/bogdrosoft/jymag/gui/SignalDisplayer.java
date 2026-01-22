@@ -343,7 +343,7 @@ public class SignalDisplayer extends javax.swing.JFrame
 			private int currLevel = 0;
 
 			@Override
-			public synchronized void run ()
+			public void run ()
 			{
 				while (runUpdater && ! Thread.interrupted ())
 				{
