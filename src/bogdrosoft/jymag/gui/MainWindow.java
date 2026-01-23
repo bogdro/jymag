@@ -149,7 +149,7 @@ public class MainWindow extends JFrame
 	private final transient StatusChangeRunnable setSendingStatus;
 	private final transient StatusChangeRunnable setReceivingStatus;
 	private final MainWindow mw = this;
-	private JFileChooser cfgFC;
+	JFileChooser cfgFC;
 
 	// ------------ static variables for command-line
 
