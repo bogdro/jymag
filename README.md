@@ -20,6 +20,8 @@ License:
 
 See the COPYING file.
 
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=bogdro_jymag)
+
 ## WARNING ##
 
 The `dev` branch may contain code which is a work in progress and committed
