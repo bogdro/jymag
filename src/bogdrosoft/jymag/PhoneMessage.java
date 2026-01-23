@@ -32,12 +32,6 @@ public class PhoneMessage implements Serializable
 {
 	private static final long serialVersionUID = 92L;
 
-	private String message = null;
-	private String recipientNum = null;
-	private String datetime = null;
-	private String id = null;
-	private String status = null;
-
 /*
 	+CMGL: <ID>,"<status>","<number>","<DD/MM/YY,HH:MM:SS+ZZ>",<N>
 	<body>
@@ -87,6 +81,12 @@ public class PhoneMessage implements Serializable
 	private static final String TOSTRING_NUMBER = "";					// NOI18N
 	private static final String TOSTRING_DATETIME = "";					// NOI18N
 	private static final String TOSTRING_BODY = "";						// NOI18N
+
+	private String message = null;
+	private String recipientNum = null;
+	private String datetime = null;
+	private String id = null;
+	private String status = null;
 
 	/* ==================================================== */
 
@@ -199,7 +199,7 @@ public class PhoneMessage implements Serializable
 	 * @param response The response to parse.
 	 * @return a PhoneMessage that matches the given response.
 	 */
-	public synchronized static PhoneMessage parseReponse (String response)
+	public static synchronized PhoneMessage parseReponse (String response)
 	{
 		if ( response == null )
 		{

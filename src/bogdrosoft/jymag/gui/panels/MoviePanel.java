@@ -39,18 +39,18 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 86L;
 
+	// i18n stuff:
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
+	private static final String ANIM_VIDEO_TYPES_STRING
+		= MSGS.getString("Supported_animation/video_files");
+
 	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentAnimElements;
 	private JFileChooser downloadFC;
 	private JFileChooser uploadAnimFC;
 	private String destDirName;
-
-	// i18n stuff:
-	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
-	private static final String ANIM_VIDEO_TYPES_STRING
-		= MSGS.getString("Supported_animation/video_files");
 
 	/** Creates new form MoviePanel */
 	public MoviePanel()

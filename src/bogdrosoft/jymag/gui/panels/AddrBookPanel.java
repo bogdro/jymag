@@ -39,18 +39,18 @@ public class AddrBookPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 82L;
 
+	// i18n stuff:
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
+	private static final String ADDRESSBOOK_STRING
+		= MSGS.getString("Supported_addressbook_files");
+
 	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentAddrElements;
 	private JFileChooser downloadFC;
 	private JFileChooser uploadAddrFC;
 	private String destDirName;
-
-	// i18n stuff:
-	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
-	private static final String ADDRESSBOOK_STRING
-		= MSGS.getString("Supported_addressbook_files");
 
 	/** Creates new form AddrBookPanel. */
 	public AddrBookPanel()

@@ -160,7 +160,7 @@ public class CommandLineParser
 	 * Gets the current destination directory name.
 	 * @return the current destination directory name.
 	 */
-	public synchronized static String getDstDirName ()
+	public static synchronized String getDstDirName ()
 	{
 		return destDirName;
 	}
@@ -169,7 +169,7 @@ public class CommandLineParser
 	 * Gets the current number of data bits.
 	 * @return the current number of data bits.
 	 */
-	public synchronized static int getDBits ()
+	public static synchronized int getDBits ()
 	{
 		return dBits;
 	}
@@ -178,7 +178,7 @@ public class CommandLineParser
 	 * Gets the current number of stop bits.
 	 * @return the current number of stop bits.
 	 */
-	public synchronized static double getSBits ()
+	public static synchronized double getSBits ()
 	{
 		return sBits;
 	}
@@ -187,7 +187,7 @@ public class CommandLineParser
 	 * Gets the current port speed.
 	 * @return the current port speed.
 	 */
-	public synchronized static int getSpeed ()
+	public static synchronized int getSpeed ()
 	{
 		return speed;
 	}
@@ -196,7 +196,7 @@ public class CommandLineParser
 	 * Gets the current flow control mode.
 	 * @return the current flow control mode.
 	 */
-	public synchronized static int getFlowMode ()
+	public static synchronized int getFlowMode ()
 	{
 		return flow;
 	}
@@ -205,7 +205,7 @@ public class CommandLineParser
 	 * Gets the current parity mode.
 	 * @return the current parity mode.
 	 */
-	public synchronized static int getParityMode ()
+	public static synchronized int getParityMode ()
 	{
 		return parity;
 	}
@@ -214,7 +214,7 @@ public class CommandLineParser
 	 * Gets the current port name.
 	 * @return the current port name.
 	 */
-	public synchronized static String getPortName ()
+	public static synchronized String getPortName ()
 	{
 		return portName;
 	}
@@ -223,7 +223,7 @@ public class CommandLineParser
 	 * Gets the current "is maximized" property value.
 	 * @return the current  "is maximized" property value.
 	 */
-	public synchronized static boolean isMax ()
+	public static synchronized boolean isMax ()
 	{
 		return isMax;
 	}
@@ -232,7 +232,7 @@ public class CommandLineParser
 	 * Gets the current X coordinate.
 	 * @return the current X coordinate.
 	 */
-	public synchronized static int getX ()
+	public static synchronized int getX ()
 	{
 		return x;
 	}
@@ -241,7 +241,7 @@ public class CommandLineParser
 	 * Gets the current Y coordinate.
 	 * @return the current Y coordinate.
 	 */
-	public synchronized static int getY ()
+	public static synchronized int getY ()
 	{
 		return y;
 	}
@@ -250,7 +250,7 @@ public class CommandLineParser
 	 * Gets the current width for the window.
 	 * @return the current width for the window.
 	 */
-	public synchronized static int getWidth ()
+	public static synchronized int getWidth ()
 	{
 		return width;
 	}
@@ -259,7 +259,7 @@ public class CommandLineParser
 	 * Gets the current height for the window.
 	 * @return the current height for the window.
 	 */
-	public synchronized static int getHeight ()
+	public static synchronized int getHeight ()
 	{
 		return height;
 	}
@@ -268,7 +268,7 @@ public class CommandLineParser
 	 * Gets the current font size.
 	 * @return the current font size.
 	 */
-	public synchronized static int getFontSize ()
+	public static synchronized int getFontSize ()
 	{
 		return fontSize;
 	}
@@ -277,7 +277,7 @@ public class CommandLineParser
 	 * Gets the current selected tab.
 	 * @return the current selected tab.
 	 */
-	public synchronized static int getSelectedTab ()
+	public static synchronized int getSelectedTab ()
 	{
 		return selectedTab;
 	}

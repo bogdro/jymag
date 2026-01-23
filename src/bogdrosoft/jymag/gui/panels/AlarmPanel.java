@@ -41,10 +41,6 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 83L;
 
-	private transient MainWindow mw;
-
-	private transient Vector<PhoneAlarm> currentAlarmElements;
-
 	// i18n stuff:
 	private static final ResourceBundle MSGS
 		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
@@ -52,6 +48,10 @@ public class AlarmPanel extends javax.swing.JPanel implements JYMAGTab
 		= MSGS.getString("want_to_delete");
 	private static final String QUESTION_STRING
 		= MSGS.getString("Question");
+
+	private transient MainWindow mw;
+
+	private transient Vector<PhoneAlarm> currentAlarmElements;
 
 	/** Creates new form AlarmPanel. */
 	public AlarmPanel()

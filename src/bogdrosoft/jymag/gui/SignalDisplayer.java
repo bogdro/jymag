@@ -33,19 +33,19 @@ public class SignalDisplayer extends javax.swing.JFrame
 {
 	private static final long serialVersionUID = 78L;
 
-	/** The Thread that updates the power level display. */
-	private transient Thread updater = null;
-	/** The thread control field. */
-	private volatile boolean runUpdater = true;
+	/** The refresh interval, in milliseconds. */
+	private static final int REFRESH_TIME = 1000;
+	private static final String DBM_STR = "dBm";	// NOI18N
 
 	/** The DataTransporter used for retrieveing the signal power level. */
 	private final transient DataTransporter dt;
 	/** The synchronization field. */
 	private final transient Object sync;
-	/** The refresh interval, in milliseconds. */
-	private static final int REFRESH_TIME = 1000;
 
-	private static final String DBM_STR = "dBm";	// NOI18N
+	/** The Thread that updates the power level display. */
+	private transient Thread updater = null;
+	/** The thread control field. */
+	private volatile boolean runUpdater = true;
 
 	private final MainWindow mw;
 

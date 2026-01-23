@@ -35,24 +35,6 @@ import java.util.regex.Pattern;
  */
 public class ConfigFile
 {
-	private final File cfgFile;
-
-	// communication parameters:
-	private String port;
-	private int speed;
-	private int dBits;
-	private int parity;
-	private int sBits;
-	private int flowCtl;
-	// main window's parameters:
-	private int x;
-	private int y;
-	private int width;
-	private int height;
-	private boolean isMax;
-	private int fontSize;
-	private int selectedTab;
-
 	// patterns for matching:
 	private static final Pattern PORT_PATTERN = Pattern.compile
 			("port\\s*=\\s*([^\\s]+)", Pattern.CASE_INSENSITIVE);		// NOI18N
@@ -82,6 +64,24 @@ public class ConfigFile
 			("tab\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);		// NOI18N
 	private static final Pattern COMMENT_PATTERN = Pattern.compile
 			("^#.*");		// NOI18N
+
+	private final File cfgFile;
+
+	// communication parameters:
+	private String port;
+	private int speed;
+	private int dBits;
+	private int parity;
+	private int sBits;
+	private int flowCtl;
+	// main window's parameters:
+	private int x;
+	private int y;
+	private int width;
+	private int height;
+	private boolean isMax;
+	private int fontSize;
+	private int selectedTab;
 
 	/**
 	 * Creates a new instance of ConfigFile.

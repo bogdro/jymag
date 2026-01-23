@@ -48,12 +48,6 @@ import java.util.regex.Pattern;
  */
 public class DataTransporter
 {
-	//private final CommPortIdentifier portID;
-	private final Object portID;
-	private SerialPort s;
-	private InputStream inputStream;
-	private final Object inputStreamLock = new Object ();
-	private OutputStream outputStream;
 	/** Maximum number of attempts to establish communication. */
 	public static final int MAX_TRIALS = 3;
 	/** DT_TIMEOUT betwenn up/download stages, in milliseconds. */
@@ -136,8 +130,6 @@ public class DataTransporter
 	private static final String ANSWER_CALL_CMD = "ATA\r";				// NOI18N
 	private static final String CURRENT_VOLUME_CMD = "AT+CLVL?\r";			// NOI18N
 	private static final String SET_VOLUME_CMD = "AT+CLVL=";			// NOI18N
-
-	private final SPL spl = new SPL ();
 
 	// file headers:
 	// JPG/EXIF/MJPG
@@ -326,6 +318,15 @@ public class DataTransporter
 		(byte) 0x41, (byte) 0x52, (byte) 0x52, (byte) 0x49,
 		(byte) 0x45, (byte) 0x52
 		};
+
+	private final SPL spl = new SPL ();
+
+	//private final CommPortIdentifier portID;
+	private final Object portID;
+	private SerialPort s;
+	private InputStream inputStream;
+	private final Object inputStreamLock = new Object ();
+	private OutputStream outputStream;
 
 	/**
 	 * Creates a new instance of DataTransporter.
@@ -2540,7 +2541,7 @@ public class DataTransporter
 	/**
 	 * The Enumeration of the states for PIN entering.
 	 */
-	public static enum PIN_STATUS
+	public enum PIN_STATUS
 	{
 		READY,
 		SIM_PIN,
@@ -2581,7 +2582,7 @@ public class DataTransporter
 	/**
 	 * The Enumeration of the message storage types.
 	 */
-	public static enum STORAGE_TYPE
+	public enum STORAGE_TYPE
 	{
 		/** SIM storage. */
 		SM,
@@ -2594,7 +2595,7 @@ public class DataTransporter
 	/**
 	 * The Enumeration of the dialing modes.
 	 */
-	public static enum DIAL_MODE
+	public enum DIAL_MODE
 	{
 		/** Automatic select (ATD command). */
 		AUTO,

@@ -36,28 +36,6 @@ import java.util.TooManyListenersException;
  */
 class FakeDevice
 {
-	// output from application, input to device:
-	private byte[] currInput;
-	private int currInputPosition;
-	// input to application, output from device:
-	private byte[] currOutput;
-	private int currOutputPosition;
-	
-	private boolean isNotifyOnDataAvailable;
-	private boolean isNotifyOnOutputEmpty;
-	private boolean isNotifyOnCTS;
-	private boolean isNotifyOnDSR;
-	private boolean isNotifyOnRingIndicator;
-	private boolean isNotifyOnCarrierDetect;
-	private boolean isNotifyOnOverrunError;
-	private boolean isNotifyOnParityError;
-	private boolean isNotifyOnFramingError;
-	private boolean isNotifyOnBreakInterrupt;
-	private SerialPortEventListener l;
-	private final SerialPort port;
-	private int volume = 1; // must be static to pass between instances
-	private boolean inFileSending = false; // must be static to pass between instances
-	private int signal = 0;
 	private static final boolean DEBUG = false;
 
 	/** The default encoding for commands. */
@@ -105,6 +83,29 @@ class FakeDevice
 	private static final String ANSWER_CALL_CMD = "ATA\r";				// NOI18N
 	private static final String CURRENT_VOLUME_CMD = "AT+CLVL?\r";			// NOI18N
 	private static final String SET_VOLUME_CMD = "AT+CLVL=";			// NOI18N
+
+	// output from application, input to device:
+	private byte[] currInput;
+	private int currInputPosition;
+	// input to application, output from device:
+	private byte[] currOutput;
+	private int currOutputPosition;
+
+	private boolean isNotifyOnDataAvailable;
+	private boolean isNotifyOnOutputEmpty;
+	private boolean isNotifyOnCTS;
+	private boolean isNotifyOnDSR;
+	private boolean isNotifyOnRingIndicator;
+	private boolean isNotifyOnCarrierDetect;
+	private boolean isNotifyOnOverrunError;
+	private boolean isNotifyOnParityError;
+	private boolean isNotifyOnFramingError;
+	private boolean isNotifyOnBreakInterrupt;
+	private SerialPortEventListener l;
+	private final SerialPort port;
+	private int volume = 1; // must be static to pass between instances
+	private boolean inFileSending = false; // must be static to pass between instances
+	private int signal = 0;
 
 	FakeDevice(SerialPort sp)
 	{

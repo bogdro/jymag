@@ -41,12 +41,6 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 89L;
 
-	private JSpinner fontSizeSpin;
-
-	private transient MainWindow mw;
-
-	private Vector<PhoneMessage> currentMessageElements;
-
 	// i18n stuff:
 	private static final ResourceBundle MSGS
 		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
@@ -54,6 +48,12 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 		= MSGS.getString("want_to_delete");
 	private static final String QUESTION_STRING
 		= MSGS.getString("Question");
+
+	private JSpinner fontSizeSpin;
+
+	private transient MainWindow mw;
+
+	private Vector<PhoneMessage> currentMessageElements;
 
 	/** Creates new form SMSPanel */
 	public SMSPanel()

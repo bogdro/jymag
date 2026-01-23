@@ -34,15 +34,16 @@ import javax.swing.SwingWorker;
 public class CapabilityWindow extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 75L;
-	private final transient DataTransporter dtr;
-	private final transient Object sync;
-	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
 	private static final String EX_STRING
 		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/CapabilityWindow")
 			.getString("Exception");
 	private final MainWindow mw;
+
+	private final transient DataTransporter dtr;
+	private final transient Object sync;
+	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	/**
 	 * Creates new form CapabilityWindow.

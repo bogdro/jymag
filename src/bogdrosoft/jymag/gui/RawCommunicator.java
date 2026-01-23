@@ -41,21 +41,8 @@ import javax.swing.SwingWorker;
 public class RawCommunicator extends javax.swing.JDialog
 {
 	private static final long serialVersionUID = 71L;
-	private final transient DataTransporter dtr;
-	private final transient Object sync;
-	/** The Thread that updates the control line signal display. */
-	private transient Thread updater = null;
 	/** The refresh interval, in milliseconds. */
 	private static final int REFRESH_TIME = 1000;
-	/** The "line disabled" icon. */
-	private final ImageIcon line_disabled_icon
-		= new ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/line_off.png")); // NOI18N
-	/** The "line enabled" icon. */
-	private final ImageIcon line_enabled_icon
-		= new ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/line_on.png")); // NOI18N
-	/** The file chooser for choosing the file to send. */
-	private JFileChooser fc;
-	private final AtomicBoolean isFinished = new AtomicBoolean(true);
 
 	// ------------ i18n stuff
 	private static final ResourceBundle MSGS
@@ -67,7 +54,21 @@ public class RawCommunicator extends javax.swing.JDialog
 	private static final String FILE_SENT_OK_MSG
 		= MSGS.getString("file_sent_ok");
 
+	/** The file chooser for choosing the file to send. */
+	private JFileChooser fc;
+	private final AtomicBoolean isFinished = new AtomicBoolean(true);
+	/** The "line disabled" icon. */
+	private final ImageIcon lineDisabledIcon
+		= new ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/line_off.png")); // NOI18N
+	/** The "line enabled" icon. */
+	private final ImageIcon lineEnabledIcon
+		= new ImageIcon (getClass ().getResource ("/bogdrosoft/jymag/rsrc/line_on.png")); // NOI18N
+
 	private final MainWindow mw;
+	private final transient DataTransporter dtr;
+	private final transient Object sync;
+	/** The Thread that updates the control line signal display. */
+	private transient Thread updater = null;
 
 	/**
 	 * Creates new form RawCommunicator.
@@ -690,11 +691,11 @@ public class RawCommunicator extends javax.swing.JDialog
 			{
 				if ( on )
 				{
-					but.setIcon (line_enabled_icon);
+					but.setIcon (lineEnabledIcon);
 				}
 				else
 				{
-					but.setIcon (line_disabled_icon);
+					but.setIcon (lineDisabledIcon);
 				}
 				but.setSelected (on);
 			}
@@ -720,11 +721,11 @@ public class RawCommunicator extends javax.swing.JDialog
 			{
 				if ( on )
 				{
-					l.setIcon (line_enabled_icon);
+					l.setIcon (lineEnabledIcon);
 				}
 				else
 				{
-					l.setIcon (line_disabled_icon);
+					l.setIcon (lineDisabledIcon);
 				}
 			}
 

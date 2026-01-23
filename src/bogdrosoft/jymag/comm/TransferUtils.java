@@ -1695,7 +1695,7 @@ public class TransferUtils
 	 * Gets all the serial ports' names.
 	 * @return A list of serial ports' names.
 	 */
-	public synchronized static Vector<String> getSerialPortNames ()
+	public static synchronized Vector<String> getSerialPortNames ()
 	{
 		Vector<String> ret = new Vector<String> (32);
 		Enumeration<?> portList = getPortList();

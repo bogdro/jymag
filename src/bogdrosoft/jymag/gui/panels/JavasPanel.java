@@ -38,18 +38,18 @@ public class JavasPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 85L;
 
+	// i18n stuff:
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
+	private static final String JAVA_TYPES_STRING
+		= MSGS.getString("Supported_Java_files");
+
 	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentJavaElements;
 	private JFileChooser downloadFC;
 	private JFileChooser uploadJavaFC;
 	private String destDirName;
-
-	// i18n stuff:
-	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
-	private static final String JAVA_TYPES_STRING
-		= MSGS.getString("Supported_Java_files");
 
 	/** Creates new form JavasPanel */
 	public JavasPanel()

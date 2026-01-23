@@ -39,8 +39,6 @@ public class JYMAGTransferHandler extends TransferHandler
 {
 	private static final long serialVersionUID = 77L;
 
-	private final MainWindow mw;
-
 	// http://www.davidgrant.ca/drag_drop_from_linux_kde_gnome_file_managers_konqueror_nautilus_to_java_applications
 	private static transient DataFlavor uriFileListFlavor;
 	private static final String URI_FILE_LIST_FLAVOR_TYPE = "text/uri-list;class=java.lang.String";	// NOI18N
@@ -62,6 +60,8 @@ public class JYMAGTransferHandler extends TransferHandler
 			uriFileListFlavor = null;
 		}
 	}
+
+	private final MainWindow mw;
 
 	/**
 	 * Creates a new TransferHandler that takes its transfer

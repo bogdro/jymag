@@ -31,15 +31,15 @@ public class PhoneElement implements Serializable
 {
 	private static final long serialVersionUID = 91L;
 
-	private final String id;
-	private final String type;
-	private final String filename;
-
 	private static final String TOSTRING_BEGIN = "PhoneElement[";	// NOI18N
 	private static final String TOSTRING_END = "]";			// NOI18N
 	private static final String TOSTRING_ID = "ID=";		// NOI18N
 	// the rest can be empty. The user needs to know only where the ID is
 	private static final String TOSTRING_NAME = "";			// NOI18N
+
+	private final String id;
+	private final String type;
+	private final String filename;
 
 	/**
 	 * Creates a new instance of PhoneElement.

@@ -56,7 +56,6 @@ import javax.swing.filechooser.FileFilter;
 public class MainWindow extends JFrame
 {
 	private static final long serialVersionUID = 65L;
-	private final MainWindow mw = this;
 
 	/** Current version number as a String. */
 	public static final String JYMAG_VERSION =
@@ -65,13 +64,55 @@ public class MainWindow extends JFrame
 
 	// synchronization variable:
 	private static final Object SYNC = new Object ();
+
+	private static final FileFilter	CFG_FILE_FILTER = new FileFilter ()
+		{
+			@Override
+			public boolean accept ( File f )
+			{
+				if ( f == null )
+				{
+					return false;
+				}
+				return f.isDirectory () ||
+					f.getName ().endsWith (".cfg");	// NOI18N
+			}
+
+			@Override
+			public String getDescription ()
+			{
+				return MW_BUNDLE.getString("JYMAG_configuration_files")	// NOI18N
+					+ " (*.cfg)";	// NOI18N
+			}
+
+			@Override
+			public String toString ()
+			{
+				return "MainWindow.cfgFileFilter";	// NOI18N
+			}
+		};
+	// ------------ i18n stuff
+	private static final ResourceBundle MW_BUNDLE = ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
+	private static final String NO_REPLY_STRING = MW_BUNDLE.getString("No_answers_received");
+	private static final String MULTI_REPLIES_STRING = MW_BUNDLE.getString("Multiple_answers");
+	private static final String WHICH_STRING = MW_BUNDLE.getString("Which_one");
+	public static final String ERR_STRING = MW_BUNDLE.getString("Error");
+	public static final String NO_PORT_MSG = MW_BUNDLE.getString("no_ports_selected");
+	public static final String FILE_EXISTS_OVERWRITE = MW_BUNDLE.getString("_exists._Overwrite");
+	public static final String OVERWRITE_STRING = MW_BUNDLE.getString("Overwrite?");
+	public static final String FILE_NOT_WRITABLE_MSG=  MW_BUNDLE.getString("Cant_write_to_file");
+	public static final String PICT_TYPES_STRING = MW_BUNDLE.getString("Supported_pictures");
+	public static final String DELETE_QUESTION = MW_BUNDLE.getString("want_to_delete");
+	public static final String QUESTION_STRING = MW_BUNDLE.getString("Question");
+
+	private static final String PRESS_SCAN_MSG = "(" + MW_BUNDLE.getString("(press_Scan)") + ")";	// NOI18N
+
 	// port-firmware pairs and the firmware version pattern, used for displaying:
 	private transient Map<String, String> firmwares;
 	private transient Map<String, String> phoneTypes;
 	private transient Map<String, String> phoneIMEIs;
 	private transient Map<String, String> phoneSubsNums;
 
-	JFileChooser cfgFC;
 	private final transient Runnable progressBarUpdateRunnable =
 		new Runnable ()
 		{
@@ -104,65 +145,25 @@ public class MainWindow extends JFrame
 				return "MainWindow.progressBarUpdateRunnable";	// NOI18N
 			}
 		};
-
-	private static final FileFilter	CFG_FILE_FILTER = new FileFilter ()
-		{
-			@Override
-			public boolean accept ( File f )
-			{
-				if ( f == null )
-				{
-					return false;
-				}
-				return f.isDirectory () ||
-					f.getName ().endsWith (".cfg");	// NOI18N
-			}
-
-			@Override
-			public String getDescription ()
-			{
-				return MW_BUNDLE.getString("JYMAG_configuration_files")	// NOI18N
-					+ " (*.cfg)";	// NOI18N
-			}
-
-			@Override
-			public String toString ()
-			{
-				return "MainWindow.cfgFileFilter";	// NOI18N
-			}
-		};
 	private final transient StatusChangeRunnable setReadyStatus;
 	private final transient StatusChangeRunnable setSendingStatus;
 	private final transient StatusChangeRunnable setReceivingStatus;
-	// ------------ i18n stuff
-	private static final ResourceBundle MW_BUNDLE = ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
-	private static final String NO_REPLY_STRING = MW_BUNDLE.getString("No_answers_received");
-	private static final String MULTI_REPLIES_STRING = MW_BUNDLE.getString("Multiple_answers");
-	private static final String WHICH_STRING = MW_BUNDLE.getString("Which_one");
-	public static final String ERR_STRING = MW_BUNDLE.getString("Error");
-	public static final String NO_PORT_MSG = MW_BUNDLE.getString("no_ports_selected");
-	public static final String FILE_EXISTS_OVERWRITE = MW_BUNDLE.getString("_exists._Overwrite");
-	public static final String OVERWRITE_STRING = MW_BUNDLE.getString("Overwrite?");
-	public static final String FILE_NOT_WRITABLE_MSG=  MW_BUNDLE.getString("Cant_write_to_file");
-	public static final String PICT_TYPES_STRING = MW_BUNDLE.getString("Supported_pictures");
-	public static final String DELETE_QUESTION = MW_BUNDLE.getString("want_to_delete");
-	public static final String QUESTION_STRING = MW_BUNDLE.getString("Question");
-
-	private static final String PRESS_SCAN_MSG = "(" + MW_BUNDLE.getString("(press_Scan)") + ")";	// NOI18N
+	private final MainWindow mw = this;
+	private JFileChooser cfgFC;
 
 	// ------------ static variables for command-line
 
 	// read from the command-line:
-	private static String destDirName;
-	private static int dBits = 8;
-	private static double sBits = 1;
-	private static int speed = 115200;
-	private static int flow = 0;
-	private static int parity = 0;
-	private static String portName = null;
-	private static boolean isMax = false;
-	private static int xPos = 0;
-	private static int yPos = 0;
+	private String destDirName;
+	private int dBits;
+	private double sBits;
+	private int speed;
+	private int flow;
+	private int parity;
+	private String portName;
+	private boolean isMax;
+	private int xPos;
+	private int yPos;
 
 	/**
 	 * Creates new form MainWindow.

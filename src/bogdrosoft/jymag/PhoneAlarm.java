@@ -34,12 +34,6 @@ import java.util.regex.Pattern;
  */
 public class PhoneAlarm
 {
-	private Calendar time;
-	private boolean oneTime;
-	private boolean forAllDays;
-	private Set<Integer> days;
-	private int number;
-
 	// alarm recurrences could also show up here
 	private static final Pattern DATETIME_PATTERN
 		= Pattern.compile ("(\\+CALA:)?(\\s+)?\"?(\\d{2})/(\\d{2})/(\\d{2}),"		// NOI18N
@@ -61,10 +55,16 @@ public class PhoneAlarm
 	private static final String TOSTRING_DATETIME = "";		// NOI18N
 	private static final String TOSTRING_DAYS = "";			// NOI18N
 
-	private final SimpleDateFormat DATE_FORMAT
+	private static final Integer ALL_DAYS = 0;
+
+	private final SimpleDateFormat dateFormat
 		= new SimpleDateFormat ("dd/MM/yy,HH:mm:ss");
 
-	private static final Integer ALL_DAYS = 0;
+	private Calendar time;
+	private boolean oneTime;
+	private boolean forAllDays;
+	private Set<Integer> days;
+	private int number;
 
 	/**
 	 * Creates a new instance of PhoneAlarm.
@@ -546,7 +546,7 @@ public class PhoneAlarm
 	 * @param response The response to parse.
 	 * @return a PhoneAlarm that matches the given response.
 	 */
-	public synchronized static PhoneAlarm parseReponse (String response)
+	public static synchronized PhoneAlarm parseReponse (String response)
 	{
 		if ( response == null )
 		{
@@ -771,7 +771,7 @@ public class PhoneAlarm
 	public synchronized String toString ()
 	{
 		return TOSTRING_BEGIN + TOSTRING_ID + number + Utils.COMMA
-			+ TOSTRING_DATETIME + DATE_FORMAT.format (time.getTime ())
+			+ TOSTRING_DATETIME + dateFormat.format (time.getTime ())
 			+ Utils.COMMA + TOSTRING_DAYS + getDaysString ()
 			+ TOSTRING_END;
 	}

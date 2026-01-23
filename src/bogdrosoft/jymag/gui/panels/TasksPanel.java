@@ -39,18 +39,18 @@ public class TasksPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 90L;
 
+	// i18n stuff:
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
+	private static final String TODO_TYPES_STRING
+		= MSGS.getString("Supported_to-do_files");
+
 	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentTodoElements;
 	private JFileChooser downloadFC;
 	private JFileChooser uploadTODOFC;
 	private String destDirName;
-
-	// i18n stuff:
-	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
-	private static final String TODO_TYPES_STRING
-		= MSGS.getString("Supported_to-do_files");
 
 	/** Creates new form TasksPanel */
 	public TasksPanel()

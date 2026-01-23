@@ -39,18 +39,18 @@ public class PhotoPanel extends javax.swing.JPanel implements JYMAGTab
 {
 	private static final long serialVersionUID = 87L;
 
+	// i18n stuff:
+	private static final ResourceBundle MSGS
+		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
+	private static final String PICT_TYPES_STRING
+		= MSGS.getString("Supported_pictures");
+
 	private transient MainWindow mw;
 
 	private Vector<PhoneElement> currentPhotoElements;
 	private JFileChooser downloadFC;
 	private JFileChooser uploadPictFC;
 	private String destDirName;
-
-	// i18n stuff:
-	private static final ResourceBundle MSGS
-		= ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MainWindow");
-	private static final String PICT_TYPES_STRING
-		= MSGS.getString("Supported_pictures");
 
 	/** Creates new form PhotoPanel */
 	public PhotoPanel()
