@@ -161,6 +161,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                 capabText.setRows(5);
                 jScrollPane1.setViewportView(capabText);
                 capabText.getAccessibleContext().setAccessibleName(bundle.getString("Received_capabilities")); // NOI18N
+                capabText.getAccessibleContext().setAccessibleDescription(bundle.getString("cap_area_desc")); // NOI18N
 
                 fontSizeSpin.setModel(new javax.swing.SpinnerNumberModel(12, 1, null, 1));
                 fontSizeSpin.addChangeListener(new javax.swing.event.ChangeListener()
@@ -240,6 +241,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                 );
 
                 getCapBut.getAccessibleContext().setAccessibleName(bundle.getString("cap_button")); // NOI18N
+                getCapBut.getAccessibleContext().setAccessibleDescription(bundle.getString("capbut_desc")); // NOI18N
                 exitBut.getAccessibleContext().setAccessibleName(bundle.getString("cap_exit")); // NOI18N
                 jLabel1.getAccessibleContext().setAccessibleName(bundle.getString("cap_label")); // NOI18N
                 pictCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_pict")); // NOI18N
