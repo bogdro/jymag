@@ -215,11 +215,13 @@ public class SMSWindow extends javax.swing.JDialog
                 );
 
                 closeBut.getAccessibleContext().setAccessibleName(bundle.getString("access_exit")); // NOI18N
+                closeBut.getAccessibleContext().setAccessibleDescription(bundle.getString("exitbut_desc")); // NOI18N
                 sendBut.getAccessibleContext().setAccessibleName(bundle.getString("access_send")); // NOI18N
                 fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("font_size")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spin")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("access_font_size")); // NOI18N
                 phoneNumField.getAccessibleContext().setAccessibleName(bundle.getString("access_phone")); // NOI18N
+                phoneNumField.getAccessibleContext().setAccessibleDescription(bundle.getString("phonenum_desc")); // NOI18N
 
                 pack();
         }// </editor-fold>//GEN-END:initComponents
