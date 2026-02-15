@@ -243,6 +243,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                 getCapBut.getAccessibleContext().setAccessibleName(bundle.getString("cap_button")); // NOI18N
                 getCapBut.getAccessibleContext().setAccessibleDescription(bundle.getString("capbut_desc")); // NOI18N
                 exitBut.getAccessibleContext().setAccessibleName(bundle.getString("cap_exit")); // NOI18N
+                exitBut.getAccessibleContext().setAccessibleDescription(bundle.getString("exitbut_desc")); // NOI18N
                 jLabel1.getAccessibleContext().setAccessibleName(bundle.getString("cap_label")); // NOI18N
                 pictCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_pict")); // NOI18N
                 ringCapRB.getAccessibleContext().setAccessibleName(bundle.getString("cap_ring")); // NOI18N
