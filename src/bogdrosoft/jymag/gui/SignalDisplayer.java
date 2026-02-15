@@ -215,10 +215,16 @@ public class SignalDisplayer extends javax.swing.JFrame
                                 .addContainerGap())
                 );
 
+                powerLevel.getAccessibleContext().setAccessibleName(bundle.getString("level_name")); // NOI18N
+                powerLevel.getAccessibleContext().setAccessibleDescription(bundle.getString("levelbar_desc")); // NOI18N
                 exitBut.getAccessibleContext().setAccessibleName(bundle.getString("exit_but")); // NOI18N
+                exitBut.getAccessibleContext().setAccessibleDescription(bundle.getString("exitbut_desc")); // NOI18N
                 jLabel3.getAccessibleContext().setAccessibleName(bundle.getString("power_label")); // NOI18N
+                powerLabel.getAccessibleContext().setAccessibleName(bundle.getString("powerlabel_name")); // NOI18N
+                powerLabel.getAccessibleContext().setAccessibleDescription(bundle.getString("powerlabel_desc")); // NOI18N
                 jLabel4.getAccessibleContext().setAccessibleName(bundle.getString("font_label")); // NOI18N
                 fontSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_spin")); // NOI18N
+                fontSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("access_font_size")); // NOI18N
                 onTopCB.getAccessibleContext().setAccessibleName(bundle.getString("ontop_cb")); // NOI18N
 
                 jScrollPane1.setViewportView(jPanel1);
