@@ -149,6 +149,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 cmdArea.setRows(5);
                 jScrollPane1.setViewportView(cmdArea);
                 cmdArea.getAccessibleContext().setAccessibleName(bundle.getString("sent_commands")); // NOI18N
+                cmdArea.getAccessibleContext().setAccessibleDescription(bundle.getString("cmdarea_desc")); // NOI18N
 
                 jSplitPane1.setTopComponent(jScrollPane1);
 
@@ -157,6 +158,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 answerArea.setRows(5);
                 jScrollPane2.setViewportView(answerArea);
                 answerArea.getAccessibleContext().setAccessibleName(bundle.getString("received_answers")); // NOI18N
+                answerArea.getAccessibleContext().setAccessibleDescription(bundle.getString("replyarea_desc")); // NOI18N
 
                 jSplitPane1.setRightComponent(jScrollPane2);
 
@@ -164,6 +166,7 @@ public class RawCommunicator extends javax.swing.JDialog
                 currCommArea.setRows(5);
                 jScrollPane3.setViewportView(currCommArea);
                 currCommArea.getAccessibleContext().setAccessibleName(bundle.getString("command")); // NOI18N
+                currCommArea.getAccessibleContext().setAccessibleDescription(bundle.getString("curr_cmdarea_desc")); // NOI18N
 
                 sendBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/upload.png"))); // NOI18N
                 sendBut.setText(bundle.getString("Send")); // NOI18N
@@ -326,12 +329,16 @@ public class RawCommunicator extends javax.swing.JDialog
                 );
 
                 sendBut.getAccessibleContext().setAccessibleName(bundle.getString("access_send")); // NOI18N
+                sendBut.getAccessibleContext().setAccessibleDescription(bundle.getString("sendbut_desc")); // NOI18N
                 closeBut.getAccessibleContext().setAccessibleName(bundle.getString("access_exit")); // NOI18N
+                closeBut.getAccessibleContext().setAccessibleDescription(bundle.getString("exitbut_desc")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spinner")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
                 fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("font_label")); // NOI18N
                 sendFileBut.getAccessibleContext().setAccessibleName(bundle.getString("access_send_file")); // NOI18N
+                sendFileBut.getAccessibleContext().setAccessibleDescription(bundle.getString("sendfilebut_desc")); // NOI18N
                 clearBut.getAccessibleContext().setAccessibleName(bundle.getString("access_clear_but_text")); // NOI18N
+                clearBut.getAccessibleContext().setAccessibleDescription(bundle.getString("clearbut_desc")); // NOI18N
 
                 jScrollPane4.setViewportView(jPanel1);
 
