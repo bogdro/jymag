@@ -396,42 +396,62 @@ public class MainWindow extends JFrame
                 tabPane.setPreferredSize(new java.awt.Dimension(800, 600));
 
                 jScrollPane7.setViewportView(photoPanel);
+                photoPanel.getAccessibleContext().setAccessibleName(bundle.getString("photopanel_name")); // NOI18N
+                photoPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("photopanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("Photos"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/pictures.png")), jScrollPane7); // NOI18N
 
                 jScrollPane8.setViewportView(ringtonePanel);
+                ringtonePanel.getAccessibleContext().setAccessibleName(bundle.getString("ringtonepanel_name")); // NOI18N
+                ringtonePanel.getAccessibleContext().setAccessibleDescription(bundle.getString("ringtonepanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("Ringtones"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/ringtones.png")), jScrollPane8); // NOI18N
 
                 jScrollPane9.setViewportView(addrBookPanel);
+                addrBookPanel.getAccessibleContext().setAccessibleName(bundle.getString("addrbookpanel_name")); // NOI18N
+                addrBookPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("addrbookpanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("Addressbook"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/addrbook.png")), jScrollPane9); // NOI18N
 
                 jScrollPane10.setViewportView(tasksPanel);
+                tasksPanel.getAccessibleContext().setAccessibleName(bundle.getString("todopanel_name")); // NOI18N
+                tasksPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("todopanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("ToDoTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/todo.png")), jScrollPane10); // NOI18N
 
                 jScrollPane11.setViewportView(eventsPanel);
+                eventsPanel.getAccessibleContext().setAccessibleName(bundle.getString("eventpanel_name")); // NOI18N
+                eventsPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("eventpanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("EventsTasksTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/events.png")), jScrollPane11); // NOI18N
 
                 jScrollPane12.setViewportView(moviePanel);
+                moviePanel.getAccessibleContext().setAccessibleName(bundle.getString("videopanel_name")); // NOI18N
+                moviePanel.getAccessibleContext().setAccessibleDescription(bundle.getString("videopanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("AnimationsVideosTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/videos.png")), jScrollPane12); // NOI18N
 
                 jScrollPane13.setViewportView(javasPanel);
+                javasPanel.getAccessibleContext().setAccessibleName(bundle.getString("javapanel_name")); // NOI18N
+                javasPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("javapanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("JavaTab"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/java.png")), jScrollPane13); // NOI18N
 
                 jScrollPane16.setViewportView(alarmPanel);
+                alarmPanel.getAccessibleContext().setAccessibleName(bundle.getString("alarmpanel_main")); // NOI18N
+                alarmPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("alarmpanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("Alarms"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/alarm.png")), jScrollPane16); // NOI18N
 
                 jScrollPane18.setViewportView(sMSPanel);
+                sMSPanel.getAccessibleContext().setAccessibleName(bundle.getString("smspanel_name")); // NOI18N
+                sMSPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("smspanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("SMS"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/sms.png")), jScrollPane18); // NOI18N
 
                 jScrollPane20.setViewportView(dialPanel);
+                dialPanel.getAccessibleContext().setAccessibleName(bundle.getString("dialpanel_name")); // NOI18N
+                dialPanel.getAccessibleContext().setAccessibleDescription(bundle.getString("dialpanel_desc")); // NOI18N
 
                 tabPane.addTab(bundle.getString("tab_dial"), new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/dialtab.png")), jScrollPane20); // NOI18N
 
@@ -664,42 +684,63 @@ public class MainWindow extends JFrame
                 );
 
                 loadConfBut.getAccessibleContext().setAccessibleName(bundle.getString("loadconf_button")); // NOI18N
+                loadConfBut.getAccessibleContext().setAccessibleDescription(bundle.getString("loadconf_desc")); // NOI18N
                 phone.getAccessibleContext().setAccessibleName(bundle.getString("phone_type")); // NOI18N
+                phone.getAccessibleContext().setAccessibleDescription(bundle.getString("phone_type_value")); // NOI18N
                 speedCombo.getAccessibleContext().setAccessibleName(bundle.getString("port_speed")); // NOI18N
+                speedCombo.getAccessibleContext().setAccessibleDescription(bundle.getString("speed_dropdown")); // NOI18N
                 speedLabel.getAccessibleContext().setAccessibleName(bundle.getString("speed_label")); // NOI18N
                 parityLabel.getAccessibleContext().setAccessibleName(bundle.getString("parity_label")); // NOI18N
                 aboutBut.getAccessibleContext().setAccessibleName(bundle.getString("about_button")); // NOI18N
+                aboutBut.getAccessibleContext().setAccessibleDescription(bundle.getString("aboutbut_desc")); // NOI18N
                 flowSoft.getAccessibleContext().setAccessibleName(bundle.getString("flowsoft_label")); // NOI18N
+                flowSoft.getAccessibleContext().setAccessibleDescription(bundle.getString("flow_soft_desc")); // NOI18N
                 progressLabel.getAccessibleContext().setAccessibleName(bundle.getString("pbar_label")); // NOI18N
                 rawBut.getAccessibleContext().setAccessibleName(bundle.getString("mancomm_button")); // NOI18N
+                rawBut.getAccessibleContext().setAccessibleDescription(bundle.getString("manualcmd_desc")); // NOI18N
                 status.getAccessibleContext().setAccessibleName(bundle.getString("program_status")); // NOI18N
+                status.getAccessibleContext().setAccessibleDescription(bundle.getString("status_value")); // NOI18N
                 firmwareLabel.getAccessibleContext().setAccessibleName(bundle.getString("firmware_label")); // NOI18N
                 statusLabel.getAccessibleContext().setAccessibleName(bundle.getString("status_label")); // NOI18N
                 scanButton.getAccessibleContext().setAccessibleName(bundle.getString("scan_button")); // NOI18N
+                scanButton.getAccessibleContext().setAccessibleDescription(bundle.getString("scanbut_desc")); // NOI18N
                 flowLabel.getAccessibleContext().setAccessibleName(bundle.getString("flow_label")); // NOI18N
                 databitsLabel.getAccessibleContext().setAccessibleName(bundle.getString("dbits_label")); // NOI18N
                 portLabel.getAccessibleContext().setAccessibleName(bundle.getString("port_label")); // NOI18N
                 progressBar.getAccessibleContext().setAccessibleName(bundle.getString("operation_progress")); // NOI18N
+                progressBar.getAccessibleContext().setAccessibleDescription(bundle.getString("progress_value")); // NOI18N
                 getCapBut.getAccessibleContext().setAccessibleName(bundle.getString("capab_button")); // NOI18N
+                getCapBut.getAccessibleContext().setAccessibleDescription(bundle.getString("capbut_desc")); // NOI18N
                 IMEI.getAccessibleContext().setAccessibleName(bundle.getString("phone_imei")); // NOI18N
+                IMEI.getAccessibleContext().setAccessibleDescription(bundle.getString("imei_value")); // NOI18N
                 exitBut.getAccessibleContext().setAccessibleName(bundle.getString("exit_button")); // NOI18N
+                exitBut.getAccessibleContext().setAccessibleDescription(bundle.getString("exitbut_desc")); // NOI18N
                 tabPane.getAccessibleContext().setAccessibleName(bundle.getString("tabPane")); // NOI18N
                 phoneTypeLabel.getAccessibleContext().setAccessibleName(bundle.getString("ptype_label")); // NOI18N
                 flowHard.getAccessibleContext().setAccessibleName(bundle.getString("flowhard_label")); // NOI18N
+                flowHard.getAccessibleContext().setAccessibleDescription(bundle.getString("flow_hard_desc")); // NOI18N
                 dataBitsCombo.getAccessibleContext().setAccessibleName(bundle.getString("data_bits")); // NOI18N
+                dataBitsCombo.getAccessibleContext().setAccessibleDescription(bundle.getString("databits_dropdown")); // NOI18N
                 stopbitsLabel.getAccessibleContext().setAccessibleName(bundle.getString("sbits_label")); // NOI18N
                 IMEILabel.getAccessibleContext().setAccessibleName(bundle.getString("imei_label")); // NOI18N
                 saveConfBut.getAccessibleContext().setAccessibleName(bundle.getString("saveconf_button")); // NOI18N
+                saveConfBut.getAccessibleContext().setAccessibleDescription(bundle.getString("saveconf_desc")); // NOI18N
                 portCombo.getAccessibleContext().setAccessibleName(bundle.getString("port_list")); // NOI18N
+                portCombo.getAccessibleContext().setAccessibleDescription(bundle.getString("port_dropdown")); // NOI18N
                 subsNumLabel.getAccessibleContext().setAccessibleName(bundle.getString("subnum_label")); // NOI18N
                 firmware.getAccessibleContext().setAccessibleName(bundle.getString("phone_firmware")); // NOI18N
+                firmware.getAccessibleContext().setAccessibleDescription(bundle.getString("firmware_value")); // NOI18N
                 stopBitsCombo.getAccessibleContext().setAccessibleName(bundle.getString("stop_bits")); // NOI18N
+                stopBitsCombo.getAccessibleContext().setAccessibleDescription(bundle.getString("stopbits_dropdown")); // NOI18N
                 parityCombo.getAccessibleContext().setAccessibleName(bundle.getString("parity_type")); // NOI18N
+                parityCombo.getAccessibleContext().setAccessibleDescription(bundle.getString("parity_dropdown")); // NOI18N
                 subsNum.getAccessibleContext().setAccessibleName(bundle.getString("subscriber_number")); // NOI18N
+                subsNum.getAccessibleContext().setAccessibleDescription(bundle.getString("phone_number_value")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleName(bundle.getString("font_size_spinner")); // NOI18N
                 fontSizeSpin.getAccessibleContext().setAccessibleDescription(bundle.getString("change_font_size")); // NOI18N
                 fontSizeLab.getAccessibleContext().setAccessibleName(bundle.getString("font_label")); // NOI18N
                 signalButton.getAccessibleContext().setAccessibleName(bundle.getString("signal_button")); // NOI18N
+                signalButton.getAccessibleContext().setAccessibleDescription(bundle.getString("signalbut_desc")); // NOI18N
 
                 jScrollPane15.setViewportView(jPanel1);
 
@@ -1293,7 +1334,7 @@ public class MainWindow extends JFrame
 	 * @param args the command line arguments.
 	 * @throws ClassNotFoundException if the communication classes can't be loaded.
 	 */
-	public static void start (String args[]) throws ClassNotFoundException
+	public static void start (String[] args) throws ClassNotFoundException
 	{
 		// parse the command line:
 		CommandLineParser.parse (args, SYNC);
