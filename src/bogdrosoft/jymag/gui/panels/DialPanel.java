@@ -446,8 +446,28 @@ public class DialPanel extends javax.swing.JPanel implements JYMAGTab
                                 .addContainerGap(12, Short.MAX_VALUE))
                 );
 
+                dialNumRadio.getAccessibleContext().setAccessibleName(bundle.getString("dial_radio_name")); // NOI18N
+                dialNumRadio.getAccessibleContext().setAccessibleDescription(bundle.getString("dial_radio_desc")); // NOI18N
+                dialCmdRadio.getAccessibleContext().setAccessibleName(bundle.getString("manualcmd_radio_name")); // NOI18N
+                dialCmdRadio.getAccessibleContext().setAccessibleDescription(bundle.getString("manualcmd_radio_desc")); // NOI18N
+                numberField.getAccessibleContext().setAccessibleName(bundle.getString("acc_number_field_name")); // NOI18N
                 numberField.getAccessibleContext().setAccessibleDescription(bundle.getString("acc_number_field")); // NOI18N
+                dialCmdField.getAccessibleContext().setAccessibleName(bundle.getString("acc_dial_cmd_name")); // NOI18N
                 dialCmdField.getAccessibleContext().setAccessibleDescription(bundle.getString("acc_dial_cmd")); // NOI18N
+                voiceRadio.getAccessibleContext().setAccessibleName(bundle.getString("voice_radio_name")); // NOI18N
+                voiceRadio.getAccessibleContext().setAccessibleDescription(bundle.getString("voice_radio_desc")); // NOI18N
+                dataRadio.getAccessibleContext().setAccessibleName(bundle.getString("data_radio_name")); // NOI18N
+                dataRadio.getAccessibleContext().setAccessibleDescription(bundle.getString("data_radio_desc")); // NOI18N
+                dialBut.getAccessibleContext().setAccessibleName(bundle.getString("dialbut_name")); // NOI18N
+                dialBut.getAccessibleContext().setAccessibleDescription(bundle.getString("dialbut_desc")); // NOI18N
+                hangUpBut.getAccessibleContext().setAccessibleName(bundle.getString("hangupbut_name")); // NOI18N
+                hangUpBut.getAccessibleContext().setAccessibleDescription(bundle.getString("hangupbut_desc")); // NOI18N
+                answerBut.getAccessibleContext().setAccessibleName(bundle.getString("answerbut_name")); // NOI18N
+                answerBut.getAccessibleContext().setAccessibleDescription(bundle.getString("answerbut_desc")); // NOI18N
+                volumeUpBut.getAccessibleContext().setAccessibleName(bundle.getString("volupbut_name")); // NOI18N
+                volumeUpBut.getAccessibleContext().setAccessibleDescription(bundle.getString("volupbut_desc")); // NOI18N
+                volumeDownBut.getAccessibleContext().setAccessibleName(bundle.getString("voldownbut_name")); // NOI18N
+                volumeDownBut.getAccessibleContext().setAccessibleDescription(bundle.getString("voldownbut_desc")); // NOI18N
         }// </editor-fold>//GEN-END:initComponents
 
 	private void numberButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_numberButActionPerformed

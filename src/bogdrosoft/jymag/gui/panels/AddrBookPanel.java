@@ -199,6 +199,15 @@ public class AddrBookPanel extends javax.swing.JPanel implements JYMAGTab
 
                 layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteAddrBut, downloadAddrBut, getAddrListBut, uploadAddrBut});
 
+                java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/AddrBookPanel"); // NOI18N
+                getAddrListBut.getAccessibleContext().setAccessibleName(bundle1.getString("get_list_but_name")); // NOI18N
+                getAddrListBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("get_list_but_desc")); // NOI18N
+                downloadAddrBut.getAccessibleContext().setAccessibleName(bundle1.getString("down_but_name")); // NOI18N
+                downloadAddrBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("down_but_desc")); // NOI18N
+                uploadAddrBut.getAccessibleContext().setAccessibleName(bundle1.getString("upload_but_name")); // NOI18N
+                uploadAddrBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("upload_but_desc")); // NOI18N
+                deleteAddrBut.getAccessibleContext().setAccessibleName(bundle1.getString("delbut_name")); // NOI18N
+                deleteAddrBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("delbut_desc")); // NOI18N
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getAddrListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getAddrListButActionPerformed

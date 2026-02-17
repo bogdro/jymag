@@ -199,6 +199,15 @@ public class RingtonePanel extends javax.swing.JPanel implements JYMAGTab
 
                 layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteRingBut, downloadRingBut, getRingListBut, uploadRingBut});
 
+                java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/RingtonePanel"); // NOI18N
+                getRingListBut.getAccessibleContext().setAccessibleName(bundle1.getString("get_list_but_name")); // NOI18N
+                getRingListBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("get_list_but_desc")); // NOI18N
+                downloadRingBut.getAccessibleContext().setAccessibleName(bundle1.getString("down_but_name")); // NOI18N
+                downloadRingBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("down_but_desc")); // NOI18N
+                uploadRingBut.getAccessibleContext().setAccessibleName(bundle1.getString("upload_but_name")); // NOI18N
+                uploadRingBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("upload_but_desc")); // NOI18N
+                deleteRingBut.getAccessibleContext().setAccessibleName(bundle1.getString("delbut_name")); // NOI18N
+                deleteRingBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("delbut_desc")); // NOI18N
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getRingListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getRingListButActionPerformed

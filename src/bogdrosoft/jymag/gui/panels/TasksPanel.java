@@ -199,6 +199,15 @@ public class TasksPanel extends javax.swing.JPanel implements JYMAGTab
 
                 layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteTodoBut, downloadTodoBut, getTodoListBut, uploadTodoBut});
 
+                java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/TasksPanel"); // NOI18N
+                deleteTodoBut.getAccessibleContext().setAccessibleName(bundle1.getString("delbut_name")); // NOI18N
+                deleteTodoBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("delbut_desc")); // NOI18N
+                uploadTodoBut.getAccessibleContext().setAccessibleName(bundle1.getString("upload_but_name")); // NOI18N
+                uploadTodoBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("upload_but_desc")); // NOI18N
+                downloadTodoBut.getAccessibleContext().setAccessibleName(bundle1.getString("down_but_name")); // NOI18N
+                downloadTodoBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("down_but_desc")); // NOI18N
+                getTodoListBut.getAccessibleContext().setAccessibleName(bundle1.getString("get_list_but_name")); // NOI18N
+                getTodoListBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("get_list_but_desc")); // NOI18N
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getTodoListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getTodoListButActionPerformed

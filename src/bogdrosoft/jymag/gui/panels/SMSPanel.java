@@ -193,6 +193,15 @@ public class SMSPanel extends javax.swing.JPanel implements JYMAGTab
 
                 layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteSmsBut, downloadSmsBut, getSmsListBut, uploadSmsBut});
 
+                java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/SMSPanel"); // NOI18N
+                deleteSmsBut.getAccessibleContext().setAccessibleName(bundle1.getString("delbut_name")); // NOI18N
+                deleteSmsBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("delbut_desc")); // NOI18N
+                uploadSmsBut.getAccessibleContext().setAccessibleName(bundle1.getString("upload_but_name")); // NOI18N
+                uploadSmsBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("upload_but_desc")); // NOI18N
+                downloadSmsBut.getAccessibleContext().setAccessibleName(bundle1.getString("down_but_name")); // NOI18N
+                downloadSmsBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("down_but_desc")); // NOI18N
+                getSmsListBut.getAccessibleContext().setAccessibleName(bundle1.getString("get_list_but_name")); // NOI18N
+                getSmsListBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("get_list_but_desc")); // NOI18N
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getSmsListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getSmsListButActionPerformed

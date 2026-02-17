@@ -199,6 +199,15 @@ public class MoviePanel extends javax.swing.JPanel implements JYMAGTab
 
                 layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {deleteAnimBut, downloadAnimBut, getAnimListBut, uploadAnimBut});
 
+                java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("bogdrosoft/jymag/i18n/MoviePanel"); // NOI18N
+                deleteAnimBut.getAccessibleContext().setAccessibleName(bundle1.getString("delbut_name")); // NOI18N
+                deleteAnimBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("delbut_desc")); // NOI18N
+                uploadAnimBut.getAccessibleContext().setAccessibleName(bundle1.getString("upload_but_name")); // NOI18N
+                uploadAnimBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("upload_but_desc")); // NOI18N
+                downloadAnimBut.getAccessibleContext().setAccessibleName(bundle1.getString("down_but_name")); // NOI18N
+                downloadAnimBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("down_but_desc")); // NOI18N
+                getAnimListBut.getAccessibleContext().setAccessibleName(bundle1.getString("get_list_but_name")); // NOI18N
+                getAnimListBut.getAccessibleContext().setAccessibleDescription(bundle1.getString("get_list_but_desc")); // NOI18N
         }// </editor-fold>//GEN-END:initComponents
 
 	private void getAnimListButActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_getAnimListButActionPerformed
