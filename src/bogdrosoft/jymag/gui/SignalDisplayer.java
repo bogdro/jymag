@@ -122,6 +122,7 @@ public class SignalDisplayer extends javax.swing.JFrame
                 powerLevel.setOrientation(javax.swing.JProgressBar.VERTICAL);
 
                 exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
+                exitBut.setMnemonic('Q');
                 exitBut.setText(bundle.getString("exit")); // NOI18N
                 exitBut.addActionListener(new java.awt.event.ActionListener()
                 {

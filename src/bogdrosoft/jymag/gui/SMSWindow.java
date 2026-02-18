@@ -126,6 +126,7 @@ public class SMSWindow extends javax.swing.JDialog
                 });
 
                 closeBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
+                closeBut.setMnemonic('Q');
                 closeBut.setText(bundle.getString("Exit")); // NOI18N
                 closeBut.addActionListener(new java.awt.event.ActionListener()
                 {

@@ -126,6 +126,7 @@ public class CapabilityWindow extends javax.swing.JDialog
                 });
 
                 exitBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bogdrosoft/jymag/rsrc/exit.png"))); // NOI18N
+                exitBut.setMnemonic('Q');
                 exitBut.setText(bundle.getString("Exit")); // NOI18N
                 exitBut.addActionListener(new java.awt.event.ActionListener()
                 {
