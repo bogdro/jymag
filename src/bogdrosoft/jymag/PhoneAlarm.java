@@ -92,11 +92,7 @@ public class PhoneAlarm
 		oneTime = isOneTimeAlarm;
 		forAllDays = isForAllDays;
 		days = null;
-		if ( isForAllDays )
-		{
-			days = null;
-		}
-		else
+		if (! isForAllDays)
 		{
 			days = makeSetFromArray (alarmDays);
 			if ( days != null && days.contains (ALL_DAYS) )
@@ -133,19 +129,12 @@ public class PhoneAlarm
 		oneTime = isOneTimeAlarm;
 		forAllDays = isForAllDays;
 		days = null;
-		if ( isForAllDays )
+		if (! isForAllDays && alarmDays != null )
 		{
-			days = null;
-		}
-		else
-		{
-			if ( alarmDays != null )
+			days = new HashSet<Integer> (alarmDays);
+			if ( alarmDays.contains (ALL_DAYS) )
 			{
-				days = new HashSet<Integer> (alarmDays);
-				if ( alarmDays.contains (ALL_DAYS) )
-				{
-					forAllDays = true;
-				}
+				forAllDays = true;
 			}
 		}
 		number = alarmNumber;
@@ -743,11 +732,8 @@ public class PhoneAlarm
 			boolean isForAllDays = false;
 			if ( tmpDays != null )
 			{
-				if ( tmpDays.isEmpty () )
-				{
-					isForAllDays = true;
-				}
-				else if ( tmpDays.contains (ALL_DAYS) )
+				if ( tmpDays.isEmpty ()
+					|| tmpDays.contains (ALL_DAYS) )
 				{
 					isForAllDays = true;
 				}

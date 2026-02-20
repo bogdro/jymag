@@ -57,6 +57,7 @@ public class FakeCommPortIdentifier //extends CommPortIdentifier // illegal acce
 	}
 
 	//@Override
+	@SuppressWarnings("unused")
 	public CommPort open(String owner, int i)
 	{
 		return sp;
@@ -68,6 +69,7 @@ public class FakeCommPortIdentifier //extends CommPortIdentifier // illegal acce
 		return CommPortIdentifier.PORT_SERIAL;
 	}
 
+	@SuppressWarnings("unused")
 	//public static CommPortIdentifier getPortIdentifier (String port)
 	public static FakeCommPortIdentifier getPortIdentifier (String port)
 	{

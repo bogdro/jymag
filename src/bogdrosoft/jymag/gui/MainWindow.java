@@ -1152,7 +1152,7 @@ public class MainWindow extends JFrame
 	/**
 	 * Makes the MainWindow change the status to "ready".
 	 */
-	public void setReadyStatus ()
+	public final void setReadyStatus ()
 	{
 		enablePortControls ();
 		UiUtils.changeGUI(setReadyStatus);
@@ -1195,7 +1195,7 @@ public class MainWindow extends JFrame
 		progressBar.setMaximum(value);
 	}
 
-	void updateControls ()
+	final void updateControls ()
 	{
 		if ( portName != null )
 		{
@@ -1253,7 +1253,7 @@ public class MainWindow extends JFrame
 	 * Component (recursively, if it's a Container).
 	 * @param c The Component with Components that will be connected to the main window.
 	 */
-	void setPanelConnections (Component c)
+	final void setPanelConnections (Component c)
 	{
 		if ( c == null )
 		{
@@ -1283,7 +1283,7 @@ public class MainWindow extends JFrame
 	}
 
 	@SuppressWarnings("unchecked")
-	int setPorts ()
+	final int setPorts ()
 	{
 		Vector<String> portList = TransferUtils.getSerialPortNames ();
 		if ( portList != null )
