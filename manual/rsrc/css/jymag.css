@@ -31,7 +31,7 @@ a:active	{
 
 a:focus		{
 			border-style: none;
-			outline-width: 0px;
+			outline-width: 0;
 		}
 
 pre		{
