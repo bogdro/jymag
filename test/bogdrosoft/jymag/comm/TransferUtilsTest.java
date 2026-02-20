@@ -65,7 +65,7 @@ public class TransferUtilsTest
 	}
 
 	@AfterClass
-	public static void tearDownClass () throws Exception
+	public static void tearDownClass()
 	{
 		new File(FILENAME).delete();
 	}

@@ -95,7 +95,7 @@ public class PhoneMessageTest
 		PhoneMessage instance = new PhoneMessage ();
 		instance.setMessage (newMsg);
 		String result = instance.getMessage ();
-		assertEquals (result, newMsg);
+		assertEquals(newMsg, result);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class PhoneMessageTest
 		PhoneMessage instance = new PhoneMessage ();
 		instance.setRecipientNum (newRecip);
 		String result = instance.getRecipientNum ();
-		assertEquals (result, newRecip);
+		assertEquals(newRecip, result);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class PhoneMessageTest
 		PhoneMessage instance = new PhoneMessage ();
 		instance.setID (newID);
 		String result = instance.getID ();
-		assertEquals (result, newID);
+		assertEquals(newID, result);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class PhoneMessageTest
 		PhoneMessage instance = new PhoneMessage ();
 		instance.setDateTime (newDateTime);
 		String result = instance.getDateTime ();
-		assertEquals (result, newDateTime);
+		assertEquals(newDateTime, result);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class PhoneMessageTest
 		PhoneMessage instance = new PhoneMessage ();
 		instance.setStatus (newStatus);
 		String result = instance.getStatus ();
-		assertEquals (result, newStatus);
+		assertEquals(newStatus, result);
 	}
 
 	/**
@@ -173,30 +173,30 @@ public class PhoneMessageTest
 	 * Test of parseReponse method, of class PhoneMessage.
 	 */
 	@Test
-	public void testParseReponse ()
+	public void testParseReponse()
 	{
-		System.out.println ("parseReponse");
+		System.out.println("parseReponse");
 
 		String response = "+CMGL: 31415,\"1\",\"12345\",\"01/02/03,04:05:06+07\",,333\nbody\n";
-		PhoneMessage result = PhoneMessage.parseReponse (response);
+		PhoneMessage result = PhoneMessage.parseReponse(response);
 		assertNotNull (result);
-		assertEquals (result.getMessage (), "body");
-		assertEquals (result.getRecipientNum (), "12345");
-		assertEquals (result.getID (), "31415");
-		assertEquals (result.getDateTime (), "01/02/03,04:05:06+07");
-		assertEquals (result.getStatus (), "1");
+		assertEquals("body", result.getMessage());
+		assertEquals("12345", result.getRecipientNum());
+		assertEquals("31415", result.getID());
+		assertEquals("01/02/03,04:05:06+07", result.getDateTime());
+		assertEquals("1", result.getStatus());
 
 		response = "+CMGr: \"1\",\nbody\n";
 		result = PhoneMessage.parseReponse (response);
-		assertNotNull (result);
-		assertEquals (result.getMessage (), "body");
-		assertNull (result.getRecipientNum ());
-		assertNull (result.getDateTime ());
-		assertEquals (result.getStatus (), "1");
+		assertNotNull(result);
+		assertEquals("body", result.getMessage ());
+		assertNull(result.getRecipientNum());
+		assertNull(result.getDateTime());
+		assertEquals("1", result.getStatus());
 
 		response = null;
-		result = PhoneMessage.parseReponse (response);
-		assertNull (result);
+		result = PhoneMessage.parseReponse(response);
+		assertNull(result);
 	}
 
 	/**

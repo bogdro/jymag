@@ -46,7 +46,7 @@ public class TransferParametersTest
 	private static final Object SYNC = new Object();
 
 	@BeforeClass
-	public static void setUpClass () throws Exception
+	public static void setUpClass()
 	{
 		CommandLineParser.mock = true;
 		System.setProperty("mock", "138b7ce0632d70dd9d6fc7b571fd9199");

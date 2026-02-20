@@ -51,21 +51,21 @@ public class DataTransporterTest
 	private static final PhoneElement PICTURE_ELEMENT =
 		new PhoneElement("5303650005022001FFFF", "FGIF", "TestPicture");
 
-	private static PhoneMessage MESSAGE;
+	private static PhoneMessage message;
 
 	@BeforeClass
-	public static void setUpClass () throws Exception
+	public static void setUpClass()
 	{
-		MESSAGE = new PhoneMessage();
-		MESSAGE.setDateTime("08/08/02,06:30:00+00");
-		MESSAGE.setID("1");
-		MESSAGE.setMessage("Test");
-		MESSAGE.setRecipientNum("+001123456789");
-		MESSAGE.setStatus("STOR");
+		message = new PhoneMessage();
+		message.setDateTime("08/08/02,06:30:00+00");
+		message.setID("1");
+		message.setMessage("Test");
+		message.setRecipientNum("+001123456789");
+		message.setStatus("STOR");
 	}
 
 	@AfterClass
-	public static void tearDownClass () throws Exception
+	public static void tearDownClass()
 	{
 		/*
 		if ( dt != null )
@@ -434,15 +434,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	public void testSendPINWithStringString () throws Exception
+	public void testSendPINWithStringString() throws Exception
 	{
-		System.out.println ("sendPIN");
+		System.out.println("sendPIN");
 		DataTransporter dt = prepareDT();
-		String PIN = "1234";
+		String pin = "1234";
 		String newPIN = "2345";
 		int expResult = -1;
-		int result = dt.sendPIN (PIN, newPIN);
-		assertEquals (expResult, result);
+		int result = dt.sendPIN(pin, newPIN);
+		assertEquals(expResult, result);
 	}
 
 	/**
@@ -451,15 +451,15 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	public void testSendPINWithIntInt () throws Exception
+	public void testSendPINWithIntInt() throws Exception
 	{
-		System.out.println ("sendPIN");
+		System.out.println("sendPIN");
 		DataTransporter dt = prepareDT();
-		int PIN = 1234;
+		int pin = 1234;
 		int newPIN = 2345;
 		int expResult = -1;
-		int result = dt.sendPIN (PIN, newPIN);
-		assertEquals (expResult, result);
+		int result = dt.sendPIN(pin, newPIN);
+		assertEquals(expResult, result);
 	}
 
 	/**
@@ -555,7 +555,7 @@ public class DataTransporterTest
 		System.out.println ("getMessages");
 		DataTransporter dt = prepareDT();
 		Vector<PhoneMessage> expResult = new Vector<PhoneMessage>(1);
-		expResult.add(MESSAGE);
+		expResult.add(message);
 		Vector<PhoneMessage> result = dt.getMessages ();
 		assertEquals (expResult, result);
 	}
@@ -572,7 +572,7 @@ public class DataTransporterTest
 		DataTransporter dt = prepareDT();
 		int number = 1;
 		PhoneMessage result = dt.getMessage (number);
-		assertEquals (MESSAGE, result);
+		assertEquals(message, result);
 	}
 
 	/**
@@ -586,7 +586,7 @@ public class DataTransporterTest
 		System.out.println ("sendMessage");
 		DataTransporter dt = prepareDT();
 		int expResult = 0;
-		int result = dt.sendMessage (MESSAGE);
+		int result = dt.sendMessage(message);
 		assertEquals (expResult, result);
 	}
 

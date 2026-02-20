@@ -45,40 +45,40 @@ public class ConfigFileTest
 	 * @throws Exception
 	 */
 	@Test
-	public void testRead () throws Exception
+	public void testRead() throws Exception
 	{
-		System.out.println ("read");
-		ConfigFile instance = new ConfigFile (f);
-		instance.setPort ("testPort");
-		instance.setSpeed (1234);
-		instance.setDataBits (2345);
-		instance.setParity (3456);
-		instance.setStopBits (4567);
-		instance.setFlow (5678);
-		instance.setX (6789);
-		instance.setY (7890);
-		instance.setWidth (8901);
-		instance.setHeight (9012);
-		instance.setIsMaximized (false);
-		instance.setFontSizeValue (123);
-		instance.setSelectedTab (2);
-		instance.write ();
-		instance = new ConfigFile (f);
-		instance.read ();
+		System.out.println("read");
+		ConfigFile instance = new ConfigFile(f);
+		instance.setPort("testPort");
+		instance.setSpeed(1234);
+		instance.setDataBits(2345);
+		instance.setParity(3456);
+		instance.setStopBits(4567);
+		instance.setFlow(5678);
+		instance.setX(6789);
+		instance.setY(7890);
+		instance.setWidth(8901);
+		instance.setHeight(9012);
+		instance.setIsMaximized(false);
+		instance.setFontSizeValue(123);
+		instance.setSelectedTab(2);
+		instance.write();
+		instance = new ConfigFile(f);
+		instance.read();
 		// some values below are the defaults
-		assertEquals (instance.getPort (), "testPort");
-		assertEquals (instance.getSpeed (), 115200);
-		assertEquals (instance.getDBits (), 8);
-		assertEquals (instance.getParity (), 0);
-		assertEquals (instance.getSBits (), 0);
-		assertEquals (instance.getFlowCtl (), 0);
-		assertEquals (instance.getX (), 6789);
-		assertEquals (instance.getY (), 7890);
-		assertEquals (instance.getWidth (), 8901);
-		assertEquals (instance.getHeight (), 9012);
-		assertEquals (instance.getIsMax (), false);
-		assertEquals (instance.getFontSizeValue (), 123);
-		assertEquals (instance.getSelectedTab (), 2);
+		assertEquals("testPort", instance.getPort());
+		assertEquals(115200, instance.getSpeed());
+		assertEquals(8, instance.getDBits());
+		assertEquals(0, instance.getParity());
+		assertEquals(0, instance.getSBits());
+		assertEquals(0, instance.getFlowCtl());
+		assertEquals(6789, instance.getX());
+		assertEquals(7890, instance.getY());
+		assertEquals(8901, instance.getWidth());
+		assertEquals(9012, instance.getHeight());
+		assertFalse(instance.getIsMax ());
+		assertEquals(123, instance.getFontSizeValue());
+		assertEquals(2, instance.getSelectedTab());
 	}
 
 	/**
