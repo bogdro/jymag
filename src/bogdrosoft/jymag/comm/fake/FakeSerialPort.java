@@ -47,7 +47,7 @@ public class FakeSerialPort extends SerialPort
 	private SerialPortEventListener lsn;
 	private byte parityErrorChar;
 	private byte endOfInputChar;
-	private String UARTType;
+	private String uartType;
 	private int baudBase;
 	private int divisor;
 	private boolean lowLatency;
@@ -245,7 +245,7 @@ public class FakeSerialPort extends SerialPort
 	public boolean setUARTType(String type, boolean test)
 		throws UnsupportedCommOperationException
 	{
-		UARTType = type;
+		uartType = type;
 		return true;
 	}
 
@@ -253,7 +253,7 @@ public class FakeSerialPort extends SerialPort
 	public String getUARTType()
 		throws UnsupportedCommOperationException
 	{
-		return UARTType;
+		return uartType;
 	}
 
 	@Override

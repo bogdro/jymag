@@ -100,11 +100,11 @@ public class DataTransporter
 	private static final String IMEI_CMD = "ATIMEI\r";				// NOI18N
 	private static final String IMEI_REPLY = "ATIMEI";				// NOI18N
 	private static final String TYPE_CMD = "AT+CGMR\r";				// NOI18N
-	private static final String TYPE_REPLY_REGEX = "\\+CGMR:\\s*";			// NOI18N
+	private static final String TYPE_REPLY = "+CGMR: ";				// NOI18N
 	private static final String SERIALNUM_CMD = "AT+CGSN\r";			// NOI18N
 	private static final String SERIALNUM_REPLY = "CGSN";				// NOI18N
 	private static final String SUBSCR_NUM_CMD = "AT+CNUM\r";			// NOI18N
-	private static final String SUBSCR_NUM_REPLY_REGEX = "\\+CNUM: ";		// NOI18N
+	private static final String SUBSCR_NUM_REPLY = "+CNUM: ";			// NOI18N
 	private static final String CAPABILITY_CMD = "AT+KPSCAP=\"";			// NOI18N
  	private static final String POWEROFF_CMD = "AT*PSCPOF\r";			// NOI18N
 	private static final String PIN_STATUS_CMD = "AT+CPIN?\r";			// NOI18N
@@ -1547,8 +1547,8 @@ public class DataTransporter
 						{
 							continue;
 						}
-						lines[i] = lines[i].replaceAll
-							(TYPE_REPLY_REGEX, Utils.EMPTY_STR)
+						lines[i] = lines[i].replace
+							(TYPE_REPLY, Utils.EMPTY_STR)
 							.trim ();
 						if ( ! lines[i].isEmpty () )
 						{
@@ -1629,8 +1629,8 @@ public class DataTransporter
 						{
 							continue;
 						}
-						lines[i] = lines[i].replaceAll
-							(SUBSCR_NUM_REPLY_REGEX, Utils.EMPTY_STR);
+						lines[i] = lines[i].replace
+							(SUBSCR_NUM_REPLY, Utils.EMPTY_STR);
 						if ( ! lines[i].trim ().isEmpty () )
 						{
 							String[] elems = lines[i].trim ().split (Utils.COMMA);
@@ -1638,7 +1638,7 @@ public class DataTransporter
 							if ( elems != null && elems.length > 1 )
 							{
 								newElem = elems[1].trim()
-									.replaceAll (Utils.DQUOT, Utils.EMPTY_STR);
+									.replace(Utils.DQUOT, Utils.EMPTY_STR);
 							}
 							if ( ! newElem.isEmpty () )
 							{

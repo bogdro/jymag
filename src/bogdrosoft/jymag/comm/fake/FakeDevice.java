@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.TooManyListenersException;
 
 /**
  * FakeDevice - a phone emulator for tests.
@@ -363,7 +362,6 @@ class FakeDevice
 	// --------------------------
 
 	void addEventListener( SerialPortEventListener lsnr )
-		throws TooManyListenersException
 	{
 		l = lsnr;
 	}
