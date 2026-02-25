@@ -55,6 +55,8 @@ PDFGEN		= pdfgen.sh
 
 # Apache Ant (ant.apache.org)
 ANT		= ant
+# Apache Maven (maven.apache.org)
+MAVEN		= mvn
 
 # Launch4j (launch4j.sf.net)
 LAUNCH4J	= launch4j
@@ -433,6 +435,9 @@ check:	test
 
 test:
 	$(ANT) test
+
+coverage:
+	$(MAVEN) -B verify -Pcoverage
 
 clean:	installer-signed-clean installer-clean manual-clean javadoc-clean jar-clean
 
