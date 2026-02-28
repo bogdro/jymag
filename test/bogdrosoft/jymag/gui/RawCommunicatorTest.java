@@ -25,6 +25,7 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 import org.junit.Test;
 
 /**
@@ -36,10 +37,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testConstruct()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		RawCommunicator rc = constructRawCommunicator();
 		assertTrue(UiTestHelper.isKeyListenerPresent(rc));
 	}
@@ -47,10 +45,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testConstructNullDt()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		RawCommunicator rc = new RawCommunicator (
 			null, mw, new Object(), 12.0f
@@ -61,10 +56,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testConstructNullSynchro()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		DataTransporter dt = new DataTransporter(
 			new FakeCommPortIdentifier()
 		);
@@ -78,10 +70,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testSetSignalToggle()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			RawCommunicator rc = constructRawCommunicator();
@@ -97,10 +86,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testSetSignalToggleNullButton()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			RawCommunicator rc = constructRawCommunicator();
@@ -115,10 +101,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testSetSignalLabel()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			RawCommunicator rc = constructRawCommunicator();
@@ -134,10 +117,7 @@ public class RawCommunicatorTest
 	@Test
 	public void testSetSignalLabelNullButton()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			RawCommunicator rc = constructRawCommunicator();

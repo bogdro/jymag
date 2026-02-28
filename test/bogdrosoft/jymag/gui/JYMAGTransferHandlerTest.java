@@ -28,6 +28,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import javax.swing.TransferHandler;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 import org.junit.Test;
 
 /**
@@ -42,10 +43,7 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNoDropJavaFileListFlavor()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());
@@ -61,10 +59,7 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNull()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(
 			new MainWindow()
 		);
@@ -77,10 +72,7 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportWrongType()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new StringSelection("aaa");
@@ -95,10 +87,7 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNonDrop()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());
@@ -114,10 +103,7 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testCanImportNonCopy()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());
@@ -133,10 +119,7 @@ public class JYMAGTransferHandlerTest
 	@Test
 	public void testImportData()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		JYMAGTransferHandler handler = new JYMAGTransferHandler(mw);
 		Transferable transferable = new TestTransferable(new Object());

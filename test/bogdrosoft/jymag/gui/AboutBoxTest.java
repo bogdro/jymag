@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 /**
  * AboutBoxTest - a test for the AboutBox class.
@@ -34,10 +35,7 @@ public class AboutBoxTest
 	@Test
 	public void testConstruct()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		AboutBox ab = new AboutBox(null, false, 12);
 		assertTrue(UiTestHelper.isKeyListenerPresent(ab));
 	}

@@ -22,6 +22,7 @@ package bogdrosoft.jymag.gui;
 import java.awt.GraphicsEnvironment;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * MainWindowTest - a test for the MainWindow class.
@@ -35,10 +36,7 @@ public class MainWindowTest
 	@Test
 	public void testConstruct()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		assertTrue(UiTestHelper.isKeyListenerPresent(mw));
 	}
@@ -49,10 +47,7 @@ public class MainWindowTest
 	@Test
 	public void testDisablePortControls()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.disablePortControls();
 		assertNotNull(mw.getTransferParameters());
@@ -64,10 +59,7 @@ public class MainWindowTest
 	@Test
 	public void testEnablePortControls()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.enablePortControls();
 		assertNotNull(mw.getTransferParameters());
@@ -79,10 +71,7 @@ public class MainWindowTest
 	@Test
 	public void testSetSendingStatus()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.setSendingStatus();
 		assertNotNull(mw.getTransferParameters());
@@ -94,10 +83,7 @@ public class MainWindowTest
 	@Test
 	public void testSetReceivingStatus()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.setReceivingStatus();
 		assertNotNull(mw.getTransferParameters());
@@ -109,10 +95,7 @@ public class MainWindowTest
 	@Test
 	public void testSetReadyStatus()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.setReadyStatus();
 		assertNotNull(mw.getTransferParameters());
@@ -124,10 +107,7 @@ public class MainWindowTest
 	@Test
 	public void testSetProgressCurrentValue()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		int value = 35;
 		MainWindow mw = new MainWindow();
 		mw.setProgressCurrentValue(value);
@@ -140,10 +120,7 @@ public class MainWindowTest
 	@Test
 	public void testSetProgressMinimumValue()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		int value = 10;
 		MainWindow mw = new MainWindow();
 		mw.setProgressCurrentValue(value);
@@ -157,10 +134,7 @@ public class MainWindowTest
 	@Test
 	public void testSetProgressMaximumValue()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		int value = 10;
 		MainWindow mw = new MainWindow();
 		mw.setProgressCurrentValue(value);
@@ -174,10 +148,7 @@ public class MainWindowTest
 	@Test
 	public void testGetTransferParameters()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		assertNotNull(mw.getTransferParameters());
 	}
@@ -188,10 +159,7 @@ public class MainWindowTest
 	@Test
 	public void testCreateConfigFileChooser()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.createConfigFileChooser();
 		assertNotNull(mw.cfgFC);
@@ -203,10 +171,7 @@ public class MainWindowTest
 	@Test
 	public void testUpdateControls()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.updateControls();
 		assertNotNull(mw.getTransferParameters());
@@ -218,10 +183,7 @@ public class MainWindowTest
 	@Test
 	public void testSetPanelConnections()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.setPanelConnections(mw);
 		assertNotNull(mw.getTransferParameters());
@@ -233,10 +195,7 @@ public class MainWindowTest
 	@Test
 	public void testSetPorts()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		MainWindow mw = new MainWindow();
 		mw.setPorts();
 		assertNotNull(mw.getTransferParameters());

@@ -25,6 +25,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * EscKeyListenerTest - a test for the EscKeyListener class.
@@ -38,10 +39,7 @@ public class EscKeyListenerTest
 	@Test
 	public void testInstall()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		JFrame f = new JFrame();
 		EscKeyListener listener = new EscKeyListener(f);
 		listener.install();
@@ -62,10 +60,7 @@ public class EscKeyListenerTest
 	@Test
 	public void testKeyTyped()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			JFrame f = new JFrame();
@@ -87,10 +82,7 @@ public class EscKeyListenerTest
 	@Test
 	public void testKeyTypedNullFrame()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			EscKeyListener listener = new EscKeyListener(null);
@@ -111,10 +103,7 @@ public class EscKeyListenerTest
 	@Test
 	public void testKeyTypedNullEvent()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		try
 		{
 			JFrame f = new JFrame();
@@ -134,10 +123,7 @@ public class EscKeyListenerTest
 	@Test
 	public void testToString()
 	{
-		if (GraphicsEnvironment.isHeadless())
-		{
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 		String name = "testName";
 		JFrame f = new JFrame();
 		f.setName(name);
