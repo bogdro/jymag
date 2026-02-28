@@ -545,79 +545,28 @@ public class PhoneAlarm
 		if ( m.matches () )
 		{
 			Calendar c = Calendar.getInstance ();
-			int year;
-			int month;
-			int day;
-			int hour;
-			int minute;
-			int second;
-			int alNumber = 0;
-			try
+			Integer year;
+			Integer month;
+			Integer day;
+			Integer hour;
+			Integer minute;
+			Integer second;
+			Integer alNumber;
+			day = parseField(m.group(3), "day");
+			month = parseField(m.group(4), "month");
+			year = parseField(m.group(5), "year");
+			hour = parseField(m.group(6), "hour");
+			minute = parseField(m.group(7), "minute");
+			second = parseField(m.group(8), "second");
+			if (day == null || month == null || year == null ||
+				hour == null || minute == null || second == null)
 			{
-				day = Integer.parseInt (m.group (3));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (day)");	// NOI18N
 				return null;
 			}
-			try
+			alNumber = parseField(m.group(10), "alNumber");
+			if (alNumber == null)
 			{
-				month = Integer.parseInt (m.group (4));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (month)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				year = Integer.parseInt (m.group (5));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (year)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				hour = Integer.parseInt (m.group (6));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (hour)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				minute = Integer.parseInt (m.group (7));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (minute)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				second = Integer.parseInt (m.group (8));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (second)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				String g10 = m.group (10);
-				if ( g10 != null )
-				{
-					alNumber = Integer.parseInt (g10);
-				}
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (number)");	// NOI18N
-				return null;
+				alNumber = 0;
 			}
 
 			c.set (Calendar.MONTH, Utils.convertRealMonthToCalendar (month));
@@ -641,51 +590,19 @@ public class PhoneAlarm
 		if ( m.matches () )
 		{
 			Calendar c = Calendar.getInstance ();
-			int hour;
-			int minute;
-			int second;
-			int alNumber = 0;
+			Integer hour;
+			Integer minute;
+			Integer second;
+			Integer alNumber;
 			int firstrec = -1;
 			Set<Integer> tmpDays = null;
 
-			try
+			hour = parseField(m.group(3), "hour");
+			minute = parseField(m.group(4), "minute");
+			second = parseField(m.group(5), "second");
+			alNumber = parseField(m.group(7), "alNumber");
+			if (hour == null || minute == null || second == null || alNumber == null)
 			{
-				hour = Integer.parseInt (m.group (3));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (hour) (2)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				minute = Integer.parseInt (m.group (4));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (minute) (2)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				second = Integer.parseInt (m.group (5));
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (second) (2)");	// NOI18N
-				return null;
-			}
-			try
-			{
-				String g7 = m.group (7);
-				if ( g7 != null )
-				{
-					alNumber = Integer.parseInt (g7);
-				}
-			}
-			catch (NumberFormatException ex)
-			{
-				Utils.handleException (ex, "PhoneAlarm.parseReponse.parseInt (number) (2)");	// NOI18N
 				return null;
 			}
 			// groups 9 and 10 contain the recurrences
@@ -807,5 +724,24 @@ public class PhoneAlarm
 			return false;
 		}
 		return this.days == other.days || (this.days != null && this.days.equals(other.days));
+	}
+
+	private static Integer parseField(String field, String name)
+	{
+		try
+		{
+			if ( field != null )
+			{
+				return Integer.valueOf(field);
+			}
+		}
+		catch (NumberFormatException ex)
+		{
+			Utils.handleException(ex,
+				String.format("PhoneAlarm.parseReponse.parseInt(%s)", name)	// NOI18N
+			);
+			return null;
+		}
+		return 0;
 	}
 }
