@@ -173,30 +173,82 @@ public class PhoneMessageTest
 	 * Test of parseReponse method, of class PhoneMessage.
 	 */
 	@Test
-	public void testParseReponse()
+	public void testParseReponseCmglFull()
 	{
-		System.out.println("parseReponse");
+		System.out.println("testParseReponseCmglFull");
 
-		String response = "+CMGL: 31415,\"1\",\"12345\",\"01/02/03,04:05:06+07\",,333\nbody\n";
+		String response = "+CMGL: 31415,\"1\",\"12345\",\"01/09/03,04:11:06+07\",,333\nbody\n";
 		PhoneMessage result = PhoneMessage.parseReponse(response);
-		assertNotNull (result);
+		assertNotNull(result);
 		assertEquals("body", result.getMessage());
 		assertEquals("12345", result.getRecipientNum());
 		assertEquals("31415", result.getID());
-		assertEquals("01/02/03,04:05:06+07", result.getDateTime());
+		assertEquals("01/09/03,04:11:06+07", result.getDateTime());
 		assertEquals("1", result.getStatus());
+	}
 
-		response = "+CMGr: \"1\",\nbody\n";
-		result = PhoneMessage.parseReponse (response);
+	/**
+	 * Test of parseReponse method, of class PhoneMessage.
+	 */
+	@Test
+	public void testParseReponseCmglSimple()
+	{
+		System.out.println("testParseReponseCmglSimple");
+
+		String response = "+CMGL: 31415,\"1\",\nbody\n";
+		PhoneMessage result = PhoneMessage.parseReponse(response);
 		assertNotNull(result);
-		assertEquals("body", result.getMessage ());
+		assertEquals("body", result.getMessage());
+		assertEquals("31415", result.getID());
 		assertNull(result.getRecipientNum());
 		assertNull(result.getDateTime());
 		assertEquals("1", result.getStatus());
+	}
 
-		response = null;
-		result = PhoneMessage.parseReponse(response);
-		assertNull(result);
+	/**
+	 * Test of parseReponse method, of class PhoneMessage.
+	 */
+	@Test
+	public void testParseReponseCmgrFull()
+	{
+		System.out.println("testParseReponseCmgrFull");
+
+		String response = "+CMGr: \"1\",\"12345\",\"01/09/03,04:11:06+07\",,333\nbody\n";
+		PhoneMessage result = PhoneMessage.parseReponse(response);
+		assertNotNull(result);
+		assertEquals("body", result.getMessage());
+		assertEquals("12345", result.getRecipientNum());
+		assertNull(result.getID());
+		assertEquals("01/09/03,04:11:06+07", result.getDateTime());
+		assertEquals("1", result.getStatus());
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneMessage.
+	 */
+	@Test
+	public void testParseReponseCmgrSimple()
+	{
+		System.out.println("testParseReponseCmgrSimple");
+
+		String response = "+CMGR: \"1\",\nbody\n";
+		PhoneMessage result = PhoneMessage.parseReponse(response);
+		assertNotNull(result);
+		assertEquals("body", result.getMessage());
+		assertNull(result.getID());
+		assertNull(result.getRecipientNum());
+		assertNull(result.getDateTime());
+		assertEquals("1", result.getStatus());
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneMessage.
+	 */
+	@Test
+	public void testParseReponseNull()
+	{
+		System.out.println("parseReponseNull");
+		assertNull(PhoneMessage.parseReponse(null));
 	}
 
 	/**

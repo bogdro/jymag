@@ -74,6 +74,38 @@ public class PhoneAlarmTest
 	}
 
 	/**
+	 * Test of isForAllDays method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testIsForAllDaysByArray()
+	{
+		System.out.println("testIsForAllDaysByArray");
+		Calendar c = Calendar.getInstance();
+		boolean expResult = true;
+		PhoneAlarm instance = new PhoneAlarm(c, false, false, new int[]{2, 3, 0}, 1);
+		boolean result = instance.isForAllDays();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of isForAllDays method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testIsForAllDaysBySet()
+	{
+		System.out.println ("testIsForAllDaysBySet");
+		Calendar c = Calendar.getInstance();
+		Set<Integer> days = new HashSet<Integer>(3);
+		days.add(2);
+		days.add(3);
+		days.add(0);
+		boolean expResult = true;
+		PhoneAlarm instance = new PhoneAlarm(c, false, false, days, 1);
+		boolean result = instance.isForAllDays();
+		assertEquals(expResult, result);
+	}
+
+	/**
 	 * Test of getDays method, of class PhoneAlarm.
 	 */
 	@Test
@@ -116,6 +148,18 @@ public class PhoneAlarmTest
 	}
 
 	/**
+	 * Test of setTime method, of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetTimeWithNull()
+	{
+		System.out.println ("testSetTimeWithNull");
+		Calendar c = Calendar.getInstance();
+		PhoneAlarm alarm = new PhoneAlarm (c, false, true, (int[]) null, 1);
+		alarm.setTime(null);
+	}
+
+	/**
 	 * Test of setOneTimeAlarm method, of class PhoneAlarm.
 	 */
 	@Test
@@ -149,20 +193,32 @@ public class PhoneAlarmTest
 	 * Test of setDays method, of class PhoneAlarm.
 	 */
 	@Test
-	public void testSetDaysWithIntArray ()
+	public void testSetDaysWithIntArray()
 	{
-		System.out.println ("setDays");
-		Calendar c = Calendar.getInstance ();
-		int[] alarmDays = new int[] {1};
-		PhoneAlarm instance = new PhoneAlarm (c, false, true, (int[]) null, 1);
-		instance.setDays (alarmDays);
-		Set<Integer> d = instance.getDays ();
-		Set<Integer> d2 = new HashSet<Integer> (alarmDays.length);
-		for ( int a : alarmDays )
+		System.out.println("setDays");
+		Calendar c = Calendar.getInstance();
+		int[] alarmDays = new int[] {1, 0};
+		PhoneAlarm instance = new PhoneAlarm(c, false, true, (int[]) null, 1);
+		instance.setDays(alarmDays);
+		Set<Integer> d = instance.getDays();
+		Set<Integer> d2 = new HashSet<Integer>(alarmDays.length);
+		for (int a : alarmDays)
 		{
-			d2.add (a);
+			d2.add(a);
 		}
-		assertEquals (d, d2);
+		assertEquals(d, d2);
+	}
+
+	/**
+	 * Test of setDays method, of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetDaysWithIntArrayInvalidInput()
+	{
+		System.out.println ("testSetDaysWithIntArrayInvalidInput");
+		Calendar c = Calendar.getInstance();
+		PhoneAlarm instance = new PhoneAlarm(c, false, false, new int[]{1}, 1);
+		instance.setDays((int[])null);
 	}
 
 	/**
@@ -178,6 +234,18 @@ public class PhoneAlarmTest
 		instance.setDays (alarmDays);
 		Set<? extends Integer> alarmDays2 = instance.getDays ();
 		assertEquals (alarmDays, alarmDays2);
+	}
+
+	/**
+	 * Test of setDays method, of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetDaysWithSetInvalidInput()
+	{
+		System.out.println ("testSetDaysWithSetInvalidInput");
+		Calendar c = Calendar.getInstance();
+		PhoneAlarm instance = new PhoneAlarm(c, false, false, new int[]{1}, 1);
+		instance.setDays((Set<Integer>)null);
 	}
 
 	/**
@@ -201,9 +269,9 @@ public class PhoneAlarmTest
 	@Test
 	public void testGetAlarmString ()
 	{
-		System.out.println ("getAlarmString");
-		Calendar c = Calendar.getInstance ();
-		PhoneAlarm instance = new PhoneAlarm (c, false, true, (int[]) null, 1);
+		System.out.println("getAlarmString");
+		Calendar c = Calendar.getInstance();
+		PhoneAlarm instance = new PhoneAlarm(c, false, true, (int[]) null, 1);
 		String expResult = "\""
 			+ ((c.get(Calendar.HOUR_OF_DAY) < 10)? "0" : "")
 			+ c.get(Calendar.HOUR_OF_DAY)
@@ -212,8 +280,20 @@ public class PhoneAlarmTest
 			+ ":" + ((c.get(Calendar.SECOND) < 10)? "0" : "")
 			+ c.get(Calendar.SECOND)
 			+ "\",1,0";
-		String result = instance.getAlarmString ();
-		assertEquals (expResult, result);
+		String result = instance.getAlarmString();
+		assertEquals(expResult, result);
+
+		instance = new PhoneAlarm(c, false, false, new int[] {3}, 1);
+		expResult = "\""
+			+ ((c.get(Calendar.HOUR_OF_DAY) < 10)? "0" : "")
+			+ c.get(Calendar.HOUR_OF_DAY)
+			+ ":" + ((c.get(Calendar.MINUTE) < 10)? "0" : "")
+			+ c.get(Calendar.MINUTE)
+			+ ":" + ((c.get(Calendar.SECOND) < 10)? "0" : "")
+			+ c.get(Calendar.SECOND)
+			+ "\",1,\"3\"";
+		result = instance.getAlarmString();
+		assertEquals(expResult, result);
 	}
 
 	/**
@@ -222,58 +302,11 @@ public class PhoneAlarmTest
 	@Test
 	public void testGetDateString ()
 	{
-		System.out.println ("getDateString");
-		Calendar c = Calendar.getInstance ();
-		PhoneAlarm instance = new PhoneAlarm (c, true, true, (int[]) null, 1);
-		int month = c.get(Calendar.MONTH);
-		if ( month == Calendar.JANUARY )
-		{
-			month =  1;
-		}
-		else if ( month == Calendar.FEBRUARY )
-		{
-			month =  2;
-		}
-		else if ( month == Calendar.MARCH )
-		{
-			month =  3;
-		}
-		else if ( month == Calendar.APRIL )
-		{
-			month =  4;
-		}
-		else if ( month == Calendar.MAY )
-		{
-			month =  5;
-		}
-		else if ( month == Calendar.JUNE )
-		{
-			month =  6;
-		}
-		else if ( month == Calendar.JULY )
-		{
-			month =  7;
-		}
-		else if ( month == Calendar.AUGUST )
-		{
-			month =  8;
-		}
-		else if ( month == Calendar.SEPTEMBER )
-		{
-			month =  9;
-		}
-		else if ( month == Calendar.OCTOBER )
-		{
-			month = 10;
-		}
-		else if ( month == Calendar.NOVEMBER )
-		{
-			month = 11;
-		}
-		else if ( month == Calendar.DECEMBER )
-		{
-			month = 12;
-		}
+		System.out.println("getDateString");
+		Calendar c = Calendar.getInstance();
+		c.set(2000, 2, 1);
+		PhoneAlarm instance = new PhoneAlarm(c, true, true, (int[]) null, 1);
+		int month = Utils.convertCalendarMonthToReal(c.get(Calendar.MONTH));
 		String expResult = ""
 			+ ((c.get(Calendar.DAY_OF_MONTH) < 10)? "0" : "")
 			+ c.get(Calendar.DAY_OF_MONTH)
@@ -282,8 +315,22 @@ public class PhoneAlarmTest
 			+ "/" + ((c.get(Calendar.YEAR) % 100 < 10)? "0" : "")
 			+ c.get(Calendar.YEAR) % 100
 			+ "";
-		String result = instance.getDateString ();
-		assertEquals (expResult, result);
+		String result = instance.getDateString();
+		assertEquals(expResult, result);
+
+		c.set(2000, 11, 1);
+		instance = new PhoneAlarm(c, true, true, (int[]) null, 1);
+		month = Utils.convertCalendarMonthToReal(c.get(Calendar.MONTH));
+		expResult = ""
+			+ ((c.get(Calendar.DAY_OF_MONTH) < 10)? "0" : "")
+			+ c.get(Calendar.DAY_OF_MONTH)
+			+ "/" + ((month < 10)? "0" : "")
+			+ month
+			+ "/" + ((c.get(Calendar.YEAR) % 100 < 10)? "0" : "")
+			+ c.get(Calendar.YEAR) % 100
+			+ "";
+		result = instance.getDateString();
+		assertEquals(expResult, result);
 	}
 
 	/**
@@ -360,6 +407,127 @@ public class PhoneAlarmTest
 	}
 
 	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithNullCalendar()
+	{
+		System.out.println("testConstructWithNullCalendar");
+		PhoneAlarm a = new PhoneAlarm(null, true, true, new int[]{}, 1);
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithNullRequiredDaysArray()
+	{
+		System.out.println("testConstructWithNullRequiredDaysArray");
+		PhoneAlarm a = new PhoneAlarm(Calendar.getInstance(), false, false, (int[])null, 1);
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithDaysSetAndNullCalendar()
+	{
+		System.out.println("testConstructWithDaysSetAndNullCalendar");
+		PhoneAlarm a = new PhoneAlarm(null, true, true, new HashSet<Integer>(), 1);
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithNullRequiredDaysSet()
+	{
+		System.out.println("testConstructWithNullRequiredDaysSet");
+		PhoneAlarm a = new PhoneAlarm(Calendar.getInstance(), false, false, (Set<Integer>)null, 1);
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithNullTimeString()
+	{
+		System.out.println("testConstructWithNullTimeString");
+		PhoneAlarm a = new PhoneAlarm(1, "01/02/03", null, "3,4");
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithEmptyTimeString()
+	{
+		System.out.println("testConstructWithEmptyTimeString");
+		PhoneAlarm a = new PhoneAlarm(1, "01/02/03", "", "3,4");
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithInvalidTimeString()
+	{
+		System.out.println("testConstructWithInvalidTimeString");
+		PhoneAlarm a = new PhoneAlarm(1, "01/02/03", "11:22", "3,4");
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testConstructWithInvalidDateString()
+	{
+		System.out.println("testConstructWithInvalidTimeString");
+		PhoneAlarm a = new PhoneAlarm(1, "01/02", "11:22:33", "3,4");
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test
+	public void testConstructWithNullDateString()
+	{
+		System.out.println("testConstructWithNullDateString");
+		PhoneAlarm a = new PhoneAlarm(1, null, "11:22:33", "3,4");
+		assertTrue(a.isOneTimeAlarm());
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test
+	public void testConstructWithEmptyDateString()
+	{
+		System.out.println("testConstructWithEmptyDateString");
+		PhoneAlarm a = new PhoneAlarm(1, "", "11:22:33", "3,4");
+		assertTrue(a.isOneTimeAlarm());
+	}
+
+	/**
+	 * Test of the constructor of class PhoneAlarm.
+	 */
+	@Test
+	public void testConstructWithEmptyDayString()
+	{
+		System.out.println("testConstructWithEmptyDateString");
+		PhoneAlarm a = new PhoneAlarm(1, "01/02/03", "11:22:33", "");
+		assertTrue(a.isForAllDays());
+	}
+
+	/**
 	 * Test of parseReponse method, of class PhoneAlarm.
 	 */
 	@Test
@@ -423,6 +591,140 @@ public class PhoneAlarmTest
 	}
 
 	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithNullInput()
+	{
+		System.out.println("testParseReponseWithNullInput");
+		String response = null;
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithInvalidDay()
+	{
+		System.out.println("testParseReponseWithInvalidDay");
+		String response = "+CALA:\"x/02/03,11:22:33\",4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithInvalidMonth()
+	{
+		System.out.println("testParseReponseWithInvalidMonth");
+		String response = "+CALA:\"01/x/03,11:22:33\",4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithInvalidYear()
+	{
+		System.out.println("testParseReponseWithInvalidYear");
+		String response = "+CALA:\"01/02/x,11:22:33\",4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithInvalidHour()
+	{
+		System.out.println("testParseReponseWithInvalidHour");
+		String response = "+CALA:\"01/02/03,x:22:33\",4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithInvalidMinute()
+	{
+		System.out.println("testParseReponseWithInvalidMinute");
+		String response = "+CALA:\"01/02/03,11:x:33\",4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithAllDays()
+	{
+		System.out.println("testParseReponseWithAllDays");
+		String response = "+CALA:\"11:22:33,4,5,6,0\"";
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.HOUR_OF_DAY, 11);
+		c.set(Calendar.MINUTE, 22);
+		c.set(Calendar.SECOND, 33);
+		PhoneAlarm expResult = new PhoneAlarm(c, false, true, new int[] {4, 5, 6}, 5);
+		PhoneAlarm result = PhoneAlarm.parseReponse(response);
+		assertEquals(expResult.getTime().get(Calendar.HOUR_OF_DAY),
+			result.getTime().get(Calendar.HOUR_OF_DAY));
+		assertEquals(expResult.getTime().get(Calendar.MINUTE),
+			result.getTime().get(Calendar.MINUTE));
+		assertEquals(expResult.getTime().get(Calendar.SECOND),
+			result.getTime().get(Calendar.SECOND));
+		assertEquals(expResult.isOneTimeAlarm(), result.isOneTimeAlarm());
+		assertEquals(expResult.isForAllDays(), result.isForAllDays());
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseReponseWithInvalidSecond()
+	{
+		System.out.println("testParseReponseWithInvalidSecond");
+		String response = "+CALA:\"01/02/03,11:22:x\",4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseTimeOnlyReponseWithInvalidHour()
+	{
+		System.out.println("testParseTimeOnlyReponseWithInvalidHour");
+		String response = "+CALA:\"x:22:33,4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseTimeOnlyReponseWithInvalidMinute()
+	{
+		System.out.println("testParseTimeOnlyReponseWithInvalidMinute");
+		String response = "+CALA:\"11:x:33,4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
+	 * Test of parseReponse method, of class PhoneAlarm.
+	 */
+	@Test
+	public void testParseTimeOnlyReponseWithInvalidSecond()
+	{
+		System.out.println("testParseTimeOnlyReponseWithInvalidSecond");
+		String response = "+CALA:\"11:22:x,4,5,66\"";
+		assertNull(PhoneAlarm.parseReponse(response));
+	}
+
+	/**
 	 * Test of toString method, of class PhoneAlarm.
 	 */
 	@Test
@@ -430,55 +732,7 @@ public class PhoneAlarmTest
 	{
 		System.out.println ("toString");
 		Calendar c = Calendar.getInstance ();
-		int month = c.get(Calendar.MONTH);
-		if ( month == Calendar.JANUARY )
-		{
-			month =  1;
-		}
-		else if ( month == Calendar.FEBRUARY )
-		{
-			month =  2;
-		}
-		else if ( month == Calendar.MARCH )
-		{
-			month =  3;
-		}
-		else if ( month == Calendar.APRIL )
-		{
-			month =  4;
-		}
-		else if ( month == Calendar.MAY )
-		{
-			month =  5;
-		}
-		else if ( month == Calendar.JUNE )
-		{
-			month =  6;
-		}
-		else if ( month == Calendar.JULY )
-		{
-			month =  7;
-		}
-		else if ( month == Calendar.AUGUST )
-		{
-			month =  8;
-		}
-		else if ( month == Calendar.SEPTEMBER )
-		{
-			month =  9;
-		}
-		else if ( month == Calendar.OCTOBER )
-		{
-			month = 10;
-		}
-		else if ( month == Calendar.NOVEMBER )
-		{
-			month = 11;
-		}
-		else if ( month == Calendar.DECEMBER )
-		{
-			month = 12;
-		}
+		int month = Utils.convertCalendarMonthToReal(c.get(Calendar.MONTH));
 		String time = ""
 			+ ((c.get(Calendar.DAY_OF_MONTH) < 10)? "0" : "")
 			+ c.get(Calendar.DAY_OF_MONTH)
