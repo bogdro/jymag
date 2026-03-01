@@ -82,6 +82,61 @@ public class ConfigFileTest
 	}
 
 	/**
+	 * Test of read method, of class ConfigFile.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testReadInvalidValues() throws Exception
+	{
+		System.out.println("testReadInvalidValues");
+		ConfigFile instance = new ConfigFile(f);
+		instance.setPort("testPort");
+		instance.setSpeed(1234);
+		instance.setDataBits(2345);
+		instance.setParity(3456);
+		instance.setStopBits(4567);
+		instance.setFlow(5678);
+		instance.setX(-6789);
+		instance.setY(-7890);
+		instance.setWidth(-8901);
+		instance.setHeight(-9012);
+		instance.setIsMaximized(true);
+		instance.setFontSizeValue(-123);
+		instance.setSelectedTab(-2);
+		instance.write();
+		instance = new ConfigFile(f);
+		instance.read();
+		// some values below are the defaults
+		assertEquals("testPort", instance.getPort());
+		assertEquals(115200, instance.getSpeed());
+		assertEquals(8, instance.getDBits());
+		assertEquals(0, instance.getParity());
+		assertEquals(0, instance.getSBits());
+		assertEquals(0, instance.getFlowCtl());
+		assertEquals(0, instance.getX());
+		assertEquals(0, instance.getY());
+		assertEquals(800, instance.getWidth());
+		assertEquals(600, instance.getHeight());
+		assertTrue(instance.getIsMax());
+		assertEquals(12, instance.getFontSizeValue());
+		assertEquals(0, instance.getSelectedTab());
+	}
+
+	/**
+	 * Test of read method, of class ConfigFile.
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@SuppressWarnings("unused")
+	public void testReadNullFile() throws Exception
+	{
+		System.out.println("testReadNullFile");
+		ConfigFile instance = new ConfigFile(null);
+	}
+
+	/**
 	 * Test of write method, of class ConfigFile.
 	 *
 	 * @throws Exception
