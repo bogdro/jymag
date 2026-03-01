@@ -80,12 +80,12 @@ public class DataTransporterTest
 	{
 		Object id = new FakeCommPortIdentifier();
 		int speed = 115200;
-		int dataBits = SerialPort.DATABITS_8;
-		double stopBits = SerialPort.STOPBITS_1;
-		int parity = SerialPort.PARITY_NONE;
-		int flowControl = SerialPort.FLOWCONTROL_NONE;
-		DataTransporter dt = new DataTransporter (id);
-		dt.open (speed, dataBits, stopBits, parity, flowControl);
+		int dataBits = 8;
+		double stopBits = 1;
+		int parity = 0;
+		int flowControl = 0;
+		DataTransporter dt = new DataTransporter(id);
+		dt.open(speed, dataBits, stopBits, parity, flowControl);
 		return dt;
 	}
 
@@ -95,11 +95,54 @@ public class DataTransporterTest
 	 * @throws Exception
 	 */
 	@Test
-	public void testOpen () throws Exception
+	public void testOpen() throws Exception
 	{
-		System.out.println ("open");
+		System.out.println("open");
 		DataTransporter dt = prepareDT();
 		assertFalse(dt.isCTS());
+
+		int speed = 115200;
+		int dataBits = 7;
+		double stopBits = 1.5;
+		int parity = 1;
+		int flowControl = 1;
+		dt.open(speed, dataBits, stopBits, parity, flowControl);
+		assertFalse(dt.isCTS());
+
+		dataBits = 6;
+		stopBits = 2;
+		parity = 2;
+		flowControl = 3;
+		dt.open(speed, dataBits, stopBits, parity, flowControl);
+		assertFalse(dt.isCTS());
+
+		dataBits = 5;
+		stopBits = 1;
+		parity = 3;
+		flowControl = 3;
+		dt.open(speed, dataBits, stopBits, parity, flowControl);
+		assertFalse(dt.isCTS());
+
+		dataBits = 5;
+		stopBits = 1;
+		parity = 4;
+		flowControl = 0;
+		dt.open(speed, dataBits, stopBits, parity, flowControl);
+		assertFalse(dt.isCTS());
+	}
+
+	/**
+	 * Test of open method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testOpenNullDt() throws Exception
+	{
+		System.out.println("testOpenNullDt");
+		DataTransporter dt = new DataTransporter(null);
+		dt.open(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+			SerialPort.PARITY_NONE, SerialPort.FLOWCONTROL_NONE);
 	}
 
 	/**
@@ -166,6 +209,19 @@ public class DataTransporterTest
 	 *
 	 * @throws Exception
 	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testSendByteArrayNull() throws Exception
+	{
+		System.out.println ("testSendByteArrayNull");
+		DataTransporter dt = prepareDT();
+		dt.send(null);
+	}
+
+	/**
+	 * Test of send method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
 	@Test
 	public void testSend3args () throws Exception
 	{
@@ -181,6 +237,38 @@ public class DataTransporterTest
 		catch (Exception ex)
 		{
 			fail("Exception during sending (3args): " + ex);
+		}
+	}
+
+	/**
+	 * Test of send method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSend3argsInvalidLength() throws Exception
+	{
+		System.out.println("testSend3argsInvalidLength");
+		try
+		{
+			DataTransporter dt = prepareDT();
+			byte[] b = "AAT\r".getBytes();
+
+			int start = 3;
+			int length = 3;
+			dt.send(b, start, length);
+
+			start = -3;
+			length = 3;
+			dt.send(b, start, length);
+
+			start = 3;
+			length = -3;
+			dt.send(b, start, length);
+		}
+		catch (Exception ex)
+		{
+			fail("Exception during sending (3args invalid): " + ex);
 		}
 	}
 
@@ -225,6 +313,68 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of putFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testPutFileNullFile() throws Exception
+	{
+		System.out.println("testPutFileNullFile");
+		DataTransporter dt = prepareDT();
+		String newName = FILENAME;
+		int result = dt.putFile (null, newName);
+		assertTrue(result < 0);
+	}
+
+	/**
+	 * Test of putFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testPutFileNoExtension() throws Exception
+	{
+		System.out.println("testPutFileNoExtension");
+		DataTransporter dt = prepareDT();
+		File f = new File("test");
+		String newName = FILENAME;
+		int result = dt.putFile (f, newName);
+		assertTrue(result < 0);
+	}
+
+	/**
+	 * Test of putFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testPutFileUnsupported() throws Exception
+	{
+		System.out.println("testPutFileUnsupported");
+		DataTransporter dt = prepareDT();
+		File f = new File("test.test");
+		String newName = FILENAME;
+		int result = dt.putFile (f, newName);
+		assertTrue(result < 0);
+	}
+
+	/**
+	 * Test of putFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testPutFileNoNewName() throws Exception
+	{
+		System.out.println("testPutFileNoNewName");
+		DataTransporter dt = prepareDT();
+		File f = new File(FILENAME);
+		int result = dt.putFile (f, null);
+		assertEquals(0, result);
+	}
+
+	/**
 	 * Test of getFile method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -239,6 +389,36 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.getFile (f, el);
 		assertEquals (expResult, result);
+	}
+
+	/**
+	 * Test of getFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetFileNullFile() throws Exception
+	{
+		System.out.println("testGetFileNullFile");
+		DataTransporter dt = prepareDT();
+		PhoneElement el = new PhoneElement("1", "jpg", FILENAME);
+		int result = dt.getFile(null, el);
+		assertTrue(result < 0);
+	}
+
+	/**
+	 * Test of getFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetFileNullElement() throws Exception
+	{
+		System.out.println("testGetFileNullFile");
+		DataTransporter dt = prepareDT();
+		File f = new File(FILENAME);
+		int result = dt.getFile(f, null);
+		assertTrue(result < 0);
 	}
 
 	/**
@@ -259,6 +439,21 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of getList method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetListNullType() throws Exception
+	{
+		System.out.println ("testGetListNullType");
+		DataTransporter dt = prepareDT();
+		Vector<PhoneElement> expResult = new Vector<PhoneElement>(1);
+		Vector<PhoneElement> result = dt.getList(null);
+		assertEquals (expResult, result);
+	}
+
+	/**
 	 * Test of deleteFile method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -274,6 +469,20 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of deleteFile method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testDeleteFileNullElement() throws Exception
+	{
+		System.out.println("testDeleteFileNullElement");
+		DataTransporter dt = prepareDT();
+		int result = dt.deleteFile(null);
+		assertTrue(result < 0);
+	}
+
+	/**
 	 * Test of reopen method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -284,6 +493,20 @@ public class DataTransporterTest
 		System.out.println ("reopen");
 		DataTransporter dt = prepareDT();
 		dt.reopen ();
+		assertFalse(dt.isCTS());
+	}
+
+	/**
+	 * Test of reopen method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testReopenNullPort() throws Exception
+	{
+		System.out.println("testReopenNullPort");
+		DataTransporter dt = new DataTransporter(null);
+		dt.reopen();
 		assertFalse(dt.isCTS());
 	}
 
@@ -394,6 +617,20 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of getCapabilities method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetCapabilitiesNullType() throws Exception
+	{
+		System.out.println("testGetCapabilitiesNullType");
+		DataTransporter dt = prepareDT();
+		String result = dt.getCapabilities(null);
+		assertNull(result);
+	}
+
+	/**
 	 * Test of poweroff method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -494,6 +731,20 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of deleteAlarm method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testDeleteAlarmInvalidId() throws Exception
+	{
+		System.out.println("testDeleteAlarmInvalidId");
+		DataTransporter dt = prepareDT();
+		int result = dt.deleteAlarm(-1);
+		assertTrue(result < 0);
+	}
+
+	/**
 	 * Test of addAlarm method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -507,6 +758,20 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.addAlarm (al);
 		assertEquals (expResult, result);
+	}
+
+	/**
+	 * Test of addAlarm method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testAddAlarmNullValue() throws Exception
+	{
+		System.out.println("testAddAlarmNullValue");
+		DataTransporter dt = prepareDT();
+		int result = dt.addAlarm(null);
+		assertTrue(result < 0);
 	}
 
 	/**
@@ -545,6 +810,21 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of deleteMessage method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testDeleteMessageInvalidInput() throws Exception
+	{
+		System.out.println("testDeleteMessageInvalidInput");
+		DataTransporter dt = prepareDT();
+		int number = -1;
+		int result = dt.deleteMessage(number);
+		assertTrue(result < 0);
+	}
+
+	/**
 	 * Test of getMessages method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -576,6 +856,21 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of getMessage method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetMessageInvalidInput() throws Exception
+	{
+		System.out.println("testGetMessageInvalidInput");
+		DataTransporter dt = prepareDT();
+		int number = -1;
+		PhoneMessage result = dt.getMessage(number);
+		assertNull(result);
+	}
+
+	/**
 	 * Test of sendMessage method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -588,6 +883,20 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.sendMessage(message);
 		assertEquals (expResult, result);
+	}
+
+	/**
+	 * Test of sendMessage method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendMessageInvalidInput() throws Exception
+	{
+		System.out.println("testSendMessageInvalidInput");
+		DataTransporter dt = prepareDT();
+		int result = dt.sendMessage(null);
+		assertTrue(result < 0);
 	}
 
 	/**
@@ -604,6 +913,20 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.setMessageStorage (stor);
 		assertEquals (expResult, result);
+	}
+
+	/**
+	 * Test of setMessageStorage method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSetMessageStorageInvalidInput() throws Exception
+	{
+		System.out.println("testSetMessageStorageInvalidInput");
+		DataTransporter dt = prepareDT();
+		int result = dt.setMessageStorage(null);
+		assertTrue(result < 0);
 	}
 
 	/**
@@ -764,6 +1087,41 @@ public class DataTransporterTest
 	}
 
 	/**
+	 * Test of dialNumber method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testDialNumberPulseVoice() throws Exception
+	{
+		System.out.println("testDialNumberPulse");
+		DataTransporter dt = prepareDT();
+		String number = "+00123456789";
+		boolean isVoice = true;
+		DIAL_MODE dialMode = DIAL_MODE.PULSE;
+		int expResult = 0;
+		int result = dt.dialNumber(number, isVoice, dialMode);
+		assertNotEquals(expResult, result);
+	}
+
+	/**
+	 * Test of dialNumber method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testDialNumberNullNumber() throws Exception
+	{
+		System.out.println("testDialNumberNullNumber");
+		DataTransporter dt = prepareDT();
+		boolean isVoice = false;
+		DIAL_MODE dialMode = DIAL_MODE.TONE;
+		int expResult = 0;
+		int result = dt.dialNumber(null, isVoice, dialMode);
+		assertNotEquals(expResult, result);
+	}
+
+	/**
 	 * Test of hangup method, of class DataTransporter.
 	 *
 	 * @throws Exception
@@ -822,6 +1180,21 @@ public class DataTransporterTest
 		int expResult = 0;
 		int result = dt.setVolume (vol);
 		assertEquals (expResult, result);
+	}
+
+	/**
+	 * Test of setVolume method, of class DataTransporter.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSetVolumeInvalidValue() throws Exception
+	{
+		System.out.println("testSetVolumeInvalidValue");
+		DataTransporter dt = prepareDT();
+		int vol = -1;
+		int result = dt.setVolume(vol);
+		assertTrue(result < 0);
 	}
 
 	/**
