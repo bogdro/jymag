@@ -159,6 +159,8 @@ FILE_ANY_SOURCE_FILE = src/bogdrosoft/jymag/Starter.java
 
 DIR_TMP_DIST = $(NAME)-$(VER)
 
+DISTDIR = dist-setup
+
 ###########################################################################
 # Targets
 ###########################################################################
@@ -174,12 +176,12 @@ pack:	pack-javadoc pack-bin installer installer-signed pack-src
 
 pack-src:	$(FILE_ARCH_SRC)
 
-$(FILE_ARCH_SRC): clean Makefile
+$(FILE_ARCH_SRC): clean makedir Makefile
 	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_SRC) $(FILE_ARCH_SRC).$(SIGEXT)
 	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
-	$(MKDIR) ../$(DIR_TMP_DIST)
-	$(COPY) * ../$(DIR_TMP_DIST)
-	$(MOVE) ../$(DIR_TMP_DIST) .
+	$(MKDIR) $(DISTDIR)/$(DIR_TMP_DIST)
+	$(COPY) * $(DISTDIR)/$(DIR_TMP_DIST)
+	$(MOVE) $(DISTDIR)/$(DIR_TMP_DIST) .
 	$(PACK) $(FILE_ARCH_SRC)			\
 		$(DIR_TMP_DIST)/AUTHORS			\
 		$(DIR_TMP_DIST)/build.xml		\
@@ -206,13 +208,13 @@ $(FILE_ARCH_SRC): clean Makefile
 
 pack-bin:	$(FILE_ARCH_BIN) test
 
-$(FILE_ARCH_BIN):	manual jar Makefile
+$(FILE_ARCH_BIN):	manual jar makedir Makefile
 	$(DEL) dist/javadoc
 	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_BIN) $(FILE_ARCH_BIN).$(SIGEXT)
 	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
-	$(MKDIR) ../$(DIR_TMP_DIST)
-	$(COPY) * ../$(DIR_TMP_DIST)
-	$(MOVE) ../$(DIR_TMP_DIST) .
+	$(MKDIR) $(DISTDIR)/$(DIR_TMP_DIST)
+	$(COPY) * $(DISTDIR)/$(DIR_TMP_DIST)
+	$(MOVE) $(DISTDIR)/$(DIR_TMP_DIST) .
 	$(PACK) $(FILE_ARCH_BIN)			\
 		$(DIR_TMP_DIST)/AUTHORS			\
 		$(DIR_TMP_DIST)/ChangeLog		\
@@ -232,12 +234,12 @@ $(FILE_ARCH_BIN):	manual jar Makefile
 
 pack-javadoc:	$(FILE_ARCH_JAVADOC)
 
-$(FILE_ARCH_JAVADOC):	dist/javadoc Makefile
+$(FILE_ARCH_JAVADOC):	dist/javadoc makedir Makefile
 	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_JAVADOC) $(FILE_ARCH_JAVADOC).$(SIGEXT)
 	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
-	$(MKDIR) ../$(DIR_TMP_DIST)
-	$(COPY) * ../$(DIR_TMP_DIST)
-	$(MOVE) ../$(DIR_TMP_DIST) .
+	$(MKDIR) $(DISTDIR)/$(DIR_TMP_DIST)
+	$(COPY) * $(DISTDIR)/$(DIR_TMP_DIST)
+	$(MOVE) $(DISTDIR)/$(DIR_TMP_DIST) .
 	$(PACK) $(FILE_ARCH_JAVADOC) $(DIR_TMP_DIST)/dist/javadoc
 	$(DEL) $(DIR_TMP_DIST)
 	$(GNUPG_SIGNER) $(FILE_ARCH_JAVADOC)
@@ -306,8 +308,9 @@ jar-clean:
 # Installer
 ###########################################################################
 
-installer:	jar manual test $(FILE_L4J_EXE) $(FILE_L4J_EXE_EN) \
-	setup/$(FILE_INSTALLER)
+installer:	jar manual test makedir $(FILE_L4J_EXE) $(FILE_L4J_EXE_EN) \
+	setup/$(FILE_INSTALLER) $(DISTDIR)/jymag-$(VER).exe \
+	$(DISTDIR)/jymag-$(VER)-en.exe $(DISTDIR)/$(FILE_INSTALLER).$(SIGEXT)
 
 $(FILE_L4J_EXE):	$(FILE_L4J_CONFIG) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_FILEVERSION) $(FILE_L4J_CONFIG)
@@ -316,8 +319,10 @@ $(FILE_L4J_EXE):	$(FILE_L4J_CONFIG) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_TXTPRODUCTVERSION) $(FILE_L4J_CONFIG)
 	$(SED) $(SED_OPTS) $(SED_FIX_COPYRIGHT) $(FILE_L4J_CONFIG)
 	$(LAUNCH4J) $(PWD)/$(FILE_L4J_CONFIG)
-	$(DEL) ../jymag-$(VER).exe
-	$(COPY) $@ ../jymag-$(VER).exe
+
+$(DISTDIR)/jymag-$(VER).exe: $(FILE_L4J_EXE)
+	$(DEL) $@
+	$(COPY) $(FILE_L4J_EXE) $@
 
 $(FILE_L4J_EXE_EN):	$(FILE_L4J_CONFIG_EN) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_FILEVERSION) $(FILE_L4J_CONFIG_EN)
@@ -326,8 +331,10 @@ $(FILE_L4J_EXE_EN):	$(FILE_L4J_CONFIG_EN) setup/jymag.ico Makefile
 	$(SED) $(SED_OPTS) $(SED_FIX_TXTPRODUCTVERSION) $(FILE_L4J_CONFIG_EN)
 	$(SED) $(SED_OPTS) $(SED_FIX_COPYRIGHT) $(FILE_L4J_CONFIG_EN)
 	$(LAUNCH4J) $(PWD)/$(FILE_L4J_CONFIG_EN)
-	$(DEL) ../jymag-$(VER)-en.exe
-	$(COPY) $@ ../jymag-$(VER)-en.exe
+
+$(DISTDIR)/jymag-$(VER)-en.exe: $(FILE_L4J_EXE_EN)
+	$(DEL) $@
+	$(COPY) $(FILE_L4J_EXE_EN) $@
 
 setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog \
 		INSTALL COPYING README THANKS jar Makefile
@@ -348,9 +355,14 @@ setup/$(FILE_INSTALLER):	$(FILE_INSTALLER_CFG) AUTHORS ChangeLog \
 	#$(DEL) $@-signed.exe
 	#$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in $@ -out $@-signed.exe
 	#$(MOVE) $@-signed.exe $@
-	$(DEL) ../$(FILE_INSTALLER)
-	$(COPY) $@ ..
-	$(GNUPG_SIGNER) ../$(FILE_INSTALLER)
+
+$(DISTDIR)/$(FILE_INSTALLER): setup/$(FILE_INSTALLER)
+	$(DEL) $@
+	$(COPY) setup/$(FILE_INSTALLER) $@
+
+$(DISTDIR)/$(FILE_INSTALLER).$(SIGEXT): $(DISTDIR)/$(FILE_INSTALLER)
+	$(DEL) $@
+	$(GNUPG_SIGNER) $(DISTDIR)/$(FILE_INSTALLER)
 
 installer-clean:
 	$(DEL) setup/$(FILE_INSTALLER)
@@ -372,15 +384,16 @@ installer-clean:
 # source files after building, so that building the unsigned installer will
 # use the unsigned files again
 
-jar-signed: jar $(FILE_PROGRAM_SIGNED)
+jar-signed: jar makedir $(FILE_PROGRAM_SIGNED)
 
 $(FILE_PROGRAM_SIGNED): jar Makefile
 	$(JARSIGN) -signedjar $@ $(JARSIGN_OPTS) $(FILE_PROGRAM) $(JARSIGN_ALIAS)
 	$(MOVE) $@ $(FILE_PROGRAM)
 	$(TOUCH) $(FILE_ANY_SOURCE_FILE)
 
-installer-signed:	jar-signed installer manual $(FILE_L4J_EXE) \
-		$(FILE_L4J_EXE_EN) setup/$(FILE_INSTALLER_SIGNED)
+installer-signed:	jar-signed installer manual makedir $(FILE_L4J_EXE) \
+		$(FILE_L4J_EXE_EN) setup/$(FILE_INSTALLER_SIGNED) \
+		$(DISTDIR)/$(FILE_INSTALLER_SIGNED).$(SIGEXT)
 
 setup/$(FILE_INSTALLER_SIGNED):	installer $(FILE_INSTALLER_CFG) AUTHORS \
 		ChangeLog INSTALL COPYING README THANKS jar-signed Makefile
@@ -391,13 +404,18 @@ setup/$(FILE_INSTALLER_SIGNED):	installer $(FILE_INSTALLER_CFG) AUTHORS \
 	$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in $(FILE_L4J_EXE_EN) -out $(FILE_L4J_EXE_SIGNED_EN)
 	$(MOVE) $(FILE_L4J_EXE_SIGNED_EN) $(FILE_L4J_EXE_EN)
 	$(NSIS) $(NSIS_OPT) $(FILE_INSTALLER_CFG)
-	$(DEL) setup/$(FILE_INSTALLER_SIGNED)
+	$(DEL) $@
 	$(OSSLSIGNCODE) $(OSSLSIGNCODE_O) -in setup/$(FILE_INSTALLER) -out $@
 	#$(MOVE) $@ setup/$(FILE_INSTALLER)
-	$(DEL) ../$(FILE_INSTALLER_SIGNED)
-	$(COPY) $@ ..
-	$(GNUPG_SIGNER) ../$(FILE_INSTALLER_SIGNED)
 	$(TOUCH) $(FILE_L4J_CONFIG) $(FILE_L4J_CONFIG_EN) $(FILE_INSTALLER_CFG)
+
+$(DISTDIR)/$(FILE_INSTALLER_SIGNED): setup/$(FILE_INSTALLER_SIGNED)
+	$(DEL) $@
+	$(COPY) setup/$(FILE_INSTALLER_SIGNED) $@
+
+$(DISTDIR)/$(FILE_INSTALLER_SIGNED).$(SIGEXT): $(DISTDIR)/$(FILE_INSTALLER_SIGNED)
+	$(DEL) $@
+	$(GNUPG_SIGNER) $(DISTDIR)/$(FILE_INSTALLER_SIGNED)
 
 installer-signed-clean:
 	$(DEL) setup/$(FILE_INSTALLER_SIGNED)
@@ -428,6 +446,12 @@ setup/jymag.ico: src/bogdrosoft/jymag/rsrc/jymag-icon-phone.png Makefile
 # Other targets
 ###########################################################################
 
+makedir:
+	$(MKDIR) $(DISTDIR)
+
+makedir-clean:
+	$(DEL) $(DISTDIR)
+
 javadoc-clean:
 	$(DEL) dist/javadoc
 
@@ -437,7 +461,8 @@ check:
 coverage:
 	$(MAVEN) -B verify -Pcoverage
 
-clean:	installer-signed-clean installer-clean manual-clean javadoc-clean jar-clean
+clean:	installer-signed-clean installer-clean manual-clean javadoc-clean \
+	jar-clean makedir-clean
 
 .PHONY:	all pack pack-src pack-bin pack-javadoc \
 	manual manual-clean \
