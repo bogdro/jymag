@@ -33,7 +33,6 @@ LS		= /bin/ls
 # PACK_GNUOPTS	= --format gnutar
 # endif
 PACK		= /bin/tar $(PACK_GNUOPTS) -jcf
-PACK		= tar jcf
 PACK_EXT	= tar.bz2
 SED		= sed
 SED_OPTS	= -i
