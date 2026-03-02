@@ -43,6 +43,7 @@ UNIX2DOS	= unix2dos
 # gpgsignsoft.sh is a wrapper aroun GnuPG (www.gnupg.org) that selects the
 # default key and options
 GNUPG_SIGNER	= gpgsignsoft.sh
+SIGEXT		= asc
 
 # www.perl.org
 PERL		= perl
@@ -174,7 +175,7 @@ pack:	pack-javadoc pack-bin installer installer-signed pack-src
 pack-src:	$(FILE_ARCH_SRC)
 
 $(FILE_ARCH_SRC): clean Makefile
-	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_SRC) $(FILE_ARCH_SRC).asc
+	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_SRC) $(FILE_ARCH_SRC).$(SIGEXT)
 	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
@@ -207,7 +208,7 @@ pack-bin:	$(FILE_ARCH_BIN) test
 
 $(FILE_ARCH_BIN):	manual jar Makefile
 	$(DEL) dist/javadoc
-	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_BIN) $(FILE_ARCH_BIN).asc
+	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_BIN) $(FILE_ARCH_BIN).$(SIGEXT)
 	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
@@ -232,7 +233,7 @@ $(FILE_ARCH_BIN):	manual jar Makefile
 pack-javadoc:	$(FILE_ARCH_JAVADOC)
 
 $(FILE_ARCH_JAVADOC):	dist/javadoc Makefile
-	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_JAVADOC) $(FILE_ARCH_JAVADOC).asc
+	$(DEL) $(DIR_TMP_DIST) $(FILE_ARCH_JAVADOC) $(FILE_ARCH_JAVADOC).$(SIGEXT)
 	$(SED) $(SED_OPTS) $(SED_FIX_POM_VERSION) pom.xml
 	$(MKDIR) ../$(DIR_TMP_DIST)
 	$(COPY) * ../$(DIR_TMP_DIST)
