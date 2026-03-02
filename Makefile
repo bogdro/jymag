@@ -442,6 +442,9 @@ icons:	$(PNG_ICONS)
 setup/jymag.ico: src/bogdrosoft/jymag/rsrc/jymag-icon-phone.png Makefile
 	$(PNG2ICO) $< $@
 
+icons-clean:
+	$(DEL) setup/jymag.ico
+
 ###########################################################################
 # Other targets
 ###########################################################################
@@ -462,13 +465,13 @@ coverage:
 	$(MAVEN) -B verify -Pcoverage
 
 clean:	installer-signed-clean installer-clean manual-clean javadoc-clean \
-	jar-clean makedir-clean
+	jar-clean icons-clean makedir-clean
 
 .PHONY:	all pack pack-src pack-bin pack-javadoc \
 	manual manual-clean \
 	jar jar-clean jar-signed \
 	installer installer-signed installer-signed-clean installer-clean \
 	makedir makedir-clean \
-	icons \
+	icons icons-clean \
 	clean javadoc-clean \
 	check test

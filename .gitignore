@@ -4,6 +4,7 @@ dist
 lib
 *.bz2
 *.asc
+*.ico
 *.exe
 /target/
 JYMAG-manual-*.pdf
