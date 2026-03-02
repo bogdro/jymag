@@ -468,6 +468,7 @@ clean:	installer-signed-clean installer-clean manual-clean javadoc-clean \
 	manual manual-clean \
 	jar jar-clean jar-signed \
 	installer installer-signed installer-signed-clean installer-clean \
+	makedir makedir-clean \
 	icons \
 	clean javadoc-clean \
 	check test
