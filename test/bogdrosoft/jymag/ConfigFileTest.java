@@ -125,12 +125,10 @@ public class ConfigFileTest
 
 	/**
 	 * Test of read method, of class ConfigFile.
-	 *
-	 * @throws Exception
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@SuppressWarnings("unused")
-	public void testReadNullFile() throws Exception
+	public void testReadNullFile()
 	{
 		System.out.println("testReadNullFile");
 		ConfigFile instance = new ConfigFile(null);

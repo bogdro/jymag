@@ -543,7 +543,6 @@ public class TransferUtilsTest
 		boolean waitFor = true;
 		JTable alarms = null;
 		Vector<PhoneAlarm> placeForData = new Vector<PhoneAlarm>(1);
-		int expResult = 0;
 		int result = TransferUtils.downloadAlarmList(null, onDone, parent,
 			quiet, quietGUI, waitFor, alarms, placeForData);
 		assertTrue(result < 0);
@@ -577,7 +576,6 @@ public class TransferUtilsTest
 	public void testDownloadMessageListNoParameters()
 	{
 		System.out.println("testDownloadMessageListNoParameters");
-		TransferParameters tp = getTransferParameters();
 		Runnable onDone = null;
 		Component parent = null;
 		boolean quiet = true;
@@ -1030,7 +1028,7 @@ public class TransferUtilsTest
 		Vector<String> replied = new Vector<String>(1);
 		Runnable afterPort = new Runnable(){
 			@Override
-			public void run() {}
+			public void run() { /* empty */ }
 		};
 		int expResult = 0;
 		int result = TransferUtils.scanPorts(quiet, tp, firmwares,

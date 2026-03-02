@@ -498,11 +498,9 @@ public class DataTransporterTest
 
 	/**
 	 * Test of reopen method, of class DataTransporter.
-	 *
-	 * @throws Exception
 	 */
 	@Test
-	public void testReopenNullPort() throws Exception
+	public void testReopenNullPort()
 	{
 		System.out.println("testReopenNullPort");
 		DataTransporter dt = new DataTransporter(null);
