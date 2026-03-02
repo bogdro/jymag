@@ -431,9 +431,7 @@ setup/jymag.ico: src/bogdrosoft/jymag/rsrc/jymag-icon-phone.png Makefile
 javadoc-clean:
 	$(DEL) dist/javadoc
 
-check:	test
-
-test:
+check:
 	$(ANT) test
 
 coverage:
