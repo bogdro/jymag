@@ -26,7 +26,7 @@ NAME = JYMAG
 COPY		= /bin/cp -fr
 DEL		= /bin/rm -fr
 MOVE		= /bin/mv -f
-MKDIR		= /bin/mkdir
+MKDIR		= /bin/mkdir -p
 LS		= /bin/ls
 # Use the GNU tar format
 # ifneq ($(shell tar --version | grep -i bsd),)
@@ -159,7 +159,7 @@ FILE_ANY_SOURCE_FILE = src/bogdrosoft/jymag/Starter.java
 
 DIR_TMP_DIST = $(NAME)-$(VER)
 
-DISTDIR = dist-setup
+DISTDIR = ../jymag-dist-setup
 
 ###########################################################################
 # Targets
@@ -465,7 +465,7 @@ coverage:
 	$(MAVEN) -B verify -Pcoverage
 
 clean:	installer-signed-clean installer-clean manual-clean javadoc-clean \
-	jar-clean icons-clean makedir-clean
+	jar-clean icons-clean
 
 .PHONY:	all pack pack-src pack-bin pack-javadoc \
 	manual manual-clean \
