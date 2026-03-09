@@ -1,3 +1,58 @@
+2026-03-02	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
+
+	* JYMAG version 3.2:
+	  Enhanced program accessibility by adding labels and descriptions to
+	  window elements and mnemonics to some buttons - Alt+Q now closes
+	  any program window. When reading a configuration file, set also the
+	  window size, font size and selected tab. Remove the Send button when
+	  just reading an SMS. Improvements in tests and many new tests
+	  (current coverage: 70% with GUI, 34.8% without). Code style
+	  improvements. Verified to work with Java 25. Improvements in the
+	  build system, verified to work with launch4j 3.50.
+	* Utils.java (handleException): Fixed the package name after renaming.
+	* EscKeyListener.java (toString): Use a predefined empty string.
+	* ConfigFile.java (read): Catch IOExceptions.
+	* ConfigFile.java (write): Remove an unnecessary call to close().
+	* CommandLineParser.java (readConfig): Read also the window size,
+	  font size and selected tab from the configuration file.
+	* MainWindow.java (MainWindow): Set also the window size, font size
+	  and selected tab from the config file read by the command line.
+	* SMSWindow.java (SMSWindow): When in reading mode, remove the Send
+	  button completely instead of disabling it.
+	* RawCommunicator.java (start), SignalDisplayer.java (start): Stop
+	  synchronizing on the Runnables.
+	* PhoneElement.java (getFilename): Simplified the filename replace.
+	* DataTransporter.java (PIN_STATUS.looseValueOf): Simplified the
+	  value replace.
+	* src/bogdrosoft/jymag/gui/**/*.*, src/bogdrosoft/jymag/i18n/:
+	  Enhanced accessibility.
+	* PhoneAlarm.java (parseReponse, parseField): Simplified parsing.
+	* UncExceptionHandler.java: Extracted class from Utils.
+	* StatusChangeRunnable.java: Extracted class from Utils.
+	* ProgramStatus.java: Extracted class from Utils.
+	* test/**/*.java: Many new tests (methods). Use Assume to check for
+	  access to GUI and skip if unavailable. Updated to work better with
+	  new Java.
+	* {src,test}/**/*.java, pom.xml: Code quality fixes, as recommended by
+	  Apache NetBeans, Semgrep, Codacy, SonarQube Cloud: transient fields,
+	  direct imports, field and variable names, field order, qualifiers,
+	  conditions, exceptions, usage of regexes and replaceAll(),
+	  test order.
+	* UtilsTest.java, DataTransporterTest.java, EscKeyListenerTest.java,
+	  RawCommunicatorTest.java, SignalDisplayerTest.java, UiUtilsTest.java,
+	  PanelUtilsTest.java: Added simple assertions where missing.
+	* Makefile: Added the "coverage" target. Removed the "test" target,
+	  because it matches an existing filesystem object. Removed a duplicate
+	  variable. Put the signature extension ".asc" in a variable. Changed
+	  the target directory for the installers from the parent directory
+	  and manage the targets better. Made the installer targets depend on
+	  the signed files. Made the icon removed when cleaning.
+	* pom.xml: Added coverage output in HTML format. Updated the Mockito
+	  version and its requirements.
+	* setup/launch4j-jymag*.xml: Added the license block.
+	* nbproject/project.properties, manual/*/readme.html: Fixed missed
+	  package name.
+
 2024-02-27	Bogdan Drozdowski <bogdro (at) users . sourceforge . net>
 
 	* JYMAG version 3.1:
@@ -395,7 +450,7 @@
 	* EscKeyListener.java, Utils.java: moved the EscKeyListener inner
 	  class to its separate file. Make the constructor just save the frame
 	  and add a new method to actually install the listener in the frame
-	  (better readbility, avoid IDE warnings).
+	  (better readability, avoid IDE warnings).
 	* MainWindow.java (MainWindow), Utils.java (UncExHndlr): make the
 	  uncaught exception handler for GUI threads repaint the source window.
 	  This may help in cases the GUI gets irresponsive e.g. after a failed
@@ -613,7 +668,7 @@
 	* Utils.java (createOpenFileChooser): more checks for null.
 	* test: added tests and the required stub classes.
 	* PhoneAlarm.java (getDays): checking for null.
-	* *Panel.java: makeing the buttons same height for better layout
+	* *Panel.java: making the buttons same height for better layout
 	* README, manuals: added alternative addresses of RxTx
 	* ConfigFile.java: enhanced detecting the system end-of-line sequence
 	* ConfigFile.java (read): better performance in comment matching
@@ -629,7 +684,7 @@
 	  Added answering a call and changing the volume level. Added sending
 	  a file with commands/data on the command line. Removed the
 	  dependency on the "beansbinding" library, making the binary
-	  distibution smaller.
+	  distribution smaller.
 	* Utils.STATUS: get the bundle and the strings just once
 	* Makefile: allowing excluding files from source distribution, signing
 	  the installer automatically
@@ -675,7 +730,7 @@
 	  with get*() methods.
 	* MainWindow.java (loadConfButActionPerformed): corrected reading
 	  the configuration values. Method is now synchronized.
-	* PhoneAlarm.java: using a constand field for the integer zero
+	* PhoneAlarm.java: using a constant field for the integer zero
 	  (which represents all days for an alarm). Less relying on particular
 	  implementations (using a general Set instead of HashSet if possible).
 	* AboutBox.java (getFileContents): using a StringBuilder to improve
@@ -697,14 +752,14 @@
 	  fields.
 	* MainWindow.java: corrected the size of the tab pane and its
 	  subelements so the buttons on the right don't cover it when the
-	  font size decreases. A new tab for dialing numbers.
+	  font size decreases. A new tab for dialling numbers.
 	* TransferUtils.java: using "Component" instead of "JFrame" in
 	  methods' parameters. Added methods that dial a number and hang up.
 	* DataTransporter.java: added methods that dial a number and hang up.
 	* MainWindow.java, RawCommunicator.java, SMSWindow.java: using a
 	  single instance of the resource bundle with messages.
-	* DialPanel.java: a panel for dialing numbers (contents of the
-	  dialing tab in MainWindow.java).
+	* DialPanel.java: a panel for dialling numbers (contents of the
+	  dialling tab in MainWindow.java).
 	* CommandLineParser.java (parse): recognising new command-line
 	  options: --dial-voice, --dial-data, --hangup.
 	* README, manual/en/readme.html, manual/pl/readme.html: added new
@@ -817,7 +872,7 @@
 	* DataTransporter.java: added methods for powering off the phone,
 	  telling which PIN number is the phone waiting for (if any) and for
 	  sending that PIN number. These methods are unverified. Moved
-	  transport-realted code from MainWindow and CapabilityWindow to this
+	  transport-related code from MainWindow and CapabilityWindow to this
 	  class. Added methods for getting the number of supported alarms,
 	  getting the list of currently-enabled alarms, adding new alarms and
 	  deleting alarms.
